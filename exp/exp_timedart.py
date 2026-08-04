@@ -11,6 +11,7 @@ from utils.augmentations import masked_data
 from utils.forecast_report import build_forecast_report, save_training_history
 from utils.metrics import forecast_metrics
 from utils.forecast_losses import ForecastLoss
+from utils.run_tags import forecast_result_tag
 from torch.optim import lr_scheduler
 import torch
 import torch.nn as nn
@@ -1008,19 +1009,7 @@ class Exp_TimeDART(Exp_Basic):
         trues = []
         last_observations = []
 
-        result_tag = (
-            f"{self.args.features}_"
-            f"il{self.args.input_len}_"
-            f"pl{self.args.pred_len}_"
-            f"dm{self.args.d_model}_"
-            f"el{self.args.e_layers}_"
-            f"p{self.args.patch_len}_"
-            f"s{self.args.stride}_"
-            f"loss{self.args.loss}_"
-            f"lr{self.args.learning_rate}_"
-            f"res{int(self.args.residual_forecast)}_"
-            f"seed{self.args.seed}"
-        )
+        result_tag = forecast_result_tag(self.args)
 
         folder_path = os.path.join(
             "./outputs/test_results",

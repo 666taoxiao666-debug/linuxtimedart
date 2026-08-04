@@ -9,6 +9,7 @@ import torch
 from exp.exp_simmtm import Exp_SimMTM
 from exp.exp_timedart import Exp_TimeDART
 from exp.exp_timedart_v2 import Exp_TimeDART_v2
+from utils.run_tags import experiment_setting, forecast_result_tag
 
 
 def build_parser():
@@ -191,6 +192,12 @@ def build_parser():
     parser.add_argument("--use_amp", action="store_true")
     parser.add_argument("--accumulation_steps", type=int, default=1)
     parser.add_argument("--seed", type=int, default=2024)
+    parser.add_argument(
+        "--run_id",
+        type=str,
+        default="",
+        help="unique run tag appended to checkpoint/test dirs to avoid overwriting",
+    )
 
     # Device
     parser.add_argument(
@@ -265,18 +272,6 @@ def pretrain_signature(args):
     return "_".join(_safe_component(part) for part in parts)
 
 
-def experiment_setting(args, run_index):
-    return (
-        f"{args.task_name}_{args.model}_{args.data}_{args.features}_"
-        f"il{args.input_len}_ll{args.label_len}_pl{args.pred_len}_"
-        f"dm{args.d_model}_df{args.d_ff}_nh{args.n_heads}_el{args.e_layers}_"
-        f"dl{args.d_layers}_fc{args.factor}_dp{args.dropout}_hdp{args.head_dropout}_"
-        f"ep{args.train_epochs}_bs{args.batch_size}_lr{args.learning_rate}_"
-        f"loss{args.loss}_res{int(args.residual_forecast)}_"
-        f"seed{args.seed}_run{run_index}"
-    )
-
-
 def resolve_pretrained_checkpoint(args):
     explicit = args.load_checkpoints
     if isinstance(explicit, str) and explicit.strip().lower() in {"", "none", "null"}:
@@ -330,6 +325,8 @@ def configure_args(args):
     args.pretrain_run_dir = os.path.join(
         args.pretrain_checkpoints, args.data, pretrain_signature(args)
     )
+    if not getattr(args, "run_id", None):
+        args.run_id = os.environ.get("RUN_ID", "")
     return args
 
 
