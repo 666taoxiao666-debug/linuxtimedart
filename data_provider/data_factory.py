@@ -141,6 +141,17 @@ def data_provider(args, flag):
                     args.sdwpf_train_stride if flag == 'train' else args.sdwpf_eval_stride
                 ),
                 filter_abnormal=args.sdwpf_filter_abnormal,
+                rated_power=args.rated_power,
+                clip_power=args.sdwpf_clip_power,
+                circular_wind=args.sdwpf_circular_wind,
+                collapse_pitch=args.sdwpf_collapse_pitch,
+                keep_curtailment=args.sdwpf_keep_curtailment,
+                causal_fill=args.sdwpf_causal_fill,
+                split=args.sdwpf_split,
+                fold=args.sdwpf_fold,
+                n_folds=args.sdwpf_n_folds,
+                physics_features=args.sdwpf_physics_features,
+                drop_weak_features=args.sdwpf_drop_weak,
             )
         data_set = Data(**data_kwargs)
 

@@ -3,6 +3,7 @@ import torch.nn as nn
 from layers.Transformer_EncDec import Decoder, DecoderLayer, Encoder, EncoderLayer
 from layers.TimeDART_EncDec import (
     ChannelIndependence,
+    ChannelMixer,
     AddSosTokenAndDropLast,
     CausalTransformer,
     Diffusion,
@@ -19,6 +20,11 @@ from layers.TimeDART_EncDec import (
 )
 from layers.Embed import Patch, PatchEmbedding, PositionalEncoding, TokenEmbedding_TimeDART
 from utils.regime_labels import compute_regime_pseudo_labels_from_series
+from data_provider.sdwpf_features import (
+    channel_prior_vector,
+    operating_context_dim,
+    revin_keep_indices,
+)
 
 
 class FlattenHead(nn.Module):
@@ -66,6 +72,12 @@ class Model(nn.Module):
         self.pred_len = args.pred_len
         self.use_norm = args.use_norm
         self.residual_forecast = getattr(args, "residual_forecast", False)
+        self.residual_gate_init = float(getattr(args, "residual_gate_init", -4.0))
+        self.residual_gate_logit = (
+            nn.Parameter(torch.tensor(self.residual_gate_init, dtype=torch.float32))
+            if self.residual_forecast
+            else None
+        )
         self.zero_init_residual_head = getattr(
             args,
             "zero_init_residual_head",
@@ -91,7 +103,44 @@ class Model(nn.Module):
             "regime_ramp_thresh",
             0.25,
         )
+        self.features = getattr(args, "features", "M")
+        self.enc_in = int(getattr(args, "enc_in", 1))
+        self.feature_columns = list(getattr(args, "feature_columns", None) or [])
+        if not self.feature_columns:
+            self.feature_columns = [f"f{i}" for i in range(self.enc_in)]
+        if len(self.feature_columns) != self.enc_in:
+            raise ValueError(
+                "feature_columns length must equal enc_in: "
+                f"{len(self.feature_columns)} != {self.enc_in}"
+            )
+        self.mix_channels = bool(getattr(args, "mix_channels", False)) and (
+            self.features == "MS"
+        )
+        self.use_channel_prior = bool(getattr(args, "channel_prior", False))
+        self.use_op_context = bool(getattr(args, "op_context", False))
+        self.revin_keep_indices = (
+            revin_keep_indices(self.feature_columns)
+            if bool(getattr(args, "revin_keep_wind", False))
+            else []
+        )
+        self.op_context_dim = (
+            operating_context_dim(self.feature_columns) if self.use_op_context else 0
+        )
         self.channel_independence = ChannelIndependence()
+        self.channel_mixer = (
+            ChannelMixer(
+                num_features=self.enc_in,
+                d_model=self.d_model,
+                dropout=self.dropout,
+                channel_prior=channel_prior_vector(
+                    self.feature_columns,
+                    physics_init=self.use_channel_prior,
+                ),
+                context_dim=self.op_context_dim,
+            )
+            if self.mix_channels and self.task_name == "finetune"
+            else None
+        )
 
         # Patch
         self.patch_len = args.patch_len
@@ -232,10 +281,12 @@ class Model(nn.Module):
             if (
                 self.residual_forecast
                 and self.zero_init_residual_head
+                and not self.mix_channels
             ):
-                # The initial forecast is exactly persistence.
-                # The head then learns only the correction
-                # relative to the last observation.
+                # Without a channel mixer the head is a power-only linear
+                # map, so a zero start is exactly persistence.  Mixing
+                # wind into the head is the point of mix_channels, so
+                # do not zero that path.
                 nn.init.zeros_(
                     self.head.forecast_head.weight
                 )
@@ -479,6 +530,21 @@ class Model(nn.Module):
 
         return predict_x
 
+    def _operating_context(self, x):
+        """Pre-norm last/mean wind and last power/yaw/pitch.  History only."""
+        names = {name: i for i, name in enumerate(self.feature_columns)}
+        pieces = []
+        if "Wspd" in names:
+            idx = names["Wspd"]
+            pieces.append(x[:, -1, idx])
+            pieces.append(x[:, :, idx].mean(dim=1))
+        for name in ("power", "yaw_sin", "yaw_cos", "Pab_mean"):
+            if name in names:
+                pieces.append(x[:, -1, names[name]])
+        if not pieces:
+            return None
+        return torch.stack(pieces, dim=-1)
+
     def forecast(self, x):
         batch_size, _, num_features = (
             x.size()
@@ -488,8 +554,14 @@ class Model(nn.Module):
         last_observation = (
             x[:, -1:, :].detach()
         )
+        context = (
+            self._operating_context(x)
+            if self.channel_mixer is not None and self.op_context_dim > 0
+            else None
+        )
 
         if self.use_norm:
+            x_raw = x
             means = torch.mean(
                 x,
                 dim=1,
@@ -509,6 +581,9 @@ class Model(nn.Module):
             ).detach()
 
             x = x / stdevs
+            if self.revin_keep_indices:
+                x = x.clone()
+                x[:, :, self.revin_keep_indices] = x_raw[:, :, self.revin_keep_indices]
 
         x = self.channel_independence(x)
         x = self.patch(x)
@@ -538,6 +613,9 @@ class Model(nn.Module):
             self.d_model,
         )
 
+        if self.channel_mixer is not None:
+            x = self.channel_mixer(x, context=context)
+
         # Forecast
         x = self.head(x)
 
@@ -546,36 +624,19 @@ class Model(nn.Module):
         # In residual mode the mean must not be added:
         # the last observation is already on the
         # original input scale.
+        power_slice = slice(-1, None) if self.mix_channels else slice(None)
         if self.residual_forecast:
             if self.use_norm:
-                x = (
-                    x
-                    * stdevs[
-                        :,
-                        0,
-                        :,
-                    ].unsqueeze(1)
-                )
-
-            x = last_observation + x
+                x = x * stdevs[:, :, power_slice]
+            # Start close to the hard-to-beat persistence baseline.  Unlike a
+            # zeroed head, this small learnable gate still lets gradients reach
+            # the wind/context path from the first optimisation step.
+            residual_gate = torch.sigmoid(self.residual_gate_logit)
+            x = last_observation[:, :, power_slice] + residual_gate * x
 
         elif self.use_norm:
-            x = (
-                x
-                * stdevs[
-                    :,
-                    0,
-                    :,
-                ].unsqueeze(1)
-            )
-            x = (
-                x
-                + means[
-                    :,
-                    0,
-                    :,
-                ].unsqueeze(1)
-            )
+            x = x * stdevs[:, :, power_slice]
+            x = x + means[:, :, power_slice]
 
         return x
 

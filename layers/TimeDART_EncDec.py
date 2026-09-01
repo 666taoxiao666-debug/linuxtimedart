@@ -21,6 +21,112 @@ class ChannelIndependence(nn.Module):
         return x
 
 
+class ChannelMixer(nn.Module):
+    """Fuse every channel token at each patch into one power token.
+
+    TimeDART encodes channels independently, so wind speed never reaches the
+    power head unless the patch tokens are mixed here.  The mixer is used only
+    in MS fine-tuning; pre-training still reconstructs each channel on its own.
+
+    ``channel_prior`` scales each channel before concat so Wspd/power start
+    larger than weak SCADA.  ``context`` is a pre-norm operating-point vector
+    (last/mean wind, last power, yaw, pitch) added to every patch token.
+    """
+
+    def __init__(
+        self,
+        num_features: int,
+        d_model: int,
+        dropout: float,
+        channel_prior=None,
+        context_dim: int = 0,
+    ):
+        super().__init__()
+        if num_features < 1:
+            raise ValueError("num_features must be positive")
+        self.num_features = int(num_features)
+        if channel_prior is None:
+            prior = torch.ones(self.num_features)
+        else:
+            prior = torch.as_tensor(channel_prior, dtype=torch.float32).reshape(-1)
+            if prior.numel() != self.num_features:
+                raise ValueError(
+                    "channel_prior length must equal num_features: "
+                    f"{prior.numel()} != {self.num_features}"
+                )
+        self.log_channel_scale = nn.Parameter(torch.log(prior.clamp(min=1e-4)))
+        self.proj = nn.Sequential(
+            nn.Linear(self.num_features * d_model, d_model),
+            nn.GELU(),
+            nn.Dropout(dropout),
+            nn.Linear(d_model, d_model),
+        )
+        self.context_dim = int(context_dim)
+        self.context_proj = (
+            nn.Linear(self.context_dim, d_model) if self.context_dim > 0 else None
+        )
+        self.context_gate = (
+            nn.Linear(self.context_dim, self.num_features)
+            if self.context_dim > 0
+            else None
+        )
+        if self.context_gate is not None:
+            # 2*sigmoid(0)=1: training starts exactly from the physics prior,
+            # then learns regime-specific channel importance per sample.
+            nn.init.zeros_(self.context_gate.weight)
+            nn.init.zeros_(self.context_gate.bias)
+
+    def channel_scale(self) -> torch.Tensor:
+        return self.log_channel_scale.exp()
+
+    def effective_channel_scale(self, context: torch.Tensor = None) -> torch.Tensor:
+        """Return static physics priors or per-sample context-adaptive scales."""
+        base = self.channel_scale()
+        if self.context_gate is None:
+            return base
+        if context is None:
+            raise ValueError("ChannelMixer was built with context_dim>0 but context is None")
+        if context.ndim != 2 or context.shape[-1] != self.context_dim:
+            raise ValueError(
+                "operating context width does not match mixer: "
+                f"{tuple(context.shape)} vs context_dim={self.context_dim}"
+            )
+        dynamic = 2.0 * torch.sigmoid(self.context_gate(context))
+        return dynamic * base.unsqueeze(0)
+
+    def forward(self, x: torch.Tensor, context: torch.Tensor = None) -> torch.Tensor:
+        """
+        :param x: [batch_size, num_features, num_patches, d_model]
+        :param context: optional [batch_size, context_dim] operating point
+        :return: [batch_size, 1, num_patches, d_model]
+        """
+        if x.ndim != 4:
+            raise ValueError(f"ChannelMixer expects 4D input, got {tuple(x.shape)}")
+        batch, num_features, num_patches, d_model = x.shape
+        if num_features != self.num_features:
+            raise ValueError(
+                "ChannelMixer feature count does not match the data: "
+                f"encoder={num_features}, mixer={self.num_features}. "
+                "Set --enc_in to the SDWPF feature count."
+            )
+        scale = self.effective_channel_scale(context)
+        if scale.ndim == 1:
+            scale = scale.unsqueeze(0)
+        if scale.shape[0] not in (1, batch):
+            raise ValueError(
+                f"context batch size {scale.shape[0]} does not match input batch {batch}"
+            )
+        scale = scale.view(scale.shape[0], self.num_features, 1, 1)
+        x = x * scale
+        mixed = x.permute(0, 2, 1, 3).reshape(
+            batch, num_patches, num_features * d_model
+        )
+        mixed = self.proj(mixed)
+        if self.context_proj is not None:
+            mixed = mixed + self.context_proj(context).unsqueeze(1)
+        return mixed.unsqueeze(1)
+
+
 class AddSosTokenAndDropLast(nn.Module):
     def __init__(self, sos_token: torch.Tensor):
         super(AddSosTokenAndDropLast, self).__init__()

@@ -18,9 +18,15 @@ def forecast_result_tag(args):
         f"loss{args.loss}",
         f"lr{args.learning_rate}",
         f"res{int(args.residual_forecast)}",
+        f"rg{getattr(args, 'residual_gate_init', -4.0)}",
         f"hw{args.horizon_weight_end}",
         f"pw{args.power_weight_alpha}",
         f"mix{args.mix_mse_weight}",
+        f"chmix{int(getattr(args, 'mix_channels', False))}",
+        f"phy{int(getattr(args, 'sdwpf_physics_features', False))}",
+        f"keepw{int(getattr(args, 'revin_keep_wind', False))}",
+        f"split{getattr(args, 'sdwpf_split', 'time')}",
+        f"fold{getattr(args, 'sdwpf_fold', 0)}",
         f"seed{args.seed}",
     ]
     run_id = getattr(args, "run_id", "") or ""
@@ -37,8 +43,13 @@ def experiment_setting(args, run_index):
         f"dl{args.d_layers}_fc{args.factor}_dp{args.dropout}_hdp{args.head_dropout}_"
         f"ep{args.train_epochs}_bs{args.batch_size}_lr{args.learning_rate}_"
         f"loss{args.loss}_res{int(args.residual_forecast)}_"
+        f"rg{getattr(args, 'residual_gate_init', -4.0)}_"
         f"hw{args.horizon_weight_end}_pw{args.power_weight_alpha}_"
-        f"mix{args.mix_mse_weight}_seed{args.seed}"
+        f"mix{args.mix_mse_weight}_chmix{int(getattr(args, 'mix_channels', False))}_"
+        f"phy{int(getattr(args, 'sdwpf_physics_features', False))}_"
+        f"keepw{int(getattr(args, 'revin_keep_wind', False))}_"
+        f"split{getattr(args, 'sdwpf_split', 'time')}_fold{getattr(args, 'sdwpf_fold', 0)}_"
+        f"seed{args.seed}"
     )
     run_id = getattr(args, "run_id", "") or ""
     if str(run_id).strip():

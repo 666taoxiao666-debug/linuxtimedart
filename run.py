@@ -6,6 +6,7 @@ import re
 import numpy as np
 import torch
 
+from data_provider.sdwpf_features import sdwpf_feature_columns
 from exp.exp_simmtm import Exp_SimMTM
 from exp.exp_timedart import Exp_TimeDART
 from exp.exp_timedart_v2 import Exp_TimeDART_v2
@@ -27,7 +28,16 @@ def build_parser():
         type=int,
         choices=[0, 1],
         default=1,
-        help="1: train then test; 0: load a fine-tuned checkpoint and test only",
+        help="1: train/validate; 0: load a fine-tuned checkpoint and test only",
+    )
+    parser.add_argument(
+        "--evaluate_test_after_train",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+        help=(
+            "also evaluate the test split after training; disabled by default "
+            "to prevent repeated test-set peeking"
+        ),
     )
     parser.add_argument("--model_id", required=True)
     parser.add_argument(
@@ -65,6 +75,84 @@ def build_parser():
         default=True,
         help="apply the standard SDWPF invalid-operation filters",
     )
+    parser.add_argument(
+        "--sdwpf_clip_power",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help="clip power labels to [0, rated_power]",
+    )
+    parser.add_argument(
+        "--sdwpf_circular_wind",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help="encode Wdir/Ndir as sin/cos instead of raw degrees",
+    )
+    parser.add_argument(
+        "--sdwpf_collapse_pitch",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help="replace Pab1/Pab2/Pab3 with their mean",
+    )
+    parser.add_argument(
+        "--sdwpf_keep_curtailment",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help="keep high-wind zero-power rows as actual=0 with an available mask",
+    )
+    parser.add_argument(
+        "--sdwpf_causal_fill",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help="forward-fill short sensor gaps; never use future points",
+    )
+    parser.add_argument(
+        "--sdwpf_split",
+        choices=["time_ratio", "rolling", "seasonal"],
+        default="time_ratio",
+        help="time_ratio=legacy 70/10/20; rolling=expanding origin; seasonal=month blocks",
+    )
+    parser.add_argument("--sdwpf_fold", type=int, default=0)
+    parser.add_argument("--sdwpf_n_folds", type=int, default=3)
+    parser.add_argument(
+        "--mix_channels",
+        action=argparse.BooleanOptionalAction,
+        default=None,
+        help="mix all encoder channels into the power head (MS fine-tune). "
+        "Default: on for SDWPF MS, off otherwise",
+    )
+    parser.add_argument(
+        "--sdwpf_physics_features",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help="yaw error instead of nacelle heading; drop weak SCADA (Prtv/Itmp)",
+    )
+    parser.add_argument(
+        "--sdwpf_drop_weak",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help="drop Prtv and Itmp when physics features are on",
+    )
+    parser.add_argument(
+        "--channel_prior",
+        action=argparse.BooleanOptionalAction,
+        default=None,
+        help="initial mixer scales: Wspd/power large, Prtv/Itmp small. "
+        "Default: on for SDWPF MS mixing",
+    )
+    parser.add_argument(
+        "--op_context",
+        action=argparse.BooleanOptionalAction,
+        default=None,
+        help="inject last/mean wind and last power/yaw/pitch into the mixer "
+        "before instance norm. Default: on for SDWPF MS mixing",
+    )
+    parser.add_argument(
+        "--revin_keep_wind",
+        action=argparse.BooleanOptionalAction,
+        default=None,
+        help="do not instance-normalise Wspd, so the power-curve operating "
+        "point survives. Default: on for SDWPF MS mixing",
+    )
 
     # Checkpoints
     parser.add_argument("--checkpoints", default="./outputs/checkpoints/")
@@ -74,6 +162,15 @@ def build_parser():
         "--load_checkpoints",
         default=None,
         help="explicit pre-trained checkpoint; takes priority over automatic discovery",
+    )
+    parser.add_argument(
+        "--pretrain_init",
+        choices=["auto", "none"],
+        default="auto",
+        help=(
+            "auto discovers a fold-matched pre-trained checkpoint; none guarantees "
+            "that fine-tuning starts from random initialisation"
+        ),
     )
     parser.add_argument(
         "--finetune_checkpoint",
@@ -104,6 +201,12 @@ def build_parser():
         action=argparse.BooleanOptionalAction,
         default=True,
         help="start a residual model from the exact persistence forecast",
+    )
+    parser.add_argument(
+        "--residual_gate_init",
+        type=float,
+        default=-4.0,
+        help="initial logit of the residual correction gate; -4 is near persistence",
     )
 
     # Model
@@ -269,6 +372,16 @@ def pretrain_signature(args):
     ]
     if args.model == "PromptTimeDART" or args.use_soft_prompt:
         parts.extend(["prompt", f"m{args.num_modes}"])
+    if args.data == "SDWPF":
+        # Fold-specific pretraining is required: a checkpoint trained on later
+        # rolling folds must never be auto-discovered for an earlier fold.
+        parts.extend(
+            [
+                f"split{args.sdwpf_split}",
+                f"fold{args.sdwpf_fold}of{args.sdwpf_n_folds}",
+                f"seed{args.seed}",
+            ]
+        )
     return "_".join(_safe_component(part) for part in parts)
 
 
@@ -276,6 +389,10 @@ def resolve_pretrained_checkpoint(args):
     explicit = args.load_checkpoints
     if isinstance(explicit, str) and explicit.strip().lower() in {"", "none", "null"}:
         explicit = None
+    if args.pretrain_init == "none":
+        if explicit:
+            raise ValueError("--pretrain_init none conflicts with --load_checkpoints")
+        return None
     if explicit:
         path = os.path.abspath(os.path.expanduser(explicit))
         if not os.path.isfile(path):
@@ -311,6 +428,48 @@ def configure_args(args):
             args.features = "MS"
         if args.freq == "h":
             args.freq = "10min"
+        if args.rated_power <= 0:
+            args.rated_power = 1500.0
+            print("[INFO] SDWPF rated_power defaulted to 1500 kW.")
+        args.feature_columns = sdwpf_feature_columns(
+            features=args.features,
+            target=args.target,
+            circular_wind=args.sdwpf_circular_wind,
+            collapse_pitch=args.sdwpf_collapse_pitch,
+            physics_features=args.sdwpf_physics_features,
+            drop_weak_features=args.sdwpf_drop_weak,
+        )
+        n_features = len(args.feature_columns)
+        args.enc_in = n_features
+        args.dec_in = n_features
+        if args.mix_channels is None:
+            args.mix_channels = (
+                args.features == "MS" and args.task_name == "finetune"
+            )
+        mixing = bool(args.mix_channels) and args.task_name == "finetune"
+        if args.channel_prior is None:
+            args.channel_prior = mixing
+        if args.op_context is None:
+            args.op_context = mixing
+        if args.revin_keep_wind is None:
+            args.revin_keep_wind = mixing
+        args.c_out = 1 if mixing else n_features
+        print(f"[INFO] SDWPF features ({n_features}): {args.feature_columns}")
+        if args.pred_len >= 96:
+            print(
+                "[INFO] 4-16 h (steps 25-96) is reported as an NWP-free ceiling, "
+                "not as a SOTA claim. The primary SCADA-only task is 0-4 h."
+            )
+    else:
+        args.feature_columns = list(getattr(args, "feature_columns", None) or [])
+        if args.mix_channels is None:
+            args.mix_channels = False
+        if args.channel_prior is None:
+            args.channel_prior = False
+        if args.op_context is None:
+            args.op_context = False
+        if args.revin_keep_wind is None:
+            args.revin_keep_wind = False
     args.use_gpu = bool(args.use_gpu and torch.cuda.is_available())
     if args.use_multi_gpu and not args.use_gpu:
         raise ValueError("--use_multi_gpu requires CUDA")
@@ -392,10 +551,17 @@ def main():
         print(f">>>>>>> start finetuning: {setting}")
         if args.downstream_task == "classification":
             exp.cls_train(setting)
-            exp.cls_test()
+            if args.evaluate_test_after_train:
+                exp.cls_test()
         else:
             exp.train(setting)
-            exp.test()
+            if args.evaluate_test_after_train:
+                exp.test()
+        if not args.evaluate_test_after_train:
+            print(
+                "[INFO] Test evaluation was intentionally skipped. Run with "
+                "--is_training 0 and an explicit --finetune_checkpoint for the final test."
+            )
         if torch.cuda.is_available():
             torch.cuda.empty_cache()
 

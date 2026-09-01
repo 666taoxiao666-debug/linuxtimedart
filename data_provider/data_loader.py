@@ -6,8 +6,9 @@ import re
 import torch
 import pickle
 from torch.utils.data import Dataset
-from utils.timefeatures import time_features
+from data_provider.sdwpf_features import sdwpf_feature_columns
 from data_provider.m4 import M4Dataset, M4Meta
+from utils.timefeatures import time_features
 from data_provider.uea import subsample, interpolate_missing, Normalizer
 # from sktime.utils import load_data
 import warnings
@@ -23,6 +24,9 @@ def _interpolate_short_missing_runs(series, max_gap=6):
     from each side, so a 12-point gap can be filled when max_gap is 6.  This
     helper measures the complete run first and therefore enforces the intended
     limit exactly.
+
+    Linear interpolation uses both endpoints and is not causal.  Prefer
+    ``_ffill_short_missing_runs`` for forecasting pipelines.
     """
     series = series.copy()
     missing = series.isna()
@@ -35,6 +39,95 @@ def _interpolate_short_missing_runs(series, max_gap=6):
     fillable = missing & (run_length <= int(max_gap)) & interpolated.notna()
     series.loc[fillable] = interpolated.loc[fillable]
     return series
+
+
+def _ffill_short_missing_runs(series, max_gap=6):
+    """Fill short NaN runs using only past values inside one series."""
+    series = series.copy()
+    missing = series.isna()
+    if not missing.any():
+        return series
+
+    run_id = missing.ne(missing.shift(fill_value=False)).cumsum()
+    run_length = missing.groupby(run_id).transform("sum")
+    filled = series.ffill()
+    fillable = missing & (run_length <= int(max_gap)) & filled.notna()
+    series.loc[fillable] = filled.loc[fillable]
+    return series
+
+
+def _segment_ids(turbines, dates, expected_freq):
+    expected_delta = pd.to_timedelta(expected_freq).to_timedelta64()
+    boundary = np.empty(len(dates), dtype=bool)
+    boundary[0] = True
+    if len(dates) > 1:
+        boundary[1:] = (turbines[1:] != turbines[:-1]) | (
+            (dates[1:] - dates[:-1]) != expected_delta
+        )
+    return np.cumsum(boundary) - 1
+
+
+def _sdwpf_cutoffs(
+    unique_dates,
+    split,
+    fold,
+    n_folds,
+    train_ratio,
+    val_ratio,
+    date_months=None,
+):
+    unique_dates = np.asarray(unique_dates)
+    n = len(unique_dates)
+    if n < 3:
+        raise ValueError("SDWPF data must contain at least three unique timestamps")
+    if split == "time_ratio":
+        train_pos = min(max(1, int(n * train_ratio)), n - 2)
+        val_pos = min(max(train_pos + 1, int(n * (train_ratio + val_ratio))), n - 1)
+        return unique_dates[train_pos], unique_dates[val_pos], None
+    if split == "rolling":
+        if fold < 0 or fold >= n_folds:
+            raise ValueError(f"sdwpf_fold must be in [0, {n_folds}), got {fold}")
+        test_ratio = 1.0 - train_ratio - val_ratio
+        test_size = max(1, int(round(n * test_ratio / n_folds)))
+        val_size = max(1, int(round(n * val_ratio)))
+        test_start = n - (n_folds - fold) * test_size
+        test_start = max(val_size + 2, test_start)
+        val_end = test_start
+        val_start = max(2, val_end - val_size)
+        train_end = val_start
+        test_end = min(n, test_start + test_size)
+        if train_end < 2 or val_end <= train_end or test_start >= n:
+            raise ValueError(
+                f"Rolling fold {fold}/{n_folds} is empty; reduce n_folds or "
+                "window length"
+            )
+        # The upper bound is essential: without it fold 0 evaluates on every
+        # later timestamp and therefore overlaps folds 1..N.  ``None`` means
+        # that the last fold legitimately runs to the end of the dataset.
+        test_cutoff = unique_dates[test_end] if test_end < n else None
+        return unique_dates[train_end], unique_dates[val_end], test_cutoff
+    if split == "seasonal":
+        if date_months is None:
+            raise ValueError("seasonal split requires month labels for unique dates")
+        if fold < 0 or fold >= n_folds:
+            raise ValueError(f"sdwpf_fold must be in [0, {n_folds}), got {fold}")
+        val_month = 6 + int(fold)
+        if val_month > 11:
+            raise ValueError("seasonal fold exceeds the mapped calendar")
+        months = np.asarray(date_months)
+        val_idx = np.flatnonzero(months == val_month)
+        after_idx = np.flatnonzero(months > val_month)
+        if len(val_idx) == 0 or len(after_idx) == 0:
+            raise ValueError(
+                f"Seasonal fold {fold} needs month {val_month} for validation "
+                f"and later months for test"
+            )
+        train_cutoff = unique_dates[val_idx[0]]
+        val_cutoff = unique_dates[after_idx[0]]
+        if not (unique_dates[0] < train_cutoff < val_cutoff):
+            raise ValueError("Seasonal cutoffs are not strictly increasing")
+        return train_cutoff, val_cutoff, None
+    raise ValueError("sdwpf_split must be one of: time_ratio, rolling, seasonal")
 
 
 def _stratified_classification_train_val_indices(
@@ -559,6 +652,12 @@ class Dataset_SDWPF(Dataset):
     ``TurbID`` and ``Day`` are metadata and are never model inputs.  For ``M``
     and ``MS`` the requested target is placed last, matching the framework's
     ``f_dim = -1`` convention for ``MS``.
+
+    Power is clipped to ``[0, rated_power]`` (consumption as zero).  High-wind
+    zeros and feathered pitch are kept as actual power=0 but flagged in
+    ``available_mask`` so evaluation can report both actual and available
+    generation.  Wind angles are optional sin/cos encodings.  Missing sensor
+    values are forward-filled inside a segment so no future observation is used.
     """
 
     _cache = {}
@@ -580,6 +679,17 @@ class Dataset_SDWPF(Dataset):
         expected_freq="10min",
         window_stride=1,
         filter_abnormal=True,
+        rated_power=1500.0,
+        clip_power=True,
+        circular_wind=True,
+        collapse_pitch=True,
+        keep_curtailment=True,
+        causal_fill=True,
+        split="time_ratio",
+        fold=0,
+        n_folds=3,
+        physics_features=True,
+        drop_weak_features=True,
     ):
         del seasonal_patterns
         if size is None:
@@ -588,6 +698,8 @@ class Dataset_SDWPF(Dataset):
             raise ValueError("flag must be one of: train, val, test")
         if features not in {"M", "S", "MS"}:
             raise ValueError("features must be one of: M, S, MS")
+        if split not in {"time_ratio", "rolling", "seasonal"}:
+            raise ValueError("split must be time_ratio, rolling, or seasonal")
         if not 0 < train_ratio < 1 or not 0 < val_ratio < 1:
             raise ValueError("train_ratio and val_ratio must be in (0, 1)")
         if train_ratio + val_ratio >= 1:
@@ -602,6 +714,9 @@ class Dataset_SDWPF(Dataset):
         self.freq = freq
         self.expected_freq = expected_freq
         self.window_stride = max(1, int(window_stride))
+        self.rated_power = float(rated_power) if rated_power else 0.0
+        self.split = split
+        self.fold = int(fold)
 
         file_path = os.path.abspath(os.path.join(root_path, data_path))
         cache_key = (
@@ -615,6 +730,17 @@ class Dataset_SDWPF(Dataset):
             float(val_ratio),
             expected_freq,
             bool(filter_abnormal),
+            float(self.rated_power),
+            bool(clip_power),
+            bool(circular_wind),
+            bool(collapse_pitch),
+            bool(keep_curtailment),
+            bool(causal_fill),
+            split,
+            int(fold),
+            int(n_folds),
+            bool(physics_features),
+            bool(drop_weak_features),
         )
         if cache_key not in self._cache:
             self._cache[cache_key] = self._prepare_data(
@@ -628,6 +754,17 @@ class Dataset_SDWPF(Dataset):
                 val_ratio=val_ratio,
                 expected_freq=expected_freq,
                 filter_abnormal=filter_abnormal,
+                rated_power=self.rated_power,
+                clip_power=clip_power,
+                circular_wind=circular_wind,
+                collapse_pitch=collapse_pitch,
+                keep_curtailment=keep_curtailment,
+                causal_fill=causal_fill,
+                split=split,
+                fold=int(fold),
+                n_folds=int(n_folds),
+                physics_features=bool(physics_features),
+                drop_weak_features=bool(drop_weak_features),
             )
 
         prepared = self._cache[cache_key]
@@ -639,8 +776,11 @@ class Dataset_SDWPF(Dataset):
         self.segments = prepared["segments"]
         self.train_cutoff = prepared["train_cutoff"]
         self.val_cutoff = prepared["val_cutoff"]
+        self.test_cutoff = prepared["test_cutoff"]
         self.scaler = prepared["scaler"]
         self.feature_columns = prepared["feature_columns"]
+        self.available_mask = prepared["available_mask"]
+        self.wspd = prepared["wspd"]
         self.window_starts = self._build_window_starts()
 
         if len(self.window_starts) == 0:
@@ -661,6 +801,17 @@ class Dataset_SDWPF(Dataset):
         val_ratio,
         expected_freq,
         filter_abnormal,
+        rated_power,
+        clip_power,
+        circular_wind,
+        collapse_pitch,
+        keep_curtailment,
+        causal_fill,
+        split,
+        fold,
+        n_folds,
+        physics_features,
+        drop_weak_features,
     ):
         if not os.path.isfile(file_path):
             raise FileNotFoundError(f"SDWPF data file not found: {file_path}")
@@ -672,22 +823,18 @@ class Dataset_SDWPF(Dataset):
             raise ValueError(f"SDWPF file is missing required columns: {missing}")
 
         metadata = {"date", "TurbID", "Day"}
-        candidate_features = [c for c in header if c not in metadata and c != target]
-        feature_columns = [target] if features == "S" else candidate_features + [target]
-
-        filter_columns = {"Wspd", "Wdir", "Ndir", "Pab1", "Pab2", "Pab3", target}
-        usecols = [
+        load_columns = [
             c
             for c in header
-            if c in {"date", "TurbID"} or c in feature_columns or c in filter_columns
+            if c in {"date", "TurbID"}
+            or c not in metadata
         ]
-        dtype = {c: "float32" for c in usecols if c != "date"}
-        # TurbID is read as float first so malformed values can be removed cleanly.
-        df = pd.read_csv(file_path, usecols=usecols, dtype=dtype)
+        dtype = {c: "float32" for c in load_columns if c != "date"}
+        df = pd.read_csv(file_path, usecols=load_columns, dtype=dtype)
         original_rows = len(df)
         df["date"] = pd.to_datetime(df["date"], errors="coerce")
 
-        numeric_columns = [c for c in usecols if c != "date"]
+        numeric_columns = [c for c in load_columns if c != "date"]
         df[numeric_columns] = df[numeric_columns].replace([np.inf, -np.inf], np.nan)
         df = df.dropna(subset=["date", "TurbID"])
         df["TurbID"] = df["TurbID"].astype(np.int16)
@@ -697,23 +844,26 @@ class Dataset_SDWPF(Dataset):
             .reset_index(drop=True)
         )
 
+        wind = df["Wspd"] if "Wspd" in df else pd.Series(np.nan, index=df.index)
+        power = df[target]
+        pitch_cols = [c for c in ("Pab1", "Pab2", "Pab3") if c in df]
+        pitch_mean = df[pitch_cols].mean(axis=1) if pitch_cols else None
+        available = np.ones(len(df), dtype=bool)
+        if filter_abnormal:
+            # Consumption / standby: keep the row, treat as zero later.
+            # Curtailment / outage: keep actual near-zero power, mark unavailable.
+            curtailed = (wind > 5.0) & (power.fillna(0) <= 0)
+            if pitch_mean is not None:
+                curtailed = curtailed | ((wind > 2.5) & (pitch_mean > 89))
+            available = ~curtailed.to_numpy()
+            if not keep_curtailment:
+                df.loc[curtailed, target] = np.nan
+
         repaired_values = 0
         if filter_abnormal:
             invalid_masks = {}
-            if {"Wspd", target}.issubset(df.columns):
-                wind = df["Wspd"]
-                power = df[target]
-                invalid_power = (power < 0) & (wind > 2.5)
-                invalid_power |= (power == 0) & (wind > 5.0)
-                pitch_cols = [c for c in ("Pab1", "Pab2", "Pab3") if c in df]
-                if pitch_cols:
-                    invalid_power |= (
-                        (power > 0)
-                        & (wind > 2.5)
-                        & (df[pitch_cols].mean(axis=1) > 89)
-                    )
-                invalid_masks[target] = invalid_power
-                invalid_masks["Wspd"] = ~wind.between(0, 40)
+            if "Wspd" in df:
+                invalid_masks["Wspd"] = ~df["Wspd"].between(0, 40)
             if "Wdir" in df:
                 invalid_masks["Wdir"] = ~df["Wdir"].between(-180, 180)
             if "Ndir" in df:
@@ -721,53 +871,100 @@ class Dataset_SDWPF(Dataset):
             for temperature in ("Etmp", "Itmp"):
                 if temperature in df:
                     invalid_masks[temperature] = ~df[temperature].between(-50, 80)
-
+            # Do not NaN the power column for negative/curtailed values.
+            # Those are operating regimes, not missing labels.
             for column, invalid in invalid_masks.items():
-                if column in feature_columns:
-                    repaired_values += int(invalid.sum())
-                    df.loc[invalid, column] = np.nan
+                repaired_values += int(invalid.sum())
+                df.loc[invalid, column] = np.nan
 
-            # Repair only short bad runs and never interpolate across a real
-            # timestamp gap or a turbine boundary.
+        if clip_power:
+            upper = float(rated_power) if rated_power and rated_power > 0 else None
+            clipped = df[target].clip(lower=0.0, upper=upper)
+            df[target] = clipped.astype(np.float32)
+
+        if physics_features and "Wdir" in df and "Ndir" in df:
+            yaw = np.deg2rad(
+                (df["Wdir"].to_numpy(dtype=np.float64) - df["Ndir"].to_numpy(dtype=np.float64))
+            )
+            df["yaw_sin"] = np.sin(yaw).astype(np.float32)
+            df["yaw_cos"] = np.cos(yaw).astype(np.float32)
+
+        if circular_wind:
+            for angle_col, prefix in (("Wdir", "Wdir"), ("Ndir", "Ndir")):
+                if angle_col not in df:
+                    continue
+                radians = np.deg2rad(df[angle_col].to_numpy(dtype=np.float64))
+                df[f"{prefix}_sin"] = np.sin(radians).astype(np.float32)
+                df[f"{prefix}_cos"] = np.cos(radians).astype(np.float32)
+                df = df.drop(columns=[angle_col])
+        if collapse_pitch and pitch_cols:
+            df["Pab_mean"] = df[pitch_cols].mean(axis=1).astype(np.float32)
+            df = df.drop(columns=pitch_cols)
+
+        feature_columns = sdwpf_feature_columns(
+            features=features,
+            target=target,
+            circular_wind=circular_wind,
+            collapse_pitch=collapse_pitch,
+            physics_features=physics_features,
+            drop_weak_features=drop_weak_features,
+        )
+        missing_features = [c for c in feature_columns if c not in df]
+        if missing_features:
+            raise ValueError(f"SDWPF feature columns missing: {missing_features}")
+
+        raw_dates = df["date"].to_numpy(dtype="datetime64[ns]")
+        raw_turbines = df["TurbID"].to_numpy(dtype=np.int16, copy=False)
+        segment_ids = _segment_ids(raw_turbines, raw_dates, expected_freq)
+        fill_fn = _ffill_short_missing_runs if causal_fill else _interpolate_short_missing_runs
+        # Input sensors may be repaired over a short gap, but labels must never
+        # be imputed: even causal target filling fabricates supervision and
+        # makes the validation loss look artificially smooth.
+        fill_columns = [column for column in feature_columns if column != target]
+        df[fill_columns] = df.groupby(segment_ids, sort=False)[fill_columns].transform(
+            lambda series: fill_fn(series, max_gap=6)
+        )
+
+        unique_dates = np.unique(raw_dates)
+        unique_months = pd.DatetimeIndex(unique_dates).month.to_numpy()
+        train_cutoff, val_cutoff, test_cutoff = _sdwpf_cutoffs(
+            unique_dates,
+            split=split,
+            fold=fold,
+            n_folds=n_folds,
+            train_ratio=train_ratio,
+            val_ratio=val_ratio,
+            date_months=unique_months,
+        )
+        train_rows = raw_dates < train_cutoff
+        if not np.any(train_rows):
+            raise ValueError("The SDWPF training split is empty")
+
+        # Short gaps have already been filled causally above.  A remaining NaN
+        # denotes a long/leading invalid run and must create a hard temporal
+        # boundary.  Median filling it would fabricate long stretches of SCADA
+        # data and allow windows to bridge turbine outages or sensor failures.
+        still_missing = df[feature_columns].isna().any(axis=1)
+        if still_missing.any():
+            keep = ~still_missing.to_numpy()
+            df = df.loc[keep].reset_index(drop=True)
+            available = available[keep]
             raw_dates = df["date"].to_numpy(dtype="datetime64[ns]")
             raw_turbines = df["TurbID"].to_numpy(dtype=np.int16, copy=False)
-            expected_delta = pd.to_timedelta(expected_freq).to_timedelta64()
-            raw_boundary = np.empty(len(df), dtype=bool)
-            raw_boundary[0] = True
-            if len(df) > 1:
-                raw_boundary[1:] = (raw_turbines[1:] != raw_turbines[:-1]) | (
-                    (raw_dates[1:] - raw_dates[:-1]) != expected_delta
-                )
-            segment_ids = np.cumsum(raw_boundary) - 1
-            df[feature_columns] = df.groupby(segment_ids, sort=False)[
-                feature_columns
-            ].transform(
-                lambda series: _interpolate_short_missing_runs(series, max_gap=6)
-            )
-
-        df = df.dropna(subset=feature_columns).reset_index(drop=True)
         if df.empty:
             raise ValueError("No SDWPF rows remain after validation and filtering")
 
         dates = df["date"].to_numpy(dtype="datetime64[ns]")
         turbines = df["TurbID"].to_numpy(dtype=np.int16, copy=True)
-        unique_dates = np.unique(dates)
-        if len(unique_dates) < 3:
-            raise ValueError("SDWPF data must contain at least three unique timestamps")
-        train_pos = min(max(1, int(len(unique_dates) * train_ratio)), len(unique_dates) - 2)
-        val_pos = min(
-            max(train_pos + 1, int(len(unique_dates) * (train_ratio + val_ratio))),
-            len(unique_dates) - 1,
+        wspd = (
+            df["Wspd"].to_numpy(dtype=np.float32, copy=True)
+            if "Wspd" in df
+            else np.full(len(df), np.nan, dtype=np.float32)
         )
-        train_cutoff = unique_dates[train_pos]
-        val_cutoff = unique_dates[val_pos]
-
         values = df[feature_columns].to_numpy(dtype=np.float32, copy=True)
         scaler = StandardScaler()
         if scale:
             train_rows = dates < train_cutoff
-            if not np.any(train_rows):
-                raise ValueError("The SDWPF training split is empty")
             scaler.fit(values[train_rows])
             values = scaler.transform(values).astype(np.float32, copy=False)
         else:
@@ -806,7 +1003,12 @@ class Dataset_SDWPF(Dataset):
             "SDWPF prepared: "
             f"{len(df):,} rows, {len(segments):,} continuous segments, "
             f"{removed:,} unresolved/duplicate rows removed, "
-            f"{repaired_values:,} abnormal values marked for short-gap repair, "
+            f"{repaired_values:,} abnormal sensor values marked, "
+            f"split={split} fold={fold}, "
+            f"train_cutoff={pd.Timestamp(train_cutoff)}, "
+            f"val_cutoff={pd.Timestamp(val_cutoff)}, "
+            f"test_cutoff={pd.Timestamp(test_cutoff) if test_cutoff is not None else 'end'}, "
+            f"available_frac={float(available.mean()):.3f}, "
             f"features={feature_columns}"
         )
         return {
@@ -817,8 +1019,11 @@ class Dataset_SDWPF(Dataset):
             "segments": segments,
             "train_cutoff": train_cutoff,
             "val_cutoff": val_cutoff,
+            "test_cutoff": test_cutoff,
             "scaler": scaler,
             "feature_columns": feature_columns,
+            "available_mask": np.asarray(available, dtype=bool),
+            "wspd": wspd,
         }
 
     def _build_window_starts(self):
@@ -839,6 +1044,8 @@ class Dataset_SDWPF(Dataset):
                 keep = (target_start >= self.train_cutoff) & (target_end < self.val_cutoff)
             else:
                 keep = target_start >= self.val_cutoff
+                if self.test_cutoff is not None:
+                    keep &= target_end < self.test_cutoff
             if np.any(keep):
                 starts.append(candidates[keep])
         if not starts:
@@ -865,6 +1072,19 @@ class Dataset_SDWPF(Dataset):
         original_shape = array.shape
         restored = self.scaler.inverse_transform(array.reshape(-1, original_shape[-1]))
         return restored.reshape(original_shape)
+
+    def _target_row_index(self):
+        starts = np.asarray(self.window_starts, dtype=np.int64)
+        return starts[:, None] + int(self.seq_len) + np.arange(int(self.pred_len))
+
+    def target_available_mask(self):
+        """Boolean mask of uncurtailed target steps, shape [windows, pred_len]."""
+        return np.asarray(self.available_mask, dtype=bool)[self._target_row_index()]
+
+    def last_history_wspd(self):
+        """Wind speed at the forecast issue time, shape [windows]."""
+        starts = np.asarray(self.window_starts, dtype=np.int64)
+        return np.asarray(self.wspd)[starts + int(self.seq_len) - 1]
 
 
 class Dataset_M4(Dataset):

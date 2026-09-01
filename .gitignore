@@ -139,3 +139,6 @@ dmypy.json
 datasets/
 outputs/
 git
+
+# Local GitHub token for push-linuxtimedart skill (never commit)
+.cursor/skills/push-linuxtimedart/.github-token

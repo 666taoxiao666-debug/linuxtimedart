@@ -1159,6 +1159,24 @@ class Exp_TimeDART(Exp_Basic):
                 f"sMAPE="
                 f"{values['smape_pct']:.3f}%"
             )
+            if "0_4h_mae" in values:
+                print(
+                    "  0-4 h  MAE="
+                    f"{values['0_4h_mae']:.3f}  RMSE="
+                    f"{values['0_4h_rmse']:.3f}"
+                    + (
+                        f"  MAE_skill={values['0_4h_mae_skill_vs_persistence_pct']:+.2f}%"
+                        if "0_4h_mae_skill_vs_persistence_pct" in values
+                        else ""
+                    )
+                )
+            if "4_16h_mae" in values:
+                print(
+                    "  4-16 h MAE="
+                    f"{values['4_16h_mae']:.3f}  RMSE="
+                    f"{values['4_16h_rmse']:.3f}"
+                    "  (no NWP; not a SOTA claim)"
+                )
 
         else:
             values = forecast_metrics(

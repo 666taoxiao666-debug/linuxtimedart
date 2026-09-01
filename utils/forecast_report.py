@@ -133,6 +133,9 @@ def _save_summary(output_dir, normalized_metrics, original_metrics):
     lines = [
         "Forecast metrics (primary values are in original power units)",
         "=" * 72,
+        "Task split: 0-4 h is the SCADA-only claim; 4-16 h without NWP is",
+        "an extrapolation ceiling, not a SOTA comparison.",
+        "",
     ]
     for name, value in original_metrics.items():
         if isinstance(value, (int, np.integer)):
@@ -193,25 +196,41 @@ def _horizon_table(
     return pd.DataFrame(rows)
 
 
+def _horizon_task_bands(horizon, step_minutes):
+    """Primary 0-4 h / 4-16 h bands, plus finer diagnostic slices."""
+    four_hour_steps = max(1, int(round(240 / max(int(step_minutes), 1))))
+    requested = [
+        ("0_4h", 1, min(four_hour_steps, horizon), True),
+        ("4_16h", four_hour_steps + 1, horizon, True),
+        ("step_1_12", 1, min(12, horizon), False),
+        ("step_13_24", 13, min(24, horizon), False),
+        ("step_25_48", 25, min(48, horizon), False),
+        (f"step_49_{horizon}", 49, horizon, False),
+    ]
+    bands = []
+    for name, start, end, primary in requested:
+        if start > horizon or start > end:
+            continue
+        bands.append((name, start, min(end, horizon), primary))
+    return bands
+
+
 def _horizon_segment_table(
     pred, true, persistence, step_minutes, rated_power
 ):
-    """Aggregate the standard 1-12, 13-24, 25-48 and 49+ lead bands."""
+    """Report 0-4 h and 4-16 h as primary bands (10-min SDWPF steps)."""
     horizon = pred.shape[1]
-    requested = [(1, 12), (13, 24), (25, 48), (49, horizon)]
     rows = []
     eps = np.finfo(float).eps
-    for start, end in requested:
-        if start > horizon:
-            continue
-        end = min(end, horizon)
+    for name, start, end, primary in _horizon_task_bands(horizon, step_minutes):
         model_values = forecast_metrics(
             pred[:, start - 1 : end],
             true[:, start - 1 : end],
             rated_power=rated_power,
         )
         row = {
-            "segment": f"step_{start}_{end}",
+            "segment": name,
+            "primary_task": bool(primary),
             "start_step": start,
             "end_step": end,
             "start_minutes": start * step_minutes,
@@ -425,10 +444,12 @@ def _plot_horizon_segments(table, output_dir):
     if table is None or table.empty:
         return
 
-    band_names = ["Short", "Mid-short", "Medium", "Long"]
+    band_names = ["0-4h", "4-16h"]
     labels = []
     for index, row in table.reset_index(drop=True).iterrows():
-        name = band_names[index] if index < len(band_names) else f"Band {index + 1}"
+        name = row["segment"] if "segment" in table else (
+            band_names[index] if index < len(band_names) else f"Band {index + 1}"
+        )
         labels.append(
             f"{name}\nstep {int(row['start_step'])}-{int(row['end_step'])}\n"
             f"{int(row['start_minutes'])}-{int(row['end_minutes'])} min"
@@ -689,6 +710,9 @@ def build_forecast_report(
 
     pred = inverse_transform_target(dataset, pred_scaled)
     true = inverse_transform_target(dataset, true_scaled)
+    if rated_power is not None and float(rated_power) > 0:
+        pred = np.clip(pred, 0.0, float(rated_power))
+        true = np.clip(true, 0.0, float(rated_power))
     normalized_metrics = forecast_metrics(pred_scaled, true_scaled)
     original_metrics = forecast_metrics(pred, true, rated_power=rated_power)
 
@@ -697,10 +721,36 @@ def build_forecast_report(
         last_scaled = np.asarray(last_observation_scaled, dtype=np.float64).reshape(-1, 1)
         if len(last_scaled) == len(pred):
             last = inverse_transform_target(dataset, last_scaled)
+            if rated_power is not None and float(rated_power) > 0:
+                last = np.clip(last, 0.0, float(rated_power))
             persistence = np.repeat(last, pred.shape[1], axis=1)
             _add_persistence_metrics(original_metrics, pred, true, persistence)
 
-    _save_summary(output_dir, normalized_metrics, original_metrics)
+    available_mask = None
+    if hasattr(dataset, "target_available_mask"):
+        mask = np.asarray(dataset.target_available_mask(), dtype=bool)
+        if mask.shape == pred.shape:
+            available_mask = mask
+            original_metrics["available_point_pct"] = float(mask.mean() * 100.0)
+            if mask.any():
+                available_metrics = forecast_metrics(
+                    pred[mask], true[mask], rated_power=rated_power
+                )
+                original_metrics["available_mae"] = available_metrics["mae"]
+                original_metrics["available_rmse"] = available_metrics["rmse"]
+                original_metrics["available_r2"] = available_metrics["r2"]
+                if persistence is not None:
+                    available_base = forecast_metrics(
+                        persistence[mask], true[mask], rated_power=rated_power
+                    )
+                    eps = np.finfo(float).eps
+                    original_metrics["available_mae_skill_vs_persistence_pct"] = (
+                        100.0 * (1.0 - available_metrics["mae"] / max(available_base["mae"], eps))
+                    )
+                    original_metrics["available_rmse_skill_vs_persistence_pct"] = (
+                        100.0 * (1.0 - available_metrics["rmse"] / max(available_base["rmse"], eps))
+                    )
+
     metadata = _window_metadata(dataset, len(pred))
     horizon = _horizon_table(
         pred,
@@ -721,6 +771,22 @@ def build_forecast_report(
     segments.to_csv(
         os.path.join(output_dir, "metrics_by_horizon_segment.csv"), index=False
     )
+    for _, row in segments.iterrows():
+        if not bool(row.get("primary_task", False)):
+            continue
+        key = str(row["segment"])
+        original_metrics[f"{key}_mae"] = float(row["mae"])
+        original_metrics[f"{key}_rmse"] = float(row["rmse"])
+        original_metrics[f"{key}_r2"] = float(row["r2"])
+        if "mae_skill_vs_persistence_pct" in row:
+            original_metrics[f"{key}_mae_skill_vs_persistence_pct"] = float(
+                row["mae_skill_vs_persistence_pct"]
+            )
+            original_metrics[f"{key}_rmse_skill_vs_persistence_pct"] = float(
+                row["rmse_skill_vs_persistence_pct"]
+            )
+
+    _save_summary(output_dir, normalized_metrics, original_metrics)
 
     turbine = _per_turbine_table(metadata, pred, true, rated_power)
     if turbine is not None:
@@ -746,6 +812,8 @@ def build_forecast_report(
     if persistence is not None:
         arrays["persistence_original"] = persistence.astype(np.float32)
         arrays["correction_original"] = (pred - persistence).astype(np.float32)
+    if available_mask is not None:
+        arrays["available_mask"] = available_mask.astype(np.uint8)
     np.savez_compressed(os.path.join(output_dir, "predictions.npz"), **arrays)
 
     _plot_horizon(horizon, output_dir)
