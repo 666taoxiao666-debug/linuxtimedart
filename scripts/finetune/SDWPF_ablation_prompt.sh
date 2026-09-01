@@ -8,13 +8,18 @@ set -euo pipefail
 SEED="${SEED:-2024}"
 FOLD="${FOLD:-0}"
 SPLIT="${SPLIT:-rolling}"
-EVAL_STRIDE="${EVAL_STRIDE:-96}"
+N_FOLDS="${N_FOLDS:-3}"
+PRED_LEN="${PRED_LEN:-24}"
+EVAL_STRIDE="${EVAL_STRIDE:-${PRED_LEN}}"
+PRETRAIN_RUN_ID="${PRETRAIN_RUN_ID:-}"
 ALLOW_RANDOM="${ALLOW_RANDOM:-0}"
-RUN_ID="${RUN_ID:-prompt_ablation_s${SEED}_$(date +%Y%m%d_%H%M%S)}"
+RUN_ID="${RUN_ID:-prompt_h${PRED_LEN}_${SPLIT}_f${FOLD}_s${SEED}_$(date +%Y%m%d_%H%M%S)}"
 
 EXTRA=()
 if [[ "${ALLOW_RANDOM}" == "1" ]]; then
-    EXTRA+=(--allow_random_init)
+    EXTRA+=(--pretrain_init none --allow_random_init)
+else
+    EXTRA+=(--pretrain_init auto)
 fi
 
 python -u run.py \
@@ -30,7 +35,7 @@ python -u run.py \
     --target power \
     --freq 10min \
     --input_len 336 \
-    --pred_len 96 \
+    --pred_len "${PRED_LEN}" \
     --d_model 128 \
     --d_ff 512 \
     --n_heads 8 \
@@ -45,6 +50,8 @@ python -u run.py \
     --sdwpf_eval_stride "${EVAL_STRIDE}" \
     --sdwpf_split "${SPLIT}" \
     --sdwpf_fold "${FOLD}" \
+    --sdwpf_n_folds "${N_FOLDS}" \
+    --pretrain_run_id "${PRETRAIN_RUN_ID}" \
     --mix_channels \
     --train_epochs 20 \
     --learning_rate 0.00003 \

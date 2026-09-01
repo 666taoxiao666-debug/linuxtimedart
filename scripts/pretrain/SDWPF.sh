@@ -5,6 +5,9 @@ SEED="${SEED:-2024}"
 FOLD="${FOLD:-0}"
 N_FOLDS="${N_FOLDS:-3}"
 SPLIT="${SPLIT:-rolling}"
+PATIENCE="${PATIENCE:-3}"
+PRETRAIN_RUN_ID="${PRETRAIN_RUN_ID:-pretrain_${SPLIT}_f${FOLD}_s${SEED}_$(date +%Y%m%d_%H%M%S)}"
+RUN_ID="${RUN_ID:-${PRETRAIN_RUN_ID}}"
 
 python -u run.py \
     --task_name pretrain \
@@ -34,8 +37,11 @@ python -u run.py \
     --sdwpf_split "${SPLIT}" \
     --sdwpf_fold "${FOLD}" \
     --sdwpf_n_folds "${N_FOLDS}" \
+    --pretrain_run_id "${PRETRAIN_RUN_ID}" \
     --train_epochs 20 \
+    --patience "${PATIENCE}" \
     --learning_rate 0.0001 \
     --lr_decay 0.95 \
     --seed "${SEED}" \
+    --run_id "${RUN_ID}" \
     --gpu 0

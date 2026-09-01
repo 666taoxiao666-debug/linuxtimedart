@@ -1,4 +1,5 @@
 import argparse
+import json
 import os
 import random
 import re
@@ -11,6 +12,7 @@ from exp.exp_simmtm import Exp_SimMTM
 from exp.exp_timedart import Exp_TimeDART
 from exp.exp_timedart_v2 import Exp_TimeDART_v2
 from utils.run_tags import experiment_setting, forecast_result_tag
+from utils.experiment_audit import checkpoint_info
 
 
 def build_parser():
@@ -159,6 +161,11 @@ def build_parser():
     parser.add_argument("--pretrain_checkpoints", default="./outputs/pretrain_checkpoints/")
     parser.add_argument("--transfer_checkpoints", default="ckpt_best.pth")
     parser.add_argument(
+        "--pretrain_run_id",
+        default="",
+        help="optional immutable pretraining run id included in checkpoint discovery",
+    )
+    parser.add_argument(
         "--load_checkpoints",
         default=None,
         help="explicit pre-trained checkpoint; takes priority over automatic discovery",
@@ -301,6 +308,12 @@ def build_parser():
         default="",
         help="unique run tag appended to checkpoint/test dirs to avoid overwriting",
     )
+    parser.add_argument(
+        "--audit_hash_data",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help="record SHA256 of the source dataset in run_manifest.json",
+    )
 
     # Device
     parser.add_argument(
@@ -382,6 +395,8 @@ def pretrain_signature(args):
                 f"seed{args.seed}",
             ]
         )
+    if str(getattr(args, "pretrain_run_id", "")).strip():
+        parts.append(f"rid{args.pretrain_run_id}")
     return "_".join(_safe_component(part) for part in parts)
 
 
@@ -497,6 +512,51 @@ def load_finetuned_model(exp, checkpoint_path):
     if isinstance(state, dict) and "model_state_dict" in state:
         state = state["model_state_dict"]
     exp.model.load_state_dict(state, strict=True)
+    exp.args.loaded_finetune_checkpoint = path
+    exp.args.loaded_finetune_checkpoint_info = checkpoint_info(path)
+    manifest_path = os.path.join(os.path.dirname(path), "run_manifest.json")
+    exp.args.checkpoint_training_args = {}
+    if os.path.isfile(manifest_path):
+        with open(manifest_path, "r", encoding="utf-8") as handle:
+            manifest = json.load(handle)
+        training_args = manifest.get("args", {})
+        exp.args.checkpoint_training_args = training_args
+        critical_keys = (
+            "model",
+            "data",
+            "features",
+            "input_len",
+            "pred_len",
+            "d_model",
+            "e_layers",
+            "patch_len",
+            "stride",
+            "sdwpf_split",
+            "sdwpf_fold",
+            "sdwpf_n_folds",
+            "mix_channels",
+            "residual_forecast",
+            "feature_columns",
+        )
+        mismatches = []
+        for key in critical_keys:
+            if key not in training_args or not hasattr(exp.args, key):
+                continue
+            current = getattr(exp.args, key)
+            if training_args[key] != current:
+                mismatches.append(f"{key}: checkpoint={training_args[key]!r}, eval={current!r}")
+        if mismatches:
+            raise ValueError(
+                "Fine-tuned checkpoint manifest does not match evaluation arguments:\n- "
+                + "\n- ".join(mismatches)
+            )
+        exp.args.loaded_finetune_manifest = os.path.abspath(manifest_path)
+        print(f"Loaded training manifest: {os.path.abspath(manifest_path)}")
+    else:
+        print(
+            "[WARNING] Fine-tuned checkpoint has no run_manifest.json; "
+            "training loss/LR/data provenance cannot be verified."
+        )
     print(f"Loaded fine-tuned checkpoint: {path}")
 
 

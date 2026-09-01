@@ -19,6 +19,7 @@ SPLIT="${SPLIT:-rolling}"
 PRED_LEN="${PRED_LEN:-24}"
 EVAL_STRIDE="${EVAL_STRIDE:-${PRED_LEN}}"
 RESIDUAL_GATE_INIT="${RESIDUAL_GATE_INIT:--4.0}"
+MODEL="${MODEL:-PromptTimeDART}"
 RUN_ID="${RUN_ID:-final_h${PRED_LEN}_${SPLIT}_f${FOLD}_s${SEED}}"
 
 python -u run.py \
@@ -29,7 +30,7 @@ python -u run.py \
     --root_path ./datasets/ \
     --data_path sdwpf_fixed.csv \
     --model_id SDWPF \
-    --model TimeDART \
+    --model "${MODEL}" \
     --data SDWPF \
     --features MS \
     --target power \

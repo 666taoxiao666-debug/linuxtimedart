@@ -781,6 +781,7 @@ class Dataset_SDWPF(Dataset):
         self.feature_columns = prepared["feature_columns"]
         self.available_mask = prepared["available_mask"]
         self.wspd = prepared["wspd"]
+        self.audit_stats = prepared["audit_stats"]
         self.window_starts = self._build_window_starts()
 
         if len(self.window_starts) == 0:
@@ -843,6 +844,7 @@ class Dataset_SDWPF(Dataset):
             .drop_duplicates(["TurbID", "date"], keep="last")
             .reset_index(drop=True)
         )
+        rows_after_identity_validation = len(df)
 
         wind = df["Wspd"] if "Wspd" in df else pd.Series(np.nan, index=df.index)
         power = df[target]
@@ -860,6 +862,7 @@ class Dataset_SDWPF(Dataset):
                 df.loc[curtailed, target] = np.nan
 
         repaired_values = 0
+        invalid_counts = {}
         if filter_abnormal:
             invalid_masks = {}
             if "Wspd" in df:
@@ -874,7 +877,8 @@ class Dataset_SDWPF(Dataset):
             # Do not NaN the power column for negative/curtailed values.
             # Those are operating regimes, not missing labels.
             for column, invalid in invalid_masks.items():
-                repaired_values += int(invalid.sum())
+                invalid_counts[column] = int(invalid.sum())
+                repaired_values += invalid_counts[column]
                 df.loc[invalid, column] = np.nan
 
         if clip_power:
@@ -944,7 +948,13 @@ class Dataset_SDWPF(Dataset):
         # denotes a long/leading invalid run and must create a hard temporal
         # boundary.  Median filling it would fabricate long stretches of SCADA
         # data and allow windows to bridge turbine outages or sensor failures.
+        missing_by_feature_after_fill = {
+            column: int(count)
+            for column, count in df[feature_columns].isna().sum().items()
+            if int(count) > 0
+        }
         still_missing = df[feature_columns].isna().any(axis=1)
+        unresolved_rows = int(still_missing.sum())
         if still_missing.any():
             keep = ~still_missing.to_numpy()
             df = df.loc[keep].reset_index(drop=True)
@@ -999,6 +1009,26 @@ class Dataset_SDWPF(Dataset):
         segments = np.column_stack([segment_starts, segment_ends]).astype(np.int64)
 
         removed = original_rows - len(df)
+        audit_stats = {
+            "original_rows": int(original_rows),
+            "rows_after_identity_validation": int(rows_after_identity_validation),
+            "retained_rows": int(len(df)),
+            "removed_rows_total": int(removed),
+            "removed_invalid_identity_or_duplicate_rows": int(
+                original_rows - rows_after_identity_validation
+            ),
+            "removed_unresolved_feature_rows": unresolved_rows,
+            "abnormal_values_total": int(repaired_values),
+            "abnormal_values_by_feature": invalid_counts,
+            "missing_by_feature_after_short_fill": missing_by_feature_after_fill,
+            "available_rows": int(np.asarray(available, dtype=bool).sum()),
+            "unavailable_or_curtailed_rows": int((~np.asarray(available, dtype=bool)).sum()),
+            "available_fraction": float(np.asarray(available, dtype=bool).mean()),
+            "continuous_segments": int(len(segments)),
+            "causal_fill": bool(causal_fill),
+            "keep_curtailment": bool(keep_curtailment),
+            "filter_abnormal": bool(filter_abnormal),
+        }
         print(
             "SDWPF prepared: "
             f"{len(df):,} rows, {len(segments):,} continuous segments, "
@@ -1024,6 +1054,7 @@ class Dataset_SDWPF(Dataset):
             "feature_columns": feature_columns,
             "available_mask": np.asarray(available, dtype=bool),
             "wspd": wspd,
+            "audit_stats": audit_stats,
         }
 
     def _build_window_starts(self):

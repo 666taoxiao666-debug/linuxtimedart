@@ -12,6 +12,7 @@ from utils.forecast_report import build_forecast_report, save_training_history
 from utils.metrics import forecast_metrics
 from utils.forecast_losses import ForecastLoss
 from utils.run_tags import forecast_result_tag
+from utils.experiment_audit import checkpoint_info, model_runtime_summary, write_run_manifest
 from torch.optim import lr_scheduler
 import torch
 import torch.nn as nn
@@ -167,6 +168,16 @@ class Exp_TimeDART(Exp_Basic):
             exist_ok=True,
         )
 
+        write_run_manifest(
+            path,
+            self.args,
+            "pretrain",
+            model=self.model,
+            datasets={"train": train_data, "val": vali_data},
+            checkpoints={"pretrained_source": checkpoint_info(self.args.load_checkpoints)},
+            extra={"status": "started"},
+        )
+
         model_optim = (
             self._select_optimizer()
         )
@@ -178,7 +189,9 @@ class Exp_TimeDART(Exp_Basic):
             )
         )
 
-        min_vali_loss = None
+        min_vali_loss = float("inf")
+        best_epoch = None
+        no_improvement = 0
         history = []
 
         for epoch in range(
@@ -196,7 +209,7 @@ class Exp_TimeDART(Exp_Basic):
                 "{:.7f}".format(current_lr)
             )
 
-            train_loss = (
+            train_metrics = (
                 self.pretrain_one_epoch(
                     train_loader,
                     model_optim,
@@ -204,7 +217,7 @@ class Exp_TimeDART(Exp_Basic):
                 )
             )
 
-            vali_loss = (
+            validation = (
                 self.valid_one_epoch(
                     vali_loader
                 )
@@ -214,19 +227,30 @@ class Exp_TimeDART(Exp_Basic):
 
             print(
                 "Epoch: {}/{}, Time: {:.2f}, "
-                "Train Loss: {:.4f}, "
-                "Vali Loss: {:.4f}".format(
+                "Train Total/Diff/CE: {:.4f}/{:.4f}/{:.4f}, "
+                "Val Total/Diff/CE: {:.4f}/{:.4f}/{:.4f}, "
+                "Val Regime Acc: {:.3f}, GradNorm: {:.3f}".format(
                     epoch + 1,
                     self.args.train_epochs,
                     end_time - start_time,
-                    train_loss,
-                    vali_loss,
+                    train_metrics["total_loss"],
+                    train_metrics["diff_loss"],
+                    train_metrics["ce_loss"],
+                    validation["total_loss"],
+                    validation["diff_loss"],
+                    validation["ce_loss"],
+                    validation["regime_accuracy"],
+                    train_metrics["grad_norm"],
                 )
             )
 
             loss_scalar_dict = {
-                "train_loss": train_loss,
-                "vali_loss": vali_loss,
+                "train_total": train_metrics["total_loss"],
+                "train_diff": train_metrics["diff_loss"],
+                "train_ce": train_metrics["ce_loss"],
+                "vali_total": validation["total_loss"],
+                "vali_diff": validation["diff_loss"],
+                "vali_ce": validation["ce_loss"],
             }
 
             self.writer.add_scalars(
@@ -238,12 +262,17 @@ class Exp_TimeDART(Exp_Basic):
             history.append(
                 {
                     "epoch": epoch + 1,
-                    "train_loss": float(
-                        train_loss
-                    ),
-                    "val_loss": float(
-                        vali_loss
-                    ),
+                    "train_loss": float(train_metrics["total_loss"]),
+                    "train_diff_loss": float(train_metrics["diff_loss"]),
+                    "train_ce_loss": float(train_metrics["ce_loss"]),
+                    "train_regime_accuracy": float(train_metrics["regime_accuracy"]),
+                    "train_grad_norm": float(train_metrics["grad_norm"]),
+                    "train_regime_counts": train_metrics["regime_counts"],
+                    "val_loss": float(validation["total_loss"]),
+                    "val_diff_loss": float(validation["diff_loss"]),
+                    "val_ce_loss": float(validation["ce_loss"]),
+                    "val_regime_accuracy": float(validation["regime_accuracy"]),
+                    "val_regime_counts": validation["regime_counts"],
                     "learning_rate": float(
                         current_lr
                     ),
@@ -256,13 +285,8 @@ class Exp_TimeDART(Exp_Basic):
                 title="Pretraining history",
             )
 
-            if (
-                not min_vali_loss
-                or vali_loss <= min_vali_loss
-            ):
-                if epoch == 0:
-                    min_vali_loss = vali_loss
-
+            vali_loss = validation["total_loss"]
+            if vali_loss < min_vali_loss:
                 print(
                     "Validation loss decreased "
                     "({:.6f} --> {:.6f}).  "
@@ -275,11 +299,19 @@ class Exp_TimeDART(Exp_Basic):
                 )
 
                 min_vali_loss = vali_loss
+                best_epoch = epoch + 1
+                no_improvement = 0
 
                 self._save_pretrain_checkpoint(
                     path,
                     "ckpt_best.pth",
                     epoch,
+                )
+            else:
+                no_improvement += 1
+                print(
+                    f"Pretrain early-stopping counter: {no_improvement} "
+                    f"out of {self.args.patience}"
                 )
 
             if (epoch + 1) % 10 == 0:
@@ -294,7 +326,26 @@ class Exp_TimeDART(Exp_Basic):
                     epoch,
                 )
 
+            if no_improvement >= self.args.patience:
+                print("Pretrain early stopping")
+                break
+
         self.writer.flush()
+        best_path = os.path.join(path, "ckpt_best.pth")
+        write_run_manifest(
+            path,
+            self.args,
+            "pretrain",
+            model=self.model,
+            datasets={"train": train_data, "val": vali_data},
+            checkpoints={"best": checkpoint_info(best_path)},
+            extra={
+                "status": "complete",
+                "best_epoch": best_epoch,
+                "best_validation_loss": min_vali_loss,
+                "epochs_completed": len(history),
+            },
+        )
 
     def _save_pretrain_checkpoint(
         self,
@@ -334,6 +385,14 @@ class Exp_TimeDART(Exp_Basic):
             "epoch": epoch,
             "model": self.args.model,
             "data": self.args.data,
+            "split": getattr(self.args, "sdwpf_split", None),
+            "fold": getattr(self.args, "sdwpf_fold", None),
+            "n_folds": getattr(self.args, "sdwpf_n_folds", None),
+            "seed": self.args.seed,
+            "feature_columns": list(getattr(self.args, "feature_columns", []) or []),
+            "input_len": self.args.input_len,
+            "pred_len": self.args.pred_len,
+            "runtime_model": model_runtime_summary(self.model, self.args),
             "model_state_dict": state,
         }
 
@@ -383,7 +442,13 @@ class Exp_TimeDART(Exp_Basic):
         model_optim,
         model_scheduler,
     ):
-        train_loss = []
+        total_losses = []
+        diff_losses = []
+        ce_losses = []
+        grad_norms = []
+        regime_correct = 0
+        regime_total = 0
+        regime_counts = np.zeros(int(self.args.num_classes), dtype=np.int64)
 
         model_criterion = (
             self._select_criterion()
@@ -451,6 +516,7 @@ class Exp_TimeDART(Exp_Basic):
                     )
 
                 else:
+                    ce_loss = torch.zeros((), device=diff_loss.device)
                     total_loss = diff_loss
 
             self.grad_scaler.scale(
@@ -465,6 +531,13 @@ class Exp_TimeDART(Exp_Basic):
                 or (i + 1)
                 == len(train_loader)
             ):
+                self.grad_scaler.unscale_(model_optim)
+                if self.args.grad_clip > 0:
+                    grad_norm = torch.nn.utils.clip_grad_norm_(
+                        self.model.parameters(),
+                        self.args.grad_clip,
+                    )
+                    grad_norms.append(float(grad_norm.detach().cpu().item()))
                 self.grad_scaler.step(
                     model_optim
                 )
@@ -474,22 +547,37 @@ class Exp_TimeDART(Exp_Basic):
                     set_to_none=True
                 )
 
-            train_loss.append(
-                total_loss.item()
-            )
+            total_losses.append(total_loss.item())
+            diff_losses.append(diff_loss.item())
+            ce_losses.append(ce_loss.item())
+            if logits is not None and pseudo_labels is not None:
+                predictions = logits.detach().argmax(dim=-1)
+                labels = pseudo_labels.detach().reshape(-1)
+                regime_correct += int((predictions.reshape(-1) == labels).sum().item())
+                regime_total += int(labels.numel())
+                counts = torch.bincount(labels, minlength=len(regime_counts)).cpu().numpy()
+                regime_counts += counts[: len(regime_counts)]
 
         model_scheduler.step()
-        train_loss = np.mean(
-            train_loss
-        )
-
-        return train_loss
+        return {
+            "total_loss": float(np.mean(total_losses)),
+            "diff_loss": float(np.mean(diff_losses)),
+            "ce_loss": float(np.mean(ce_losses)),
+            "regime_accuracy": float(regime_correct / regime_total) if regime_total else 0.0,
+            "regime_counts": ";".join(str(int(value)) for value in regime_counts),
+            "grad_norm": float(np.mean(grad_norms)) if grad_norms else 0.0,
+        }
 
     def valid_one_epoch(
         self,
         vali_loader,
     ):
-        vali_loss = []
+        total_losses = []
+        diff_losses = []
+        ce_losses = []
+        regime_correct = 0
+        regime_total = 0
+        regime_counts = np.zeros(int(self.args.num_classes), dtype=np.int64)
 
         model_criterion = (
             self._select_criterion()
@@ -553,19 +641,29 @@ class Exp_TimeDART(Exp_Basic):
                         )
 
                     else:
-                        total_loss = (
-                            diff_loss
-                        )
+                        ce_loss = torch.zeros((), device=diff_loss.device)
+                        total_loss = diff_loss
 
-                vali_loss.append(
-                    total_loss.item()
-                )
+                total_losses.append(total_loss.item())
+                diff_losses.append(diff_loss.item())
+                ce_losses.append(ce_loss.item())
+                if logits is not None and pseudo_labels is not None:
+                    predictions = logits.detach().argmax(dim=-1)
+                    labels = pseudo_labels.detach().reshape(-1)
+                    regime_correct += int((predictions.reshape(-1) == labels).sum().item())
+                    regime_total += int(labels.numel())
+                    counts = torch.bincount(
+                        labels, minlength=len(regime_counts)
+                    ).cpu().numpy()
+                    regime_counts += counts[: len(regime_counts)]
 
-        vali_loss = np.mean(
-            vali_loss
-        )
-
-        return vali_loss
+        return {
+            "total_loss": float(np.mean(total_losses)),
+            "diff_loss": float(np.mean(diff_losses)),
+            "ce_loss": float(np.mean(ce_losses)),
+            "regime_accuracy": float(regime_correct / regime_total) if regime_total else 0.0,
+            "regime_counts": ";".join(str(int(value)) for value in regime_counts),
+        }
 
     def train(self, setting):
         train_data, train_loader = (
@@ -582,6 +680,16 @@ class Exp_TimeDART(Exp_Basic):
 
         if not os.path.exists(path):
             os.makedirs(path)
+
+        write_run_manifest(
+            path,
+            self.args,
+            "finetune",
+            model=self.model,
+            datasets={"train": train_data, "val": vali_data},
+            checkpoints={"pretrained_source": checkpoint_info(self.args.load_checkpoints)},
+            extra={"status": "started", "setting": setting},
+        )
 
         early_stopping = EarlyStopping(
             patience=self.args.patience,
@@ -616,6 +724,10 @@ class Exp_TimeDART(Exp_Basic):
         ):
             iter_count = 0
             train_loss = []
+            train_squared_error = 0.0
+            train_absolute_error = 0.0
+            train_point_count = 0
+            grad_norms = []
 
             progress = tqdm(
                 train_loader,
@@ -683,6 +795,11 @@ class Exp_TimeDART(Exp_Basic):
                         batch_y,
                     )
 
+                train_error = pred_x.detach().float() - batch_y.detach().float()
+                train_squared_error += train_error.square().sum().item()
+                train_absolute_error += train_error.abs().sum().item()
+                train_point_count += train_error.numel()
+
                 self.grad_scaler.scale(
                     loss
                 ).backward()
@@ -692,10 +809,11 @@ class Exp_TimeDART(Exp_Basic):
                 )
 
                 if self.args.grad_clip > 0:
-                    torch.nn.utils.clip_grad_norm_(
+                    grad_norm = torch.nn.utils.clip_grad_norm_(
                         self.model.parameters(),
                         self.args.grad_clip,
                     )
+                    grad_norms.append(float(grad_norm.detach().cpu().item()))
 
                 self.grad_scaler.step(
                     model_optim
@@ -719,6 +837,9 @@ class Exp_TimeDART(Exp_Basic):
             train_loss = np.mean(
                 train_loss
             )
+            train_mse = train_squared_error / max(1, train_point_count)
+            train_mae = train_absolute_error / max(1, train_point_count)
+            train_grad_norm = float(np.mean(grad_norms)) if grad_norms else 0.0
 
             validation = self.valid(
                 vali_loader,
@@ -748,7 +869,10 @@ class Exp_TimeDART(Exp_Basic):
                 "Vali Loss: {4:.7f} "
                 "Vali MSE: {5:.7f} "
                 "Vali MAE: {6:.7f} "
-                "Select({7}): {8:.7f}"
+                "Persist MAE: {7:.7f} "
+                "MAE Skill: {8:+.2f}% "
+                "Gate: {9:.5f} GradNorm: {10:.3f} "
+                "Select({11}): {12:.7f}"
                 .format(
                     epoch + 1,
                     len(train_loader),
@@ -757,6 +881,10 @@ class Exp_TimeDART(Exp_Basic):
                     vali_loss,
                     validation["mse"],
                     validation["mae"],
+                    validation["persistence_mae"],
+                    validation["mae_skill_vs_persistence_pct"],
+                    validation["diagnostics"].get("residual_gate", 0.0),
+                    train_grad_norm,
                     self.args
                     .early_stop_metric,
                     selection_value,
@@ -778,7 +906,10 @@ class Exp_TimeDART(Exp_Basic):
                     "Vali Loss: {4:.7f} "
                     "Vali MSE: {5:.7f} "
                     "Vali MAE: {6:.7f} "
-                    "Select({7}): {8:.7f}\n"
+                    "Persist MAE: {7:.7f} "
+                    "MAE Skill: {8:+.2f}% "
+                    "Gate: {9:.5f} GradNorm: {10:.3f} "
+                    "Select({11}): {12:.7f}\n"
                     .format(
                         epoch + 1,
                         len(train_loader),
@@ -788,6 +919,10 @@ class Exp_TimeDART(Exp_Basic):
                         vali_loss,
                         validation["mse"],
                         validation["mae"],
+                        validation["persistence_mae"],
+                        validation["mae_skill_vs_persistence_pct"],
+                        validation["diagnostics"].get("residual_gate", 0.0),
+                        train_grad_norm,
                         self.args
                         .early_stop_metric,
                         selection_value,
@@ -800,6 +935,9 @@ class Exp_TimeDART(Exp_Basic):
                     "train_loss": float(
                         train_loss
                     ),
+                    "train_mse": float(train_mse),
+                    "train_mae": float(train_mae),
+                    "train_grad_norm": train_grad_norm,
                     "val_loss": float(
                         vali_loss
                     ),
@@ -809,12 +947,21 @@ class Exp_TimeDART(Exp_Basic):
                     "val_mae": float(
                         validation["mae"]
                     ),
+                    "val_persistence_mse": float(validation["persistence_mse"]),
+                    "val_persistence_mae": float(validation["persistence_mae"]),
+                    "val_mae_skill_vs_persistence_pct": float(
+                        validation["mae_skill_vs_persistence_pct"]
+                    ),
+                    "val_rmse_skill_vs_persistence_pct": float(
+                        validation["rmse_skill_vs_persistence_pct"]
+                    ),
                     "selection_value": float(
                         selection_value
                     ),
                     "learning_rate": float(
                         current_lr
                     ),
+                    **validation["diagnostics"],
                 }
             )
 
@@ -873,6 +1020,28 @@ class Exp_TimeDART(Exp_Basic):
             )
         )
 
+        best_record = min(history, key=lambda record: record["selection_value"])
+        self.args.selected_finetune_checkpoint = os.path.abspath(best_model_path)
+        write_run_manifest(
+            path,
+            self.args,
+            "finetune",
+            model=self.model,
+            datasets={"train": train_data, "val": vali_data},
+            checkpoints={
+                "pretrained_source": checkpoint_info(self.args.load_checkpoints),
+                "best_finetuned": checkpoint_info(best_model_path),
+            },
+            extra={
+                "status": "complete",
+                "setting": setting,
+                "best_epoch": int(best_record["epoch"]),
+                "best_selection_value": float(best_record["selection_value"]),
+                "epochs_completed": len(history),
+            },
+        )
+        print(f"[AUDIT] FINETUNE_CHECKPOINT={os.path.abspath(best_model_path)}")
+
         self.lr = (
             model_scheduler
             .get_last_lr()[0]
@@ -890,7 +1059,15 @@ class Exp_TimeDART(Exp_Basic):
         vali_loss = []
         squared_error_sum = 0.0
         absolute_error_sum = 0.0
+        persistence_squared_error_sum = 0.0
+        persistence_absolute_error_sum = 0.0
         point_count = 0
+        dynamic_scale_samples = []
+        core_model = (
+            self.model.module
+            if isinstance(self.model, nn.DataParallel)
+            else self.model
+        )
 
         self.model.eval()
 
@@ -939,6 +1116,22 @@ class Exp_TimeDART(Exp_Basic):
                         f_dim:,
                     ]
 
+                    persistence = batch_x[:, -1:, f_dim:].expand(
+                        -1, self.args.pred_len, -1
+                    )
+
+                    mixer = getattr(core_model, "channel_mixer", None)
+                    if mixer is not None and hasattr(core_model, "_operating_context"):
+                        context = core_model._operating_context(batch_x)
+                        if context is not None:
+                            dynamic_scale_samples.append(
+                                mixer.effective_channel_scale(context)
+                                .detach()
+                                .float()
+                                .cpu()
+                                .numpy()
+                            )
+
                 pred = (
                     pred_x.detach().cpu()
                 )
@@ -972,6 +1165,10 @@ class Exp_TimeDART(Exp_Basic):
                     .item()
                 )
 
+                persistence_error = persistence.float() - batch_y.float()
+                persistence_squared_error_sum += persistence_error.square().sum().item()
+                persistence_absolute_error_sum += persistence_error.abs().sum().item()
+
                 point_count += (
                     error.numel()
                 )
@@ -988,16 +1185,41 @@ class Exp_TimeDART(Exp_Basic):
                 "no forecast points"
             )
 
+        model_mse = squared_error_sum / point_count
+        model_mae = absolute_error_sum / point_count
+        persistence_mse = persistence_squared_error_sum / point_count
+        persistence_mae = persistence_absolute_error_sum / point_count
+        eps = np.finfo(float).eps
+
+        diagnostics = {}
+        runtime = model_runtime_summary(self.model, self.args)
+        if "residual_gate" in runtime:
+            diagnostics["residual_gate"] = float(runtime["residual_gate"])
+        for name, value in runtime.get("channel_scale", {}).items():
+            diagnostics[f"channel_static_{name}"] = float(value)
+        if dynamic_scale_samples:
+            dynamic = np.concatenate(dynamic_scale_samples, axis=0)
+            names = list(getattr(self.args, "feature_columns", []) or [])
+            for index in range(dynamic.shape[1]):
+                name = names[index] if index < len(names) else f"feature_{index}"
+                values = dynamic[:, index]
+                diagnostics[f"channel_dynamic_{name}_mean"] = float(np.mean(values))
+                diagnostics[f"channel_dynamic_{name}_std"] = float(np.std(values))
+                diagnostics[f"channel_dynamic_{name}_p05"] = float(np.quantile(values, 0.05))
+                diagnostics[f"channel_dynamic_{name}_p50"] = float(np.quantile(values, 0.50))
+                diagnostics[f"channel_dynamic_{name}_p95"] = float(np.quantile(values, 0.95))
+
         return {
             "loss": vali_loss,
-            "mse": (
-                squared_error_sum
-                / point_count
-            ),
-            "mae": (
-                absolute_error_sum
-                / point_count
-            ),
+            "mse": model_mse,
+            "mae": model_mae,
+            "persistence_mse": persistence_mse,
+            "persistence_mae": persistence_mae,
+            "mae_skill_vs_persistence_pct": 100.0
+            * (1.0 - model_mae / max(persistence_mae, eps)),
+            "rmse_skill_vs_persistence_pct": 100.0
+            * (1.0 - np.sqrt(model_mse) / max(np.sqrt(persistence_mse), eps)),
+            "diagnostics": diagnostics,
         }
 
     def test(self):
@@ -1206,6 +1428,26 @@ class Exp_TimeDART(Exp_Basic):
                 f"RMSE={values['rmse']:.6f}, "
                 f"MAE={values['mae']:.6f}"
             )
+
+        checkpoint_path = getattr(
+            self.args,
+            "loaded_finetune_checkpoint",
+            getattr(self.args, "selected_finetune_checkpoint", None),
+        )
+        write_run_manifest(
+            folder_path,
+            self.args,
+            "test",
+            model=self.model,
+            datasets={"test": test_data},
+            checkpoints={"fine_tuned": checkpoint_info(checkpoint_path)},
+            extra={
+                "status": "complete",
+                "prediction_shape": list(preds.shape),
+                "target_shape": list(trues.shape),
+                "metrics": values,
+            },
+        )
 
         print(
             "Detailed forecast report: "
