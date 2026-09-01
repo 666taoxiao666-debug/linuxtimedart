@@ -281,12 +281,10 @@ class Model(nn.Module):
             if (
                 self.residual_forecast
                 and self.zero_init_residual_head
-                and not self.mix_channels
             ):
-                # Without a channel mixer the head is a power-only linear
-                # map, so a zero start is exactly persistence.  Mixing
-                # wind into the head is the point of mix_channels, so
-                # do not zero that path.
+                # A zero residual head makes the initial forecast exactly
+                # persistence, including when channel mixing is enabled. The
+                # head learns first; subsequent steps also update the mixer.
                 nn.init.zeros_(
                     self.head.forecast_head.weight
                 )

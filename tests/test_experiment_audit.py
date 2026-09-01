@@ -16,6 +16,7 @@ from utils.experiment_audit import (
     write_run_manifest,
 )
 from utils.run_tags import forecast_result_tag
+from utils.tools import transfer_weights
 
 
 class _WindowDataset:
@@ -38,6 +39,15 @@ class _WindowDataset:
 class _PersistenceModel(nn.Module):
     def forward(self, batch_x):
         return batch_x[:, -1:, -1:].expand(-1, 2, -1)
+
+
+class _TransferModel(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.sos_token = nn.Parameter(torch.zeros(1, 1, 2))
+        self.enc_embedding = nn.Linear(2, 2)
+        self.encoder = nn.Linear(2, 2)
+        self.head = nn.Linear(2, 1)
 
 
 class ExperimentAuditTests(unittest.TestCase):
@@ -167,6 +177,18 @@ class ExperimentAuditTests(unittest.TestCase):
         result = experiment.valid(loader, nn.MSELoss())
         self.assertAlmostEqual(result["mae"], result["persistence_mae"])
         self.assertAlmostEqual(result["mae_skill_vs_persistence_pct"], 0.0)
+
+    def test_transfer_audit_reports_complete_required_backbone(self):
+        source = _TransferModel()
+        target = _TransferModel()
+        with tempfile.TemporaryDirectory() as temporary:
+            checkpoint = Path(temporary) / "pretrain.pth"
+            torch.save({"model_state_dict": source.state_dict()}, checkpoint)
+            transferred = transfer_weights(checkpoint, target, strict=True)
+        audit = transferred.pretrain_transfer_audit
+        self.assertEqual(audit["required_backbone_coverage_pct"], 100.0)
+        self.assertGreater(audit["matched_parameter_elements"], 0)
+        self.assertLess(audit["target_parameter_coverage_pct"], 100.0)
 
 
 if __name__ == "__main__":

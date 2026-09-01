@@ -254,7 +254,51 @@ def transfer_weights(weights_path, model, exclude_head=True, device="cpu", stric
 
     target_state.update(matched)
     model.load_state_dict(target_state, strict=True)
-    print(f"Transferred {len(matched)} parameters from {weights_path}")
+    target_parameters = dict(model.named_parameters())
+    matched_parameter_elements = sum(
+        int(target_parameters[name].numel())
+        for name in matched
+        if name in target_parameters
+    )
+    target_parameter_elements = sum(
+        int(parameter.numel()) for parameter in target_parameters.values()
+    )
+    required_parameter_names = [
+        name
+        for name in target_parameters
+        if name in required_names
+        or any(name.startswith(prefix) for prefix in required_prefixes)
+    ]
+    required_parameter_elements = sum(
+        int(target_parameters[name].numel()) for name in required_parameter_names
+    )
+    matched_required_elements = sum(
+        int(target_parameters[name].numel())
+        for name in required_parameter_names
+        if name in matched
+    )
+    transfer_audit = {
+        "matched_state_tensors": int(len(matched)),
+        "matched_parameter_elements": matched_parameter_elements,
+        "target_parameter_elements": target_parameter_elements,
+        "target_parameter_coverage_pct": 100.0
+        * matched_parameter_elements
+        / max(1, target_parameter_elements),
+        "required_backbone_parameter_elements": required_parameter_elements,
+        "matched_required_backbone_elements": matched_required_elements,
+        "required_backbone_coverage_pct": 100.0
+        * matched_required_elements
+        / max(1, required_parameter_elements),
+    }
+    model.pretrain_transfer_audit = transfer_audit
+    print(
+        "Transferred "
+        f"{transfer_audit['matched_state_tensors']} state tensors / "
+        f"{transfer_audit['matched_parameter_elements']:,} parameter elements "
+        f"({transfer_audit['target_parameter_coverage_pct']:.2f}% of target; "
+        f"required backbone {transfer_audit['required_backbone_coverage_pct']:.2f}%) "
+        f"from {weights_path}"
+    )
     return model.to(device)
 
 def show_series(batch_x, batch_x_m, pred_batch_x, idx, time_points=336):

@@ -116,6 +116,7 @@ class ChannelMixerTests(unittest.TestCase):
         args.dropout = 0.0
         args.head_dropout = 0.0
         args.residual_forecast = True
+        args.zero_init_residual_head = False
         args.use_soft_prompt = False
         args.use_prompt_adaln = False
         model = Model(args).eval()
@@ -126,6 +127,45 @@ class ChannelMixerTests(unittest.TestCase):
         with torch.no_grad():
             delta = (model(x2) - model(x)).abs().max().item()
         self.assertGreater(delta, 1e-6)
+
+    def test_zero_initialized_mixed_residual_starts_at_persistence(self):
+        parser = build_parser()
+        args = configure_args(
+            parser.parse_args(
+                [
+                    "--task_name",
+                    "finetune",
+                    "--model_id",
+                    "SDWPF",
+                    "--model",
+                    "TimeDART",
+                    "--data",
+                    "SDWPF",
+                    "--allow_random_init",
+                    "--no-use_gpu",
+                    "--d_model",
+                    "32",
+                    "--n_heads",
+                    "4",
+                    "--e_layers",
+                    "1",
+                    "--d_ff",
+                    "64",
+                    "--residual_forecast",
+                    "--zero_init_residual_head",
+                ]
+            )
+        )
+        args.device = torch.device("cpu")
+        args.time_steps = 8
+        args.dropout = 0.0
+        args.head_dropout = 0.0
+        model = Model(args).eval()
+        x = torch.randn(2, args.input_len, args.enc_in)
+        with torch.no_grad():
+            prediction = model(x)
+        persistence = x[:, -1:, -1:].expand(-1, args.pred_len, -1)
+        self.assertTrue(torch.equal(prediction, persistence))
 
     def test_constant_wind_level_changes_power(self):
         """Absolute Wspd must survive instance norm, not only within-window shape."""

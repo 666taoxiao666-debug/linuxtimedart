@@ -13,6 +13,11 @@ PRED_LEN="${PRED_LEN:-24}"
 EVAL_STRIDE="${EVAL_STRIDE:-${PRED_LEN}}"
 PRETRAIN_RUN_ID="${PRETRAIN_RUN_ID:-}"
 ALLOW_RANDOM="${ALLOW_RANDOM:-0}"
+TRAIN_EPOCHS="${TRAIN_EPOCHS:-20}"
+LEARNING_RATE="${LEARNING_RATE:-0.00001}"
+PCT_START="${PCT_START:-0.1}"
+PATIENCE="${PATIENCE:-3}"
+RESIDUAL_GATE_INIT="${RESIDUAL_GATE_INIT:--2.2}"
 RUN_ID="${RUN_ID:-prompt_h${PRED_LEN}_${SPLIT}_f${FOLD}_s${SEED}_$(date +%Y%m%d_%H%M%S)}"
 
 EXTRA=()
@@ -53,14 +58,16 @@ python -u run.py \
     --sdwpf_n_folds "${N_FOLDS}" \
     --pretrain_run_id "${PRETRAIN_RUN_ID}" \
     --mix_channels \
-    --train_epochs 20 \
-    --learning_rate 0.00003 \
+    --train_epochs "${TRAIN_EPOCHS}" \
+    --learning_rate "${LEARNING_RATE}" \
     --loss MIXED \
     --mix_mse_weight 0.8 \
     --early_stop_metric mae \
     --residual_forecast \
-    --no-zero_init_residual_head \
-    --patience 4 \
+    --zero_init_residual_head \
+    --residual_gate_init "${RESIDUAL_GATE_INIT}" \
+    --patience "${PATIENCE}" \
+    --pct_start "${PCT_START}" \
     --lradj step \
     --seed "${SEED}" \
     --run_id "${RUN_ID}" \

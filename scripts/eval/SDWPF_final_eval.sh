@@ -18,7 +18,7 @@ N_FOLDS="${N_FOLDS:-3}"
 SPLIT="${SPLIT:-rolling}"
 PRED_LEN="${PRED_LEN:-24}"
 EVAL_STRIDE="${EVAL_STRIDE:-${PRED_LEN}}"
-RESIDUAL_GATE_INIT="${RESIDUAL_GATE_INIT:--4.0}"
+RESIDUAL_GATE_INIT="${RESIDUAL_GATE_INIT:--2.2}"
 MODEL="${MODEL:-PromptTimeDART}"
 RUN_ID="${RUN_ID:-final_h${PRED_LEN}_${SPLIT}_f${FOLD}_s${SEED}}"
 
@@ -52,7 +52,7 @@ python -u run.py \
     --sdwpf_n_folds "${N_FOLDS}" \
     --mix_channels \
     --residual_forecast \
-    --no-zero_init_residual_head \
+    --zero_init_residual_head \
     --residual_gate_init "${RESIDUAL_GATE_INIT}" \
     --seed "${SEED}" \
     --run_id "${RUN_ID}" \

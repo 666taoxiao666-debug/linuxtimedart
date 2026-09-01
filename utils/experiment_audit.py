@@ -293,6 +293,9 @@ def model_runtime_summary(model, args=None) -> dict:
         "residual_forecast",
     ):
         result[name] = _jsonable(getattr(core, name, None))
+    transfer_audit = getattr(core, "pretrain_transfer_audit", None)
+    if transfer_audit is not None:
+        result["pretrain_transfer"] = _jsonable(transfer_audit)
     if getattr(core, "residual_gate_logit", None) is not None:
         result["residual_gate"] = float(
             torch.sigmoid(core.residual_gate_logit.detach()).cpu().item()

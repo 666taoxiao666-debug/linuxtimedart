@@ -28,11 +28,11 @@ N_FOLDS="${N_FOLDS:-3}"
 SPLIT="${SPLIT:-rolling}"
 PRED_LEN="${PRED_LEN:-24}"
 EVAL_STRIDE="${EVAL_STRIDE:-${PRED_LEN}}"
-RESIDUAL_GATE_INIT="${RESIDUAL_GATE_INIT:--4.0}"
+RESIDUAL_GATE_INIT="${RESIDUAL_GATE_INIT:--2.2}"
 RUN_ID="${RUN_ID:-mix_h${PRED_LEN}_${SPLIT}_f${FOLD}_s${SEED}_$(date +%Y%m%d_%H%M%S)}"
 
 if [[ "${RESIDUAL_FORECAST}" == "1" ]]; then
-    RESIDUAL_ARGS=(--residual_forecast --no-zero_init_residual_head)
+    RESIDUAL_ARGS=(--residual_forecast --zero_init_residual_head)
 else
     RESIDUAL_ARGS=(--no-residual_forecast)
 fi

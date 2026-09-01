@@ -18,6 +18,7 @@ import torch
 import torch.nn as nn
 from torch import optim
 import os
+import sys
 import time
 import warnings
 import numpy as np
@@ -448,7 +449,7 @@ class Exp_TimeDART(Exp_Basic):
         grad_norms = []
         regime_correct = 0
         regime_total = 0
-        regime_counts = np.zeros(int(self.args.num_classes), dtype=np.int64)
+        regime_counts = np.zeros(int(self.args.num_modes), dtype=np.int64)
 
         model_criterion = (
             self._select_criterion()
@@ -577,7 +578,7 @@ class Exp_TimeDART(Exp_Basic):
         ce_losses = []
         regime_correct = 0
         regime_total = 0
-        regime_counts = np.zeros(int(self.args.num_classes), dtype=np.int64)
+        regime_counts = np.zeros(int(self.args.num_modes), dtype=np.int64)
 
         model_criterion = (
             self._select_criterion()
@@ -732,6 +733,9 @@ class Exp_TimeDART(Exp_Basic):
             progress = tqdm(
                 train_loader,
                 desc="Training",
+                disable=not sys.stderr.isatty(),
+                mininterval=5.0,
+                dynamic_ncols=True,
             )
 
             print(
@@ -1074,6 +1078,9 @@ class Exp_TimeDART(Exp_Basic):
         vali_loader = tqdm(
             vali_loader,
             desc="Validation",
+            disable=not sys.stderr.isatty(),
+            mininterval=5.0,
+            dynamic_ncols=True,
         )
 
         with torch.no_grad():
@@ -1534,6 +1541,9 @@ class Exp_TimeDART(Exp_Basic):
                 desc=(
                     "Classification training"
                 ),
+                disable=not sys.stderr.isatty(),
+                mininterval=5.0,
+                dynamic_ncols=True,
             )
 
             start_time = time.time()

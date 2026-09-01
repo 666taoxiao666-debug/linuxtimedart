@@ -6,6 +6,9 @@ FOLD="${FOLD:-0}"
 N_FOLDS="${N_FOLDS:-3}"
 SPLIT="${SPLIT:-rolling}"
 PATIENCE="${PATIENCE:-3}"
+TRAIN_EPOCHS="${TRAIN_EPOCHS:-20}"
+LEARNING_RATE="${LEARNING_RATE:-0.0001}"
+LAMBDA_CE="${LAMBDA_CE:-0.02}"
 PRETRAIN_RUN_ID="${PRETRAIN_RUN_ID:-pretrain_${SPLIT}_f${FOLD}_s${SEED}_$(date +%Y%m%d_%H%M%S)}"
 RUN_ID="${RUN_ID:-${PRETRAIN_RUN_ID}}"
 
@@ -38,9 +41,10 @@ python -u run.py \
     --sdwpf_fold "${FOLD}" \
     --sdwpf_n_folds "${N_FOLDS}" \
     --pretrain_run_id "${PRETRAIN_RUN_ID}" \
-    --train_epochs 20 \
+    --train_epochs "${TRAIN_EPOCHS}" \
     --patience "${PATIENCE}" \
-    --learning_rate 0.0001 \
+    --learning_rate "${LEARNING_RATE}" \
+    --lambda_ce "${LAMBDA_CE}" \
     --lr_decay 0.95 \
     --seed "${SEED}" \
     --run_id "${RUN_ID}" \
