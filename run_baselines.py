@@ -9,9 +9,11 @@ import pandas as pd
 
 from exp.exp_timedart import Exp_TimeDART
 from run import build_parser, configure_args
+from utils.experiment_audit import write_run_manifest
 from utils.forecast_report import _horizon_segment_table
 from utils.sdwpf_baselines import (
     _window_truth,
+    authorize_eval_split,
     evaluate_methods,
     fit_power_curve,
     fit_tree_baseline,
@@ -30,7 +32,16 @@ def main():
     parser = build_parser()
     parser.description = "SDWPF train-only baselines"
     parser.add_argument("--baseline_output_dir", default=None)
+    parser.add_argument(
+        "--eval_split",
+        choices=["val", "test"],
+        default="val",
+        help="validation by default; test requires CONFIRM_FINAL_EVAL=1",
+    )
     args = configure_args(parser.parse_args())
+    if args.data != "SDWPF":
+        raise ValueError("run_baselines.py currently supports SDWPF only")
+    args.eval_split = authorize_eval_split(args.eval_split)
     args.load_checkpoints = None
     args.allow_random_init = True
     args.task_name = "finetune"
@@ -43,17 +54,40 @@ def main():
 
     exp = Exp_TimeDART(args)
     train_set, _ = exp._get_data(flag="train")
-    test_set, _ = exp._get_data(flag="test")
+    eval_set, _ = exp._get_data(flag=args.eval_split)
+    if len(train_set) == 0 or len(eval_set) == 0:
+        raise ValueError(
+            f"Empty baseline split: train={len(train_set)}, "
+            f"{args.eval_split}={len(eval_set)}"
+        )
 
+    write_run_manifest(
+        output_dir,
+        args,
+        "baseline_evaluation",
+        datasets={"train": train_set, args.eval_split: eval_set},
+        extra={
+            "fit_split": "train",
+            "evaluation_split": args.eval_split,
+            "future_scada_used": False,
+            "test_access_confirmed": args.eval_split == "test",
+        },
+    )
+
+    print(
+        "[AUDIT] Baseline fit_split=train "
+        f"eval_split={args.eval_split} pred_len={args.pred_len} "
+        f"eval_stride={args.sdwpf_eval_stride}"
+    )
     print("Fitting power curve and tree on the training split only...")
     curve = fit_power_curve(train_set)
     tree = fit_tree_baseline(train_set, random_state=args.seed)
 
-    truth = _window_truth(test_set)
-    persistence = persistence_forecast(test_set)
+    truth = _window_truth(eval_set)
+    persistence = persistence_forecast(eval_set)
     methods = {
-        "power_curve": power_curve_forecast(test_set, curve),
-        "tree": tree_forecast(test_set, tree),
+        "power_curve": power_curve_forecast(eval_set, curve),
+        "tree": tree_forecast(eval_set, tree),
     }
     if args.rated_power > 0:
         cap = float(args.rated_power)
@@ -62,7 +96,9 @@ def main():
         methods = {name: np.clip(pred, 0.0, cap) for name, pred in methods.items()}
 
     comparison = evaluate_methods(truth, methods, args.rated_power, persistence)
-    _write_json(os.path.join(output_dir, "test_metrics.json"), comparison)
+    _write_json(
+        os.path.join(output_dir, f"{args.eval_split}_metrics.json"), comparison
+    )
 
     rows = []
     for name, metrics in comparison.items():
@@ -73,9 +109,10 @@ def main():
 
     all_methods = {"persistence": persistence, **methods}
     segment_frames = []
+    step_minutes = int(pd.to_timedelta(args.freq).total_seconds() // 60)
     for name, pred in all_methods.items():
         table = _horizon_segment_table(
-            pred, truth, persistence, 10, args.rated_power
+            pred, truth, persistence, step_minutes, args.rated_power
         )
         table.insert(0, "method", name)
         segment_frames.append(table)
@@ -84,9 +121,11 @@ def main():
     )
 
     lines = [
-        "SDWPF train-only baselines (no NWP, no test fitting)",
+        "SDWPF train-fit baselines (history-only, no NWP)",
         "=" * 72,
-        "Primary task is 0-4 h.  4-16 h is an NWP-free ceiling.",
+        f"Evaluation split: {args.eval_split}",
+        f"Forecast horizon: {args.pred_len} x {step_minutes} min "
+        f"= {args.pred_len * step_minutes / 60:.1f} h",
         "",
     ]
     for name, metrics in comparison.items():

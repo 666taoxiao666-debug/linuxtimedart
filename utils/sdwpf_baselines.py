@@ -5,6 +5,7 @@ curve maps persisted last wind speed to power.  The tree model never receives
 future SCADA or NWP.
 """
 
+import os
 from collections import OrderedDict
 
 import numpy as np
@@ -16,6 +17,17 @@ from utils.metrics import forecast_metrics
 
 
 EPS = np.finfo(np.float64).eps
+
+
+def authorize_eval_split(eval_split, environ=None):
+    """Keep the test split sealed until the user explicitly confirms final use."""
+    environ = os.environ if environ is None else environ
+    if eval_split == "test" and environ.get("CONFIRM_FINAL_EVAL") != "1":
+        raise PermissionError(
+            "Test evaluation is locked. Select baselines on --eval_split val. "
+            "For the one-time final test only, set CONFIRM_FINAL_EVAL=1."
+        )
+    return eval_split
 
 
 def _target_index(dataset):
