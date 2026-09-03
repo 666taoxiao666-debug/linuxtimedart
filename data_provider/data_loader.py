@@ -106,6 +106,27 @@ def _sdwpf_cutoffs(
         # that the last fold legitimately runs to the end of the dataset.
         test_cutoff = unique_dates[test_end] if test_end < n else None
         return unique_dates[train_end], unique_dates[val_end], test_cutoff
+    if split == "rolling_holdout":
+        if fold < 0 or fold >= n_folds:
+            raise ValueError(f"sdwpf_fold must be in [0, {n_folds}), got {fold}")
+        # Seal the final test fraction. Divide only the preceding validation
+        # fraction into disjoint expanding-origin folds for model selection.
+        selection_start = min(max(2, int(n * train_ratio)), n - 2)
+        holdout_start = min(
+            max(selection_start + int(n_folds), int(n * (train_ratio + val_ratio))),
+            n - 1,
+        )
+        edges = np.rint(
+            np.linspace(selection_start, holdout_start, int(n_folds) + 1)
+        ).astype(int)
+        if np.any(np.diff(edges) <= 0):
+            raise ValueError(
+                "rolling_holdout needs enough timestamps for one validation "
+                "block per fold"
+            )
+        train_end = int(edges[fold])
+        val_end = int(edges[fold + 1])
+        return unique_dates[train_end], unique_dates[val_end], None
     if split == "seasonal":
         if date_months is None:
             raise ValueError("seasonal split requires month labels for unique dates")
@@ -127,7 +148,26 @@ def _sdwpf_cutoffs(
         if not (unique_dates[0] < train_cutoff < val_cutoff):
             raise ValueError("Seasonal cutoffs are not strictly increasing")
         return train_cutoff, val_cutoff, None
-    raise ValueError("sdwpf_split must be one of: time_ratio, rolling, seasonal")
+    raise ValueError(
+        "sdwpf_split must be one of: time_ratio, rolling, "
+        "rolling_holdout, seasonal"
+    )
+
+
+def _sdwpf_test_start_cutoff(
+    unique_dates,
+    split,
+    train_ratio,
+    val_ratio,
+    val_cutoff,
+):
+    """Return the first timestamp that the test split may use."""
+    if split != "rolling_holdout":
+        return val_cutoff
+    unique_dates = np.asarray(unique_dates)
+    n = len(unique_dates)
+    holdout_pos = min(max(1, int(n * (train_ratio + val_ratio))), n - 1)
+    return unique_dates[holdout_pos]
 
 
 def _stratified_classification_train_val_indices(
@@ -698,8 +738,10 @@ class Dataset_SDWPF(Dataset):
             raise ValueError("flag must be one of: train, val, test")
         if features not in {"M", "S", "MS"}:
             raise ValueError("features must be one of: M, S, MS")
-        if split not in {"time_ratio", "rolling", "seasonal"}:
-            raise ValueError("split must be time_ratio, rolling, or seasonal")
+        if split not in {"time_ratio", "rolling", "rolling_holdout", "seasonal"}:
+            raise ValueError(
+                "split must be time_ratio, rolling, rolling_holdout, or seasonal"
+            )
         if not 0 < train_ratio < 1 or not 0 < val_ratio < 1:
             raise ValueError("train_ratio and val_ratio must be in (0, 1)")
         if train_ratio + val_ratio >= 1:
@@ -776,6 +818,7 @@ class Dataset_SDWPF(Dataset):
         self.segments = prepared["segments"]
         self.train_cutoff = prepared["train_cutoff"]
         self.val_cutoff = prepared["val_cutoff"]
+        self.test_start_cutoff = prepared["test_start_cutoff"]
         self.test_cutoff = prepared["test_cutoff"]
         self.scaler = prepared["scaler"]
         self.feature_columns = prepared["feature_columns"]
@@ -940,6 +983,13 @@ class Dataset_SDWPF(Dataset):
             val_ratio=val_ratio,
             date_months=unique_months,
         )
+        test_start_cutoff = _sdwpf_test_start_cutoff(
+            unique_dates,
+            split=split,
+            train_ratio=train_ratio,
+            val_ratio=val_ratio,
+            val_cutoff=val_cutoff,
+        )
         train_rows = raw_dates < train_cutoff
         if not np.any(train_rows):
             raise ValueError("The SDWPF training split is empty")
@@ -1037,6 +1087,7 @@ class Dataset_SDWPF(Dataset):
             f"split={split} fold={fold}, "
             f"train_cutoff={pd.Timestamp(train_cutoff)}, "
             f"val_cutoff={pd.Timestamp(val_cutoff)}, "
+            f"test_start={pd.Timestamp(test_start_cutoff)}, "
             f"test_cutoff={pd.Timestamp(test_cutoff) if test_cutoff is not None else 'end'}, "
             f"available_frac={float(available.mean()):.3f}, "
             f"features={feature_columns}"
@@ -1049,6 +1100,7 @@ class Dataset_SDWPF(Dataset):
             "segments": segments,
             "train_cutoff": train_cutoff,
             "val_cutoff": val_cutoff,
+            "test_start_cutoff": test_start_cutoff,
             "test_cutoff": test_cutoff,
             "scaler": scaler,
             "feature_columns": feature_columns,
@@ -1074,7 +1126,7 @@ class Dataset_SDWPF(Dataset):
             elif self.flag == "val":
                 keep = (target_start >= self.train_cutoff) & (target_end < self.val_cutoff)
             else:
-                keep = target_start >= self.val_cutoff
+                keep = target_start >= self.test_start_cutoff
                 if self.test_cutoff is not None:
                     keep &= target_end < self.test_cutoff
             if np.any(keep):

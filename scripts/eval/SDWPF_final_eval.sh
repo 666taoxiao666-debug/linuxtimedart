@@ -14,13 +14,22 @@ fi
 
 SEED="${SEED:-2024}"
 FOLD="${FOLD:-0}"
-N_FOLDS="${N_FOLDS:-3}"
-SPLIT="${SPLIT:-rolling}"
-PRED_LEN="${PRED_LEN:-24}"
+N_FOLDS="${N_FOLDS:-1}"
+SPLIT="${SPLIT:-time_ratio}"
+PRED_LEN="${PRED_LEN:-12}"
 EVAL_STRIDE="${EVAL_STRIDE:-${PRED_LEN}}"
 RESIDUAL_GATE_INIT="${RESIDUAL_GATE_INIT:--2.2}"
 MODEL="${MODEL:-PromptTimeDART}"
+RATED_POWER="${RATED_POWER:-1500}"
+GPU="${GPU:-0}"
 RUN_ID="${RUN_ID:-final_h${PRED_LEN}_${SPLIT}_f${FOLD}_s${SEED}}"
+export PYTHONHASHSEED="${PYTHONHASHSEED:-${SEED}}"
+export CUBLAS_WORKSPACE_CONFIG="${CUBLAS_WORKSPACE_CONFIG:-:4096:8}"
+
+if [[ "${SPLIT}" != "time_ratio" ]]; then
+    echo "Final paper evaluation requires SPLIT=time_ratio so CV checkpoints cannot read the sealed holdout." >&2
+    exit 2
+fi
 
 python -u run.py \
     --task_name finetune \
@@ -54,6 +63,7 @@ python -u run.py \
     --residual_forecast \
     --zero_init_residual_head \
     --residual_gate_init "${RESIDUAL_GATE_INIT}" \
+    --rated_power "${RATED_POWER}" \
     --seed "${SEED}" \
     --run_id "${RUN_ID}" \
-    --gpu 0
+    --gpu "${GPU}"

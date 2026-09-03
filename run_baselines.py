@@ -19,6 +19,7 @@ from utils.sdwpf_baselines import (
     fit_tree_baseline,
     persistence_forecast,
     power_curve_forecast,
+    seasonal_persistence_forecast,
     tree_forecast,
 )
 
@@ -32,6 +33,12 @@ def main():
     parser = build_parser()
     parser.description = "SDWPF train-only baselines"
     parser.add_argument("--baseline_output_dir", default=None)
+    parser.add_argument(
+        "--baseline_max_samples",
+        type=int,
+        default=500000,
+        help="maximum balanced window-horizon rows used by the HGB baseline",
+    )
     parser.add_argument(
         "--eval_split",
         choices=["val", "test"],
@@ -81,11 +88,21 @@ def main():
     )
     print("Fitting power curve and tree on the training split only...")
     curve = fit_power_curve(train_set)
-    tree = fit_tree_baseline(train_set, random_state=args.seed)
+    tree = fit_tree_baseline(
+        train_set,
+        max_samples=args.baseline_max_samples,
+        random_state=args.seed,
+    )
+    print(
+        "Tree baseline samples: "
+        f"{tree.sdwpf_training_samples_:,} rows from "
+        f"{tree.sdwpf_windows_sampled_:,} windows; every horizon balanced"
+    )
 
     truth = _window_truth(eval_set)
     persistence = persistence_forecast(eval_set)
     methods = {
+        "daily_persistence": seasonal_persistence_forecast(eval_set),
         "power_curve": power_curve_forecast(eval_set, curve),
         "tree": tree_forecast(eval_set, tree),
     }

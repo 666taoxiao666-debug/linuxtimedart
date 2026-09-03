@@ -109,9 +109,13 @@ def build_parser():
     )
     parser.add_argument(
         "--sdwpf_split",
-        choices=["time_ratio", "rolling", "seasonal"],
+        choices=["time_ratio", "rolling", "rolling_holdout", "seasonal"],
         default="time_ratio",
-        help="time_ratio=legacy 70/10/20; rolling=expanding origin; seasonal=month blocks",
+        help=(
+            "time_ratio=70/10/20 final protocol; rolling=legacy walk-forward; "
+            "rolling_holdout=disjoint expanding-origin validation folds before "
+            "one sealed final holdout; seasonal=month blocks"
+        ),
     )
     parser.add_argument("--sdwpf_fold", type=int, default=0)
     parser.add_argument("--sdwpf_n_folds", type=int, default=3)
@@ -249,6 +253,15 @@ def build_parser():
     parser.add_argument("--eval_batch_size", type=int, default=128)
     parser.add_argument("--patience", type=int, default=3)
     parser.add_argument("--learning_rate", type=float, default=1e-4)
+    parser.add_argument(
+        "--new_module_learning_rate",
+        type=float,
+        default=0.0,
+        help=(
+            "optional fine-tuning LR for newly initialized forecast_head, "
+            "channel_mixer, and residual gate; <=0 reuses --learning_rate"
+        ),
+    )
     parser.add_argument("--des", default="test")
     parser.add_argument(
         "--loss",
@@ -281,9 +294,12 @@ def build_parser():
     )
     parser.add_argument(
         "--early_stop_metric",
-        choices=["loss", "mse", "mae"],
+        choices=["loss", "mse", "mae", "original_mae", "original_rmse"],
         default="mse",
-        help="validation quantity used for checkpoint selection",
+        help=(
+            "validation quantity used for checkpoint selection; original_* "
+            "uses clipped, inverse-scaled kW and matches final reporting"
+        ),
     )
     parser.add_argument("--weight_decay", type=float, default=1e-4)
     parser.add_argument(
@@ -302,6 +318,12 @@ def build_parser():
     parser.add_argument("--use_amp", action="store_true")
     parser.add_argument("--accumulation_steps", type=int, default=1)
     parser.add_argument("--seed", type=int, default=2024)
+    parser.add_argument(
+        "--deterministic",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help="request deterministic PyTorch/CUDA execution for reproducible experiments",
+    )
     parser.add_argument(
         "--run_id",
         type=str,
@@ -563,6 +585,15 @@ def load_finetuned_model(exp, checkpoint_path):
 def main():
     args = configure_args(build_parser().parse_args())
     seed = args.seed
+    if args.deterministic:
+        os.environ.setdefault("CUBLAS_WORKSPACE_CONFIG", ":4096:8")
+        # Scientific runs should fail loudly if an operation has no
+        # deterministic implementation; a warning would silently weaken the
+        # reproducibility claim.
+        torch.use_deterministic_algorithms(True)
+        if torch.backends.cudnn.is_available():
+            torch.backends.cudnn.benchmark = False
+            torch.backends.cudnn.deterministic = True
     random.seed(seed)
     np.random.seed(seed)
     torch.manual_seed(seed)

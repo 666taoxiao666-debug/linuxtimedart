@@ -7,6 +7,7 @@ from utils.sdwpf_baselines import (
     _window_truth,
     authorize_eval_split,
     power_curve_forecast,
+    seasonal_persistence_forecast,
     tree_forecast,
 )
 
@@ -72,6 +73,7 @@ class BaselineLeakageTests(unittest.TestCase):
         history_features = _history_stats(dataset).copy()
         curve_prediction = power_curve_forecast(dataset, _Curve()).copy()
         tree_prediction = tree_forecast(dataset, _Tree()).copy()
+        seasonal_prediction = seasonal_persistence_forecast(dataset, seasonal_lag=4).copy()
 
         dataset.data_x[dataset.seq_len :, :] = 999999.0
         dataset.wspd[dataset.seq_len :] = 999999.0
@@ -81,6 +83,10 @@ class BaselineLeakageTests(unittest.TestCase):
             power_curve_forecast(dataset, _Curve()), curve_prediction
         )
         np.testing.assert_array_equal(tree_forecast(dataset, _Tree()), tree_prediction)
+        np.testing.assert_array_equal(
+            seasonal_persistence_forecast(dataset, seasonal_lag=4),
+            seasonal_prediction,
+        )
 
 
 if __name__ == "__main__":

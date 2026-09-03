@@ -7,18 +7,30 @@ set -euo pipefail
 
 SEED="${SEED:-2024}"
 FOLD="${FOLD:-0}"
-SPLIT="${SPLIT:-rolling}"
+SPLIT="${SPLIT:-rolling_holdout}"
 N_FOLDS="${N_FOLDS:-3}"
-PRED_LEN="${PRED_LEN:-24}"
+PRED_LEN="${PRED_LEN:-12}"
 EVAL_STRIDE="${EVAL_STRIDE:-${PRED_LEN}}"
 PRETRAIN_RUN_ID="${PRETRAIN_RUN_ID:-}"
 ALLOW_RANDOM="${ALLOW_RANDOM:-0}"
-TRAIN_EPOCHS="${TRAIN_EPOCHS:-20}"
-LEARNING_RATE="${LEARNING_RATE:-0.00001}"
-PCT_START="${PCT_START:-0.1}"
-PATIENCE="${PATIENCE:-3}"
+TRAIN_EPOCHS="${TRAIN_EPOCHS:-5}"
+LEARNING_RATE="${LEARNING_RATE:-0.000001}"
+NEW_MODULE_LEARNING_RATE="${NEW_MODULE_LEARNING_RATE:-0.0001}"
+PCT_START="${PCT_START:-0.20}"
+PATIENCE="${PATIENCE:-2}"
+LOSS="${LOSS:-MIXED}"
+MIX_MSE_WEIGHT="${MIX_MSE_WEIGHT:-0.2}"
+EARLY_STOP_METRIC="${EARLY_STOP_METRIC:-original_mae}"
+RATED_POWER="${RATED_POWER:-1500}"
+GPU="${GPU:-0}"
+MODEL="${MODEL:-PromptTimeDART}"
+CHANNEL_PRIOR="${CHANNEL_PRIOR:-1}"
+OP_CONTEXT="${OP_CONTEXT:-1}"
+REVIN_KEEP_WIND="${REVIN_KEEP_WIND:-1}"
 RESIDUAL_GATE_INIT="${RESIDUAL_GATE_INIT:--2.2}"
 RUN_ID="${RUN_ID:-prompt_h${PRED_LEN}_${SPLIT}_f${FOLD}_s${SEED}_$(date +%Y%m%d_%H%M%S)}"
+export PYTHONHASHSEED="${PYTHONHASHSEED:-${SEED}}"
+export CUBLAS_WORKSPACE_CONFIG="${CUBLAS_WORKSPACE_CONFIG:-:4096:8}"
 
 EXTRA=()
 if [[ "${ALLOW_RANDOM}" == "1" ]]; then
@@ -26,15 +38,30 @@ if [[ "${ALLOW_RANDOM}" == "1" ]]; then
 else
     EXTRA+=(--pretrain_init auto)
 fi
+if [[ "${CHANNEL_PRIOR}" == "1" ]]; then
+    EXTRA+=(--channel_prior)
+else
+    EXTRA+=(--no-channel_prior)
+fi
+if [[ "${OP_CONTEXT}" == "1" ]]; then
+    EXTRA+=(--op_context)
+else
+    EXTRA+=(--no-op_context)
+fi
+if [[ "${REVIN_KEEP_WIND}" == "1" ]]; then
+    EXTRA+=(--revin_keep_wind)
+else
+    EXTRA+=(--no-revin_keep_wind)
+fi
 
-python -u run.py \
+COMMAND=(python -u run.py
     --task_name finetune \
     --downstream_task forecast \
     --is_training 1 \
     --root_path ./datasets/ \
     --data_path sdwpf_fixed.csv \
     --model_id SDWPF \
-    --model PromptTimeDART \
+    --model "${MODEL}" \
     --data SDWPF \
     --features MS \
     --target power \
@@ -60,16 +87,25 @@ python -u run.py \
     --mix_channels \
     --train_epochs "${TRAIN_EPOCHS}" \
     --learning_rate "${LEARNING_RATE}" \
-    --loss MIXED \
-    --mix_mse_weight 0.8 \
-    --early_stop_metric mae \
+    --new_module_learning_rate "${NEW_MODULE_LEARNING_RATE}" \
+    --loss "${LOSS}" \
+    --mix_mse_weight "${MIX_MSE_WEIGHT}" \
+    --early_stop_metric "${EARLY_STOP_METRIC}" \
     --residual_forecast \
     --zero_init_residual_head \
     --residual_gate_init "${RESIDUAL_GATE_INIT}" \
     --patience "${PATIENCE}" \
     --pct_start "${PCT_START}" \
+    --rated_power "${RATED_POWER}" \
     --lradj step \
     --seed "${SEED}" \
     --run_id "${RUN_ID}" \
-    --gpu 0 \
-    "${EXTRA[@]}"
+    --gpu "${GPU}" \
+    "${EXTRA[@]}")
+
+if [[ -n "${SDWPF_LOG_FILE:-}" ]]; then
+    mkdir -p "$(dirname "${SDWPF_LOG_FILE}")"
+    "${COMMAND[@]}" 2>&1 | tee "${SDWPF_LOG_FILE}"
+else
+    "${COMMAND[@]}"
+fi

@@ -25,9 +25,13 @@ RESIDUAL_FORECAST="${RESIDUAL_FORECAST:-1}"
 PATIENCE="${PATIENCE:-4}"
 FOLD="${FOLD:-0}"
 N_FOLDS="${N_FOLDS:-3}"
-SPLIT="${SPLIT:-rolling}"
-PRED_LEN="${PRED_LEN:-24}"
+SPLIT="${SPLIT:-rolling_holdout}"
+PRED_LEN="${PRED_LEN:-12}"
 EVAL_STRIDE="${EVAL_STRIDE:-${PRED_LEN}}"
+TRAIN_EPOCHS="${TRAIN_EPOCHS:-20}"
+NEW_MODULE_LEARNING_RATE="${NEW_MODULE_LEARNING_RATE:-0.0001}"
+RATED_POWER="${RATED_POWER:-1500}"
+GPU="${GPU:-0}"
 RESIDUAL_GATE_INIT="${RESIDUAL_GATE_INIT:--2.2}"
 RUN_ID="${RUN_ID:-mix_h${PRED_LEN}_${SPLIT}_f${FOLD}_s${SEED}_$(date +%Y%m%d_%H%M%S)}"
 
@@ -69,14 +73,15 @@ python -u run.py \
     --sdwpf_fold "${FOLD}" \
     --sdwpf_n_folds "${N_FOLDS}" \
     --mix_channels \
-    --train_epochs 20 \
+    --train_epochs "${TRAIN_EPOCHS}" \
     --learning_rate "${LEARNING_RATE}" \
+    --new_module_learning_rate "${NEW_MODULE_LEARNING_RATE}" \
     --loss "${LOSS}" \
     --huber_delta 1.0 \
     --mix_mse_weight "${MIX_MSE_WEIGHT}" \
     --horizon_weight_end "${HORIZON_WEIGHT_END}" \
     --power_weight_alpha "${POWER_WEIGHT_ALPHA}" \
-    --early_stop_metric mae \
+    --early_stop_metric original_mae \
     "${RESIDUAL_ARGS[@]}" \
     --residual_gate_init "${RESIDUAL_GATE_INIT}" \
     --weight_decay 0.0001 \
@@ -84,7 +89,8 @@ python -u run.py \
     --head_dropout 0.1 \
     --patience "${PATIENCE}" \
     --pct_start 0.1 \
+    --rated_power "${RATED_POWER}" \
     --lradj step \
     --seed "${SEED}" \
     --run_id "${RUN_ID}" \
-    --gpu 0
+    --gpu "${GPU}"

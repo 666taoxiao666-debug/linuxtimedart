@@ -44,9 +44,11 @@ def original_target_series(dataset):
     return scaled * scale + mean
 
 
-def _window_truth(dataset):
+def _window_truth(dataset, window_ids=None):
     index = _target_index(dataset)
     starts = np.asarray(dataset.window_starts, dtype=np.int64)
+    if window_ids is not None:
+        starts = starts[np.asarray(window_ids, dtype=np.int64)]
     rows = starts[:, None] + int(dataset.seq_len) + np.arange(int(dataset.pred_len))
     scaled = dataset.data_x[rows][:, :, index]
     return inverse_transform_target(dataset, scaled)
@@ -84,6 +86,23 @@ def persistence_forecast(dataset):
     return np.repeat(last_power.reshape(-1, 1), int(dataset.pred_len), axis=1)
 
 
+def seasonal_persistence_forecast(dataset, seasonal_lag=144):
+    """Repeat the power observed one daily cycle before each target step."""
+    lag = int(seasonal_lag)
+    horizon = int(dataset.pred_len)
+    if lag < horizon or int(dataset.seq_len) < lag:
+        raise ValueError("seasonal_lag must be within history and >= pred_len")
+    power = original_target_series(dataset)
+    starts = np.asarray(dataset.window_starts, dtype=np.int64)
+    rows = (
+        starts[:, None]
+        + int(dataset.seq_len)
+        + np.arange(horizon, dtype=np.int64)[None, :]
+        - lag
+    )
+    return power[rows]
+
+
 def fit_power_curve(train_dataset):
     """Isotonic P=f(Wspd) on training timestamps that are still generating."""
     power = original_target_series(train_dataset)
@@ -105,22 +124,22 @@ def power_curve_forecast(dataset, curve):
     return np.repeat(power.reshape(-1, 1), int(dataset.pred_len), axis=1)
 
 
-def fit_tree_baseline(train_dataset, max_windows=20000, random_state=2024):
-    """Single HGB with horizon-step as a feature; history only."""
+def fit_tree_baseline(train_dataset, max_samples=500000, random_state=2024):
+    """Balanced direct HGB over every lead, using history-only statistics."""
     features = _history_stats(train_dataset)
-    truth = _window_truth(train_dataset)
-    n_windows, horizon = truth.shape
+    n_windows = len(features)
+    horizon = int(train_dataset.pred_len)
     rng = np.random.default_rng(random_state)
-    window_count = min(n_windows, max_windows)
+    window_count = min(n_windows, max(1, int(max_samples) // horizon))
     window_ids = rng.choice(n_windows, size=window_count, replace=False)
-    # Two samples per window keep the matrix small while covering short/long leads.
-    horizon_ids = rng.integers(0, horizon, size=(window_count, 2))
-    rows = []
-    targets = []
-    for window_id, leads in zip(window_ids, horizon_ids):
-        for lead in leads:
-            rows.append(np.concatenate([features[window_id], [float(lead)]]))
-            targets.append(truth[window_id, int(lead)])
+    truth = _window_truth(train_dataset, window_ids=window_ids)
+    rows = np.column_stack(
+        [
+            np.repeat(features[window_ids], horizon, axis=0),
+            np.tile(np.arange(horizon, dtype=np.float64), window_count),
+        ]
+    )
+    targets = truth.reshape(-1)
     model = HistGradientBoostingRegressor(
         max_depth=6,
         learning_rate=0.08,
@@ -128,6 +147,8 @@ def fit_tree_baseline(train_dataset, max_windows=20000, random_state=2024):
         random_state=random_state,
     )
     model.fit(np.asarray(rows, dtype=np.float64), np.asarray(targets, dtype=np.float64))
+    model.sdwpf_training_samples_ = int(len(targets))
+    model.sdwpf_windows_sampled_ = int(window_count)
     return model
 
 

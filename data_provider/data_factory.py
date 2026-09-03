@@ -16,6 +16,9 @@ from data_provider.data_loader import (
 )
 from data_provider.uea import collate_fn
 from torch.utils.data import DataLoader
+import numpy as np
+import random
+import torch
 
 data_dict = {
     'ETTh1': Dataset_ETT_hour,
@@ -59,6 +62,12 @@ datasets_by_task = {
 }
 
 
+def _seed_data_worker(_worker_id):
+    worker_seed = torch.initial_seed() % (2 ** 32)
+    np.random.seed(worker_seed)
+    random.seed(worker_seed)
+
+
 def data_provider(args, flag):
     supported_datasets = datasets_by_task.get(args.downstream_task)
     if supported_datasets is None:
@@ -71,6 +80,13 @@ def data_provider(args, flag):
         )
 
     Data = data_dict[args.data]
+    split_offset = {"train": 0, "val": 1, "test": 2}.get(flag, 3)
+    loader_generator = torch.Generator()
+    loader_generator.manual_seed(int(getattr(args, "seed", 2024)) + split_offset)
+    reproducibility_kwargs = {
+        "worker_init_fn": _seed_data_worker,
+        "generator": loader_generator,
+    }
 
     timeenc = 0 if args.embed != 'timeF' else 1
 
@@ -98,7 +114,8 @@ def data_provider(args, flag):
             batch_size=batch_size,
             shuffle=shuffle_flag,
             num_workers=args.num_workers,
-            drop_last=drop_last
+            drop_last=drop_last,
+            **reproducibility_kwargs,
         )
         return data_set, data_loader
     elif args.downstream_task == 'classification':
@@ -114,6 +131,7 @@ def data_provider(args, flag):
             shuffle=shuffle_flag,
             num_workers=args.num_workers,
             drop_last=drop_last,
+            **reproducibility_kwargs,
             # collate_fn=lambda x: collate_fn(x, max_len=args.seq_len)
         )
         return data_set, data_loader
@@ -162,6 +180,7 @@ def data_provider(args, flag):
             num_workers=args.num_workers,
             drop_last=drop_last,
             pin_memory=bool(args.use_gpu),
+            **reproducibility_kwargs,
         )
 
         print(flag, len(data_set), len(data_loader))

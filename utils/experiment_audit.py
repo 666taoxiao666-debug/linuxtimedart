@@ -195,7 +195,12 @@ def dataset_summary(dataset, split_name: str) -> dict:
                 "first_window_target_end": str(target_end[0]),
             }
         )
-    for name in ("train_cutoff", "val_cutoff", "test_cutoff"):
+    for name in (
+        "train_cutoff",
+        "val_cutoff",
+        "test_start_cutoff",
+        "test_cutoff",
+    ):
         value = getattr(dataset, name, None)
         result[name] = str(value) if value is not None else None
     segments = getattr(dataset, "segments", None)

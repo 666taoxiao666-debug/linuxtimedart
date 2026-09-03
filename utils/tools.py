@@ -33,15 +33,19 @@ def adjust_learning_rate(optimizer, scheduler, epoch, args, printout=True):
     elif args.lradj == "decay":
         lr_adjust = {epoch: args.learning_rate * (args.lr_decay ** ((epoch - 1) // 1)) }
     elif args.lradj == "step":
-        lr_adjust = {epoch: scheduler.get_last_lr()[0]}
+        # OneCycleLR already updates every parameter group. Reassigning the
+        # first group's LR to all groups destroys differential fine-tuning.
+        lr_adjust = {}
     elif args.lradj == "exp":
         lr_adjust = {}
         scheduler.step()
 
     if epoch in lr_adjust.keys():
         lr = lr_adjust[epoch]
+        base_lr = max(float(args.learning_rate), np.finfo(float).eps)
         for param_group in optimizer.param_groups:
-            param_group['lr'] = lr
+            target_lr = float(param_group.get("target_lr", base_lr))
+            param_group['lr'] = lr * target_lr / base_lr
         if printout:
             print('Updating learning rate to {}'.format(lr))
 

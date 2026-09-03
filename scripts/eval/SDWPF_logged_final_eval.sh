@@ -12,9 +12,9 @@ fi
 
 SEED="${SEED:-2024}"
 FOLD="${FOLD:-0}"
-N_FOLDS="${N_FOLDS:-3}"
-SPLIT="${SPLIT:-rolling}"
-PRED_LEN="${PRED_LEN:-24}"
+N_FOLDS="${N_FOLDS:-1}"
+SPLIT="${SPLIT:-time_ratio}"
+PRED_LEN="${PRED_LEN:-12}"
 MODEL="${MODEL:-PromptTimeDART}"
 RUN_ID="${RUN_ID:-final_h${PRED_LEN}_f${FOLD}_s${SEED}_$(date +%Y%m%d_%H%M%S)}"
 LOG_DIR="outputs/logs/SDWPF/${RUN_ID}"

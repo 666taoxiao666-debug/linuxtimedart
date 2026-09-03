@@ -111,10 +111,67 @@ class Exp_TimeDART(Exp_Basic):
         return data_set, data_loader
 
     def _select_optimizer(self):
+        base_lr = float(self.args.learning_rate)
+        new_module_lr = float(getattr(self.args, "new_module_learning_rate", 0.0))
+        use_groups = (
+            self.args.task_name == "finetune"
+            and self.args.downstream_task == "forecast"
+            and new_module_lr > 0
+            and not np.isclose(new_module_lr, base_lr)
+        )
+        if not use_groups:
+            model_optim = optim.AdamW(
+                [{
+                    "params": self.model.parameters(),
+                    "lr": base_lr,
+                    "target_lr": base_lr,
+                    "group_name": "all",
+                }],
+                lr=base_lr,
+                weight_decay=self.args.weight_decay,
+            )
+            return model_optim
+
+        new_tokens = ("head.", "channel_mixer.", "residual_gate_logit")
+        transferred = []
+        newly_initialized = []
+        for name, parameter in self.model.named_parameters():
+            if not parameter.requires_grad:
+                continue
+            clean_name = name.removeprefix("module.")
+            destination = (
+                newly_initialized
+                if any(token in clean_name for token in new_tokens)
+                else transferred
+            )
+            destination.append(parameter)
+        if not newly_initialized or not transferred:
+            raise RuntimeError(
+                "Differential fine-tuning LR requested, but optimizer parameter "
+                "groups could not be separated"
+            )
         model_optim = optim.AdamW(
-            self.model.parameters(),
-            lr=self.args.learning_rate,
+            [
+                {
+                    "params": transferred,
+                    "lr": base_lr,
+                    "target_lr": base_lr,
+                    "group_name": "transferred_backbone",
+                },
+                {
+                    "params": newly_initialized,
+                    "lr": new_module_lr,
+                    "target_lr": new_module_lr,
+                    "group_name": "new_forecast_modules",
+                },
+            ],
             weight_decay=self.args.weight_decay,
+        )
+        print(
+            "Optimizer groups: "
+            f"backbone={sum(p.numel() for p in transferred):,} params @ {base_lr:g}; "
+            f"new_modules={sum(p.numel() for p in newly_initialized):,} params "
+            f"@ {new_module_lr:g}"
         )
         return model_optim
 
@@ -712,9 +769,10 @@ class Exp_TimeDART(Exp_Basic):
                 ),
                 pct_start=self.args.pct_start,
                 epochs=self.args.train_epochs,
-                max_lr=(
-                    self.args.learning_rate
-                ),
+                max_lr=[
+                    float(group.get("target_lr", self.args.learning_rate))
+                    for group in model_optim.param_groups
+                ],
             )
         )
 
@@ -866,34 +924,40 @@ class Exp_TimeDART(Exp_Basic):
 
             end_time = time.time()
 
-            print(
-                "Epoch: {0}, Steps: {1}, "
-                "Time: {2:.2f}s | "
-                "Train Loss: {3:.7f} "
-                "Vali Loss: {4:.7f} "
-                "Vali MSE: {5:.7f} "
-                "Vali MAE: {6:.7f} "
-                "Persist MAE: {7:.7f} "
-                "MAE Skill: {8:+.2f}% "
-                "Gate: {9:.5f} GradNorm: {10:.3f} "
-                "Select({11}): {12:.7f}"
-                .format(
-                    epoch + 1,
-                    len(train_loader),
-                    end_time - start_time,
-                    train_loss,
-                    vali_loss,
-                    validation["mse"],
-                    validation["mae"],
-                    validation["persistence_mae"],
-                    validation["mae_skill_vs_persistence_pct"],
-                    validation["diagnostics"].get("residual_gate", 0.0),
-                    train_grad_norm,
-                    self.args
-                    .early_stop_metric,
-                    selection_value,
-                )
+            validation_unit = "kW" if self.args.data == "SDWPF" else "original"
+            epoch_summary = (
+                f"Epoch: {epoch + 1}, Steps: {len(train_loader)}, "
+                f"Time: {end_time - start_time:.2f}s | "
+                f"Train Loss: {train_loss:.7f} "
+                f"Vali Loss: {vali_loss:.7f} "
+                f"Vali MSE: {validation['mse']:.7f} "
+                f"Vali MAE: {validation['mae']:.7f} "
+                f"Val MAE({validation_unit}): {validation['original_mae']:.3f} "
+                f"Persist MAE({validation_unit}): "
+                f"{validation['original_persistence_mae']:.3f} "
+                f"MAE Skill: {validation['original_mae_skill_vs_persistence_pct']:+.2f}% "
+                f"RMSE Skill: {validation['original_rmse_skill_vs_persistence_pct']:+.2f}% "
+                f"Gate: {validation['diagnostics'].get('residual_gate', 0.0):.5f} "
+                f"GradNorm: {train_grad_norm:.3f} "
+                f"LR(backbone/new): "
+                f"{model_optim.param_groups[0]['lr']:.3g}/"
+                f"{model_optim.param_groups[-1]['lr']:.3g} "
+                f"Select({self.args.early_stop_metric}): {selection_value:.7f}"
             )
+            scale_parts = []
+            for feature_name in ("Wspd", "power"):
+                static_key = f"channel_static_{feature_name}"
+                dynamic_key = f"channel_dynamic_{feature_name}_mean"
+                if static_key in validation["diagnostics"]:
+                    static_value = validation["diagnostics"][static_key]
+                    dynamic_value = validation["diagnostics"].get(dynamic_key)
+                    value = f"{static_value:.3f}"
+                    if dynamic_value is not None:
+                        value += f"/{dynamic_value:.3f}"
+                    scale_parts.append(f"{feature_name}={value}")
+            if scale_parts:
+                epoch_summary += " ChannelScale(static/dynamic): " + ",".join(scale_parts)
+            print(epoch_summary)
 
             log_path = (
                 path + "/" + "log.txt"
@@ -903,35 +967,7 @@ class Exp_TimeDART(Exp_Basic):
                 log_path,
                 "a",
             ) as log_file:
-                log_file.write(
-                    "Epoch: {0}, Steps: {1}, "
-                    "Time: {2:.2f}s | "
-                    "Train Loss: {3:.7f} "
-                    "Vali Loss: {4:.7f} "
-                    "Vali MSE: {5:.7f} "
-                    "Vali MAE: {6:.7f} "
-                    "Persist MAE: {7:.7f} "
-                    "MAE Skill: {8:+.2f}% "
-                    "Gate: {9:.5f} GradNorm: {10:.3f} "
-                    "Select({11}): {12:.7f}\n"
-                    .format(
-                        epoch + 1,
-                        len(train_loader),
-                        end_time
-                        - start_time,
-                        train_loss,
-                        vali_loss,
-                        validation["mse"],
-                        validation["mae"],
-                        validation["persistence_mae"],
-                        validation["mae_skill_vs_persistence_pct"],
-                        validation["diagnostics"].get("residual_gate", 0.0),
-                        train_grad_norm,
-                        self.args
-                        .early_stop_metric,
-                        selection_value,
-                    )
-                )
+                log_file.write(epoch_summary + "\n")
 
             history.append(
                 {
@@ -959,11 +995,26 @@ class Exp_TimeDART(Exp_Basic):
                     "val_rmse_skill_vs_persistence_pct": float(
                         validation["rmse_skill_vs_persistence_pct"]
                     ),
+                    "val_mae_kw": float(validation["original_mae"]),
+                    "val_rmse_kw": float(validation["original_rmse"]),
+                    "val_persistence_mae_kw": float(
+                        validation["original_persistence_mae"]
+                    ),
+                    "val_persistence_rmse_kw": float(
+                        validation["original_persistence_rmse"]
+                    ),
+                    "val_mae_skill_original_pct": float(
+                        validation["original_mae_skill_vs_persistence_pct"]
+                    ),
+                    "val_rmse_skill_original_pct": float(
+                        validation["original_rmse_skill_vs_persistence_pct"]
+                    ),
                     "selection_value": float(
                         selection_value
                     ),
-                    "learning_rate": float(
-                        current_lr
+                    "learning_rate": float(model_optim.param_groups[0]["lr"]),
+                    "new_module_learning_rate": float(
+                        model_optim.param_groups[-1]["lr"]
                     ),
                     **validation["diagnostics"],
                 }
@@ -1067,6 +1118,10 @@ class Exp_TimeDART(Exp_Basic):
         persistence_absolute_error_sum = 0.0
         point_count = 0
         dynamic_scale_samples = []
+        prediction_batches = []
+        truth_batches = []
+        persistence_batches = []
+        vali_data = getattr(vali_loader, "dataset", None)
         core_model = (
             self.model.module
             if isinstance(self.model, nn.DataParallel)
@@ -1145,6 +1200,9 @@ class Exp_TimeDART(Exp_Basic):
                 true = (
                     batch_y.detach().cpu()
                 )
+                prediction_batches.append(pred.numpy())
+                truth_batches.append(true.numpy())
+                persistence_batches.append(persistence.detach().float().cpu().numpy())
 
                 loss = model_criteria(
                     pred_x,
@@ -1199,6 +1257,94 @@ class Exp_TimeDART(Exp_Basic):
         eps = np.finfo(float).eps
 
         diagnostics = {}
+        pred_scaled = np.concatenate(prediction_batches, axis=0)
+        true_scaled = np.concatenate(truth_batches, axis=0)
+        persistence_scaled = np.concatenate(persistence_batches, axis=0)
+        rated_power = float(getattr(self.args, "rated_power", 0.0))
+        can_inverse_target = (
+            hasattr(vali_data, "feature_columns")
+            and hasattr(vali_data, "target")
+            and hasattr(vali_data, "scaler")
+            and vali_data.target in list(vali_data.feature_columns)
+        )
+        if can_inverse_target:
+            target_index = list(vali_data.feature_columns).index(vali_data.target)
+            target_mean = float(vali_data.scaler.mean_[target_index])
+            target_scale = float(vali_data.scaler.scale_[target_index])
+            pred_original = pred_scaled * target_scale + target_mean
+            true_original = true_scaled * target_scale + target_mean
+            persistence_original = persistence_scaled * target_scale + target_mean
+        else:
+            # Generic datasets retain their existing normalized-space behavior.
+            pred_original = pred_scaled
+            true_original = true_scaled
+            persistence_original = persistence_scaled
+            rated_power = 0.0
+        if rated_power > 0:
+            pred_original = np.clip(pred_original, 0.0, rated_power)
+            true_original = np.clip(true_original, 0.0, rated_power)
+            persistence_original = np.clip(persistence_original, 0.0, rated_power)
+        original_metrics = forecast_metrics(
+            pred_original, true_original, rated_power=rated_power or None
+        )
+        original_persistence = forecast_metrics(
+            persistence_original, true_original, rated_power=rated_power or None
+        )
+        original_mae_skill = 100.0 * (
+            1.0
+            - original_metrics["mae"]
+            / max(original_persistence["mae"], np.finfo(float).eps)
+        )
+        original_rmse_skill = 100.0 * (
+            1.0
+            - original_metrics["rmse"]
+            / max(original_persistence["rmse"], np.finfo(float).eps)
+        )
+        per_horizon_mae = np.mean(
+            np.abs(pred_original - true_original), axis=(0, 2)
+        )
+        metric_suffix = (
+            "kw" if getattr(self.args, "data", None) == "SDWPF" else "original"
+        )
+        diagnostics[f"val_mae_{metric_suffix}"] = float(original_metrics["mae"])
+        diagnostics[f"val_rmse_{metric_suffix}"] = float(original_metrics["rmse"])
+        diagnostics[f"val_persistence_mae_{metric_suffix}"] = float(
+            original_persistence["mae"]
+        )
+        diagnostics[f"val_persistence_rmse_{metric_suffix}"] = float(
+            original_persistence["rmse"]
+        )
+        diagnostics["val_mae_skill_original_pct"] = float(original_mae_skill)
+        diagnostics["val_rmse_skill_original_pct"] = float(original_rmse_skill)
+        diagnostics[f"val_h01_mae_{metric_suffix}"] = float(per_horizon_mae[0])
+        diagnostics[f"val_h{len(per_horizon_mae):02d}_mae_{metric_suffix}"] = float(
+            per_horizon_mae[-1]
+        )
+        if vali_data is not None and hasattr(vali_data, "target_available_mask"):
+            available = np.asarray(vali_data.target_available_mask(), dtype=bool)
+            if available.shape == pred_original.shape[:2] and available.any():
+                pred_available = pred_original[..., 0][available]
+                true_available = true_original[..., 0][available]
+                persistence_available = persistence_original[..., 0][available]
+                available_metrics = forecast_metrics(
+                    pred_available, true_available, rated_power=rated_power or None
+                )
+                available_persistence = forecast_metrics(
+                    persistence_available,
+                    true_available,
+                    rated_power=rated_power or None,
+                )
+                diagnostics["val_available_point_pct"] = float(100.0 * available.mean())
+                diagnostics["val_available_mae_kw"] = float(available_metrics["mae"])
+                diagnostics["val_available_rmse_kw"] = float(available_metrics["rmse"])
+                diagnostics["val_available_mae_skill_pct"] = float(
+                    100.0
+                    * (
+                        1.0
+                        - available_metrics["mae"]
+                        / max(available_persistence["mae"], np.finfo(float).eps)
+                    )
+                )
         runtime = model_runtime_summary(self.model, self.args)
         if "residual_gate" in runtime:
             diagnostics["residual_gate"] = float(runtime["residual_gate"])
@@ -1226,6 +1372,12 @@ class Exp_TimeDART(Exp_Basic):
             * (1.0 - model_mae / max(persistence_mae, eps)),
             "rmse_skill_vs_persistence_pct": 100.0
             * (1.0 - np.sqrt(model_mse) / max(np.sqrt(persistence_mse), eps)),
+            "original_mae": float(original_metrics["mae"]),
+            "original_rmse": float(original_metrics["rmse"]),
+            "original_persistence_mae": float(original_persistence["mae"]),
+            "original_persistence_rmse": float(original_persistence["rmse"]),
+            "original_mae_skill_vs_persistence_pct": float(original_mae_skill),
+            "original_rmse_skill_vs_persistence_pct": float(original_rmse_skill),
             "diagnostics": diagnostics,
         }
 

@@ -22,6 +22,7 @@ def forecast_result_tag(args):
         f"s{args.stride}",
         f"loss{trained('loss')}",
         f"lr{trained('learning_rate')}",
+        f"nlr{trained('new_module_learning_rate', 0.0)}",
         f"res{int(trained('residual_forecast'))}",
         f"rg{trained('residual_gate_init', -4.0)}",
         f"hw{trained('horizon_weight_end')}",
@@ -51,6 +52,7 @@ def experiment_setting(args, run_index):
         f"dm{args.d_model}_df{args.d_ff}_nh{args.n_heads}_el{args.e_layers}_"
         f"dl{args.d_layers}_fc{args.factor}_dp{args.dropout}_hdp{args.head_dropout}_"
         f"ep{args.train_epochs}_bs{args.batch_size}_lr{args.learning_rate}_"
+        f"nlr{getattr(args, 'new_module_learning_rate', 0.0)}_"
         f"loss{args.loss}_res{int(args.residual_forecast)}_"
         f"rg{getattr(args, 'residual_gate_init', -4.0)}_"
         f"hw{args.horizon_weight_end}_pw{args.power_weight_alpha}_"

@@ -1,6 +1,7 @@
 import os
 import tempfile
 import unittest
+from types import SimpleNamespace
 
 import numpy as np
 import pandas as pd
@@ -10,12 +11,14 @@ from data_provider.data_loader import (
     Dataset_SDWPF,
     _ffill_short_missing_runs,
     _sdwpf_cutoffs,
+    _sdwpf_test_start_cutoff,
 )
 from data_provider.sdwpf_features import (
     channel_prior_vector,
     sdwpf_feature_columns,
 )
 from layers.TimeDART_EncDec import ChannelMixer
+from exp.exp_timedart import Exp_TimeDART
 from models.TimeDART import Model
 from run import build_parser, configure_args, resolve_pretrained_checkpoint
 
@@ -229,6 +232,41 @@ class CausalFillTests(unittest.TestCase):
         self.assertEqual(filled.tolist(), [1.0, 1.0, 1.0, 9.0])
 
 
+class OptimizerGroupTests(unittest.TestCase):
+    def test_new_forecast_modules_receive_the_configured_higher_lr(self):
+        class TinyForecastModel(torch.nn.Module):
+            def __init__(self):
+                super().__init__()
+                self.backbone = torch.nn.Linear(2, 2)
+                self.head = torch.nn.Linear(2, 1)
+                self.channel_mixer = torch.nn.Linear(2, 2)
+                self.residual_gate_logit = torch.nn.Parameter(torch.tensor(-2.2))
+
+        experiment = object.__new__(Exp_TimeDART)
+        experiment.model = TinyForecastModel()
+        experiment.args = SimpleNamespace(
+            task_name="finetune",
+            downstream_task="forecast",
+            learning_rate=1e-6,
+            new_module_learning_rate=1e-4,
+            weight_decay=1e-4,
+        )
+        optimizer = Exp_TimeDART._select_optimizer(experiment)
+        self.assertEqual(len(optimizer.param_groups), 2)
+        self.assertEqual(optimizer.param_groups[0]["group_name"], "transferred_backbone")
+        self.assertEqual(optimizer.param_groups[1]["group_name"], "new_forecast_modules")
+        self.assertAlmostEqual(optimizer.param_groups[0]["target_lr"], 1e-6)
+        self.assertAlmostEqual(optimizer.param_groups[1]["target_lr"], 1e-4)
+        grouped = [
+            id(parameter)
+            for group in optimizer.param_groups
+            for parameter in group["params"]
+        ]
+        expected = [id(parameter) for parameter in experiment.model.parameters()]
+        self.assertCountEqual(grouped, expected)
+        self.assertEqual(len(grouped), len(set(grouped)))
+
+
 class CutoffTests(unittest.TestCase):
     def test_rolling_train_never_includes_later_fold_test(self):
         dates = pd.date_range("2023-01-01", periods=100, freq="10min").to_numpy()
@@ -253,6 +291,27 @@ class CutoffTests(unittest.TestCase):
         for i in range(len(blocks)):
             for j in range(i + 1, len(blocks)):
                 self.assertTrue(blocks[i].isdisjoint(blocks[j]))
+
+    def test_rolling_holdout_validation_blocks_are_disjoint_and_before_test(self):
+        dates = pd.date_range("2023-01-01", periods=1000, freq="10min").to_numpy()
+        validation_blocks = []
+        holdout_start = None
+        for fold in range(3):
+            train_end, val_end, test_end = _sdwpf_cutoffs(
+                dates, "rolling_holdout", fold, 3, 0.7, 0.1
+            )
+            self.assertIsNone(test_end)
+            test_start = _sdwpf_test_start_cutoff(
+                dates, "rolling_holdout", 0.7, 0.1, val_end
+            )
+            holdout_start = test_start if holdout_start is None else holdout_start
+            self.assertEqual(test_start, holdout_start)
+            self.assertLess(train_end, val_end)
+            self.assertLessEqual(val_end, test_start)
+            validation_blocks.append(set(dates[(dates >= train_end) & (dates < val_end)]))
+        for left in range(len(validation_blocks)):
+            for right in range(left + 1, len(validation_blocks)):
+                self.assertTrue(validation_blocks[left].isdisjoint(validation_blocks[right]))
 
 
 class PretrainIsolationTests(unittest.TestCase):
@@ -320,6 +379,42 @@ class DatasetAlignmentTests(unittest.TestCase):
         hist_end = data.dates[start + data.seq_len - 1]
         target_start = data.dates[start + data.seq_len]
         self.assertLess(hist_end, target_start)
+
+    def test_rolling_holdout_windows_keep_cv_and_test_targets_disjoint(self):
+        _tiny_sdwpf_csv(self.csv, n_times=240, n_turbines=1)
+        Dataset_SDWPF._cache.clear()
+
+        def target_dates(dataset):
+            rows = (
+                dataset.window_starts[:, None]
+                + dataset.seq_len
+                + np.arange(dataset.pred_len)[None, :]
+            )
+            return set(dataset.dates[rows].reshape(-1).tolist())
+
+        validation_sets = []
+        test_sets = []
+        for fold in range(2):
+            common = dict(
+                split="rolling_holdout",
+                fold=fold,
+                n_folds=2,
+                train_ratio=0.6,
+                val_ratio=0.2,
+            )
+            train = self._make("train", **common)
+            val = self._make("val", **common)
+            test = self._make("test", **common)
+            train_targets = target_dates(train)
+            val_targets = target_dates(val)
+            test_targets = target_dates(test)
+            self.assertTrue(train_targets.isdisjoint(val_targets))
+            self.assertTrue(train_targets.isdisjoint(test_targets))
+            self.assertTrue(val_targets.isdisjoint(test_targets))
+            validation_sets.append(val_targets)
+            test_sets.append(test_targets)
+        self.assertTrue(validation_sets[0].isdisjoint(validation_sets[1]))
+        self.assertEqual(test_sets[0], test_sets[1])
 
     def test_scaler_fits_train_only(self):
         train = self._make("train")
