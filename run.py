@@ -2,7 +2,6 @@ import argparse
 import json
 import os
 import random
-import re
 
 import numpy as np
 import torch
@@ -11,7 +10,7 @@ from data_provider.sdwpf_features import sdwpf_feature_columns
 from exp.exp_simmtm import Exp_SimMTM
 from exp.exp_timedart import Exp_TimeDART
 from exp.exp_timedart_v2 import Exp_TimeDART_v2
-from utils.run_tags import experiment_setting, forecast_result_tag
+from utils.run_tags import bounded_component, experiment_setting, forecast_result_tag
 from utils.experiment_audit import checkpoint_info
 
 
@@ -386,10 +385,6 @@ def build_parser():
     return parser
 
 
-def _safe_component(value):
-    return re.sub(r"[^A-Za-z0-9_.-]+", "-", str(value)).strip("-")
-
-
 def pretrain_signature(args):
     parts = [
         args.model,
@@ -419,7 +414,7 @@ def pretrain_signature(args):
         )
     if str(getattr(args, "pretrain_run_id", "")).strip():
         parts.append(f"rid{args.pretrain_run_id}")
-    return "_".join(_safe_component(part) for part in parts)
+    return bounded_component("_".join(str(part) for part in parts))
 
 
 def resolve_pretrained_checkpoint(args):

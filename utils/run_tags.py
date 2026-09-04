@@ -1,8 +1,25 @@
+import hashlib
 import re
 
 
 def safe_component(value):
     return re.sub(r"[^A-Za-z0-9_.-]+", "-", str(value)).strip("-")
+
+
+def bounded_component(value, max_length=180):
+    """Return a filesystem-safe component below Linux NAME_MAX.
+
+    The readable prefix is retained while a digest of the complete value keeps
+    long experiment configurations distinct. Full arguments remain available
+    in the run manifest.
+    """
+    clean = safe_component(value) or "run"
+    if len(clean.encode("utf-8")) <= int(max_length):
+        return clean
+    digest = hashlib.sha256(clean.encode("utf-8")).hexdigest()[:12]
+    suffix = f"_h{digest}"
+    prefix = clean[: int(max_length) - len(suffix)].rstrip("._-")
+    return f"{prefix}{suffix}"
 
 
 def forecast_result_tag(args):
@@ -42,7 +59,7 @@ def forecast_result_tag(args):
     run_id = getattr(args, "run_id", "") or ""
     if str(run_id).strip():
         parts.append(f"id{safe_component(run_id)}")
-    return "_".join(safe_component(part) for part in parts)
+    return bounded_component("_".join(safe_component(part) for part in parts))
 
 
 def experiment_setting(args, run_index):
@@ -64,5 +81,5 @@ def experiment_setting(args, run_index):
     )
     run_id = getattr(args, "run_id", "") or ""
     if str(run_id).strip():
-        return f"{base}_id{safe_component(run_id)}"
-    return f"{base}_run{run_index}"
+        return bounded_component(f"{base}_id{safe_component(run_id)}")
+    return bounded_component(f"{base}_run{run_index}")

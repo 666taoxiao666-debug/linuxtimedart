@@ -15,7 +15,7 @@ from utils.experiment_audit import (
     split_boundary_checks,
     write_run_manifest,
 )
-from utils.run_tags import forecast_result_tag
+from utils.run_tags import experiment_setting, forecast_result_tag
 from utils.tools import transfer_weights
 
 
@@ -149,6 +149,30 @@ class ExperimentAuditTests(unittest.TestCase):
         self.assertIn("lr3e-05", tag)
         self.assertIn("seed2024", tag)
         self.assertIn("ckptabcdef123456", tag)
+
+    def test_long_experiment_setting_stays_below_linux_name_limit(self):
+        args = configure_args(
+            build_parser().parse_args(
+                [
+                    "--task_name",
+                    "finetune",
+                    "--model_id",
+                    "SDWPF",
+                    "--model",
+                    "PromptTimeDART",
+                    "--data",
+                    "SDWPF",
+                    "--sdwpf_split",
+                    "rolling_holdout",
+                    "--run_id",
+                    "full_h12_rolling_holdout_f0_s2024_20260904_123456_finetune",
+                    "--no-use_gpu",
+                ]
+            )
+        )
+        setting = experiment_setting(args, 0)
+        self.assertLessEqual(len(setting.encode("utf-8")), 180)
+        self.assertRegex(setting, r"_h[0-9a-f]{12}$")
 
     def test_validation_persistence_skill_is_zero_for_persistence_model(self):
         experiment = Exp_TimeDART.__new__(Exp_TimeDART)
