@@ -3,6 +3,48 @@
 This protocol keeps the final 20% of timestamps sealed until all model and
 hyper-parameter choices are frozen.
 
+## Log layout
+
+SDWPF entry scripts automatically allocate one searchable directory per user
+invocation:
+
+```text
+outputs/logs/SDWPF/
+├── latest.txt
+└── YYYYMMDD/
+    ├── index.tsv
+    ├── latest.txt
+    └── 001_<task>_<key-parameters>/
+        ├── log_meta.json
+        ├── status.env
+        ├── *.env
+        ├── *.log
+        ├── *summary.txt
+        └── tb/
+```
+
+The three-digit prefix is the run number for that date. CV, final-training,
+fold and ablation-suite scripts use one numbered parent directory and place
+their fold/seed jobs below `runs/`. Existing callers may still override the
+automatic layout with `SDWPF_LOG_DIR` or `SDWPF_LOG_FILE`.
+Long visible parameter strings are shortened with a stable hash to stay below
+common filesystem limits; `index.tsv`, `log_meta.json`, and the stage `.env`
+files always retain the complete values.
+
+Locate the newest run and its compact result with:
+
+```bash
+LATEST="$(cat outputs/logs/SDWPF/latest.txt)"
+echo "outputs/logs/SDWPF/${LATEST}"
+find "outputs/logs/SDWPF/${LATEST}" -maxdepth 3 -name '*summary.txt' -print
+```
+
+Browse every run created today with:
+
+```bash
+column -t -s $'\t' "outputs/logs/SDWPF/$(date +%Y%m%d)/index.tsv"
+```
+
 Before pushing or starting a server run, execute the fast regression suite:
 
 ```bash
@@ -21,6 +63,15 @@ python scripts/fix_data.py \
 ## 1. Validation-only cross-validation
 
 ```bash
+NEW_MODULE_LEARNING_RATE=0.00001 \
+bash scripts/train/SDWPF_paper_cv.sh
+```
+
+To confirm a selected setting only on the remaining predetermined seeds:
+
+```bash
+FOLDS='0 1 2' SEEDS='2025 2026' \
+NEW_MODULE_LEARNING_RATE=0.00001 \
 bash scripts/train/SDWPF_paper_cv.sh
 ```
 
@@ -50,6 +101,7 @@ Do not change architecture, loss, feature, optimizer, or cleaning settings
 after this point.
 
 ```bash
+NEW_MODULE_LEARNING_RATE=0.00001 \
 bash scripts/train/SDWPF_paper_final.sh
 ```
 

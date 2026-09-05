@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+source "$(dirname "${BASH_SOURCE[0]}")/../lib/sdwpf_log.sh"
+
 SEED="${SEED:-2024}"
 FOLD="${FOLD:-0}"
 N_FOLDS="${N_FOLDS:-3}"
@@ -12,7 +14,6 @@ BASELINE_MAX_SAMPLES="${BASELINE_MAX_SAMPLES:-500000}"
 RATED_POWER="${RATED_POWER:-1500}"
 GPU="${GPU:-0}"
 RUN_ID="${RUN_ID:-baselines_h${PRED_LEN}_${EVAL_SPLIT}_${SPLIT}_f${FOLD}_s${SEED}_$(date +%Y%m%d_%H%M%S)}"
-LOG_DIR="outputs/logs/SDWPF/${RUN_ID}"
 export PYTHONHASHSEED="${PYTHONHASHSEED:-${SEED}}"
 
 if [[ "${EVAL_SPLIT}" != "val" && "${EVAL_SPLIT}" != "test" ]]; then
@@ -29,7 +30,12 @@ if [[ "${EVAL_SPLIT}" == "test" && "${SPLIT}" != "time_ratio" ]]; then
     exit 2
 fi
 
-mkdir -p "${LOG_DIR}"
+LOG_PARAMETERS="h${PRED_LEN}_${EVAL_SPLIT}_${SPLIT}_f${FOLD}of${N_FOLDS}_s${SEED}_stride${EVAL_STRIDE}_max${BASELINE_MAX_SAMPLES}"
+sdwpf_log_init "baseline" "${LOG_PARAMETERS}" "baseline.log" "${RUN_ID}"
+sdwpf_log_install_exit_trap
+LOG_ENV_FILE="$(sdwpf_log_sidecar env)"
+LOG_SUMMARY_FILE="$(sdwpf_log_sidecar summary.txt)"
+
 {
     echo "RUN_ID=${RUN_ID}"
     echo "EVAL_SPLIT=${EVAL_SPLIT}"
@@ -42,7 +48,7 @@ mkdir -p "${LOG_DIR}"
     echo "BASELINE_MAX_SAMPLES=${BASELINE_MAX_SAMPLES}"
     echo "RATED_POWER=${RATED_POWER}"
     echo "STARTED_AT=$(date --iso-8601=seconds)"
-} > "${LOG_DIR}/baseline.env"
+} > "${LOG_ENV_FILE}"
 
 python -u run_baselines.py \
     --task_name finetune \
@@ -75,7 +81,12 @@ python -u run_baselines.py \
     --mix_channels \
     --seed "${SEED}" \
     --run_id "${RUN_ID}" \
-    --gpu "${GPU}" 2>&1 | tee "${LOG_DIR}/baseline.log"
+    --gpu "${GPU}" 2>&1 | tee "${SDWPF_LOG_FILE}"
 
-echo "COMPLETED_AT=$(date --iso-8601=seconds)" >> "${LOG_DIR}/baseline.env"
-echo "[BASELINE] Log: ${LOG_DIR}/baseline.log"
+echo "COMPLETED_AT=$(date --iso-8601=seconds)" >> "${LOG_ENV_FILE}"
+{
+    grep -E '^Evaluation split:|^Forecast horizon:|^persistence |^daily_persistence |^power_curve |^tree |^Output:' \
+        "${SDWPF_LOG_FILE}" || true
+} > "${LOG_SUMMARY_FILE}"
+echo "[BASELINE] Log: ${SDWPF_LOG_FILE}"
+echo "[BASELINE] Summary: ${LOG_SUMMARY_FILE}"

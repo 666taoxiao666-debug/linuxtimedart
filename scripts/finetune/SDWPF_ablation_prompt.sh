@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+source "$(dirname "${BASH_SOURCE[0]}")/../lib/sdwpf_log.sh"
+
 # Ablation: PromptTimeDART with or without a pre-trained checkpoint.
 # Do not treat this as the main result unless it beats random-init TimeDART
 # on 0-4 h MAE and RMSE across seeds.
@@ -31,6 +33,40 @@ RESIDUAL_GATE_INIT="${RESIDUAL_GATE_INIT:--2.2}"
 RUN_ID="${RUN_ID:-prompt_h${PRED_LEN}_${SPLIT}_f${FOLD}_s${SEED}_$(date +%Y%m%d_%H%M%S)}"
 export PYTHONHASHSEED="${PYTHONHASHSEED:-${SEED}}"
 export CUBLAS_WORKSPACE_CONFIG="${CUBLAS_WORKSPACE_CONFIG:-:4096:8}"
+
+LOG_PARAMETERS="${MODEL}_h${PRED_LEN}_${SPLIT}_f${FOLD}of${N_FOLDS}_s${SEED}_blr${LEARNING_RATE}_nlr${NEW_MODULE_LEARNING_RATE}_${LOSS}_mix${MIX_MSE_WEIGHT}_rg${RESIDUAL_GATE_INIT}_ep${TRAIN_EPOCHS}_pat${PATIENCE}_cp${CHANNEL_PRIOR}_ctx${OP_CONTEXT}_rw${REVIN_KEEP_WIND}"
+sdwpf_log_init "finetune" "${LOG_PARAMETERS}" "finetune.log" "${RUN_ID}"
+sdwpf_log_install_exit_trap
+LOG_ENV_FILE="$(sdwpf_log_sidecar env)"
+LOG_SUMMARY_FILE="$(sdwpf_log_sidecar summary.txt)"
+
+{
+    echo "TASK=finetune"
+    echo "RUN_ID=${RUN_ID}"
+    echo "MODEL=${MODEL}"
+    echo "PRETRAIN_RUN_ID=${PRETRAIN_RUN_ID}"
+    echo "ALLOW_RANDOM=${ALLOW_RANDOM}"
+    echo "SPLIT=${SPLIT}"
+    echo "FOLD=${FOLD}"
+    echo "N_FOLDS=${N_FOLDS}"
+    echo "SEED=${SEED}"
+    echo "PRED_LEN=${PRED_LEN}"
+    echo "EVAL_STRIDE=${EVAL_STRIDE}"
+    echo "TRAIN_EPOCHS=${TRAIN_EPOCHS}"
+    echo "LEARNING_RATE=${LEARNING_RATE}"
+    echo "NEW_MODULE_LEARNING_RATE=${NEW_MODULE_LEARNING_RATE}"
+    echo "PCT_START=${PCT_START}"
+    echo "PATIENCE=${PATIENCE}"
+    echo "LOSS=${LOSS}"
+    echo "MIX_MSE_WEIGHT=${MIX_MSE_WEIGHT}"
+    echo "EARLY_STOP_METRIC=${EARLY_STOP_METRIC}"
+    echo "RESIDUAL_GATE_INIT=${RESIDUAL_GATE_INIT}"
+    echo "CHANNEL_PRIOR=${CHANNEL_PRIOR}"
+    echo "OP_CONTEXT=${OP_CONTEXT}"
+    echo "REVIN_KEEP_WIND=${REVIN_KEEP_WIND}"
+    echo "RATED_POWER=${RATED_POWER}"
+    echo "STARTED_AT=$(date --iso-8601=seconds)"
+} > "${LOG_ENV_FILE}"
 
 EXTRA=()
 if [[ "${ALLOW_RANDOM}" == "1" ]]; then
@@ -103,9 +139,12 @@ COMMAND=(python -u run.py
     --gpu "${GPU}" \
     "${EXTRA[@]}")
 
-if [[ -n "${SDWPF_LOG_FILE:-}" ]]; then
-    mkdir -p "$(dirname "${SDWPF_LOG_FILE}")"
-    "${COMMAND[@]}" 2>&1 | tee "${SDWPF_LOG_FILE}"
-else
-    "${COMMAND[@]}"
-fi
+"${COMMAND[@]}" 2>&1 | tee "${SDWPF_LOG_FILE}"
+
+echo "COMPLETED_AT=$(date --iso-8601=seconds)" >> "${LOG_ENV_FILE}"
+{
+    grep -E '^Transferred |^Optimizer groups:|^Epoch:|^Early stopping|^\[AUDIT\] FINETUNE_CHECKPOINT=|^\[INFO\] Test evaluation' \
+        "${SDWPF_LOG_FILE}" || true
+} > "${LOG_SUMMARY_FILE}"
+echo "[FINETUNE] Log: ${SDWPF_LOG_FILE}"
+echo "[FINETUNE] Summary: ${LOG_SUMMARY_FILE}"

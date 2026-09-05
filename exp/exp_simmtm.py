@@ -3,6 +3,7 @@ from exp.exp_basic import Exp_Basic
 from utils.tools import EarlyStopping, adjust_learning_rate, transfer_weights, show_series, show_matrix
 from utils.augmentations import masked_data
 from utils.metrics import metric
+from utils.sdwpf_logging import tensorboard_log_directory
 from torch.optim import lr_scheduler
 import torch
 import torch.nn as nn
@@ -23,7 +24,12 @@ class Exp_SimMTM(Exp_Basic):
     def __init__(self, args):
         super(Exp_SimMTM, self).__init__(args)
         self.writer = SummaryWriter(
-            os.path.join("./outputs/logs", args.model, args.data)
+            tensorboard_log_directory(
+                model=args.model,
+                data=args.data,
+                task=args.task_name,
+                run_id=getattr(args, "run_id", ""),
+            )
         )
 
     def _build_model(self):

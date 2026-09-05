@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+source "$(dirname "${BASH_SOURCE[0]}")/../lib/sdwpf_log.sh"
+
 # Main SDWPF protocol after the leakage review:
 # - TimeDART (no Prompt) from random init; pretrain/Prompt are ablations
 # - Channel mixer so wind speed reaches the power head
@@ -40,6 +42,37 @@ if [[ "${RESIDUAL_FORECAST}" == "1" ]]; then
 else
     RESIDUAL_ARGS=(--no-residual_forecast)
 fi
+
+LOG_PARAMETERS="TimeDART_random_h${PRED_LEN}_${SPLIT}_f${FOLD}of${N_FOLDS}_s${SEED}_lr${LEARNING_RATE}_nlr${NEW_MODULE_LEARNING_RATE}_${LOSS}_mix${MIX_MSE_WEIGHT}_rg${RESIDUAL_GATE_INIT}_ep${TRAIN_EPOCHS}_pat${PATIENCE}"
+sdwpf_log_init "finetune" "${LOG_PARAMETERS}" "finetune.log" "${RUN_ID}"
+sdwpf_log_install_exit_trap
+LOG_ENV_FILE="$(sdwpf_log_sidecar env)"
+LOG_SUMMARY_FILE="$(sdwpf_log_sidecar summary.txt)"
+
+{
+    echo "TASK=finetune"
+    echo "RUN_ID=${RUN_ID}"
+    echo "MODEL=TimeDART"
+    echo "INITIALIZATION=random"
+    echo "SPLIT=${SPLIT}"
+    echo "FOLD=${FOLD}"
+    echo "N_FOLDS=${N_FOLDS}"
+    echo "SEED=${SEED}"
+    echo "PRED_LEN=${PRED_LEN}"
+    echo "EVAL_STRIDE=${EVAL_STRIDE}"
+    echo "TRAIN_EPOCHS=${TRAIN_EPOCHS}"
+    echo "LEARNING_RATE=${LEARNING_RATE}"
+    echo "NEW_MODULE_LEARNING_RATE=${NEW_MODULE_LEARNING_RATE}"
+    echo "LOSS=${LOSS}"
+    echo "MIX_MSE_WEIGHT=${MIX_MSE_WEIGHT}"
+    echo "HORIZON_WEIGHT_END=${HORIZON_WEIGHT_END}"
+    echo "POWER_WEIGHT_ALPHA=${POWER_WEIGHT_ALPHA}"
+    echo "RESIDUAL_FORECAST=${RESIDUAL_FORECAST}"
+    echo "RESIDUAL_GATE_INIT=${RESIDUAL_GATE_INIT}"
+    echo "PATIENCE=${PATIENCE}"
+    echo "RATED_POWER=${RATED_POWER}"
+    echo "STARTED_AT=$(date --iso-8601=seconds)"
+} > "${LOG_ENV_FILE}"
 
 python -u run.py \
     --task_name finetune \
@@ -93,4 +126,12 @@ python -u run.py \
     --lradj step \
     --seed "${SEED}" \
     --run_id "${RUN_ID}" \
-    --gpu "${GPU}"
+    --gpu "${GPU}" 2>&1 | tee "${SDWPF_LOG_FILE}"
+
+echo "COMPLETED_AT=$(date --iso-8601=seconds)" >> "${LOG_ENV_FILE}"
+{
+    grep -E '^Optimizer groups:|^Epoch:|^Early stopping|^\[AUDIT\] FINETUNE_CHECKPOINT=|^\[INFO\] Test evaluation' \
+        "${SDWPF_LOG_FILE}" || true
+} > "${LOG_SUMMARY_FILE}"
+echo "[FINETUNE] Log: ${SDWPF_LOG_FILE}"
+echo "[FINETUNE] Summary: ${LOG_SUMMARY_FILE}"

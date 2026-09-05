@@ -1,19 +1,65 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+source "$(dirname "${BASH_SOURCE[0]}")/../lib/sdwpf_log.sh"
+
 # Run only after every hyper-parameter and ablation choice is frozen.
 # time_ratio uses 70% train, 10% validation and the final 20% as test.
 PRED_LEN="${PRED_LEN:-12}"
+SPLIT="${SPLIT:-time_ratio}"
+if [[ "${SPLIT}" != "time_ratio" ]]; then
+    echo "SDWPF_paper_final.sh requires SPLIT=time_ratio." >&2
+    exit 2
+fi
+FINETUNE_LEARNING_RATE="${FINETUNE_LEARNING_RATE:-0.000001}"
+NEW_MODULE_LEARNING_RATE="${NEW_MODULE_LEARNING_RATE:-0.0001}"
+MIX_MSE_WEIGHT="${MIX_MSE_WEIGHT:-0.2}"
+FINAL_STAMP="$(date +%Y%m%d_%H%M%S)"
+FINAL_ID="${FINAL_ID:-finaltrain_h${PRED_LEN}_${SPLIT}_3seed_${FINAL_STAMP}}"
+LOG_PARAMETERS="h${PRED_LEN}_${SPLIT}_3seed_blr${FINETUNE_LEARNING_RATE}_nlr${NEW_MODULE_LEARNING_RATE}_mix${MIX_MSE_WEIGHT}"
+sdwpf_log_init "final_train" "${LOG_PARAMETERS}" "final_train.log" "${FINAL_ID}"
+sdwpf_log_install_exit_trap
+FINAL_LOG_DIR="${SDWPF_LOG_DIR}"
+sdwpf_log_capture
+
+{
+    echo "TASK=final_train"
+    echo "FINAL_ID=${FINAL_ID}"
+    echo "PRED_LEN=${PRED_LEN}"
+    echo "SPLIT=${SPLIT}"
+    echo "SEEDS=2024,2025,2026"
+    echo "FINETUNE_LEARNING_RATE=${FINETUNE_LEARNING_RATE}"
+    echo "NEW_MODULE_LEARNING_RATE=${NEW_MODULE_LEARNING_RATE}"
+    echo "MIX_MSE_WEIGHT=${MIX_MSE_WEIGHT}"
+    echo "STARTED_AT=$(date --iso-8601=seconds)"
+} > "${FINAL_LOG_DIR}/final_train.env"
+
 for seed in 2024 2025 2026; do
     echo "===== FINAL TRAIN seed=${seed}; test remains sealed ====="
     SEED="${seed}" \
     FOLD=0 \
     N_FOLDS=1 \
-    SPLIT=time_ratio \
+    SPLIT="${SPLIT}" \
     PRED_LEN="${PRED_LEN}" \
-    PIPELINE_ID="final_h${PRED_LEN}_time_ratio_s${seed}_$(date +%Y%m%d_%H%M%S)" \
+    FINETUNE_LEARNING_RATE="${FINETUNE_LEARNING_RATE}" \
+    NEW_MODULE_LEARNING_RATE="${NEW_MODULE_LEARNING_RATE}" \
+    MIX_MSE_WEIGHT="${MIX_MSE_WEIGHT}" \
+    PIPELINE_ID="${FINAL_ID}_s${seed}" \
+    PRETRAIN_RUN_ID= \
+    SDWPF_LOG_DIR="${FINAL_LOG_DIR}/runs/s${seed}" \
+    SDWPF_LOG_FILE= \
     bash scripts/train/SDWPF_full_pipeline.sh
 done
 
+{
+    for seed in 2024 2025 2026; do
+        echo "===== FINAL TRAIN seed=${seed} ====="
+        cat "${FINAL_LOG_DIR}/runs/s${seed}/summary.txt"
+    done
+} > "${FINAL_LOG_DIR}/summary.txt"
+echo "COMPLETED_AT=$(date --iso-8601=seconds)" >> "${FINAL_LOG_DIR}/final_train.env"
+
 echo "[FINAL TRAIN] Three predetermined seed checkpoints are ready."
 echo "[FINAL TRAIN] Evaluate each checkpoint exactly once with the command printed above."
+echo "[FINAL TRAIN] Log directory: ${FINAL_LOG_DIR}"
+echo "[FINAL TRAIN] Summary: ${FINAL_LOG_DIR}/summary.txt"

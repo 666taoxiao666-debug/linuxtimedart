@@ -12,6 +12,7 @@ from utils.forecast_report import build_forecast_report, save_training_history
 from utils.metrics import forecast_metrics
 from utils.forecast_losses import ForecastLoss
 from utils.run_tags import forecast_result_tag
+from utils.sdwpf_logging import tensorboard_log_directory
 from utils.experiment_audit import checkpoint_info, model_runtime_summary, write_run_manifest
 from torch.optim import lr_scheduler
 import torch
@@ -35,7 +36,12 @@ warnings.filterwarnings("ignore")
 class Exp_TimeDART(Exp_Basic):
     def __init__(self, args):
         super(Exp_TimeDART, self).__init__(args)
-        log_dir = os.path.join("./outputs/logs", args.model, args.data)
+        log_dir = tensorboard_log_directory(
+            model=args.model,
+            data=args.data,
+            task=args.task_name,
+            run_id=getattr(args, "run_id", ""),
+        )
         self.writer = SummaryWriter(log_dir)
         self.amp_enabled = bool(args.use_amp and self.device.type == "cuda")
         self.grad_scaler = torch.amp.GradScaler(

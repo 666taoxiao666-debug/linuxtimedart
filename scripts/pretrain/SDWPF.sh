@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+source "$(dirname "${BASH_SOURCE[0]}")/../lib/sdwpf_log.sh"
+
 SEED="${SEED:-2024}"
 FOLD="${FOLD:-0}"
 N_FOLDS="${N_FOLDS:-3}"
@@ -18,6 +20,31 @@ PRETRAIN_RUN_ID="${PRETRAIN_RUN_ID:-pretrain_${SPLIT}_f${FOLD}_s${SEED}_$(date +
 RUN_ID="${RUN_ID:-${PRETRAIN_RUN_ID}}"
 export PYTHONHASHSEED="${PYTHONHASHSEED:-${SEED}}"
 export CUBLAS_WORKSPACE_CONFIG="${CUBLAS_WORKSPACE_CONFIG:-:4096:8}"
+
+LOG_PARAMETERS="h${PRED_LEN}_${SPLIT}_f${FOLD}of${N_FOLDS}_s${SEED}_lr${LEARNING_RATE}_lce${LAMBDA_CE}_ep${TRAIN_EPOCHS}_pat${PATIENCE}"
+sdwpf_log_init "pretrain" "${LOG_PARAMETERS}" "pretrain.log" "${RUN_ID}"
+sdwpf_log_install_exit_trap
+LOG_ENV_FILE="$(sdwpf_log_sidecar env)"
+LOG_SUMMARY_FILE="$(sdwpf_log_sidecar summary.txt)"
+
+{
+    echo "TASK=pretrain"
+    echo "RUN_ID=${RUN_ID}"
+    echo "PRETRAIN_RUN_ID=${PRETRAIN_RUN_ID}"
+    echo "SPLIT=${SPLIT}"
+    echo "FOLD=${FOLD}"
+    echo "N_FOLDS=${N_FOLDS}"
+    echo "SEED=${SEED}"
+    echo "PRED_LEN=${PRED_LEN}"
+    echo "TRAIN_STRIDE=${TRAIN_STRIDE}"
+    echo "EVAL_STRIDE=${EVAL_STRIDE}"
+    echo "TRAIN_EPOCHS=${TRAIN_EPOCHS}"
+    echo "LEARNING_RATE=${LEARNING_RATE}"
+    echo "LAMBDA_CE=${LAMBDA_CE}"
+    echo "PATIENCE=${PATIENCE}"
+    echo "RATED_POWER=${RATED_POWER}"
+    echo "STARTED_AT=$(date --iso-8601=seconds)"
+} > "${LOG_ENV_FILE}"
 
 COMMAND=(python -u run.py
     --task_name pretrain \
@@ -58,9 +85,12 @@ COMMAND=(python -u run.py
     --run_id "${RUN_ID}" \
     --gpu "${GPU}")
 
-if [[ -n "${SDWPF_LOG_FILE:-}" ]]; then
-    mkdir -p "$(dirname "${SDWPF_LOG_FILE}")"
-    "${COMMAND[@]}" 2>&1 | tee "${SDWPF_LOG_FILE}"
-else
-    "${COMMAND[@]}"
-fi
+"${COMMAND[@]}" 2>&1 | tee "${SDWPF_LOG_FILE}"
+
+echo "COMPLETED_AT=$(date --iso-8601=seconds)" >> "${LOG_ENV_FILE}"
+{
+    grep -E '^Epoch:|^Validation loss decreased|^Pretrain early stopping|^\[AUDIT\] Run manifest:' \
+        "${SDWPF_LOG_FILE}" || true
+} > "${LOG_SUMMARY_FILE}"
+echo "[PRETRAIN] Log: ${SDWPF_LOG_FILE}"
+echo "[PRETRAIN] Summary: ${LOG_SUMMARY_FILE}"
