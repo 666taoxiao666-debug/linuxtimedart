@@ -315,6 +315,25 @@ class CutoffTests(unittest.TestCase):
 
 
 class PretrainIsolationTests(unittest.TestCase):
+    def test_epoch_zero_validation_is_explicitly_opt_in(self):
+        parser = build_parser()
+        self.assertFalse(parser.get_default("validate_before_training"))
+        self.assertTrue(
+            parser.parse_args(
+                [
+                    "--task_name",
+                    "finetune",
+                    "--model_id",
+                    "SDWPF",
+                    "--model",
+                    "PromptTimeDART",
+                    "--data",
+                    "SDWPF",
+                    "--validate_before_training",
+                ]
+            ).validate_before_training
+        )
+
     def test_none_policy_cannot_auto_load_an_existing_pretrain(self):
         parser = build_parser()
         args = configure_args(

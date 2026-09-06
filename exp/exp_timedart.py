@@ -293,7 +293,8 @@ class Exp_TimeDART(Exp_Basic):
                 "Epoch: {}/{}, Time: {:.2f}, "
                 "Train Total/Diff/CE: {:.4f}/{:.4f}/{:.4f}, "
                 "Val Total/Diff/CE: {:.4f}/{:.4f}/{:.4f}, "
-                "Val Regime Acc: {:.3f}, GradNorm: {:.3f}".format(
+                "Val Regime Acc: {:.3f}, Val Regime Counts: {}, "
+                "GradNorm: {:.3f}".format(
                     epoch + 1,
                     self.args.train_epochs,
                     end_time - start_time,
@@ -304,6 +305,7 @@ class Exp_TimeDART(Exp_Basic):
                     validation["diff_loss"],
                     validation["ce_loss"],
                     validation["regime_accuracy"],
+                    validation["regime_counts"],
                     train_metrics["grad_norm"],
                 )
             )
@@ -784,6 +786,109 @@ class Exp_TimeDART(Exp_Basic):
 
         history = []
 
+        if getattr(self.args, "validate_before_training", False):
+            initial_validation = self.valid(
+                vali_loader,
+                model_criteria,
+            )
+            initial_selection_value = initial_validation[
+                self.args.early_stop_metric
+            ]
+            validation_unit = "kW" if self.args.data == "SDWPF" else "original"
+            initial_summary = (
+                "Epoch: 0, Steps: 0, Time: 0.00s | "
+                "Train Loss: n/a "
+                f"Vali Loss: {initial_validation['loss']:.7f} "
+                f"Vali MSE: {initial_validation['mse']:.7f} "
+                f"Vali MAE: {initial_validation['mae']:.7f} "
+                f"Val MAE({validation_unit}): "
+                f"{initial_validation['original_mae']:.3f} "
+                f"Persist MAE({validation_unit}): "
+                f"{initial_validation['original_persistence_mae']:.3f} "
+                f"MAE Skill: "
+                f"{initial_validation['original_mae_skill_vs_persistence_pct']:+.2f}% "
+                f"RMSE Skill: "
+                f"{initial_validation['original_rmse_skill_vs_persistence_pct']:+.2f}% "
+                f"Gate: {initial_validation['diagnostics'].get('residual_gate', 0.0):.5f} "
+                "GradNorm: 0.000 "
+                "LR(backbone/new): 0/0 "
+                f"Select({self.args.early_stop_metric}): "
+                f"{initial_selection_value:.7f}"
+            )
+            initial_diagnostics = initial_validation["diagnostics"]
+            if "val_available_mae_kw" in initial_diagnostics:
+                initial_summary += (
+                    " Available MAE(kW): "
+                    f"{initial_diagnostics['val_available_mae_kw']:.3f} "
+                    "Available MAE Skill: "
+                    f"{initial_diagnostics['val_available_mae_skill_pct']:+.2f}%"
+                )
+            print(initial_summary)
+            log_path = path + "/log.txt"
+            with open(log_path, "a") as log_file:
+                log_file.write(initial_summary + "\n")
+
+            history.append(
+                {
+                    "epoch": 0,
+                    "train_loss": np.nan,
+                    "train_mse": np.nan,
+                    "train_mae": np.nan,
+                    "train_grad_norm": 0.0,
+                    "val_loss": float(initial_validation["loss"]),
+                    "val_mse": float(initial_validation["mse"]),
+                    "val_mae": float(initial_validation["mae"]),
+                    "val_persistence_mse": float(
+                        initial_validation["persistence_mse"]
+                    ),
+                    "val_persistence_mae": float(
+                        initial_validation["persistence_mae"]
+                    ),
+                    "val_mae_skill_vs_persistence_pct": float(
+                        initial_validation["mae_skill_vs_persistence_pct"]
+                    ),
+                    "val_rmse_skill_vs_persistence_pct": float(
+                        initial_validation["rmse_skill_vs_persistence_pct"]
+                    ),
+                    "val_mae_kw": float(initial_validation["original_mae"]),
+                    "val_rmse_kw": float(initial_validation["original_rmse"]),
+                    "val_persistence_mae_kw": float(
+                        initial_validation["original_persistence_mae"]
+                    ),
+                    "val_persistence_rmse_kw": float(
+                        initial_validation["original_persistence_rmse"]
+                    ),
+                    "val_mae_skill_original_pct": float(
+                        initial_validation[
+                            "original_mae_skill_vs_persistence_pct"
+                        ]
+                    ),
+                    "val_rmse_skill_original_pct": float(
+                        initial_validation[
+                            "original_rmse_skill_vs_persistence_pct"
+                        ]
+                    ),
+                    "selection_value": float(initial_selection_value),
+                    "learning_rate": 0.0,
+                    "new_module_learning_rate": 0.0,
+                    **initial_validation["diagnostics"],
+                }
+            )
+            save_training_history(
+                history,
+                path,
+            )
+            self.writer.add_scalar(
+                "/finetune_loss/vali_loss",
+                initial_validation["loss"],
+                0,
+            )
+            early_stopping(
+                initial_selection_value,
+                self.model,
+                path=path,
+            )
+
         for epoch in range(
             self.args.train_epochs
         ):
@@ -963,6 +1068,24 @@ class Exp_TimeDART(Exp_Basic):
                     scale_parts.append(f"{feature_name}={value}")
             if scale_parts:
                 epoch_summary += " ChannelScale(static/dynamic): " + ",".join(scale_parts)
+            diagnostics = validation["diagnostics"]
+            if "val_available_mae_kw" in diagnostics:
+                epoch_summary += (
+                    " Available MAE(kW): "
+                    f"{diagnostics['val_available_mae_kw']:.3f} "
+                    "Available MAE Skill: "
+                    f"{diagnostics['val_available_mae_skill_pct']:+.2f}%"
+                )
+            metric_suffix = "kw" if self.args.data == "SDWPF" else "original"
+            first_horizon = diagnostics.get(f"val_h01_mae_{metric_suffix}")
+            last_horizon = diagnostics.get(
+                f"val_h{self.args.pred_len:02d}_mae_{metric_suffix}"
+            )
+            if first_horizon is not None and last_horizon is not None:
+                epoch_summary += (
+                    f" Horizon MAE(first/last): "
+                    f"{first_horizon:.3f}/{last_horizon:.3f}"
+                )
             print(epoch_summary)
 
             log_path = (
@@ -1098,7 +1221,10 @@ class Exp_TimeDART(Exp_Basic):
                 "setting": setting,
                 "best_epoch": int(best_record["epoch"]),
                 "best_selection_value": float(best_record["selection_value"]),
-                "epochs_completed": len(history),
+                "epochs_completed": sum(
+                    int(record["epoch"] > 0) for record in history
+                ),
+                "validation_records": len(history),
             },
         )
         print(f"[AUDIT] FINETUNE_CHECKPOINT={os.path.abspath(best_model_path)}")

@@ -17,7 +17,7 @@ PRETRAIN_RUN_ID="${PRETRAIN_RUN_ID:-}"
 ALLOW_RANDOM="${ALLOW_RANDOM:-0}"
 TRAIN_EPOCHS="${TRAIN_EPOCHS:-5}"
 LEARNING_RATE="${LEARNING_RATE:-0.000001}"
-NEW_MODULE_LEARNING_RATE="${NEW_MODULE_LEARNING_RATE:-0.0001}"
+NEW_MODULE_LEARNING_RATE="${NEW_MODULE_LEARNING_RATE:-0.00001}"
 PCT_START="${PCT_START:-0.20}"
 PATIENCE="${PATIENCE:-2}"
 LOSS="${LOSS:-MIXED}"
@@ -127,6 +127,7 @@ COMMAND=(python -u run.py
     --loss "${LOSS}" \
     --mix_mse_weight "${MIX_MSE_WEIGHT}" \
     --early_stop_metric "${EARLY_STOP_METRIC}" \
+    --validate_before_training \
     --residual_forecast \
     --zero_init_residual_head \
     --residual_gate_init "${RESIDUAL_GATE_INIT}" \

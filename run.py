@@ -300,6 +300,15 @@ def build_parser():
             "uses clipped, inverse-scaled kW and matches final reporting"
         ),
     )
+    parser.add_argument(
+        "--validate_before_training",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+        help=(
+            "evaluate and checkpoint epoch 0 before the first optimizer step; "
+            "recommended for residual forecasts initialized to persistence"
+        ),
+    )
     parser.add_argument("--weight_decay", type=float, default=1e-4)
     parser.add_argument(
         "--grad_clip",

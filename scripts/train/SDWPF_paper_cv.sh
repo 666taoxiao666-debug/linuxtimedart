@@ -20,7 +20,7 @@ if [[ "${#CV_FOLDS[@]}" -eq 0 || "${#CV_SEEDS[@]}" -eq 0 ]]; then
     exit 2
 fi
 FINETUNE_LEARNING_RATE="${FINETUNE_LEARNING_RATE:-0.000001}"
-NEW_MODULE_LEARNING_RATE="${NEW_MODULE_LEARNING_RATE:-0.0001}"
+NEW_MODULE_LEARNING_RATE="${NEW_MODULE_LEARNING_RATE:-0.00001}"
 MIX_MSE_WEIGHT="${MIX_MSE_WEIGHT:-0.2}"
 CV_STAMP="$(date +%Y%m%d_%H%M%S)"
 CV_ID="${CV_ID:-cv_h${PRED_LEN}_${SPLIT}_${#CV_FOLDS[@]}fold_${#CV_SEEDS[@]}seed_${CV_STAMP}}"
@@ -70,9 +70,15 @@ done
         done
     done
 } > "${CV_LOG_DIR}/summary.txt"
+python scripts/summarize_sdwpf_cv.py \
+    "${CV_LOG_DIR}/summary.txt" \
+    --output-dir "${CV_LOG_DIR}" \
+    --expected-folds "${FOLDS}" \
+    --expected-seeds "${SEEDS}"
 echo "COMPLETED_AT=$(date --iso-8601=seconds)" >> "${CV_LOG_DIR}/cv.env"
 
 echo "[CV] Completed. Select one configuration from validation metrics only."
 echo "[CV] Then train the frozen configuration with SPLIT=time_ratio."
 echo "[CV] Log directory: ${CV_LOG_DIR}"
 echo "[CV] Summary: ${CV_LOG_DIR}/summary.txt"
+echo "[CV] Metrics: ${CV_LOG_DIR}/cv_metrics_summary.txt"
