@@ -234,16 +234,20 @@ def transfer_weights(weights_path, model, exclude_head=True, device="cpu", stric
     if not matched:
         raise RuntimeError("No compatible parameters were found in the pre-trained checkpoint")
 
-    required_names = {"sos_token"}
+    required_state_names = {"sos_token"}
     required_prefixes = ["enc_embedding.", "encoder."]
     if any(name.startswith("regime_predictor.") for name in target_state):
         required_prefixes.extend(["regime_predictor.", "soft_prompt_generator."])
+        if getattr(model, "regime_label_method", None) == "trend_quantile":
+            required_state_names.update(
+                {"regime_down_thresh", "regime_up_thresh"}
+            )
     if strict:
         missing_required = [
             name
             for name in target_state
             if (
-                name in required_names
+                name in required_state_names
                 or any(name.startswith(prefix) for prefix in required_prefixes)
             )
             and name not in matched
@@ -270,7 +274,7 @@ def transfer_weights(weights_path, model, exclude_head=True, device="cpu", stric
     required_parameter_names = [
         name
         for name in target_parameters
-        if name in required_names
+        if name in required_state_names
         or any(name.startswith(prefix) for prefix in required_prefixes)
     ]
     required_parameter_elements = sum(

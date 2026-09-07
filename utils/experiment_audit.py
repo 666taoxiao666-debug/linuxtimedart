@@ -296,8 +296,20 @@ def model_runtime_summary(model, args=None) -> dict:
         "use_channel_prior",
         "use_op_context",
         "residual_forecast",
+        "regime_label_method",
     ):
         result[name] = _jsonable(getattr(core, name, None))
+    if hasattr(core, "regime_down_thresh") and hasattr(core, "regime_up_thresh"):
+        down = float(core.regime_down_thresh.detach().cpu().item())
+        up = float(core.regime_up_thresh.detach().cpu().item())
+        result["regime_thresholds"] = {
+            "down": down if np.isfinite(down) else None,
+            "up": up if np.isfinite(up) else None,
+            "source": getattr(args, "regime_calibration_source", None),
+        }
+    calibration = getattr(core, "regime_calibration", None)
+    if calibration is not None:
+        result["regime_calibration"] = _jsonable(calibration)
     transfer_audit = getattr(core, "pretrain_transfer_audit", None)
     if transfer_audit is not None:
         result["pretrain_transfer"] = _jsonable(transfer_audit)

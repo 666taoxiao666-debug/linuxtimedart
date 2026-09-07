@@ -17,7 +17,7 @@ PRETRAIN_RUN_ID="${PRETRAIN_RUN_ID:-}"
 ALLOW_RANDOM="${ALLOW_RANDOM:-0}"
 TRAIN_EPOCHS="${TRAIN_EPOCHS:-5}"
 LEARNING_RATE="${LEARNING_RATE:-0.000001}"
-NEW_MODULE_LEARNING_RATE="${NEW_MODULE_LEARNING_RATE:-0.00001}"
+NEW_MODULE_LEARNING_RATE="${NEW_MODULE_LEARNING_RATE:-0.000005}"
 PCT_START="${PCT_START:-0.20}"
 PATIENCE="${PATIENCE:-2}"
 LOSS="${LOSS:-MIXED}"
@@ -29,12 +29,15 @@ MODEL="${MODEL:-PromptTimeDART}"
 CHANNEL_PRIOR="${CHANNEL_PRIOR:-1}"
 OP_CONTEXT="${OP_CONTEXT:-1}"
 REVIN_KEEP_WIND="${REVIN_KEEP_WIND:-1}"
+REGIME_PROMPT="${REGIME_PROMPT:-1}"
+REGIME_LABEL_METHOD="${REGIME_LABEL_METHOD:-trend_quantile}"
+REGIME_CALIBRATION_QUANTILE="${REGIME_CALIBRATION_QUANTILE:-0.3333333333}"
 RESIDUAL_GATE_INIT="${RESIDUAL_GATE_INIT:--2.2}"
 RUN_ID="${RUN_ID:-prompt_h${PRED_LEN}_${SPLIT}_f${FOLD}_s${SEED}_$(date +%Y%m%d_%H%M%S)}"
 export PYTHONHASHSEED="${PYTHONHASHSEED:-${SEED}}"
 export CUBLAS_WORKSPACE_CONFIG="${CUBLAS_WORKSPACE_CONFIG:-:4096:8}"
 
-LOG_PARAMETERS="${MODEL}_h${PRED_LEN}_${SPLIT}_f${FOLD}of${N_FOLDS}_s${SEED}_blr${LEARNING_RATE}_nlr${NEW_MODULE_LEARNING_RATE}_${LOSS}_mix${MIX_MSE_WEIGHT}_rg${RESIDUAL_GATE_INIT}_ep${TRAIN_EPOCHS}_pat${PATIENCE}_cp${CHANNEL_PRIOR}_ctx${OP_CONTEXT}_rw${REVIN_KEEP_WIND}"
+LOG_PARAMETERS="${MODEL}_h${PRED_LEN}_${SPLIT}_f${FOLD}of${N_FOLDS}_s${SEED}_blr${LEARNING_RATE}_nlr${NEW_MODULE_LEARNING_RATE}_${LOSS}_mix${MIX_MSE_WEIGHT}_rg${RESIDUAL_GATE_INIT}_ep${TRAIN_EPOCHS}_pat${PATIENCE}_cp${CHANNEL_PRIOR}_ctx${OP_CONTEXT}_rw${REVIN_KEEP_WIND}_rp${REGIME_PROMPT}_reg${REGIME_LABEL_METHOD}_rq${REGIME_CALIBRATION_QUANTILE}"
 sdwpf_log_init "finetune" "${LOG_PARAMETERS}" "finetune.log" "${RUN_ID}"
 sdwpf_log_install_exit_trap
 LOG_ENV_FILE="$(sdwpf_log_sidecar env)"
@@ -64,6 +67,9 @@ LOG_SUMMARY_FILE="$(sdwpf_log_sidecar summary.txt)"
     echo "CHANNEL_PRIOR=${CHANNEL_PRIOR}"
     echo "OP_CONTEXT=${OP_CONTEXT}"
     echo "REVIN_KEEP_WIND=${REVIN_KEEP_WIND}"
+    echo "REGIME_PROMPT=${REGIME_PROMPT}"
+    echo "REGIME_LABEL_METHOD=${REGIME_LABEL_METHOD}"
+    echo "REGIME_CALIBRATION_QUANTILE=${REGIME_CALIBRATION_QUANTILE}"
     echo "RATED_POWER=${RATED_POWER}"
     echo "STARTED_AT=$(date --iso-8601=seconds)"
 } > "${LOG_ENV_FILE}"
@@ -88,6 +94,9 @@ if [[ "${REVIN_KEEP_WIND}" == "1" ]]; then
     EXTRA+=(--revin_keep_wind)
 else
     EXTRA+=(--no-revin_keep_wind)
+fi
+if [[ "${REGIME_PROMPT}" == "0" ]]; then
+    EXTRA+=(--disable_regime_prompt)
 fi
 
 COMMAND=(python -u run.py
@@ -120,6 +129,8 @@ COMMAND=(python -u run.py
     --sdwpf_fold "${FOLD}" \
     --sdwpf_n_folds "${N_FOLDS}" \
     --pretrain_run_id "${PRETRAIN_RUN_ID}" \
+    --regime_label_method "${REGIME_LABEL_METHOD}" \
+    --regime_calibration_quantile "${REGIME_CALIBRATION_QUANTILE}" \
     --mix_channels \
     --train_epochs "${TRAIN_EPOCHS}" \
     --learning_rate "${LEARNING_RATE}" \

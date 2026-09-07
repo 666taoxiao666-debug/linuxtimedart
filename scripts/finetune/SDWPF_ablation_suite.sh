@@ -16,13 +16,16 @@ N_FOLDS="${N_FOLDS:-3}"
 SEED="${SEED:-2024}"
 MODEL="PromptTimeDART"
 LEARNING_RATE="${LEARNING_RATE:-0.000001}"
-NEW_MODULE_LEARNING_RATE="${NEW_MODULE_LEARNING_RATE:-0.00001}"
+NEW_MODULE_LEARNING_RATE="${NEW_MODULE_LEARNING_RATE:-0.000005}"
 TRAIN_EPOCHS="${TRAIN_EPOCHS:-5}"
 PCT_START="${PCT_START:-0.20}"
 PATIENCE="${PATIENCE:-2}"
 LOSS="${LOSS:-MIXED}"
 MIX_MSE_WEIGHT="${MIX_MSE_WEIGHT:-0.2}"
-LOG_PARAMETERS="${MODEL}_h${PRED_LEN}_${SPLIT}_f${FOLD}of${N_FOLDS}_s${SEED}_blr${LEARNING_RATE}_nlr${NEW_MODULE_LEARNING_RATE}_${LOSS}_mix${MIX_MSE_WEIGHT}_ep${TRAIN_EPOCHS}_pat${PATIENCE}_4variants"
+REGIME_LABEL_METHOD="${REGIME_LABEL_METHOD:-trend_quantile}"
+REGIME_CALIBRATION_QUANTILE="${REGIME_CALIBRATION_QUANTILE:-0.3333333333}"
+export REGIME_LABEL_METHOD REGIME_CALIBRATION_QUANTILE
+LOG_PARAMETERS="${MODEL}_h${PRED_LEN}_${SPLIT}_f${FOLD}of${N_FOLDS}_s${SEED}_blr${LEARNING_RATE}_nlr${NEW_MODULE_LEARNING_RATE}_${LOSS}_mix${MIX_MSE_WEIGHT}_ep${TRAIN_EPOCHS}_pat${PATIENCE}_reg${REGIME_LABEL_METHOD}_rq${REGIME_CALIBRATION_QUANTILE}_5variants"
 sdwpf_log_init "ablation" "${LOG_PARAMETERS}" "ablation.log" "${COMMON_ID}"
 sdwpf_log_install_exit_trap
 ABLATION_LOG_DIR="${SDWPF_LOG_DIR}"
@@ -45,10 +48,12 @@ sdwpf_log_capture
     echo "PATIENCE=${PATIENCE}"
     echo "LOSS=${LOSS}"
     echo "MIX_MSE_WEIGHT=${MIX_MSE_WEIGHT}"
+    echo "REGIME_LABEL_METHOD=${REGIME_LABEL_METHOD}"
+    echo "REGIME_CALIBRATION_QUANTILE=${REGIME_CALIBRATION_QUANTILE}"
     echo "STARTED_AT=$(date --iso-8601=seconds)"
 } > "${ABLATION_LOG_DIR}/ablation.env"
 
-echo "[ABLATION 1/4] full pretrained method"
+echo "[ABLATION 1/5] full pretrained method"
 MODEL="${MODEL}" PRED_LEN="${PRED_LEN}" SPLIT="${SPLIT}" FOLD="${FOLD}" N_FOLDS="${N_FOLDS}" SEED="${SEED}" \
 LEARNING_RATE="${LEARNING_RATE}" NEW_MODULE_LEARNING_RATE="${NEW_MODULE_LEARNING_RATE}" \
 TRAIN_EPOCHS="${TRAIN_EPOCHS}" PCT_START="${PCT_START}" PATIENCE="${PATIENCE}" \
@@ -58,7 +63,7 @@ ALLOW_RANDOM=0 CHANNEL_PRIOR=1 OP_CONTEXT=1 REVIN_KEEP_WIND=1 \
 SDWPF_LOG_DIR="${ABLATION_LOG_DIR}/runs/full" SDWPF_LOG_FILE= \
 bash scripts/finetune/SDWPF_ablation_prompt.sh
 
-echo "[ABLATION 2/4] matched random initialization"
+echo "[ABLATION 2/5] matched random initialization"
 MODEL="${MODEL}" PRED_LEN="${PRED_LEN}" SPLIT="${SPLIT}" FOLD="${FOLD}" N_FOLDS="${N_FOLDS}" SEED="${SEED}" \
 LEARNING_RATE="${LEARNING_RATE}" NEW_MODULE_LEARNING_RATE="${NEW_MODULE_LEARNING_RATE}" \
 TRAIN_EPOCHS="${TRAIN_EPOCHS}" PCT_START="${PCT_START}" PATIENCE="${PATIENCE}" \
@@ -68,7 +73,7 @@ ALLOW_RANDOM=1 CHANNEL_PRIOR=1 OP_CONTEXT=1 REVIN_KEEP_WIND=1 \
 SDWPF_LOG_DIR="${ABLATION_LOG_DIR}/runs/random" SDWPF_LOG_FILE= \
 bash scripts/finetune/SDWPF_ablation_prompt.sh
 
-echo "[ABLATION 3/4] pretrained with uniform channel initialization"
+echo "[ABLATION 3/5] pretrained with uniform channel initialization"
 MODEL="${MODEL}" PRED_LEN="${PRED_LEN}" SPLIT="${SPLIT}" FOLD="${FOLD}" N_FOLDS="${N_FOLDS}" SEED="${SEED}" \
 LEARNING_RATE="${LEARNING_RATE}" NEW_MODULE_LEARNING_RATE="${NEW_MODULE_LEARNING_RATE}" \
 TRAIN_EPOCHS="${TRAIN_EPOCHS}" PCT_START="${PCT_START}" PATIENCE="${PATIENCE}" \
@@ -78,7 +83,7 @@ ALLOW_RANDOM=0 CHANNEL_PRIOR=0 OP_CONTEXT=1 REVIN_KEEP_WIND=1 \
 SDWPF_LOG_DIR="${ABLATION_LOG_DIR}/runs/uniform_prior" SDWPF_LOG_FILE= \
 bash scripts/finetune/SDWPF_ablation_prompt.sh
 
-echo "[ABLATION 4/4] pretrained without operating-point context"
+echo "[ABLATION 4/5] pretrained without operating-point context"
 MODEL="${MODEL}" PRED_LEN="${PRED_LEN}" SPLIT="${SPLIT}" FOLD="${FOLD}" N_FOLDS="${N_FOLDS}" SEED="${SEED}" \
 LEARNING_RATE="${LEARNING_RATE}" NEW_MODULE_LEARNING_RATE="${NEW_MODULE_LEARNING_RATE}" \
 TRAIN_EPOCHS="${TRAIN_EPOCHS}" PCT_START="${PCT_START}" PATIENCE="${PATIENCE}" \
@@ -88,8 +93,18 @@ ALLOW_RANDOM=0 CHANNEL_PRIOR=1 OP_CONTEXT=0 REVIN_KEEP_WIND=1 \
 SDWPF_LOG_DIR="${ABLATION_LOG_DIR}/runs/no_context" SDWPF_LOG_FILE= \
 bash scripts/finetune/SDWPF_ablation_prompt.sh
 
+echo "[ABLATION 5/5] pretrained backbone without regime prompt at fine-tuning"
+MODEL="${MODEL}" PRED_LEN="${PRED_LEN}" SPLIT="${SPLIT}" FOLD="${FOLD}" N_FOLDS="${N_FOLDS}" SEED="${SEED}" \
+LEARNING_RATE="${LEARNING_RATE}" NEW_MODULE_LEARNING_RATE="${NEW_MODULE_LEARNING_RATE}" \
+TRAIN_EPOCHS="${TRAIN_EPOCHS}" PCT_START="${PCT_START}" PATIENCE="${PATIENCE}" \
+LOSS="${LOSS}" MIX_MSE_WEIGHT="${MIX_MSE_WEIGHT}" PRETRAIN_RUN_ID="${PRETRAIN_RUN_ID}" \
+RUN_ID="${COMMON_ID}_no_ft_prompt" \
+ALLOW_RANDOM=0 CHANNEL_PRIOR=1 OP_CONTEXT=1 REVIN_KEEP_WIND=1 REGIME_PROMPT=0 \
+SDWPF_LOG_DIR="${ABLATION_LOG_DIR}/runs/no_ft_prompt" SDWPF_LOG_FILE= \
+bash scripts/finetune/SDWPF_ablation_prompt.sh
+
 {
-    for variant in full random uniform_prior no_context; do
+    for variant in full random uniform_prior no_context no_ft_prompt; do
         echo "===== ${variant} ====="
         cat "${ABLATION_LOG_DIR}/runs/${variant}/finetune.summary.txt"
     done

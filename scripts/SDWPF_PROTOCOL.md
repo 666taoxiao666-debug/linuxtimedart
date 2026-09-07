@@ -20,6 +20,7 @@ outputs/logs/SDWPF/
         ├── *.env
         ├── *.log
         ├── *summary.txt
+        ├── artifacts/        # final-eval metrics, arrays, PNG/PDF figures
         └── tb/
 ```
 
@@ -63,7 +64,7 @@ python scripts/fix_data.py \
 ## 1. Validation-only cross-validation
 
 ```bash
-NEW_MODULE_LEARNING_RATE=0.00001 \
+NEW_MODULE_LEARNING_RATE=0.000005 \
 bash scripts/train/SDWPF_paper_cv.sh
 ```
 
@@ -71,12 +72,16 @@ To confirm a selected setting only on the remaining predetermined seeds:
 
 ```bash
 FOLDS='0 1 2' SEEDS='2025 2026' \
-NEW_MODULE_LEARNING_RATE=0.00001 \
+NEW_MODULE_LEARNING_RATE=0.000005 \
 bash scripts/train/SDWPF_paper_cv.sh
 ```
 
 `rolling_holdout` divides the 70%-80% interval into three disjoint expanding-
 origin validation folds. It never evaluates the final 80%-100% holdout.
+The three regime pseudo-label thresholds are calibrated from training-history
+trend quantiles only, saved in the pretraining checkpoint, and reused unchanged
+for validation. Logs report accuracy, macro-F1, per-class recall, support, and
+the confusion matrix; accuracy alone must not be cited.
 
 Run validation baselines with the same fold and horizon:
 
@@ -101,7 +106,7 @@ Do not change architecture, loss, feature, optimizer, or cleaning settings
 after this point.
 
 ```bash
-NEW_MODULE_LEARNING_RATE=0.00001 \
+NEW_MODULE_LEARNING_RATE=0.000005 \
 bash scripts/train/SDWPF_paper_final.sh
 ```
 
@@ -117,6 +122,23 @@ CONFIRM_FINAL_EVAL=1 SPLIT=time_ratio N_FOLDS=1 PRED_LEN=12 \
 FINETUNE_CHECKPOINT='<checkpoint.pth>' \
 bash scripts/eval/SDWPF_logged_final_eval.sh
 ```
+
+The numbered final-evaluation directory contains:
+
+```text
+artifacts/
+├── forecast_trace.png
+├── forecast_trace.pdf
+├── forecast_trace.csv
+├── forecast_trace_selection.json
+├── predictions.npz
+└── metrics_by_horizon.csv
+```
+
+The default figure selects the longest continuous test block, with deterministic
+tie-breaking. To predeclare a specific example instead, set
+`FORECAST_PLOT_TURBINE_ID` and optionally `FORECAST_PLOT_START` before running
+the logged final-evaluation command.
 
 Run the final baselines under the same split exactly once:
 

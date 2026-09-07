@@ -344,6 +344,28 @@ def build_parser():
         default=True,
         help="record SHA256 of the source dataset in run_manifest.json",
     )
+    parser.add_argument(
+        "--report_output_dir",
+        default="",
+        help="optional exact directory for final metrics, arrays, and figures",
+    )
+    parser.add_argument(
+        "--forecast_plot_points",
+        type=int,
+        default=150,
+        help="maximum continuous 10-minute points in forecast_trace.png",
+    )
+    parser.add_argument(
+        "--forecast_plot_turbine_id",
+        type=int,
+        default=None,
+        help="optional predeclared turbine for the continuous prediction figure",
+    )
+    parser.add_argument(
+        "--forecast_plot_start",
+        default=None,
+        help="optional predeclared ISO timestamp for the prediction figure",
+    )
 
     # Device
     parser.add_argument(
@@ -359,6 +381,11 @@ def build_parser():
     parser.add_argument("--use_prompt_adaln", action="store_true")
     parser.add_argument("--prompt_dim", type=int, default=None)
     parser.add_argument("--use_soft_prompt", action="store_true")
+    parser.add_argument(
+        "--disable_regime_prompt",
+        action="store_true",
+        help="ablation: discard regime predictor/prompt while retaining the backbone",
+    )
     parser.add_argument("--num_modes", type=int, choices=[3], default=3)
     parser.add_argument("--lambda_ce", type=float, default=0.1)
     parser.add_argument(
@@ -369,6 +396,30 @@ def build_parser():
     )
     parser.add_argument("--regime_stable_thresh", type=float, default=0.15)
     parser.add_argument("--regime_ramp_thresh", type=float, default=0.25)
+    parser.add_argument(
+        "--regime_label_method",
+        choices=["auto", "trend_quantile", "legacy_volatility"],
+        default="auto",
+        help="auto selects train-calibrated trend quantiles for SDWPF",
+    )
+    parser.add_argument(
+        "--regime_calibration_quantile",
+        type=float,
+        default=1.0 / 3.0,
+        help="lower/upper train-only quantiles defining down/stable/up regimes",
+    )
+    parser.add_argument(
+        "--regime_calibration_samples",
+        type=int,
+        default=50000,
+        help="deterministic maximum number of training histories used for calibration",
+    )
+    parser.add_argument(
+        "--regime_min_class_fraction",
+        type=float,
+        default=0.05,
+        help="fail pretraining when a calibrated training regime has less support",
+    )
     parser.add_argument("--lr_decay", type=float, default=0.5)
     parser.add_argument("--mask_ratio", type=float, default=1.0)
 
@@ -410,7 +461,14 @@ def pretrain_signature(args):
         args.backbone,
     ]
     if args.model == "PromptTimeDART" or args.use_soft_prompt:
-        parts.extend(["prompt", f"m{args.num_modes}"])
+        parts.extend(
+            [
+                "prompt",
+                f"m{args.num_modes}",
+                f"reg{args.regime_label_method}",
+                f"rq{args.regime_calibration_quantile:g}",
+            ]
+        )
     if args.data == "SDWPF":
         # Fold-specific pretraining is required: a checkpoint trained on later
         # rolling folds must never be auto-discovered for an earlier fold.
@@ -462,6 +520,8 @@ def configure_args(args):
     if args.seq_len != args.input_len:
         raise ValueError("seq_len and input_len must be equal in this implementation")
     if args.data == "SDWPF":
+        if args.regime_label_method == "auto":
+            args.regime_label_method = "trend_quantile"
         if args.target == "OT":
             args.target = "power"
         if args.features == "M":
@@ -502,6 +562,8 @@ def configure_args(args):
                 "not as a SOTA claim. The primary SCADA-only task is 0-4 h."
             )
     else:
+        if args.regime_label_method == "auto":
+            args.regime_label_method = "legacy_volatility"
         args.feature_columns = list(getattr(args, "feature_columns", None) or [])
         if args.mix_channels is None:
             args.mix_channels = False
@@ -562,6 +624,9 @@ def load_finetuned_model(exp, checkpoint_path):
             "sdwpf_n_folds",
             "mix_channels",
             "residual_forecast",
+            "disable_regime_prompt",
+            "regime_label_method",
+            "regime_calibration_quantile",
             "feature_columns",
         )
         mismatches = []

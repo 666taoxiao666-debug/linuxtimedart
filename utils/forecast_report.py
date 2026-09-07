@@ -577,6 +577,225 @@ def _plot_examples(
     plt.close(fig)
 
 
+def _continuous_forecast_trace(
+    pred,
+    true,
+    metadata,
+    *,
+    persistence=None,
+    step_minutes=10,
+    max_points=150,
+    turbine_id=None,
+    requested_start=None,
+):
+    """Build a deterministic, non-overlapping continuous trace for one turbine."""
+
+    horizon = int(pred.shape[1])
+    max_points = max(horizon, int(max_points))
+    if {"TurbID", "forecast_start"}.issubset(metadata.columns):
+        candidates = metadata[["window_index", "TurbID", "forecast_start"]].copy()
+        candidates["forecast_start"] = pd.to_datetime(candidates["forecast_start"])
+        if turbine_id is not None:
+            candidates = candidates[candidates["TurbID"] == int(turbine_id)]
+            if candidates.empty:
+                raise ValueError(f"Requested forecast plot TurbID={turbine_id} is absent")
+        requested = pd.Timestamp(requested_start) if requested_start else None
+        expected = pd.Timedelta(minutes=int(step_minutes) * horizon)
+        blocks = []
+        for current_turbine, group in candidates.groupby("TurbID", sort=True):
+            group = group.sort_values("forecast_start", kind="mergesort")
+            indices = group.index.to_numpy(dtype=np.int64)
+            starts = group["forecast_start"].to_numpy()
+            split_points = np.flatnonzero(
+                np.diff(starts).astype("timedelta64[m]")
+                != np.timedelta64(int(expected.total_seconds() // 60), "m")
+            ) + 1
+            for block in np.split(indices, split_points):
+                if len(block):
+                    blocks.append((int(current_turbine), block))
+        if not blocks:
+            return None, None
+        if requested is not None:
+            trimmed = []
+            for current_turbine, block in blocks:
+                times = candidates.loc[block, "forecast_start"]
+                keep = np.flatnonzero(times.to_numpy() >= requested.to_datetime64())
+                if len(keep):
+                    trimmed.append((current_turbine, block[keep[0] :]))
+            if not trimmed:
+                raise ValueError(
+                    f"No continuous prediction trace starts at or after {requested.isoformat()}"
+                )
+            blocks = trimmed
+            blocks.sort(
+                key=lambda item: candidates.loc[item[1][0], "forecast_start"]
+            )
+        else:
+            blocks.sort(
+                key=lambda item: (
+                    -len(item[1]),
+                    item[0],
+                    candidates.loc[item[1][0], "forecast_start"],
+                )
+            )
+        selected_turbine, selected_rows = blocks[0]
+        window_indices = metadata.loc[selected_rows, "window_index"].to_numpy(dtype=np.int64)
+        window_starts = pd.to_datetime(
+            metadata.loc[selected_rows, "forecast_start"]
+        ).to_numpy()
+    else:
+        selected_turbine = None
+        window_indices = np.asarray([0], dtype=np.int64)
+        window_starts = np.asarray([np.datetime64("NaT")])
+
+    records = []
+    for window_index, forecast_start in zip(window_indices, window_starts):
+        for horizon_index in range(horizon):
+            if len(records) >= max_points:
+                break
+            timestamp = (
+                pd.Timestamp(forecast_start)
+                + pd.Timedelta(minutes=int(step_minutes) * horizon_index)
+                if not pd.isna(forecast_start)
+                else pd.NaT
+            )
+            row = {
+                "point_index": len(records),
+                "timestamp": timestamp,
+                "TurbID": selected_turbine,
+                "source_window": int(window_index),
+                "horizon_step": horizon_index + 1,
+                "truth_kw": float(true[window_index, horizon_index]),
+                "prediction_kw": float(pred[window_index, horizon_index]),
+            }
+            if persistence is not None:
+                row["persistence_kw"] = float(
+                    persistence[window_index, horizon_index]
+                )
+            records.append(row)
+        if len(records) >= max_points:
+            break
+    if not records:
+        return None, None
+    trace = pd.DataFrame.from_records(records)
+    selection = {
+        "selection_rule": (
+            "requested turbine/start, then earliest continuous block"
+            if turbine_id is not None or requested_start
+            else "longest continuous block; tie-break by TurbID and start time"
+        ),
+        "TurbID": selected_turbine,
+        "forecast_start": (
+            trace["timestamp"].iloc[0].isoformat()
+            if pd.notna(trace["timestamp"].iloc[0])
+            else None
+        ),
+        "point_count": int(len(trace)),
+        "step_minutes": int(step_minutes),
+    }
+    return trace, selection
+
+
+def _plot_continuous_forecast(
+    pred,
+    true,
+    metadata,
+    output_dir,
+    *,
+    persistence=None,
+    step_minutes=10,
+    max_points=150,
+    turbine_id=None,
+    requested_start=None,
+    model_name="Forecast model",
+):
+    """Save a paper-ready truth/prediction trace with deterministic zooms."""
+
+    trace, selection = _continuous_forecast_trace(
+        pred,
+        true,
+        metadata,
+        persistence=persistence,
+        step_minutes=step_minutes,
+        max_points=max_points,
+        turbine_id=turbine_id,
+        requested_start=requested_start,
+    )
+    if trace is None or trace.empty:
+        return
+    trace.to_csv(os.path.join(output_dir, "forecast_trace.csv"), index=False)
+    with open(
+        os.path.join(output_dir, "forecast_trace_selection.json"),
+        "w",
+        encoding="utf-8",
+    ) as handle:
+        json.dump(_json_safe(selection), handle, ensure_ascii=False, indent=2)
+
+    x = trace["point_index"].to_numpy()
+    fig, axis = plt.subplots(figsize=(14, 6.4))
+    line_specs = [
+        ("truth_kw", "True", "black", "--", 1.8),
+        ("prediction_kw", str(model_name), "tab:blue", "-", 1.6),
+    ]
+    if "persistence_kw" in trace:
+        line_specs.append(("persistence_kw", "Persistence", "tab:orange", "-", 1.25))
+    for column, label, color, style, width in line_specs:
+        axis.plot(
+            x,
+            trace[column],
+            label=label,
+            color=color,
+            linestyle=style,
+            linewidth=width,
+        )
+    axis.set_xlabel(f"Time step ({int(step_minutes)} min)")
+    axis.set_ylabel("Wind power / kW")
+    title_parts = ["Continuous wind-power forecast"]
+    if selection["TurbID"] is not None:
+        title_parts.append(f"TurbID={selection['TurbID']}")
+    if selection["forecast_start"] is not None:
+        title_parts.append(f"start={selection['forecast_start']}")
+    axis.set_title(" | ".join(title_parts), fontsize=11)
+    axis.grid(alpha=0.18)
+    axis.legend(loc="upper center", bbox_to_anchor=(0.5, 1.14), ncol=len(line_specs))
+    axis.margins(x=0.01)
+
+    point_count = len(trace)
+    if point_count >= 24:
+        zoom_ranges = [
+            (max(0, int(point_count * 0.12)), max(12, int(point_count * 0.30))),
+            (max(0, int(point_count * 0.56)), max(12, int(point_count * 0.76))),
+        ]
+        placements = [(0.10, 0.55, 0.27, 0.36), (0.60, 0.55, 0.27, 0.36)]
+        for (start, end), placement in zip(zoom_ranges, placements):
+            end = min(point_count - 1, max(start + 2, end))
+            inset = axis.inset_axes(placement)
+            for column, _, color, style, width in line_specs:
+                inset.plot(
+                    x[start : end + 1],
+                    trace[column].to_numpy()[start : end + 1],
+                    color=color,
+                    linestyle=style,
+                    linewidth=max(1.0, width - 0.2),
+                )
+            inset.set_xlim(start, end)
+            inset.grid(alpha=0.12)
+            inset.tick_params(labelsize=7)
+            axis.indicate_inset_zoom(inset, edgecolor="0.35", alpha=0.65)
+
+    fig.tight_layout()
+    fig.savefig(
+        os.path.join(output_dir, "forecast_trace.png"),
+        dpi=240,
+        bbox_inches="tight",
+    )
+    fig.savefig(
+        os.path.join(output_dir, "forecast_trace.pdf"),
+        bbox_inches="tight",
+    )
+    plt.close(fig)
+
+
 def _plot_scatter(pred, true, output_dir, max_points=150000):
     p = pred.reshape(-1)
     y = true.reshape(-1)
@@ -700,6 +919,10 @@ def build_forecast_report(
     last_observation_scaled=None,
     step_minutes=10,
     rated_power=None,
+    trace_points=150,
+    trace_turbine_id=None,
+    trace_start=None,
+    model_name="Forecast model",
 ):
     """Save original-scale metrics, breakdown tables, arrays, and PNG charts."""
     os.makedirs(output_dir, exist_ok=True)
@@ -824,6 +1047,18 @@ def build_forecast_report(
         metadata,
         output_dir,
         persistence=persistence,
+    )
+    _plot_continuous_forecast(
+        pred,
+        true,
+        metadata,
+        output_dir,
+        persistence=persistence,
+        step_minutes=int(step_minutes),
+        max_points=int(trace_points),
+        turbine_id=trace_turbine_id,
+        requested_start=trace_start,
+        model_name=model_name,
     )
     _plot_scatter(pred, true, output_dir)
     _plot_residuals(pred, true, output_dir)

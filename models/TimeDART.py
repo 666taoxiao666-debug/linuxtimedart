@@ -103,6 +103,11 @@ class Model(nn.Module):
             "regime_ramp_thresh",
             0.25,
         )
+        self.regime_label_method = getattr(
+            args,
+            "regime_label_method",
+            "legacy_volatility",
+        )
         self.features = getattr(args, "features", "M")
         self.enc_in = int(getattr(args, "enc_in", 1))
         self.feature_columns = list(getattr(args, "feature_columns", None) or [])
@@ -225,6 +230,16 @@ class Model(nn.Module):
             self.soft_prompt_generator = SoftPromptGenerator(
                 num_modes=self.num_modes,
                 d_model=args.d_model,
+            )
+            down = getattr(args, "regime_down_thresh", None)
+            up = getattr(args, "regime_up_thresh", None)
+            self.register_buffer(
+                "regime_down_thresh",
+                torch.tensor(float("nan") if down is None else float(down)),
+            )
+            self.register_buffer(
+                "regime_up_thresh",
+                torch.tensor(float("nan") if up is None else float(up)),
             )
         else:
             self.prompt_dim = (
@@ -351,6 +366,9 @@ class Model(nn.Module):
                     ramp_thresh=(
                         self.regime_ramp_thresh
                     ),
+                    method=self.regime_label_method,
+                    down_thresh=self.regime_down_thresh,
+                    up_thresh=self.regime_up_thresh,
                 )
             )
 
@@ -783,6 +801,11 @@ class ClsModel(nn.Module):
                 "regime_ramp_thresh",
                 0.25,
             )
+            self.regime_label_method = getattr(
+                args,
+                "regime_label_method",
+                "legacy_volatility",
+            )
 
             if self.use_soft_prompt:
                 self.num_modes = getattr(
@@ -805,6 +828,16 @@ class ClsModel(nn.Module):
                         num_modes=self.num_modes,
                         d_model=args.d_model,
                     )
+                )
+                down = getattr(args, "regime_down_thresh", None)
+                up = getattr(args, "regime_up_thresh", None)
+                self.register_buffer(
+                    "regime_down_thresh",
+                    torch.tensor(float("nan") if down is None else float(down)),
+                )
+                self.register_buffer(
+                    "regime_up_thresh",
+                    torch.tensor(float("nan") if up is None else float(up)),
                 )
 
             else:
@@ -902,6 +935,9 @@ class ClsModel(nn.Module):
                     ramp_thresh=(
                         self.regime_ramp_thresh
                     ),
+                    method=self.regime_label_method,
+                    down_thresh=self.regime_down_thresh,
+                    up_thresh=self.regime_up_thresh,
                 )
             )
 
@@ -1095,8 +1131,9 @@ class PromptGuidedModel(Model):
     """
 
     def __init__(self, args):
-        args.use_soft_prompt = True
-        args.use_prompt_adaln = True
+        prompt_enabled = not bool(getattr(args, "disable_regime_prompt", False))
+        args.use_soft_prompt = prompt_enabled
+        args.use_prompt_adaln = prompt_enabled
         super().__init__(args)
 
     def forward(self, batch_x):
@@ -1122,8 +1159,9 @@ class PromptGuidedClsModel(ClsModel):
     """
 
     def __init__(self, args):
-        args.use_soft_prompt = True
-        args.use_prompt_adaln = True
+        prompt_enabled = not bool(getattr(args, "disable_regime_prompt", False))
+        args.use_soft_prompt = prompt_enabled
+        args.use_prompt_adaln = prompt_enabled
         super().__init__(args)
 
     def forward(self, batch_x):

@@ -14,11 +14,17 @@ from utils.forecast_losses import ForecastLoss
 from utils.run_tags import forecast_result_tag
 from utils.sdwpf_logging import tensorboard_log_directory
 from utils.experiment_audit import checkpoint_info, model_runtime_summary, write_run_manifest
+from utils.regime_labels import (
+    calibrate_regime_thresholds_from_dataset,
+    summarize_regime_confusion,
+    update_regime_confusion,
+)
 from torch.optim import lr_scheduler
 import torch
 import torch.nn as nn
 from torch import optim
 import os
+import json
 import sys
 import time
 import warnings
@@ -56,6 +62,39 @@ class Exp_TimeDART(Exp_Basic):
                 dtype=torch.float16,
             )
         return nullcontext()
+
+    def _calibrate_regime_labels(self, train_data):
+        """Fit regime thresholds from training histories and update model buffers."""
+
+        core_model = self.model.module if isinstance(self.model, nn.DataParallel) else self.model
+        if not getattr(core_model, "use_soft_prompt", False):
+            return None
+        if getattr(self.args, "regime_label_method", "legacy_volatility") != "trend_quantile":
+            print("[WARNING] Using legacy fixed regime thresholds for reproduction only.")
+            return None
+        audit = calibrate_regime_thresholds_from_dataset(
+            train_data,
+            target_index=self.args.regime_target_index,
+            quantile=self.args.regime_calibration_quantile,
+            max_samples=self.args.regime_calibration_samples,
+            min_class_fraction=self.args.regime_min_class_fraction,
+        )
+        with torch.no_grad():
+            core_model.regime_down_thresh.fill_(audit["down_thresh"])
+            core_model.regime_up_thresh.fill_(audit["up_thresh"])
+        self.args.regime_down_thresh = audit["down_thresh"]
+        self.args.regime_up_thresh = audit["up_thresh"]
+        self.args.regime_calibration_source = audit["source_split"]
+        self.args.regime_calibration_counts = audit["class_counts"]
+        core_model.regime_calibration = audit
+        print(
+            "[AUDIT] REGIME_CALIBRATION="
+            f"method={audit['method']} source={audit['source_split']} "
+            f"samples={audit['sample_count']} quantile={audit['quantile']:.6f} "
+            f"down={audit['down_thresh']:.8f} up={audit['up_thresh']:.8f} "
+            f"counts={';'.join(str(value) for value in audit['class_counts'])}"
+        )
+        return audit
 
     def _build_model(self):
         if self.args.downstream_task == "forecast":
@@ -225,12 +264,20 @@ class Exp_TimeDART(Exp_Basic):
         vali_data, vali_loader = (
             self._get_data(flag="val")
         )
+        regime_calibration = self._calibrate_regime_labels(train_data)
 
         path = self.args.pretrain_run_dir
         os.makedirs(
             path,
             exist_ok=True,
         )
+        if regime_calibration is not None:
+            with open(
+                os.path.join(path, "regime_calibration.json"),
+                "w",
+                encoding="utf-8",
+            ) as handle:
+                json.dump(regime_calibration, handle, ensure_ascii=False, indent=2)
 
         write_run_manifest(
             path,
@@ -293,7 +340,8 @@ class Exp_TimeDART(Exp_Basic):
                 "Epoch: {}/{}, Time: {:.2f}, "
                 "Train Total/Diff/CE: {:.4f}/{:.4f}/{:.4f}, "
                 "Val Total/Diff/CE: {:.4f}/{:.4f}/{:.4f}, "
-                "Val Regime Acc: {:.3f}, Val Regime Counts: {}, "
+                "Val Regime Acc/Macro-F1: {:.3f}/{:.3f}, "
+                "Val Regime Counts: {}, Recall: {}, Confusion: {}, "
                 "GradNorm: {:.3f}".format(
                     epoch + 1,
                     self.args.train_epochs,
@@ -305,7 +353,10 @@ class Exp_TimeDART(Exp_Basic):
                     validation["diff_loss"],
                     validation["ce_loss"],
                     validation["regime_accuracy"],
+                    validation["regime_macro_f1"],
                     validation["regime_counts"],
+                    validation["regime_recall"],
+                    validation["regime_confusion"],
                     train_metrics["grad_norm"],
                 )
             )
@@ -332,13 +383,23 @@ class Exp_TimeDART(Exp_Basic):
                     "train_diff_loss": float(train_metrics["diff_loss"]),
                     "train_ce_loss": float(train_metrics["ce_loss"]),
                     "train_regime_accuracy": float(train_metrics["regime_accuracy"]),
+                    "train_regime_macro_f1": float(train_metrics["regime_macro_f1"]),
                     "train_grad_norm": float(train_metrics["grad_norm"]),
                     "train_regime_counts": train_metrics["regime_counts"],
+                    "train_regime_pred_counts": train_metrics["regime_pred_counts"],
+                    "train_regime_recall": train_metrics["regime_recall"],
+                    "train_regime_f1": train_metrics["regime_f1"],
+                    "train_regime_confusion": train_metrics["regime_confusion"],
                     "val_loss": float(validation["total_loss"]),
                     "val_diff_loss": float(validation["diff_loss"]),
                     "val_ce_loss": float(validation["ce_loss"]),
                     "val_regime_accuracy": float(validation["regime_accuracy"]),
+                    "val_regime_macro_f1": float(validation["regime_macro_f1"]),
                     "val_regime_counts": validation["regime_counts"],
+                    "val_regime_pred_counts": validation["regime_pred_counts"],
+                    "val_regime_recall": validation["regime_recall"],
+                    "val_regime_f1": validation["regime_f1"],
+                    "val_regime_confusion": validation["regime_confusion"],
                     "learning_rate": float(
                         current_lr
                     ),
@@ -440,9 +501,10 @@ class Exp_TimeDART(Exp_Basic):
                 else name
             )
 
-            if clean_name.startswith(
-                transfer_prefixes
-            ):
+            if clean_name.startswith(transfer_prefixes) or clean_name in {
+                "regime_down_thresh",
+                "regime_up_thresh",
+            }:
                 state[clean_name] = (
                     value.detach().cpu()
                 )
@@ -512,9 +574,9 @@ class Exp_TimeDART(Exp_Basic):
         diff_losses = []
         ce_losses = []
         grad_norms = []
-        regime_correct = 0
-        regime_total = 0
-        regime_counts = np.zeros(int(self.args.num_modes), dtype=np.int64)
+        regime_confusion = np.zeros(
+            (int(self.args.num_modes), int(self.args.num_modes)), dtype=np.int64
+        )
 
         model_criterion = (
             self._select_criterion()
@@ -619,19 +681,16 @@ class Exp_TimeDART(Exp_Basic):
             if logits is not None and pseudo_labels is not None:
                 predictions = logits.detach().argmax(dim=-1)
                 labels = pseudo_labels.detach().reshape(-1)
-                regime_correct += int((predictions.reshape(-1) == labels).sum().item())
-                regime_total += int(labels.numel())
-                counts = torch.bincount(labels, minlength=len(regime_counts)).cpu().numpy()
-                regime_counts += counts[: len(regime_counts)]
+                update_regime_confusion(regime_confusion, predictions, labels)
 
         model_scheduler.step()
+        regime_metrics = summarize_regime_confusion(regime_confusion)
         return {
             "total_loss": float(np.mean(total_losses)),
             "diff_loss": float(np.mean(diff_losses)),
             "ce_loss": float(np.mean(ce_losses)),
-            "regime_accuracy": float(regime_correct / regime_total) if regime_total else 0.0,
-            "regime_counts": ";".join(str(int(value)) for value in regime_counts),
             "grad_norm": float(np.mean(grad_norms)) if grad_norms else 0.0,
+            **regime_metrics,
         }
 
     def valid_one_epoch(
@@ -641,9 +700,9 @@ class Exp_TimeDART(Exp_Basic):
         total_losses = []
         diff_losses = []
         ce_losses = []
-        regime_correct = 0
-        regime_total = 0
-        regime_counts = np.zeros(int(self.args.num_modes), dtype=np.int64)
+        regime_confusion = np.zeros(
+            (int(self.args.num_modes), int(self.args.num_modes)), dtype=np.int64
+        )
 
         model_criterion = (
             self._select_criterion()
@@ -716,19 +775,14 @@ class Exp_TimeDART(Exp_Basic):
                 if logits is not None and pseudo_labels is not None:
                     predictions = logits.detach().argmax(dim=-1)
                     labels = pseudo_labels.detach().reshape(-1)
-                    regime_correct += int((predictions.reshape(-1) == labels).sum().item())
-                    regime_total += int(labels.numel())
-                    counts = torch.bincount(
-                        labels, minlength=len(regime_counts)
-                    ).cpu().numpy()
-                    regime_counts += counts[: len(regime_counts)]
+                    update_regime_confusion(regime_confusion, predictions, labels)
 
+        regime_metrics = summarize_regime_confusion(regime_confusion)
         return {
             "total_loss": float(np.mean(total_losses)),
             "diff_loss": float(np.mean(diff_losses)),
             "ce_loss": float(np.mean(ce_losses)),
-            "regime_accuracy": float(regime_correct / regime_total) if regime_total else 0.0,
-            "regime_counts": ";".join(str(int(value)) for value in regime_counts),
+            **regime_metrics,
         }
 
     def train(self, setting):
@@ -1524,11 +1578,18 @@ class Exp_TimeDART(Exp_Basic):
 
         result_tag = forecast_result_tag(self.args)
 
-        folder_path = os.path.join(
-            "./outputs/test_results",
-            self.args.model,
-            self.args.data,
-            result_tag,
+        requested_report_dir = str(
+            getattr(self.args, "report_output_dir", "") or ""
+        ).strip()
+        folder_path = (
+            os.path.abspath(os.path.expanduser(requested_report_dir))
+            if requested_report_dir
+            else os.path.join(
+                "./outputs/test_results",
+                self.args.model,
+                self.args.data,
+                result_tag,
+            )
         )
 
         os.makedirs(
@@ -1660,6 +1721,10 @@ class Exp_TimeDART(Exp_Basic):
                     else 1
                 ),
                 rated_power=rated_power,
+                trace_points=self.args.forecast_plot_points,
+                trace_turbine_id=self.args.forecast_plot_turbine_id,
+                trace_start=self.args.forecast_plot_start,
+                model_name=self.args.model,
             )
 
             print(
@@ -1744,6 +1809,9 @@ class Exp_TimeDART(Exp_Basic):
             "Detailed forecast report: "
             f"{folder_path}"
         )
+        trace_path = os.path.join(folder_path, "forecast_trace.png")
+        if os.path.isfile(trace_path):
+            print(f"[AUDIT] Forecast trace: {os.path.abspath(trace_path)}")
 
     def cls_train(self, setting):
         train_data, train_loader = (

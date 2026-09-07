@@ -14,6 +14,10 @@ PATIENCE="${PATIENCE:-3}"
 TRAIN_EPOCHS="${TRAIN_EPOCHS:-20}"
 LEARNING_RATE="${LEARNING_RATE:-0.0001}"
 LAMBDA_CE="${LAMBDA_CE:-0.02}"
+REGIME_LABEL_METHOD="${REGIME_LABEL_METHOD:-trend_quantile}"
+REGIME_CALIBRATION_QUANTILE="${REGIME_CALIBRATION_QUANTILE:-0.3333333333}"
+REGIME_CALIBRATION_SAMPLES="${REGIME_CALIBRATION_SAMPLES:-50000}"
+REGIME_MIN_CLASS_FRACTION="${REGIME_MIN_CLASS_FRACTION:-0.05}"
 RATED_POWER="${RATED_POWER:-1500}"
 GPU="${GPU:-0}"
 PRETRAIN_RUN_ID="${PRETRAIN_RUN_ID:-pretrain_${SPLIT}_f${FOLD}_s${SEED}_$(date +%Y%m%d_%H%M%S)}"
@@ -21,7 +25,7 @@ RUN_ID="${RUN_ID:-${PRETRAIN_RUN_ID}}"
 export PYTHONHASHSEED="${PYTHONHASHSEED:-${SEED}}"
 export CUBLAS_WORKSPACE_CONFIG="${CUBLAS_WORKSPACE_CONFIG:-:4096:8}"
 
-LOG_PARAMETERS="h${PRED_LEN}_${SPLIT}_f${FOLD}of${N_FOLDS}_s${SEED}_lr${LEARNING_RATE}_lce${LAMBDA_CE}_ep${TRAIN_EPOCHS}_pat${PATIENCE}"
+LOG_PARAMETERS="h${PRED_LEN}_${SPLIT}_f${FOLD}of${N_FOLDS}_s${SEED}_lr${LEARNING_RATE}_lce${LAMBDA_CE}_reg${REGIME_LABEL_METHOD}_rq${REGIME_CALIBRATION_QUANTILE}_ep${TRAIN_EPOCHS}_pat${PATIENCE}"
 sdwpf_log_init "pretrain" "${LOG_PARAMETERS}" "pretrain.log" "${RUN_ID}"
 sdwpf_log_install_exit_trap
 LOG_ENV_FILE="$(sdwpf_log_sidecar env)"
@@ -41,6 +45,10 @@ LOG_SUMMARY_FILE="$(sdwpf_log_sidecar summary.txt)"
     echo "TRAIN_EPOCHS=${TRAIN_EPOCHS}"
     echo "LEARNING_RATE=${LEARNING_RATE}"
     echo "LAMBDA_CE=${LAMBDA_CE}"
+    echo "REGIME_LABEL_METHOD=${REGIME_LABEL_METHOD}"
+    echo "REGIME_CALIBRATION_QUANTILE=${REGIME_CALIBRATION_QUANTILE}"
+    echo "REGIME_CALIBRATION_SAMPLES=${REGIME_CALIBRATION_SAMPLES}"
+    echo "REGIME_MIN_CLASS_FRACTION=${REGIME_MIN_CLASS_FRACTION}"
     echo "PATIENCE=${PATIENCE}"
     echo "RATED_POWER=${RATED_POWER}"
     echo "STARTED_AT=$(date --iso-8601=seconds)"
@@ -79,6 +87,10 @@ COMMAND=(python -u run.py
     --patience "${PATIENCE}" \
     --learning_rate "${LEARNING_RATE}" \
     --lambda_ce "${LAMBDA_CE}" \
+    --regime_label_method "${REGIME_LABEL_METHOD}" \
+    --regime_calibration_quantile "${REGIME_CALIBRATION_QUANTILE}" \
+    --regime_calibration_samples "${REGIME_CALIBRATION_SAMPLES}" \
+    --regime_min_class_fraction "${REGIME_MIN_CLASS_FRACTION}" \
     --rated_power "${RATED_POWER}" \
     --lr_decay 0.95 \
     --seed "${SEED}" \
@@ -89,7 +101,7 @@ COMMAND=(python -u run.py
 
 echo "COMPLETED_AT=$(date --iso-8601=seconds)" >> "${LOG_ENV_FILE}"
 {
-    grep -E '^Epoch:|^Validation loss decreased|^Pretrain early stopping|^\[AUDIT\] Run manifest:' \
+    grep -E '^Epoch:|^Validation loss decreased|^Pretrain early stopping|^\[AUDIT\] (Run manifest:|REGIME_CALIBRATION=)' \
         "${SDWPF_LOG_FILE}" || true
 } > "${LOG_SUMMARY_FILE}"
 echo "[PRETRAIN] Log: ${SDWPF_LOG_FILE}"
