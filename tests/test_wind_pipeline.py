@@ -18,7 +18,7 @@ from data_provider.sdwpf_features import (
     sdwpf_feature_columns,
 )
 from layers.TimeDART_EncDec import ChannelMixer
-from exp.exp_timedart import Exp_TimeDART
+from exp.exp_timedart import Exp_TimeDART, _dynamic_channel_scale_sample
 from models.TimeDART import Model
 from run import build_parser, configure_args, resolve_pretrained_checkpoint
 
@@ -51,6 +51,27 @@ def _tiny_sdwpf_csv(path, n_times=40, n_turbines=2):
 
 
 class ChannelMixerTests(unittest.TestCase):
+    def test_static_mixer_is_excluded_from_dynamic_scale_diagnostics(self):
+        mixer = ChannelMixer(
+            num_features=3,
+            d_model=8,
+            dropout=0.0,
+            context_dim=0,
+        )
+        context = torch.randn(2, 3)
+        self.assertIsNone(_dynamic_channel_scale_sample(mixer, context))
+
+    def test_context_mixer_returns_batched_dynamic_scale_diagnostics(self):
+        mixer = ChannelMixer(
+            num_features=3,
+            d_model=8,
+            dropout=0.0,
+            context_dim=2,
+        )
+        context = torch.randn(4, 2)
+        scale = _dynamic_channel_scale_sample(mixer, context)
+        self.assertEqual(scale.shape, (4, 3))
+
     def test_wind_channel_changes_power_token(self):
         mixer = ChannelMixer(num_features=3, d_model=8, dropout=0.0)
         mixer.eval()

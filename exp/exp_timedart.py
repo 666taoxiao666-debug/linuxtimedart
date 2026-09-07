@@ -39,6 +39,20 @@ from sklearn.metrics import accuracy_score, f1_score
 warnings.filterwarnings("ignore")
 
 
+def _dynamic_channel_scale_sample(mixer, context):
+    """Return per-sample channel scales, excluding static-only mixers."""
+
+    if getattr(mixer, "context_gate", None) is None:
+        return None
+    scale = mixer.effective_channel_scale(context).detach().float().cpu().numpy()
+    if scale.ndim != 2 or scale.shape[1] != mixer.num_features:
+        raise ValueError(
+            "Dynamic channel scale must have shape [batch, num_features], "
+            f"got {scale.shape}"
+        )
+    return scale
+
+
 class Exp_TimeDART(Exp_Basic):
     def __init__(self, args):
         super(Exp_TimeDART, self).__init__(args)
@@ -1372,13 +1386,11 @@ class Exp_TimeDART(Exp_Basic):
                     if mixer is not None and hasattr(core_model, "_operating_context"):
                         context = core_model._operating_context(batch_x)
                         if context is not None:
-                            dynamic_scale_samples.append(
-                                mixer.effective_channel_scale(context)
-                                .detach()
-                                .float()
-                                .cpu()
-                                .numpy()
+                            dynamic_scale = _dynamic_channel_scale_sample(
+                                mixer, context
                             )
+                            if dynamic_scale is not None:
+                                dynamic_scale_samples.append(dynamic_scale)
 
                 pred = (
                     pred_x.detach().cpu()
