@@ -353,24 +353,30 @@ class Model(nn.Module):
                 )
             )
 
-            pseudo_labels = (
-                compute_regime_pseudo_labels_from_series(
-                    label_source[
-                        :,
-                        :,
-                        target_index,
-                    ],
-                    stable_thresh=(
-                        self.regime_stable_thresh
-                    ),
-                    ramp_thresh=(
-                        self.regime_ramp_thresh
-                    ),
-                    method=self.regime_label_method,
-                    down_thresh=self.regime_down_thresh,
-                    up_thresh=self.regime_up_thresh,
+            # Pseudo-labels supervise the regime classifier during pretraining
+            # only. Forecast fine-tuning consumes the predictor probabilities
+            # directly, so forcing label construction here would make an
+            # intentionally random-init ablation depend on pretrain thresholds.
+            pseudo_labels = None
+            if self.task_name == "pretrain":
+                pseudo_labels = (
+                    compute_regime_pseudo_labels_from_series(
+                        label_source[
+                            :,
+                            :,
+                            target_index,
+                        ],
+                        stable_thresh=(
+                            self.regime_stable_thresh
+                        ),
+                        ramp_thresh=(
+                            self.regime_ramp_thresh
+                        ),
+                        method=self.regime_label_method,
+                        down_thresh=self.regime_down_thresh,
+                        up_thresh=self.regime_up_thresh,
+                    )
                 )
-            )
 
             return (
                 soft_prompt,
@@ -922,24 +928,26 @@ class ClsModel(nn.Module):
                 % label_source.size(-1)
             )
 
-            pseudo_labels = (
-                compute_regime_pseudo_labels_from_series(
-                    label_source[
-                        :,
-                        :,
-                        target_index,
-                    ],
-                    stable_thresh=(
-                        self.regime_stable_thresh
-                    ),
-                    ramp_thresh=(
-                        self.regime_ramp_thresh
-                    ),
-                    method=self.regime_label_method,
-                    down_thresh=self.regime_down_thresh,
-                    up_thresh=self.regime_up_thresh,
+            pseudo_labels = None
+            if self.task_name == "pretrain":
+                pseudo_labels = (
+                    compute_regime_pseudo_labels_from_series(
+                        label_source[
+                            :,
+                            :,
+                            target_index,
+                        ],
+                        stable_thresh=(
+                            self.regime_stable_thresh
+                        ),
+                        ramp_thresh=(
+                            self.regime_ramp_thresh
+                        ),
+                        method=self.regime_label_method,
+                        down_thresh=self.regime_down_thresh,
+                        up_thresh=self.regime_up_thresh,
+                    )
                 )
-            )
 
             return (
                 soft_prompt,

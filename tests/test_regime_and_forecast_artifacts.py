@@ -8,6 +8,7 @@ import pandas as pd
 import torch
 
 from run import build_parser, configure_args
+from models.TimeDART import PromptGuidedModel
 from utils.forecast_report import _plot_continuous_forecast
 from utils.regime_labels import (
     calibrate_regime_thresholds_from_dataset,
@@ -97,6 +98,49 @@ class RegimeCalibrationTests(unittest.TestCase):
         self.assertLess(audit["down_thresh"], 0.0)
         self.assertGreater(audit["up_thresh"], 0.0)
         self.assertGreater(audit["class_counts"][0], audit["class_counts"][1])
+
+    def test_random_prompt_finetune_does_not_require_regime_thresholds(self):
+        args = configure_args(
+            build_parser().parse_args(
+                [
+                    "--task_name",
+                    "finetune",
+                    "--model_id",
+                    "SDWPF",
+                    "--model",
+                    "PromptTimeDART",
+                    "--data",
+                    "SDWPF",
+                    "--allow_random_init",
+                    "--no-use_gpu",
+                    "--input_len",
+                    "24",
+                    "--pred_len",
+                    "12",
+                    "--d_model",
+                    "16",
+                    "--n_heads",
+                    "4",
+                    "--e_layers",
+                    "1",
+                    "--d_ff",
+                    "32",
+                    "--patch_len",
+                    "12",
+                    "--stride",
+                    "12",
+                ]
+            )
+        )
+        args.device = torch.device("cpu")
+        model = PromptGuidedModel(args).eval()
+        self.assertTrue(torch.isnan(model.regime_down_thresh))
+        self.assertTrue(torch.isnan(model.regime_up_thresh))
+        batch = torch.randn(2, args.input_len, args.enc_in)
+        with torch.no_grad():
+            prediction = model(batch)
+        self.assertEqual(tuple(prediction.shape), (2, args.pred_len, 1))
+        self.assertTrue(torch.isfinite(prediction).all())
 
 
 class ForecastTraceTests(unittest.TestCase):
