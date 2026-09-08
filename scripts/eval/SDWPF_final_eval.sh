@@ -1,12 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Deliberately separate from training.  This guard makes repeated test-set
-# inspection an explicit action rather than an automatic side effect.
-if [[ "${CONFIRM_FINAL_EVAL:-0}" != "1" ]]; then
-    echo "Refusing to read the test split. Set CONFIRM_FINAL_EVAL=1 for the final evaluation." >&2
-    exit 2
-fi
 if [[ -z "${FINETUNE_CHECKPOINT:-}" ]]; then
     echo "FINETUNE_CHECKPOINT must point to the selected validation checkpoint." >&2
     exit 2
@@ -16,6 +10,7 @@ SEED="${SEED:-2024}"
 FOLD="${FOLD:-0}"
 N_FOLDS="${N_FOLDS:-1}"
 SPLIT="${SPLIT:-time_ratio}"
+EVAL_SPLIT="${EVAL_SPLIT:-test}"
 PRED_LEN="${PRED_LEN:-12}"
 EVAL_STRIDE="${EVAL_STRIDE:-${PRED_LEN}}"
 RESIDUAL_GATE_INIT="${RESIDUAL_GATE_INIT:--2.2}"
@@ -33,10 +28,28 @@ REGIME_CALIBRATION_QUANTILE="${REGIME_CALIBRATION_QUANTILE:-0.3333333333}"
 export PYTHONHASHSEED="${PYTHONHASHSEED:-${SEED}}"
 export CUBLAS_WORKSPACE_CONFIG="${CUBLAS_WORKSPACE_CONFIG:-:4096:8}"
 
-if [[ "${SPLIT}" != "time_ratio" ]]; then
-    echo "Final paper evaluation requires SPLIT=time_ratio so CV checkpoints cannot read the sealed holdout." >&2
-    exit 2
-fi
+case "${EVAL_SPLIT}" in
+    test)
+        if [[ "${CONFIRM_FINAL_EVAL:-0}" != "1" ]]; then
+            echo "Refusing to read the test split. Set CONFIRM_FINAL_EVAL=1 only for final evaluation." >&2
+            exit 2
+        fi
+        if [[ "${SPLIT}" != "time_ratio" ]]; then
+            echo "Final paper evaluation requires SPLIT=time_ratio so CV checkpoints cannot read the sealed holdout." >&2
+            exit 2
+        fi
+        ;;
+    val)
+        if [[ "${SPLIT}" != "rolling_holdout" ]]; then
+            echo "Interim validation figures require SPLIT=rolling_holdout." >&2
+            exit 2
+        fi
+        ;;
+    *)
+        echo "EVAL_SPLIT must be val or test." >&2
+        exit 2
+        ;;
+esac
 
 PLOT_ARGS=(--forecast_plot_points "${FORECAST_PLOT_POINTS}")
 PLOT_ARGS+=(--regime_label_method "${REGIME_LABEL_METHOD}")
@@ -88,4 +101,5 @@ python -u run.py \
     --run_id "${RUN_ID}" \
     --gpu "${GPU}" \
     --report_output_dir "${REPORT_OUTPUT_DIR}" \
+    --report_split "${EVAL_SPLIT}" \
     "${PLOT_ARGS[@]}"

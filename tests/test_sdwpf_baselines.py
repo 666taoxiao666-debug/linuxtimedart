@@ -1,7 +1,9 @@
 import unittest
+from types import SimpleNamespace
 
 import numpy as np
 
+from run import authorize_forecast_report_split
 from utils.sdwpf_baselines import (
     _history_stats,
     _window_truth,
@@ -62,6 +64,26 @@ class BaselineLeakageTests(unittest.TestCase):
             authorize_eval_split("test", {})
         self.assertEqual(
             authorize_eval_split("test", {"CONFIRM_FINAL_EVAL": "1"}), "test"
+        )
+
+    def test_forecast_validation_plot_does_not_open_test(self):
+        args = SimpleNamespace(
+            data="SDWPF",
+            report_split="val",
+            downstream_task="forecast",
+            model="PromptTimeDART",
+        )
+        self.assertEqual(authorize_forecast_report_split(args, {}), "val")
+
+    def test_forecast_test_report_requires_explicit_confirmation(self):
+        args = SimpleNamespace(data="SDWPF", report_split="test")
+        with self.assertRaises(PermissionError):
+            authorize_forecast_report_split(args, {})
+        self.assertEqual(
+            authorize_forecast_report_split(
+                args, {"CONFIRM_FINAL_EVAL": "1"}
+            ),
+            "test",
         )
 
     def test_truth_starts_immediately_after_history(self):

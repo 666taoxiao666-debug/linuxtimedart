@@ -1580,8 +1580,11 @@ class Exp_TimeDART(Exp_Basic):
         }
 
     def test(self):
+        report_split = str(getattr(self.args, "report_split", "test"))
+        if report_split not in {"val", "test"}:
+            raise ValueError(f"Unsupported forecast report split: {report_split!r}")
         test_data, test_loader = (
-            self._get_data(flag="test")
+            self._get_data(flag=report_split)
         )
 
         preds = []
@@ -1805,22 +1808,25 @@ class Exp_TimeDART(Exp_Basic):
         write_run_manifest(
             folder_path,
             self.args,
-            "test",
+            "test" if report_split == "test" else "validation_report",
             model=self.model,
-            datasets={"test": test_data},
+            datasets={report_split: test_data},
             checkpoints={"fine_tuned": checkpoint_info(checkpoint_path)},
             extra={
                 "status": "complete",
+                "evaluation_split": report_split,
                 "prediction_shape": list(preds.shape),
                 "target_shape": list(trues.shape),
                 "metrics": values,
             },
         )
 
-        print(
-            "Detailed forecast report: "
-            f"{folder_path}"
+        report_label = (
+            "Detailed forecast report"
+            if report_split == "test"
+            else "Detailed val forecast report"
         )
+        print(f"{report_label}: {folder_path}")
         trace_path = os.path.join(folder_path, "forecast_trace.png")
         if os.path.isfile(trace_path):
             print(f"[AUDIT] Forecast trace: {os.path.abspath(trace_path)}")

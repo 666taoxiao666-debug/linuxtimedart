@@ -350,6 +350,15 @@ def build_parser():
         help="optional exact directory for final metrics, arrays, and figures",
     )
     parser.add_argument(
+        "--report_split",
+        choices=["val", "test"],
+        default="test",
+        help=(
+            "dataset split used by evaluation-only forecast reporting; "
+            "SDWPF test access additionally requires CONFIRM_FINAL_EVAL=1"
+        ),
+    )
+    parser.add_argument(
         "--forecast_plot_points",
         type=int,
         default=150,
@@ -592,6 +601,34 @@ def configure_args(args):
     return args
 
 
+def authorize_forecast_report_split(args, environ=None):
+    """Keep validation figures separate from the sealed SDWPF test split."""
+    split = str(getattr(args, "report_split", "test"))
+    if split not in {"val", "test"}:
+        raise ValueError(f"Unsupported forecast report split: {split!r}")
+    if split == "val" and getattr(args, "downstream_task", "forecast") != "forecast":
+        raise ValueError("--report_split val is supported for forecast reporting only")
+    if split == "val" and getattr(args, "model", None) not in {
+        "TimeDART",
+        "PromptTimeDART",
+    }:
+        raise ValueError(
+            "--report_split val is implemented only for TimeDART/PromptTimeDART"
+        )
+    environment = os.environ if environ is None else environ
+    if (
+        getattr(args, "data", None) == "SDWPF"
+        and split == "test"
+        and environment.get("CONFIRM_FINAL_EVAL") != "1"
+    ):
+        raise PermissionError(
+            "SDWPF test evaluation is sealed. Use --report_split val for an "
+            "interim figure, or set CONFIRM_FINAL_EVAL=1 only for the frozen "
+            "one-time final evaluation."
+        )
+    return split
+
+
 def load_finetuned_model(exp, checkpoint_path):
     path = os.path.abspath(os.path.expanduser(checkpoint_path))
     if not os.path.isfile(path):
@@ -689,6 +726,7 @@ def main():
         return
 
     if args.is_training == 0:
+        authorize_forecast_report_split(args)
         args.load_checkpoints = None
         setting = experiment_setting(args, 0)
         checkpoint = args.finetune_checkpoint or os.path.join(

@@ -92,6 +92,19 @@ for fold in 0 1 2; do
 done
 ```
 
+Generate an interim prediction figure from one predeclared CV validation run
+without opening the sealed test split:
+
+```bash
+FOLD=0 SEED=2024 SPLIT=rolling_holdout PRED_LEN=12 \
+FINETUNE_CHECKPOINT='<matched_fold_seed_checkpoint.pth>' \
+bash scripts/eval/SDWPF_logged_validation_plot.sh
+```
+
+The resulting run manifest records `stage=validation_report` and
+`evaluation_split=val`.  Use the figure only as a validation illustration;
+do not describe it as final test performance.
+
 For a matched pretraining checkpoint, run the controlled ablations with:
 
 ```bash

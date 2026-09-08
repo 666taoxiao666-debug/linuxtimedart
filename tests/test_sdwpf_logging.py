@@ -244,6 +244,7 @@ class SDWPFLoggingTests(unittest.TestCase):
             "scripts/finetune/SDWPF_ablation_suite.sh",
             "scripts/eval/SDWPF_baselines.sh",
             "scripts/eval/SDWPF_logged_final_eval.sh",
+            "scripts/eval/SDWPF_logged_validation_plot.sh",
             "scripts/train/SDWPF_full_pipeline.sh",
             "scripts/train/SDWPF_paper_cv.sh",
             "scripts/train/SDWPF_paper_final.sh",
