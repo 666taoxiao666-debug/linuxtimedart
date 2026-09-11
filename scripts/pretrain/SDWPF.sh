@@ -2,6 +2,7 @@
 set -euo pipefail
 
 source "$(dirname "${BASH_SOURCE[0]}")/../lib/sdwpf_log.sh"
+source "$(dirname "${BASH_SOURCE[0]}")/../lib/sdwpf_wiki.sh"
 
 SEED="${SEED:-2024}"
 FOLD="${FOLD:-0}"
@@ -14,7 +15,20 @@ PATIENCE="${PATIENCE:-3}"
 TRAIN_EPOCHS="${TRAIN_EPOCHS:-20}"
 LEARNING_RATE="${LEARNING_RATE:-0.0001}"
 LAMBDA_CE="${LAMBDA_CE:-0.02}"
-REGIME_LABEL_METHOD="${REGIME_LABEL_METHOD:-trend_quantile}"
+PROMPT_ROUTER="${PROMPT_ROUTER:-scene_wiki}"
+if [[ "${PROMPT_ROUTER}" == "scene_wiki" ]]; then
+    REGIME_LABEL_METHOD="scene_wiki"
+else
+    REGIME_LABEL_METHOD="${REGIME_LABEL_METHOD:-trend_quantile}"
+fi
+SCENE_WIKI_CONFIG="${SCENE_WIKI_CONFIG:-configs/wind_regime_wiki.json}"
+SCENE_WIKI_EMBEDDINGS="${SCENE_WIKI_EMBEDDINGS:-outputs/wiki/wind_regime_wiki_qwen.npz}"
+SCENE_WIKI_TOP_K="${SCENE_WIKI_TOP_K:-2}"
+SCENE_WIKI_TEMPERATURE="${SCENE_WIKI_TEMPERATURE:-0.2}"
+SCENE_WIKI_RULE_WEIGHT="${SCENE_WIKI_RULE_WEIGHT:-2.0}"
+SCENE_WIKI_PROMPT_GATE_INIT="${SCENE_WIKI_PROMPT_GATE_INIT:--2.2}"
+WIKI_LLM_PATH="${WIKI_LLM_PATH:-Qwen/Qwen2.5-0.5B}"
+WIKI_BUILD_DEVICE="${WIKI_BUILD_DEVICE:-auto}"
 REGIME_CALIBRATION_QUANTILE="${REGIME_CALIBRATION_QUANTILE:-0.3333333333}"
 REGIME_CALIBRATION_SAMPLES="${REGIME_CALIBRATION_SAMPLES:-50000}"
 REGIME_MIN_CLASS_FRACTION="${REGIME_MIN_CLASS_FRACTION:-0.05}"
@@ -25,7 +39,9 @@ RUN_ID="${RUN_ID:-${PRETRAIN_RUN_ID}}"
 export PYTHONHASHSEED="${PYTHONHASHSEED:-${SEED}}"
 export CUBLAS_WORKSPACE_CONFIG="${CUBLAS_WORKSPACE_CONFIG:-:4096:8}"
 
-LOG_PARAMETERS="h${PRED_LEN}_${SPLIT}_f${FOLD}of${N_FOLDS}_s${SEED}_lr${LEARNING_RATE}_lce${LAMBDA_CE}_reg${REGIME_LABEL_METHOD}_rq${REGIME_CALIBRATION_QUANTILE}_ep${TRAIN_EPOCHS}_pat${PATIENCE}"
+sdwpf_wiki_prepare
+
+LOG_PARAMETERS="h${PRED_LEN}_${SPLIT}_f${FOLD}of${N_FOLDS}_s${SEED}_lr${LEARNING_RATE}_lce${LAMBDA_CE}_${PROMPT_ROUTER}_reg${REGIME_LABEL_METHOD}_rq${REGIME_CALIBRATION_QUANTILE}_ep${TRAIN_EPOCHS}_pat${PATIENCE}"
 sdwpf_log_init "pretrain" "${LOG_PARAMETERS}" "pretrain.log" "${RUN_ID}"
 sdwpf_log_install_exit_trap
 LOG_ENV_FILE="$(sdwpf_log_sidecar env)"
@@ -45,6 +61,14 @@ LOG_SUMMARY_FILE="$(sdwpf_log_sidecar summary.txt)"
     echo "TRAIN_EPOCHS=${TRAIN_EPOCHS}"
     echo "LEARNING_RATE=${LEARNING_RATE}"
     echo "LAMBDA_CE=${LAMBDA_CE}"
+    echo "PROMPT_ROUTER=${PROMPT_ROUTER}"
+    echo "SCENE_WIKI_CONFIG=${SCENE_WIKI_CONFIG}"
+    echo "SCENE_WIKI_EMBEDDINGS=${SCENE_WIKI_EMBEDDINGS}"
+    echo "SCENE_WIKI_TOP_K=${SCENE_WIKI_TOP_K}"
+    echo "SCENE_WIKI_TEMPERATURE=${SCENE_WIKI_TEMPERATURE}"
+    echo "SCENE_WIKI_RULE_WEIGHT=${SCENE_WIKI_RULE_WEIGHT}"
+    echo "SCENE_WIKI_PROMPT_GATE_INIT=${SCENE_WIKI_PROMPT_GATE_INIT}"
+    echo "WIKI_LLM_PATH=${WIKI_LLM_PATH}"
     echo "REGIME_LABEL_METHOD=${REGIME_LABEL_METHOD}"
     echo "REGIME_CALIBRATION_QUANTILE=${REGIME_CALIBRATION_QUANTILE}"
     echo "REGIME_CALIBRATION_SAMPLES=${REGIME_CALIBRATION_SAMPLES}"
@@ -87,6 +111,13 @@ COMMAND=(python -u run.py
     --patience "${PATIENCE}" \
     --learning_rate "${LEARNING_RATE}" \
     --lambda_ce "${LAMBDA_CE}" \
+    --prompt_router "${PROMPT_ROUTER}" \
+    --scene_wiki_config "${SCENE_WIKI_CONFIG}" \
+    --scene_wiki_embeddings "${SCENE_WIKI_EMBEDDINGS}" \
+    --scene_wiki_top_k "${SCENE_WIKI_TOP_K}" \
+    --scene_wiki_temperature "${SCENE_WIKI_TEMPERATURE}" \
+    --scene_wiki_rule_weight "${SCENE_WIKI_RULE_WEIGHT}" \
+    --scene_wiki_prompt_gate_init "${SCENE_WIKI_PROMPT_GATE_INIT}" \
     --regime_label_method "${REGIME_LABEL_METHOD}" \
     --regime_calibration_quantile "${REGIME_CALIBRATION_QUANTILE}" \
     --regime_calibration_samples "${REGIME_CALIBRATION_SAMPLES}" \
@@ -101,7 +132,7 @@ COMMAND=(python -u run.py
 
 echo "COMPLETED_AT=$(date --iso-8601=seconds)" >> "${LOG_ENV_FILE}"
 {
-    grep -E '^Epoch:|^Validation loss decreased|^Pretrain early stopping|^\[AUDIT\] (Run manifest:|REGIME_CALIBRATION=)' \
+    grep -E '^Epoch:|^Validation loss decreased|^Pretrain early stopping|^\[AUDIT\] (Run manifest:|REGIME_CALIBRATION=|SCENE_WIKI_CALIBRATION=)' \
         "${SDWPF_LOG_FILE}" || true
 } > "${LOG_SUMMARY_FILE}"
 echo "[PRETRAIN] Log: ${SDWPF_LOG_FILE}"

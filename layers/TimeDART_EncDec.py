@@ -351,6 +351,105 @@ class SoftPromptGenerator(nn.Module):
         return torch.matmul(probs, self.prompt_embeddings)
 
 
+class SceneWikiPromptRouter(nn.Module):
+    """Retrieve and mix frozen LLM scene anchors from a causal state query.
+
+    The LLM is used offline to encode the Wiki text. During training and
+    inference this module contains only tensors and small trainable projections,
+    so runs are deterministic and do not depend on an online service.
+    """
+
+    def __init__(
+        self,
+        semantic_embeddings,
+        d_model,
+        *,
+        num_features=None,
+        channel_prior=None,
+        top_k=2,
+        temperature=0.2,
+        rule_weight=2.0,
+        prompt_gate_init=-2.2,
+        dropout=0.1,
+    ):
+        super().__init__()
+        keys = torch.as_tensor(semantic_embeddings, dtype=torch.float32)
+        if keys.ndim != 2 or keys.size(0) < 2 or keys.size(1) < 1:
+            raise ValueError(
+                "semantic_embeddings must have shape [num_scenes, hidden_size]"
+            )
+        if not torch.isfinite(keys).all():
+            raise ValueError("semantic_embeddings contain non-finite values")
+        if not 1 <= int(top_k) <= int(keys.size(0)):
+            raise ValueError("scene_wiki_top_k must be between 1 and num_scenes")
+        if float(temperature) <= 0:
+            raise ValueError("scene_wiki_temperature must be positive")
+        self.num_scenes = int(keys.size(0))
+        self.top_k = int(top_k)
+        self.temperature = float(temperature)
+        self.rule_weight = float(rule_weight)
+        self.prompt_gate_logit = nn.Parameter(
+            torch.tensor(float(prompt_gate_init), dtype=torch.float32)
+        )
+        self.register_buffer("semantic_keys", F.normalize(keys, dim=-1))
+        self.num_features = int(num_features) if num_features is not None else None
+        if self.num_features is not None:
+            prior = torch.as_tensor(channel_prior, dtype=torch.float32).reshape(-1)
+            if prior.numel() != self.num_features:
+                raise ValueError("Wiki router channel prior must match num_features")
+            self.log_channel_weight = nn.Parameter(torch.log(prior.clamp_min(1e-4)))
+        else:
+            self.log_channel_weight = None
+        self.semantic_projection = nn.Linear(keys.size(1), d_model, bias=False)
+        self.query_encoder = nn.Sequential(
+            nn.LayerNorm(2 * d_model),
+            nn.Dropout(dropout),
+            nn.Linear(2 * d_model, d_model),
+            nn.GELU(),
+            nn.Linear(d_model, d_model),
+        )
+        self.prompt_delta = nn.Parameter(torch.zeros(self.num_scenes, d_model))
+        self.prompt_norm = nn.LayerNorm(d_model)
+
+    def forward(self, x_out, rule_logits=None):
+        if x_out.ndim == 4:
+            if self.log_channel_weight is None or x_out.size(1) != self.num_features:
+                raise ValueError(
+                    "Wiki router multichannel input does not match its configured features"
+                )
+            weights = F.softmax(self.log_channel_weight, dim=0).view(1, -1, 1, 1)
+            x_out = (x_out * weights).sum(dim=1)
+        if x_out.ndim != 3:
+            raise ValueError(
+                f"Wiki router expects [batch,patch,d_model] or multichannel 4D, got {x_out.shape}"
+            )
+        state = torch.cat([x_out.mean(dim=1), x_out[:, -1]], dim=-1)
+        query = F.normalize(self.query_encoder(state), dim=-1)
+        projected_keys = self.semantic_projection(self.semantic_keys)
+        retrieval_keys = F.normalize(projected_keys, dim=-1)
+        retrieval_logits = torch.matmul(query, retrieval_keys.transpose(0, 1))
+        retrieval_logits = retrieval_logits / self.temperature
+        routing_logits = retrieval_logits
+        if rule_logits is not None:
+            if rule_logits.shape != retrieval_logits.shape:
+                raise ValueError(
+                    "rule logits must match retrieval logits: "
+                    f"{rule_logits.shape} != {retrieval_logits.shape}"
+                )
+            routing_logits = routing_logits + self.rule_weight * rule_logits
+        if self.top_k < self.num_scenes:
+            keep = routing_logits.topk(self.top_k, dim=-1).indices
+            masked = torch.full_like(routing_logits, float("-inf"))
+            masked.scatter_(1, keep, routing_logits.gather(1, keep))
+            routing_logits = masked
+        probabilities = F.softmax(routing_logits, dim=-1)
+        prompt_values = self.prompt_norm(projected_keys + self.prompt_delta)
+        prompt = torch.sigmoid(self.prompt_gate_logit) * torch.matmul(
+            probabilities, prompt_values
+        )
+        return prompt, retrieval_logits, probabilities
+
+
 class PromptGuidedDecoderBlock(nn.Module):
     def __init__(
         self, d_model: int, num_heads: int, feedforward_dim: int, dropout: float, prompt_dim: int

@@ -3,6 +3,43 @@
 This protocol keeps the final 20% of timestamps sealed until all model and
 hyper-parameter choices are frozen.
 
+## Causal LLM Scene Wiki prompt
+
+The default PromptTimeDART route is now `scene_wiki`. Seven observable wind
+operating scenes are versioned in `configs/wind_regime_wiki.json`: stable,
+ramp-up, ramp-down, gust/turbulence, high-wind low-power, rated saturation and
+low-wind idle. The high-wind low-power card is deliberately not called
+curtailment because SCADA history alone cannot identify its cause.
+
+On the first run, the entry script uses the frozen model selected by
+`WIKI_LLM_PATH` to encode the seven text cards once. It writes
+`outputs/wiki/wind_regime_wiki_qwen.npz`; no LLM is called inside training or
+inference. The time-series encoder then performs Top-2 soft retrieval over
+those frozen semantic anchors using historical SCADA only. Train-split scaler
+statistics, Wiki/config hashes, scene support and prompt parameters are saved
+in the audit manifest and checkpoint.
+
+To build the semantic anchors explicitly (optional, because training scripts
+do this automatically when the bundle is absent):
+
+```bash
+python scripts/build_wind_regime_wiki.py \
+  --config configs/wind_regime_wiki.json \
+  --output outputs/wiki/wind_regime_wiki_qwen.npz \
+  --llm_path Qwen/Qwen2.5-0.5B
+```
+
+For the legacy three-way trend-prompt control experiment, set both variables:
+
+```bash
+PROMPT_ROUTER=trend REGIME_LABEL_METHOD=trend_quantile \
+bash scripts/train/SDWPF_paper_cv.sh
+```
+
+Do not compare the Scene Wiki run with old checkpoints as if only one module
+changed. Its Wiki router has seven modes and therefore requires fold/seed-
+matched pretraining followed by matched fine-tuning.
+
 ## Log layout
 
 SDWPF entry scripts automatically allocate one searchable directory per user

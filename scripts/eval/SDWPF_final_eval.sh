@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+source "$(dirname "${BASH_SOURCE[0]}")/../lib/sdwpf_wiki.sh"
+
 if [[ -z "${FINETUNE_CHECKPOINT:-}" ]]; then
     echo "FINETUNE_CHECKPOINT must point to the selected validation checkpoint." >&2
     exit 2
@@ -23,10 +25,25 @@ FORECAST_PLOT_POINTS="${FORECAST_PLOT_POINTS:-150}"
 FORECAST_PLOT_TURBINE_ID="${FORECAST_PLOT_TURBINE_ID:-}"
 FORECAST_PLOT_START="${FORECAST_PLOT_START:-}"
 REGIME_PROMPT="${REGIME_PROMPT:-1}"
-REGIME_LABEL_METHOD="${REGIME_LABEL_METHOD:-trend_quantile}"
+PROMPT_ROUTER="${PROMPT_ROUTER:-scene_wiki}"
+if [[ "${PROMPT_ROUTER}" == "scene_wiki" ]]; then
+    REGIME_LABEL_METHOD="scene_wiki"
+else
+    REGIME_LABEL_METHOD="${REGIME_LABEL_METHOD:-trend_quantile}"
+fi
+SCENE_WIKI_CONFIG="${SCENE_WIKI_CONFIG:-configs/wind_regime_wiki.json}"
+SCENE_WIKI_EMBEDDINGS="${SCENE_WIKI_EMBEDDINGS:-outputs/wiki/wind_regime_wiki_qwen.npz}"
+SCENE_WIKI_TOP_K="${SCENE_WIKI_TOP_K:-2}"
+SCENE_WIKI_TEMPERATURE="${SCENE_WIKI_TEMPERATURE:-0.2}"
+SCENE_WIKI_RULE_WEIGHT="${SCENE_WIKI_RULE_WEIGHT:-2.0}"
+SCENE_WIKI_PROMPT_GATE_INIT="${SCENE_WIKI_PROMPT_GATE_INIT:--2.2}"
+WIKI_LLM_PATH="${WIKI_LLM_PATH:-Qwen/Qwen2.5-0.5B}"
+WIKI_BUILD_DEVICE="${WIKI_BUILD_DEVICE:-auto}"
 REGIME_CALIBRATION_QUANTILE="${REGIME_CALIBRATION_QUANTILE:-0.3333333333}"
 export PYTHONHASHSEED="${PYTHONHASHSEED:-${SEED}}"
 export CUBLAS_WORKSPACE_CONFIG="${CUBLAS_WORKSPACE_CONFIG:-:4096:8}"
+
+sdwpf_wiki_prepare
 
 case "${EVAL_SPLIT}" in
     test)
@@ -52,6 +69,13 @@ case "${EVAL_SPLIT}" in
 esac
 
 PLOT_ARGS=(--forecast_plot_points "${FORECAST_PLOT_POINTS}")
+PLOT_ARGS+=(--prompt_router "${PROMPT_ROUTER}")
+PLOT_ARGS+=(--scene_wiki_config "${SCENE_WIKI_CONFIG}")
+PLOT_ARGS+=(--scene_wiki_embeddings "${SCENE_WIKI_EMBEDDINGS}")
+PLOT_ARGS+=(--scene_wiki_top_k "${SCENE_WIKI_TOP_K}")
+PLOT_ARGS+=(--scene_wiki_temperature "${SCENE_WIKI_TEMPERATURE}")
+PLOT_ARGS+=(--scene_wiki_rule_weight "${SCENE_WIKI_RULE_WEIGHT}")
+PLOT_ARGS+=(--scene_wiki_prompt_gate_init "${SCENE_WIKI_PROMPT_GATE_INIT}")
 PLOT_ARGS+=(--regime_label_method "${REGIME_LABEL_METHOD}")
 PLOT_ARGS+=(--regime_calibration_quantile "${REGIME_CALIBRATION_QUANTILE}")
 if [[ -n "${FORECAST_PLOT_TURBINE_ID}" ]]; then

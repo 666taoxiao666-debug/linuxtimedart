@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+# Shared offline preparation for the SDWPF semantic prompt Wiki.
+sdwpf_wiki_prepare() {
+    if [[ "${PROMPT_ROUTER}" != "scene_wiki" ]]; then
+        return 0
+    fi
+    if [[ -f "${SCENE_WIKI_EMBEDDINGS}" ]]; then
+        return 0
+    fi
+    echo "[WIKI] Embedding bundle is absent; encoding the versioned scene Wiki once."
+    python -u scripts/build_wind_regime_wiki.py \
+        --config "${SCENE_WIKI_CONFIG}" \
+        --output "${SCENE_WIKI_EMBEDDINGS}" \
+        --llm_path "${WIKI_LLM_PATH}" \
+        --device "${WIKI_BUILD_DEVICE}"
+}

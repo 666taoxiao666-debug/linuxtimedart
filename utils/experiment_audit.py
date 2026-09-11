@@ -113,7 +113,7 @@ def environment_info() -> dict:
     if torch.cuda.is_available():
         try:
             cuda_device = torch.cuda.get_device_name(torch.cuda.current_device())
-        except RuntimeError:
+        except (RuntimeError, AssertionError):
             cuda_device = None
     return {
         "recorded_at": datetime.now().astimezone().isoformat(),
@@ -297,6 +297,7 @@ def model_runtime_summary(model, args=None) -> dict:
         "use_op_context",
         "residual_forecast",
         "regime_label_method",
+        "prompt_router",
     ):
         result[name] = _jsonable(getattr(core, name, None))
     if hasattr(core, "regime_down_thresh") and hasattr(core, "regime_up_thresh"):
@@ -310,6 +311,27 @@ def model_runtime_summary(model, args=None) -> dict:
     calibration = getattr(core, "regime_calibration", None)
     if calibration is not None:
         result["regime_calibration"] = _jsonable(calibration)
+    if getattr(core, "prompt_router", None) == "scene_wiki":
+        router = core.scene_wiki_router
+        channel_weights = None
+        if getattr(router, "log_channel_weight", None) is not None:
+            values = torch.softmax(router.log_channel_weight.detach(), dim=0).cpu().numpy()
+            names = list(getattr(args, "feature_columns", []) or [])
+            channel_weights = {
+                (names[index] if index < len(names) else f"feature_{index}"): float(value)
+                for index, value in enumerate(values)
+            }
+        result["scene_wiki"] = {
+            "scene_ids": list(getattr(core, "scene_wiki_scene_ids", ())),
+            "encoder": getattr(core, "scene_wiki_encoder_name", None),
+            "bundle_sha256": getattr(core, "scene_wiki_bundle_sha256", None),
+            "prompt_gate": float(
+                torch.sigmoid(router.prompt_gate_logit.detach())
+                .cpu()
+                .item()
+            ),
+            "retrieval_channel_weights": channel_weights,
+        }
     transfer_audit = getattr(core, "pretrain_transfer_audit", None)
     if transfer_audit is not None:
         result["pretrain_transfer"] = _jsonable(transfer_audit)

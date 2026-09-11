@@ -19,6 +19,7 @@ from utils.regime_labels import (
     summarize_regime_confusion,
     update_regime_confusion,
 )
+from utils.wind_regime_wiki import audit_scene_wiki_labels_from_dataset
 from torch.optim import lr_scheduler
 import torch
 import torch.nn as nn
@@ -83,6 +84,39 @@ class Exp_TimeDART(Exp_Basic):
         core_model = self.model.module if isinstance(self.model, nn.DataParallel) else self.model
         if not getattr(core_model, "use_soft_prompt", False):
             return None
+        if getattr(core_model, "prompt_router", "trend") == "scene_wiki":
+            if not hasattr(train_data, "scaler"):
+                raise TypeError("Scene Wiki requires the SDWPF train-fitted scaler")
+            core_model.set_scene_scaler(
+                train_data.scaler.mean_,
+                train_data.scaler.scale_,
+            )
+            audit = audit_scene_wiki_labels_from_dataset(
+                train_data,
+                self.args.feature_columns,
+                rated_power=self.args.rated_power,
+                max_samples=self.args.regime_calibration_samples,
+                rule_kwargs=core_model.scene_wiki_rule_kwargs,
+            )
+            audit.update(
+                {
+                    "wiki_config_sha256": self.args.scene_wiki_config_sha256,
+                    "wiki_bundle_sha256": self.args.scene_wiki_bundle_sha256,
+                    "wiki_encoder": self.args.scene_wiki_encoder_name,
+                }
+            )
+            self.args.regime_calibration_source = "train"
+            self.args.regime_calibration_counts = audit["class_counts"]
+            core_model.regime_calibration = audit
+            print(
+                "[AUDIT] SCENE_WIKI_CALIBRATION="
+                f"source=train samples={audit['sample_count']} "
+                f"scenes={';'.join(audit['scene_ids'])} "
+                f"counts={';'.join(str(value) for value in audit['class_counts'])} "
+                f"config_sha256={audit['wiki_config_sha256'][:12]} "
+                f"bundle_sha256={audit['wiki_bundle_sha256'][:12]}"
+            )
+            return audit
         if getattr(self.args, "regime_label_method", "legacy_volatility") != "trend_quantile":
             print("[WARNING] Using legacy fixed regime thresholds for reproduction only.")
             return None
@@ -501,6 +535,7 @@ class Exp_TimeDART(Exp_Basic):
             "positional_encoding.",
             "regime_predictor.",
             "soft_prompt_generator.",
+            "scene_wiki_router.",
         )
 
         state = OrderedDict()
@@ -518,6 +553,8 @@ class Exp_TimeDART(Exp_Basic):
             if clean_name.startswith(transfer_prefixes) or clean_name in {
                 "regime_down_thresh",
                 "regime_up_thresh",
+                "scene_scaler_mean",
+                "scene_scaler_scale",
             }:
                 state[clean_name] = (
                     value.detach().cpu()
@@ -534,6 +571,13 @@ class Exp_TimeDART(Exp_Basic):
             "feature_columns": list(getattr(self.args, "feature_columns", []) or []),
             "input_len": self.args.input_len,
             "pred_len": self.args.pred_len,
+            "prompt_router": getattr(self.args, "prompt_router", "trend"),
+            "scene_wiki_config_sha256": getattr(
+                self.args, "scene_wiki_config_sha256", None
+            ),
+            "scene_wiki_bundle_sha256": getattr(
+                self.args, "scene_wiki_bundle_sha256", None
+            ),
             "runtime_model": model_runtime_summary(self.model, self.args),
             "model_state_dict": state,
         }
@@ -806,6 +850,12 @@ class Exp_TimeDART(Exp_Basic):
         vali_data, vali_loader = (
             self._get_data(flag="val")
         )
+        core_model = self.model.module if isinstance(self.model, nn.DataParallel) else self.model
+        if getattr(core_model, "prompt_router", "trend") == "scene_wiki":
+            # A random-init ablation has no pretraining checkpoint carrying the
+            # scaler buffers. Reinstall the scaler from this run's training split
+            # before the epoch-0 validation; never inspect validation/test data.
+            self._calibrate_regime_labels(train_data)
 
         path = os.path.join(
             self.args.checkpoints,
@@ -1137,6 +1187,11 @@ class Exp_TimeDART(Exp_Basic):
             if scale_parts:
                 epoch_summary += " ChannelScale(static/dynamic): " + ",".join(scale_parts)
             diagnostics = validation["diagnostics"]
+            if "scene_wiki_prompt_gate" in diagnostics:
+                epoch_summary += (
+                    " WikiPromptGate: "
+                    f"{diagnostics['scene_wiki_prompt_gate']:.5f}"
+                )
             if "val_available_mae_kw" in diagnostics:
                 epoch_summary += (
                     " Available MAE(kW): "
@@ -1546,6 +1601,15 @@ class Exp_TimeDART(Exp_Basic):
         runtime = model_runtime_summary(self.model, self.args)
         if "residual_gate" in runtime:
             diagnostics["residual_gate"] = float(runtime["residual_gate"])
+        wiki_runtime = runtime.get("scene_wiki", {})
+        if wiki_runtime:
+            diagnostics["scene_wiki_prompt_gate"] = float(
+                wiki_runtime["prompt_gate"]
+            )
+            for name, value in (
+                wiki_runtime.get("retrieval_channel_weights") or {}
+            ).items():
+                diagnostics[f"scene_wiki_channel_weight_{name}"] = float(value)
         for name, value in runtime.get("channel_scale", {}).items():
             diagnostics[f"channel_static_{name}"] = float(value)
         if dynamic_scale_samples:

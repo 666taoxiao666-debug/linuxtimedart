@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "name": "SDWPF causal wind-regime wiki",
+  "language": "en",
+  "description": "Observable wind-turbine operating scenes used as frozen semantic anchors. Every scene must be inferable from the historical SCADA window only.",
+  "rule_defaults": {
+    "recent_steps": 12,
+    "low_wind_max_mps": 3.0,
+    "active_wind_min_mps": 5.0,
+    "low_power_max_ratio": 0.08,
+    "rated_power_min_ratio": 0.9,
+    "gust_std_min_mps": 1.0,
+    "gust_step_min_mps": 2.0,
+    "ramp_delta_min_ratio": 0.1
+  },
+  "scenes": [
+    {
+      "id": "normal_stable",
+      "title": "Normal stable production",
+      "prompt": "The turbine is operating normally. Recent wind speed and active power are comparatively stable, with no clear ramp, abrupt gust, low-wind idle state, rated-power saturation, or high-wind low-power anomaly. Favor smooth short-horizon continuation while allowing small corrections.",
+      "observable_evidence": ["stable recent power", "moderate wind variability", "history only"]
+    },
+    {
+      "id": "normal_ramp_up",
+      "title": "Normal upward power ramp",
+      "prompt": "Recent active power shows a sustained upward ramp under changing wind conditions. Preserve the rising direction but avoid unlimited extrapolation near rated power. Use only the observed SCADA history.",
+      "observable_evidence": ["positive recent power change", "not already rated", "history only"]
+    },
+    {
+      "id": "normal_ramp_down",
+      "title": "Normal downward power ramp",
+      "prompt": "Recent active power shows a sustained downward ramp. Preserve the falling direction while respecting the zero-power floor and possible recovery. Use only the observed SCADA history.",
+      "observable_evidence": ["negative recent power change", "history only"]
+    },
+    {
+      "id": "gust_or_turbulent",
+      "title": "Gusty or turbulent transition",
+      "prompt": "Recent wind speed is highly variable or contains an abrupt jump. Treat the operating state as uncertain and rapidly changing; emphasize recent wind dynamics and avoid overconfident smooth extrapolation.",
+      "observable_evidence": ["large recent wind-speed standard deviation or step", "history only"]
+    },
+    {
+      "id": "high_wind_low_power",
+      "title": "High wind with unexpectedly low power",
+      "prompt": "Observed wind is sufficient for generation but recent active power is unexpectedly low. This is an observable state, not a confirmed diagnosis; possible explanations include control action, curtailment, shutdown, or sensor/fault conditions. Favor conservative power continuation until the history shows recovery.",
+      "observable_evidence": ["active wind speed", "low recent power", "cause is unknown", "history only"]
+    },
+    {
+      "id": "rated_saturation",
+      "title": "Rated-power saturation",
+      "prompt": "Recent active power is near the turbine rated-power ceiling. Respect saturation and avoid forecasts above the physical upper bound while remaining responsive to an observed decline.",
+      "observable_evidence": ["recent power near rated capacity", "history only"]
+    },
+    {
+      "id": "low_wind_idle",
+      "title": "Low-wind idle state",
+      "prompt": "Recent wind speed is below or near cut-in and active power is low. Favor a near-zero forecast unless the observed wind history already indicates a clear recovery.",
+      "observable_evidence": ["low recent wind speed", "low recent power", "history only"]
+    }
+  ]
+}

@@ -48,6 +48,7 @@ def forecast_result_tag(args):
         f"chmix{int(trained('mix_channels', False))}",
         f"phy{int(trained('sdwpf_physics_features', False))}",
         f"keepw{int(trained('revin_keep_wind', False))}",
+        f"router{trained('prompt_router', 'trend')}",
         f"split{trained('sdwpf_split', 'time')}",
         f"fold{trained('sdwpf_fold', 0)}",
         f"seed{trained('seed')}",
@@ -56,6 +57,9 @@ def forecast_result_tag(args):
     checkpoint_hash = checkpoint.get("sha256")
     if checkpoint_hash:
         parts.append(f"ckpt{checkpoint_hash[:12]}")
+    wiki_hash = trained("scene_wiki_bundle_sha256", "")
+    if wiki_hash:
+        parts.append(f"wiki{str(wiki_hash)[:12]}")
     run_id = getattr(args, "run_id", "") or ""
     if str(run_id).strip():
         parts.append(f"id{safe_component(run_id)}")
@@ -76,6 +80,7 @@ def experiment_setting(args, run_index):
         f"mix{args.mix_mse_weight}_chmix{int(getattr(args, 'mix_channels', False))}_"
         f"phy{int(getattr(args, 'sdwpf_physics_features', False))}_"
         f"keepw{int(getattr(args, 'revin_keep_wind', False))}_"
+        f"router{getattr(args, 'prompt_router', 'trend')}_"
         f"split{getattr(args, 'sdwpf_split', 'time')}_fold{getattr(args, 'sdwpf_fold', 0)}_"
         f"seed{args.seed}"
     )

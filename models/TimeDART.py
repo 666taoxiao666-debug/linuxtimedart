@@ -11,6 +11,7 @@ from layers.TimeDART_EncDec import (
     PromptEncoder,
     RegimePredictor,
     SoftPromptGenerator,
+    SceneWikiPromptRouter,
     DilatedConvEncoder,
     ClsEmbedding,
     ClsHead,
@@ -20,6 +21,10 @@ from layers.TimeDART_EncDec import (
 )
 from layers.Embed import Patch, PatchEmbedding, PositionalEncoding, TokenEmbedding_TimeDART
 from utils.regime_labels import compute_regime_pseudo_labels_from_series
+from utils.wind_regime_wiki import (
+    compute_scene_wiki_rule_logits,
+    load_wind_regime_wiki_bundle,
+)
 from data_provider.sdwpf_features import (
     channel_prior_vector,
     operating_context_dim,
@@ -108,6 +113,7 @@ class Model(nn.Module):
             "regime_label_method",
             "legacy_volatility",
         )
+        self.prompt_router = getattr(args, "prompt_router", "trend")
         self.features = getattr(args, "features", "M")
         self.enc_in = int(getattr(args, "enc_in", 1))
         self.feature_columns = list(getattr(args, "feature_columns", None) or [])
@@ -215,32 +221,81 @@ class Model(nn.Module):
         # regime classifier/dictionary.
         if self.use_soft_prompt:
             self.num_modes = getattr(args, "num_modes", 3)
-            if self.num_modes != 3:
+            if self.prompt_router == "trend" and self.num_modes != 3:
                 raise ValueError(
                     "The pseudo-label definition requires "
                     "num_modes=3"
                 )
 
             self.prompt_dim = args.d_model
-            self.regime_predictor = RegimePredictor(
-                d_model=args.d_model,
-                num_modes=self.num_modes,
-                dropout=args.dropout,
-            )
-            self.soft_prompt_generator = SoftPromptGenerator(
-                num_modes=self.num_modes,
-                d_model=args.d_model,
-            )
-            down = getattr(args, "regime_down_thresh", None)
-            up = getattr(args, "regime_up_thresh", None)
-            self.register_buffer(
-                "regime_down_thresh",
-                torch.tensor(float("nan") if down is None else float(down)),
-            )
-            self.register_buffer(
-                "regime_up_thresh",
-                torch.tensor(float("nan") if up is None else float(up)),
-            )
+            if self.prompt_router == "scene_wiki":
+                bundle = load_wind_regime_wiki_bundle(
+                    args.scene_wiki_embeddings,
+                    expected_scene_ids=getattr(args, "scene_wiki_scene_ids", None),
+                )
+                if self.num_modes != len(bundle["scene_ids"]):
+                    raise ValueError(
+                        "num_modes must equal the Wiki scene count: "
+                        f"{self.num_modes} != {len(bundle['scene_ids'])}"
+                    )
+                self.scene_wiki_scene_ids = tuple(bundle["scene_ids"])
+                self.scene_wiki_bundle_sha256 = bundle["sha256"]
+                self.scene_wiki_encoder_name = bundle["encoder_name"]
+                self.scene_wiki_router = SceneWikiPromptRouter(
+                    bundle["embeddings"],
+                    d_model=args.d_model,
+                    num_features=self.enc_in,
+                    channel_prior=channel_prior_vector(
+                        self.feature_columns,
+                        physics_init=True,
+                    ),
+                    top_k=args.scene_wiki_top_k,
+                    temperature=args.scene_wiki_temperature,
+                    rule_weight=args.scene_wiki_rule_weight,
+                    prompt_gate_init=args.scene_wiki_prompt_gate_init,
+                    dropout=args.dropout,
+                )
+                self.register_buffer(
+                    "scene_scaler_mean",
+                    torch.full((self.enc_in,), float("nan")),
+                )
+                self.register_buffer(
+                    "scene_scaler_scale",
+                    torch.full((self.enc_in,), float("nan")),
+                )
+                self.scene_wiki_rule_kwargs = {
+                    "recent_steps": int(args.scene_wiki_recent_steps),
+                    "low_wind_max_mps": float(args.scene_wiki_low_wind_max_mps),
+                    "active_wind_min_mps": float(args.scene_wiki_active_wind_min_mps),
+                    "low_power_max_ratio": float(args.scene_wiki_low_power_max_ratio),
+                    "rated_power_min_ratio": float(args.scene_wiki_rated_power_min_ratio),
+                    "gust_std_min_mps": float(args.scene_wiki_gust_std_min_mps),
+                    "gust_step_min_mps": float(args.scene_wiki_gust_step_min_mps),
+                    "ramp_delta_min_ratio": float(args.scene_wiki_ramp_delta_min_ratio),
+                }
+                self.rated_power = float(args.rated_power)
+            elif self.prompt_router == "trend":
+                self.regime_predictor = RegimePredictor(
+                    d_model=args.d_model,
+                    num_modes=self.num_modes,
+                    dropout=args.dropout,
+                )
+                self.soft_prompt_generator = SoftPromptGenerator(
+                    num_modes=self.num_modes,
+                    d_model=args.d_model,
+                )
+                down = getattr(args, "regime_down_thresh", None)
+                up = getattr(args, "regime_up_thresh", None)
+                self.register_buffer(
+                    "regime_down_thresh",
+                    torch.tensor(float("nan") if down is None else float(down)),
+                )
+                self.register_buffer(
+                    "regime_up_thresh",
+                    torch.tensor(float("nan") if up is None else float(up)),
+                )
+            else:
+                raise ValueError(f"Unknown prompt router: {self.prompt_router}")
         else:
             self.prompt_dim = (
                 args.prompt_dim
@@ -324,24 +379,48 @@ class Model(nn.Module):
                 % num_features
             )
 
-            target_hidden = x_out.reshape(
+            channel_hidden = x_out.reshape(
                 batch_size,
                 num_features,
                 x_out.size(1),
                 x_out.size(2),
-            )[:, target_index]
-
-            regime_logits, regime_probs = (
-                self.regime_predictor(
-                    target_hidden
-                )
             )
+            target_hidden = channel_hidden[:, target_index]
 
-            sample_prompt = (
-                self.soft_prompt_generator(
-                    regime_probs
+            if self.prompt_router == "scene_wiki":
+                if not torch.isfinite(self.scene_scaler_mean).all() or not torch.isfinite(
+                    self.scene_scaler_scale
+                ).all():
+                    raise RuntimeError(
+                        "Scene Wiki scaler statistics are unset. Pretrain with a train-only "
+                        "SDWPF split or load its matched pretraining checkpoint."
+                    )
+                raw_history = (
+                    label_source * self.scene_scaler_scale.view(1, 1, -1)
+                    + self.scene_scaler_mean.view(1, 1, -1)
                 )
-            )
+                rule_logits, scene_labels = compute_scene_wiki_rule_logits(
+                    raw_history,
+                    self.feature_columns,
+                    rated_power=self.rated_power,
+                    **self.scene_wiki_rule_kwargs,
+                )
+                sample_prompt, regime_logits, regime_probs = self.scene_wiki_router(
+                    channel_hidden,
+                    rule_logits=rule_logits,
+                )
+            else:
+                regime_logits, regime_probs = (
+                    self.regime_predictor(
+                        target_hidden
+                    )
+                )
+
+                sample_prompt = (
+                    self.soft_prompt_generator(
+                        regime_probs
+                    )
+                )
 
             # Channel-independent encoder rows belonging
             # to the same sample receive the same
@@ -359,24 +438,27 @@ class Model(nn.Module):
             # intentionally random-init ablation depend on pretrain thresholds.
             pseudo_labels = None
             if self.task_name == "pretrain":
-                pseudo_labels = (
-                    compute_regime_pseudo_labels_from_series(
-                        label_source[
-                            :,
-                            :,
-                            target_index,
-                        ],
-                        stable_thresh=(
-                            self.regime_stable_thresh
-                        ),
-                        ramp_thresh=(
-                            self.regime_ramp_thresh
-                        ),
-                        method=self.regime_label_method,
-                        down_thresh=self.regime_down_thresh,
-                        up_thresh=self.regime_up_thresh,
+                if self.prompt_router == "scene_wiki":
+                    pseudo_labels = scene_labels
+                else:
+                    pseudo_labels = (
+                        compute_regime_pseudo_labels_from_series(
+                            label_source[
+                                :,
+                                :,
+                                target_index,
+                            ],
+                            stable_thresh=(
+                                self.regime_stable_thresh
+                            ),
+                            ramp_thresh=(
+                                self.regime_ramp_thresh
+                            ),
+                            method=self.regime_label_method,
+                            down_thresh=self.regime_down_thresh,
+                            up_thresh=self.regime_up_thresh,
+                        )
                     )
-                )
 
             return (
                 soft_prompt,
@@ -401,6 +483,27 @@ class Model(nn.Module):
         )
 
         return prompt_emb, None, None
+
+    def set_scene_scaler(self, mean, scale):
+        """Install scaler statistics fitted on the training split only."""
+
+        if self.prompt_router != "scene_wiki":
+            return
+        mean_tensor = torch.as_tensor(
+            mean, dtype=self.scene_scaler_mean.dtype, device=self.scene_scaler_mean.device
+        ).reshape(-1)
+        scale_tensor = torch.as_tensor(
+            scale, dtype=self.scene_scaler_scale.dtype, device=self.scene_scaler_scale.device
+        ).reshape(-1)
+        if mean_tensor.numel() != self.enc_in or scale_tensor.numel() != self.enc_in:
+            raise ValueError("Scene Wiki scaler width must equal enc_in")
+        if not torch.isfinite(mean_tensor).all() or not torch.isfinite(scale_tensor).all():
+            raise ValueError("Scene Wiki scaler statistics must be finite")
+        if torch.any(scale_tensor <= 0):
+            raise ValueError("Scene Wiki scaler scales must be positive")
+        with torch.no_grad():
+            self.scene_scaler_mean.copy_(mean_tensor)
+            self.scene_scaler_scale.copy_(scale_tensor)
 
     def pretrain(self, x):
         # [batch_size, input_len, num_features]

@@ -2,6 +2,7 @@
 set -euo pipefail
 
 source "$(dirname "${BASH_SOURCE[0]}")/../lib/sdwpf_log.sh"
+source "$(dirname "${BASH_SOURCE[0]}")/../lib/sdwpf_wiki.sh"
 
 # Ablation: PromptTimeDART with or without a pre-trained checkpoint.
 # Do not treat this as the main result unless it beats random-init TimeDART
@@ -30,14 +31,29 @@ CHANNEL_PRIOR="${CHANNEL_PRIOR:-1}"
 OP_CONTEXT="${OP_CONTEXT:-1}"
 REVIN_KEEP_WIND="${REVIN_KEEP_WIND:-1}"
 REGIME_PROMPT="${REGIME_PROMPT:-1}"
-REGIME_LABEL_METHOD="${REGIME_LABEL_METHOD:-trend_quantile}"
+PROMPT_ROUTER="${PROMPT_ROUTER:-scene_wiki}"
+if [[ "${PROMPT_ROUTER}" == "scene_wiki" ]]; then
+    REGIME_LABEL_METHOD="scene_wiki"
+else
+    REGIME_LABEL_METHOD="${REGIME_LABEL_METHOD:-trend_quantile}"
+fi
+SCENE_WIKI_CONFIG="${SCENE_WIKI_CONFIG:-configs/wind_regime_wiki.json}"
+SCENE_WIKI_EMBEDDINGS="${SCENE_WIKI_EMBEDDINGS:-outputs/wiki/wind_regime_wiki_qwen.npz}"
+SCENE_WIKI_TOP_K="${SCENE_WIKI_TOP_K:-2}"
+SCENE_WIKI_TEMPERATURE="${SCENE_WIKI_TEMPERATURE:-0.2}"
+SCENE_WIKI_RULE_WEIGHT="${SCENE_WIKI_RULE_WEIGHT:-2.0}"
+SCENE_WIKI_PROMPT_GATE_INIT="${SCENE_WIKI_PROMPT_GATE_INIT:--2.2}"
+WIKI_LLM_PATH="${WIKI_LLM_PATH:-Qwen/Qwen2.5-0.5B}"
+WIKI_BUILD_DEVICE="${WIKI_BUILD_DEVICE:-auto}"
 REGIME_CALIBRATION_QUANTILE="${REGIME_CALIBRATION_QUANTILE:-0.3333333333}"
 RESIDUAL_GATE_INIT="${RESIDUAL_GATE_INIT:--2.2}"
 RUN_ID="${RUN_ID:-prompt_h${PRED_LEN}_${SPLIT}_f${FOLD}_s${SEED}_$(date +%Y%m%d_%H%M%S)}"
 export PYTHONHASHSEED="${PYTHONHASHSEED:-${SEED}}"
 export CUBLAS_WORKSPACE_CONFIG="${CUBLAS_WORKSPACE_CONFIG:-:4096:8}"
 
-LOG_PARAMETERS="${MODEL}_h${PRED_LEN}_${SPLIT}_f${FOLD}of${N_FOLDS}_s${SEED}_blr${LEARNING_RATE}_nlr${NEW_MODULE_LEARNING_RATE}_${LOSS}_mix${MIX_MSE_WEIGHT}_rg${RESIDUAL_GATE_INIT}_ep${TRAIN_EPOCHS}_pat${PATIENCE}_cp${CHANNEL_PRIOR}_ctx${OP_CONTEXT}_rw${REVIN_KEEP_WIND}_rp${REGIME_PROMPT}_reg${REGIME_LABEL_METHOD}_rq${REGIME_CALIBRATION_QUANTILE}"
+sdwpf_wiki_prepare
+
+LOG_PARAMETERS="${MODEL}_h${PRED_LEN}_${SPLIT}_f${FOLD}of${N_FOLDS}_s${SEED}_blr${LEARNING_RATE}_nlr${NEW_MODULE_LEARNING_RATE}_${LOSS}_mix${MIX_MSE_WEIGHT}_rg${RESIDUAL_GATE_INIT}_ep${TRAIN_EPOCHS}_pat${PATIENCE}_cp${CHANNEL_PRIOR}_ctx${OP_CONTEXT}_rw${REVIN_KEEP_WIND}_rp${REGIME_PROMPT}_${PROMPT_ROUTER}_reg${REGIME_LABEL_METHOD}_rq${REGIME_CALIBRATION_QUANTILE}"
 sdwpf_log_init "finetune" "${LOG_PARAMETERS}" "finetune.log" "${RUN_ID}"
 sdwpf_log_install_exit_trap
 LOG_ENV_FILE="$(sdwpf_log_sidecar env)"
@@ -68,6 +84,13 @@ LOG_SUMMARY_FILE="$(sdwpf_log_sidecar summary.txt)"
     echo "OP_CONTEXT=${OP_CONTEXT}"
     echo "REVIN_KEEP_WIND=${REVIN_KEEP_WIND}"
     echo "REGIME_PROMPT=${REGIME_PROMPT}"
+    echo "PROMPT_ROUTER=${PROMPT_ROUTER}"
+    echo "SCENE_WIKI_CONFIG=${SCENE_WIKI_CONFIG}"
+    echo "SCENE_WIKI_EMBEDDINGS=${SCENE_WIKI_EMBEDDINGS}"
+    echo "SCENE_WIKI_TOP_K=${SCENE_WIKI_TOP_K}"
+    echo "SCENE_WIKI_TEMPERATURE=${SCENE_WIKI_TEMPERATURE}"
+    echo "SCENE_WIKI_RULE_WEIGHT=${SCENE_WIKI_RULE_WEIGHT}"
+    echo "SCENE_WIKI_PROMPT_GATE_INIT=${SCENE_WIKI_PROMPT_GATE_INIT}"
     echo "REGIME_LABEL_METHOD=${REGIME_LABEL_METHOD}"
     echo "REGIME_CALIBRATION_QUANTILE=${REGIME_CALIBRATION_QUANTILE}"
     echo "RATED_POWER=${RATED_POWER}"
@@ -129,6 +152,13 @@ COMMAND=(python -u run.py
     --sdwpf_fold "${FOLD}" \
     --sdwpf_n_folds "${N_FOLDS}" \
     --pretrain_run_id "${PRETRAIN_RUN_ID}" \
+    --prompt_router "${PROMPT_ROUTER}" \
+    --scene_wiki_config "${SCENE_WIKI_CONFIG}" \
+    --scene_wiki_embeddings "${SCENE_WIKI_EMBEDDINGS}" \
+    --scene_wiki_top_k "${SCENE_WIKI_TOP_K}" \
+    --scene_wiki_temperature "${SCENE_WIKI_TEMPERATURE}" \
+    --scene_wiki_rule_weight "${SCENE_WIKI_RULE_WEIGHT}" \
+    --scene_wiki_prompt_gate_init "${SCENE_WIKI_PROMPT_GATE_INIT}" \
     --regime_label_method "${REGIME_LABEL_METHOD}" \
     --regime_calibration_quantile "${REGIME_CALIBRATION_QUANTILE}" \
     --mix_channels \

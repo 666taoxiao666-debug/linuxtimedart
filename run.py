@@ -12,6 +12,10 @@ from exp.exp_timedart import Exp_TimeDART
 from exp.exp_timedart_v2 import Exp_TimeDART_v2
 from utils.run_tags import bounded_component, experiment_setting, forecast_result_tag
 from utils.experiment_audit import checkpoint_info
+from utils.wind_regime_wiki import (
+    load_wind_regime_wiki_bundle,
+    load_wind_regime_wiki_spec,
+)
 
 
 def build_parser():
@@ -395,7 +399,35 @@ def build_parser():
         action="store_true",
         help="ablation: discard regime predictor/prompt while retaining the backbone",
     )
-    parser.add_argument("--num_modes", type=int, choices=[3], default=3)
+    parser.add_argument(
+        "--prompt_router",
+        choices=["trend", "scene_wiki"],
+        default="trend",
+        help="legacy 3-trend prompt or LLM-encoded wind-regime Wiki retrieval",
+    )
+    parser.add_argument("--num_modes", type=int, default=3)
+    parser.add_argument(
+        "--scene_wiki_config",
+        default="configs/wind_regime_wiki.json",
+        help="versioned observable-scene definitions",
+    )
+    parser.add_argument(
+        "--scene_wiki_embeddings",
+        default="outputs/wiki/wind_regime_wiki_qwen.npz",
+        help="offline LLM embeddings built before training",
+    )
+    parser.add_argument("--scene_wiki_top_k", type=int, default=2)
+    parser.add_argument("--scene_wiki_temperature", type=float, default=0.2)
+    parser.add_argument("--scene_wiki_rule_weight", type=float, default=2.0)
+    parser.add_argument("--scene_wiki_prompt_gate_init", type=float, default=-2.2)
+    parser.add_argument("--scene_wiki_recent_steps", type=int, default=None)
+    parser.add_argument("--scene_wiki_low_wind_max_mps", type=float, default=None)
+    parser.add_argument("--scene_wiki_active_wind_min_mps", type=float, default=None)
+    parser.add_argument("--scene_wiki_low_power_max_ratio", type=float, default=None)
+    parser.add_argument("--scene_wiki_rated_power_min_ratio", type=float, default=None)
+    parser.add_argument("--scene_wiki_gust_std_min_mps", type=float, default=None)
+    parser.add_argument("--scene_wiki_gust_step_min_mps", type=float, default=None)
+    parser.add_argument("--scene_wiki_ramp_delta_min_ratio", type=float, default=None)
     parser.add_argument("--lambda_ce", type=float, default=0.1)
     parser.add_argument(
         "--regime_target_index",
@@ -407,7 +439,7 @@ def build_parser():
     parser.add_argument("--regime_ramp_thresh", type=float, default=0.25)
     parser.add_argument(
         "--regime_label_method",
-        choices=["auto", "trend_quantile", "legacy_volatility"],
+        choices=["auto", "trend_quantile", "legacy_volatility", "scene_wiki"],
         default="auto",
         help="auto selects train-calibrated trend quantiles for SDWPF",
     )
@@ -473,11 +505,21 @@ def pretrain_signature(args):
         parts.extend(
             [
                 "prompt",
+                f"router{args.prompt_router}",
                 f"m{args.num_modes}",
                 f"reg{args.regime_label_method}",
                 f"rq{args.regime_calibration_quantile:g}",
             ]
         )
+        if args.prompt_router == "scene_wiki":
+            parts.extend(
+                [
+                    f"wk{args.scene_wiki_bundle_sha256[:12]}",
+                    f"top{args.scene_wiki_top_k}",
+                    f"wt{args.scene_wiki_rule_weight:g}",
+                    f"wg{args.scene_wiki_prompt_gate_init:g}",
+                ]
+            )
     if args.data == "SDWPF":
         # Fold-specific pretraining is required: a checkpoint trained on later
         # rolling folds must never be auto-discovered for an earlier fold.
@@ -582,6 +624,77 @@ def configure_args(args):
             args.op_context = False
         if args.revin_keep_wind is None:
             args.revin_keep_wind = False
+    if args.prompt_router == "scene_wiki":
+        if args.model != "PromptTimeDART" or args.downstream_task != "forecast":
+            raise ValueError(
+                "--prompt_router scene_wiki currently requires PromptTimeDART forecast"
+            )
+        if args.data != "SDWPF":
+            raise ValueError("--prompt_router scene_wiki currently requires SDWPF")
+        spec = load_wind_regime_wiki_spec(args.scene_wiki_config)
+        bundle = load_wind_regime_wiki_bundle(
+            args.scene_wiki_embeddings,
+            expected_scene_ids=spec["scene_ids"],
+        )
+        if bundle["config_sha256"] != spec["sha256"]:
+            raise ValueError(
+                "Wiki embeddings were built from a different config. Rebuild the bundle."
+            )
+        defaults = spec.get("rule_defaults", {})
+        rule_names = (
+            "recent_steps",
+            "low_wind_max_mps",
+            "active_wind_min_mps",
+            "low_power_max_ratio",
+            "rated_power_min_ratio",
+            "gust_std_min_mps",
+            "gust_step_min_mps",
+            "ramp_delta_min_ratio",
+        )
+        for name in rule_names:
+            attr = f"scene_wiki_{name}"
+            if getattr(args, attr) is None:
+                if name not in defaults:
+                    raise ValueError(f"Wiki config has no rule default for {name}")
+                setattr(args, attr, defaults[name])
+        args.scene_wiki_scene_ids = list(spec["scene_ids"])
+        args.scene_wiki_config_sha256 = spec["sha256"]
+        args.scene_wiki_bundle_sha256 = bundle["sha256"]
+        args.scene_wiki_encoder_name = bundle["encoder_name"]
+        args.num_modes = len(spec["scene_ids"])
+        args.regime_label_method = "scene_wiki"
+        if not 1 <= args.scene_wiki_top_k <= args.num_modes:
+            raise ValueError("scene_wiki_top_k must be between 1 and the scene count")
+        if args.scene_wiki_temperature <= 0:
+            raise ValueError("scene_wiki_temperature must be positive")
+        if args.scene_wiki_rule_weight < 0:
+            raise ValueError("scene_wiki_rule_weight cannot be negative")
+        if int(args.scene_wiki_recent_steps) < 3:
+            raise ValueError("scene_wiki_recent_steps must be at least 3")
+        for name in (
+            "low_power_max_ratio",
+            "rated_power_min_ratio",
+            "ramp_delta_min_ratio",
+        ):
+            value = float(getattr(args, f"scene_wiki_{name}"))
+            if not 0.0 < value <= 1.0:
+                raise ValueError(f"scene_wiki_{name} must be in (0, 1]")
+        for name in (
+            "low_wind_max_mps",
+            "active_wind_min_mps",
+            "gust_std_min_mps",
+            "gust_step_min_mps",
+        ):
+            if float(getattr(args, f"scene_wiki_{name}")) < 0.0:
+                raise ValueError(f"scene_wiki_{name} cannot be negative")
+        print(
+            "[INFO] Scene Wiki prompt router: "
+            f"scenes={args.num_modes} top_k={args.scene_wiki_top_k} "
+            f"encoder={args.scene_wiki_encoder_name} "
+            f"bundle_sha256={args.scene_wiki_bundle_sha256[:12]}"
+        )
+    elif args.num_modes != 3:
+        raise ValueError("The trend prompt router requires --num_modes 3")
     args.use_gpu = bool(args.use_gpu and torch.cuda.is_available())
     if args.use_multi_gpu and not args.use_gpu:
         raise ValueError("--use_multi_gpu requires CUDA")
@@ -664,6 +777,21 @@ def load_finetuned_model(exp, checkpoint_path):
             "disable_regime_prompt",
             "regime_label_method",
             "regime_calibration_quantile",
+            "prompt_router",
+            "scene_wiki_config_sha256",
+            "scene_wiki_bundle_sha256",
+            "scene_wiki_top_k",
+            "scene_wiki_temperature",
+            "scene_wiki_rule_weight",
+            "scene_wiki_prompt_gate_init",
+            "scene_wiki_recent_steps",
+            "scene_wiki_low_wind_max_mps",
+            "scene_wiki_active_wind_min_mps",
+            "scene_wiki_low_power_max_ratio",
+            "scene_wiki_rated_power_min_ratio",
+            "scene_wiki_gust_std_min_mps",
+            "scene_wiki_gust_step_min_mps",
+            "scene_wiki_ramp_delta_min_ratio",
             "feature_columns",
         )
         mismatches = []

@@ -242,6 +242,9 @@ def transfer_weights(weights_path, model, exclude_head=True, device="cpu", stric
             required_state_names.update(
                 {"regime_down_thresh", "regime_up_thresh"}
             )
+    if any(name.startswith("scene_wiki_router.") for name in target_state):
+        required_prefixes.append("scene_wiki_router.")
+        required_state_names.update({"scene_scaler_mean", "scene_scaler_scale"})
     if strict:
         missing_required = [
             name
