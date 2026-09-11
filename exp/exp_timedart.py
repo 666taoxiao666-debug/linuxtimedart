@@ -20,8 +20,12 @@ from utils.regime_labels import (
     update_regime_confusion,
 )
 from utils.wind_regime_wiki import (
+    audit_event_factor_labels_from_dataset,
     audit_scene_wiki_labels_from_dataset,
+    compute_event_factor_rule_logits,
     compute_scene_wiki_rule_logits,
+    summarize_event_factor_confusion,
+    update_event_factor_confusion,
 )
 from torch.optim import lr_scheduler
 import torch
@@ -89,21 +93,35 @@ class Exp_TimeDART(Exp_Basic):
             return None
         prompt_router = getattr(core_model, "prompt_router", "trend")
         scene_audit = None
-        if prompt_router in ("scene_wiki", "hybrid_wiki"):
+        if prompt_router in (
+            "scene_wiki",
+            "hybrid_wiki",
+            "compositional_wiki",
+        ):
             if not hasattr(train_data, "scaler"):
                 raise TypeError("Scene Wiki requires the SDWPF train-fitted scaler")
             core_model.set_scene_scaler(
                 train_data.scaler.mean_,
                 train_data.scaler.scale_,
             )
-            scene_audit = audit_scene_wiki_labels_from_dataset(
-                train_data,
-                self.args.feature_columns,
-                rated_power=self.args.rated_power,
-                max_samples=self.args.regime_calibration_samples,
-                rule_kwargs=core_model.scene_wiki_rule_kwargs,
-                scene_ids=core_model.scene_wiki_scene_ids,
-            )
+            if prompt_router == "compositional_wiki":
+                scene_audit = audit_event_factor_labels_from_dataset(
+                    train_data,
+                    self.args.feature_columns,
+                    rated_power=self.args.rated_power,
+                    max_samples=self.args.regime_calibration_samples,
+                    rule_kwargs=core_model.scene_wiki_rule_kwargs,
+                    factor_ids=core_model.scene_wiki_scene_ids,
+                )
+            else:
+                scene_audit = audit_scene_wiki_labels_from_dataset(
+                    train_data,
+                    self.args.feature_columns,
+                    rated_power=self.args.rated_power,
+                    max_samples=self.args.regime_calibration_samples,
+                    rule_kwargs=core_model.scene_wiki_rule_kwargs,
+                    scene_ids=core_model.scene_wiki_scene_ids,
+                )
             scene_audit.update(
                 {
                     "wiki_config_sha256": self.args.scene_wiki_config_sha256,
@@ -112,15 +130,42 @@ class Exp_TimeDART(Exp_Basic):
                 }
             )
             self.args.regime_calibration_source = "train"
-            self.args.scene_wiki_calibration_counts = scene_audit["class_counts"]
-            print(
-                "[AUDIT] SCENE_WIKI_CALIBRATION="
-                f"source=train samples={scene_audit['sample_count']} "
-                f"scenes={';'.join(scene_audit['scene_ids'])} "
-                f"counts={';'.join(str(value) for value in scene_audit['class_counts'])} "
-                f"config_sha256={scene_audit['wiki_config_sha256'][:12]} "
-                f"bundle_sha256={scene_audit['wiki_bundle_sha256'][:12]}"
-            )
+            if prompt_router == "compositional_wiki":
+                positive_counts = scene_audit["positive_counts"]
+                missing = [
+                    factor_id
+                    for factor_id, count in zip(
+                        scene_audit["factor_ids"], positive_counts
+                    )
+                    if count <= 0
+                ]
+                if missing:
+                    raise ValueError(
+                        "Training split has no positive support for event factors: "
+                        + ", ".join(missing)
+                    )
+                self.args.event_factor_positive_counts = positive_counts
+                self.args.event_factor_negative_counts = scene_audit["negative_counts"]
+                print(
+                    "[AUDIT] EVENT_FACTOR_CALIBRATION="
+                    f"source=train samples={scene_audit['sample_count']} "
+                    f"factors={';'.join(scene_audit['factor_ids'])} "
+                    f"positive_counts={';'.join(str(value) for value in positive_counts)} "
+                    f"no_intervention={scene_audit['no_intervention_count']} "
+                    f"mean_active={scene_audit['mean_active_factors']:.6f} "
+                    f"config_sha256={scene_audit['wiki_config_sha256'][:12]} "
+                    f"bundle_sha256={scene_audit['wiki_bundle_sha256'][:12]}"
+                )
+            else:
+                self.args.scene_wiki_calibration_counts = scene_audit["class_counts"]
+                print(
+                    "[AUDIT] SCENE_WIKI_CALIBRATION="
+                    f"source=train samples={scene_audit['sample_count']} "
+                    f"scenes={';'.join(scene_audit['scene_ids'])} "
+                    f"counts={';'.join(str(value) for value in scene_audit['class_counts'])} "
+                    f"config_sha256={scene_audit['wiki_config_sha256'][:12]} "
+                    f"bundle_sha256={scene_audit['wiki_bundle_sha256'][:12]}"
+                )
             if prompt_router == "scene_wiki":
                 self.args.regime_calibration_counts = scene_audit["class_counts"]
                 core_model.regime_calibration = scene_audit
@@ -142,16 +187,22 @@ class Exp_TimeDART(Exp_Basic):
         self.args.regime_up_thresh = audit["up_thresh"]
         self.args.regime_calibration_source = audit["source_split"]
         self.args.regime_calibration_counts = audit["class_counts"]
-        combined_audit = (
-            {
+        if prompt_router == "hybrid_wiki":
+            combined_audit = {
                 "method": "causal_trend_wiki_residual",
                 "source_split": "train",
                 "trend": audit,
                 "exception_wiki": scene_audit,
             }
-            if prompt_router == "hybrid_wiki"
-            else audit
-        )
+        elif prompt_router == "compositional_wiki":
+            combined_audit = {
+                "method": "causal_compositional_event_wiki_residual",
+                "source_split": "train",
+                "trend": audit,
+                "event_factor_wiki": scene_audit,
+            }
+        else:
+            combined_audit = audit
         core_model.regime_calibration = combined_audit
         print(
             "[AUDIT] REGIME_CALIBRATION="
@@ -182,18 +233,6 @@ class Exp_TimeDART(Exp_Basic):
                     self.args.load_checkpoints
                 )
             )
-            if getattr(self.args, "prompt_router", "trend") == "hybrid_wiki":
-                print(
-                    "Hybrid exception Wiki Train/Val CE: {:.4f}/{:.4f}, "
-                    "Val Acc/Macro-F1: {:.3f}/{:.3f}, Counts: {}".format(
-                        train_metrics["scene_ce_loss"],
-                        validation["scene_ce_loss"],
-                        validation["scene_accuracy"],
-                        validation["scene_macro_f1"],
-                        validation["scene_counts"],
-                    )
-                )
-
             model = transfer_weights(
                 self.args.load_checkpoints,
                 model,
@@ -437,16 +476,45 @@ class Exp_TimeDART(Exp_Basic):
                     train_metrics["grad_norm"],
                 )
             )
+            prompt_router = getattr(self.args, "prompt_router", "trend")
+            if prompt_router == "hybrid_wiki":
+                print(
+                    "Legacy Wiki Train/Val CE: {:.4f}/{:.4f}, "
+                    "Val Acc/Macro-F1: {:.3f}/{:.3f}".format(
+                        train_metrics["scene_ce_loss"],
+                        validation["scene_ce_loss"],
+                        validation.get("scene_accuracy", 0.0),
+                        validation.get("scene_macro_f1", 0.0),
+                    )
+                )
+            elif prompt_router == "compositional_wiki":
+                print(
+                    "Event Wiki Train/Val BCE: {:.4f}/{:.4f}, "
+                    "Val Hamming/Macro-F1/Micro-F1/Exact: "
+                    "{:.3f}/{:.3f}/{:.3f}/{:.3f}, "
+                    "Null Recall/False Intervention: {:.3f}/{:.3f}".format(
+                        train_metrics["event_bce_loss"],
+                        validation["event_bce_loss"],
+                        validation.get("event_hamming_accuracy", 0.0),
+                        validation.get("event_macro_f1", 0.0),
+                        validation.get("event_micro_f1", 0.0),
+                        validation.get("event_exact_match", 0.0),
+                        validation.get("event_null_recall", 0.0),
+                        validation.get("event_false_intervention_on_null", 0.0),
+                    )
+                )
 
             loss_scalar_dict = {
                 "train_total": train_metrics["total_loss"],
                 "train_diff": train_metrics["diff_loss"],
                 "train_ce": train_metrics["ce_loss"],
                 "train_scene_ce": train_metrics["scene_ce_loss"],
+                "train_event_bce": train_metrics["event_bce_loss"],
                 "vali_total": validation["total_loss"],
                 "vali_diff": validation["diff_loss"],
                 "vali_ce": validation["ce_loss"],
                 "vali_scene_ce": validation["scene_ce_loss"],
+                "vali_event_bce": validation["event_bce_loss"],
             }
 
             self.writer.add_scalars(
@@ -473,6 +541,29 @@ class Exp_TimeDART(Exp_Basic):
                     "train_scene_macro_f1": train_metrics.get("scene_macro_f1"),
                     "train_scene_counts": train_metrics.get("scene_counts"),
                     "train_scene_confusion": train_metrics.get("scene_confusion"),
+                    "train_event_bce_loss": float(train_metrics["event_bce_loss"]),
+                    "train_event_hamming_accuracy": train_metrics.get(
+                        "event_hamming_accuracy"
+                    ),
+                    "train_event_macro_f1": train_metrics.get("event_macro_f1"),
+                    "train_event_micro_f1": train_metrics.get("event_micro_f1"),
+                    "train_event_exact_match": train_metrics.get("event_exact_match"),
+                    "train_event_null_recall": train_metrics.get("event_null_recall"),
+                    "train_event_false_intervention_on_null": train_metrics.get(
+                        "event_false_intervention_on_null"
+                    ),
+                    "train_event_positive_counts": train_metrics.get(
+                        "event_positive_counts"
+                    ),
+                    "train_event_pred_positive_counts": train_metrics.get(
+                        "event_pred_positive_counts"
+                    ),
+                    "train_event_precision": train_metrics.get("event_precision"),
+                    "train_event_recall": train_metrics.get("event_recall"),
+                    "train_event_f1": train_metrics.get("event_f1"),
+                    "train_event_confusion": train_metrics.get(
+                        "event_confusion_tn_fp_fn_tp"
+                    ),
                     "val_loss": float(validation["total_loss"]),
                     "val_diff_loss": float(validation["diff_loss"]),
                     "val_ce_loss": float(validation["ce_loss"]),
@@ -487,6 +578,29 @@ class Exp_TimeDART(Exp_Basic):
                     "val_scene_macro_f1": validation.get("scene_macro_f1"),
                     "val_scene_counts": validation.get("scene_counts"),
                     "val_scene_confusion": validation.get("scene_confusion"),
+                    "val_event_bce_loss": float(validation["event_bce_loss"]),
+                    "val_event_hamming_accuracy": validation.get(
+                        "event_hamming_accuracy"
+                    ),
+                    "val_event_macro_f1": validation.get("event_macro_f1"),
+                    "val_event_micro_f1": validation.get("event_micro_f1"),
+                    "val_event_exact_match": validation.get("event_exact_match"),
+                    "val_event_null_recall": validation.get("event_null_recall"),
+                    "val_event_false_intervention_on_null": validation.get(
+                        "event_false_intervention_on_null"
+                    ),
+                    "val_event_positive_counts": validation.get(
+                        "event_positive_counts"
+                    ),
+                    "val_event_pred_positive_counts": validation.get(
+                        "event_pred_positive_counts"
+                    ),
+                    "val_event_precision": validation.get("event_precision"),
+                    "val_event_recall": validation.get("event_recall"),
+                    "val_event_f1": validation.get("event_f1"),
+                    "val_event_confusion": validation.get(
+                        "event_confusion_tn_fp_fn_tp"
+                    ),
                     "learning_rate": float(
                         current_lr
                     ),
@@ -617,6 +731,39 @@ class Exp_TimeDART(Exp_Basic):
             "scene_wiki_bundle_sha256": getattr(
                 self.args, "scene_wiki_bundle_sha256", None
             ),
+            "scene_wiki_scene_ids": list(
+                getattr(self.args, "scene_wiki_scene_ids", []) or []
+            ),
+            "scene_wiki_activation_threshold": getattr(
+                self.args, "scene_wiki_activation_threshold", None
+            ),
+            "scene_wiki_confidence_power": getattr(
+                self.args, "scene_wiki_confidence_power", None
+            ),
+            "scene_wiki_top_k": getattr(self.args, "scene_wiki_top_k", None),
+            "scene_wiki_temperature": getattr(
+                self.args, "scene_wiki_temperature", None
+            ),
+            "scene_wiki_rule_weight": getattr(
+                self.args, "scene_wiki_rule_weight", None
+            ),
+            "scene_wiki_rule_kwargs": dict(
+                getattr(
+                    self.model.module if isinstance(self.model, nn.DataParallel) else self.model,
+                    "scene_wiki_rule_kwargs",
+                    {},
+                )
+            ),
+            "lambda_event_bce": getattr(self.args, "lambda_event_bce", None),
+            "event_factor_positive_counts": getattr(
+                self.args, "event_factor_positive_counts", None
+            ),
+            "event_factor_negative_counts": getattr(
+                self.args, "event_factor_negative_counts", None
+            ),
+            "event_factor_pos_weight": getattr(
+                self.args, "event_factor_pos_weight", None
+            ),
             "runtime_model": model_runtime_summary(self.model, self.args),
             "model_state_dict": state,
         }
@@ -661,14 +808,42 @@ class Exp_TimeDART(Exp_Basic):
                 output.get(
                     "pseudo_labels"
                 ),
-                output.get("scene_logits"),
-                output.get("scene_labels"),
+                output.get("event_logits", output.get("scene_logits")),
+                output.get("event_targets", output.get("scene_labels")),
             )
 
         return output, None, None, None, None
 
-    def _scene_ce_criterion(self):
-        """Train-only class balancing for rare exception supervision."""
+    def _wiki_auxiliary_criterion(self):
+        """Build train-only balancing for legacy scenes or event factors."""
+
+        if getattr(self.args, "prompt_router", "trend") == "compositional_wiki":
+            positives = getattr(self.args, "event_factor_positive_counts", None)
+            negatives = getattr(self.args, "event_factor_negative_counts", None)
+            if not positives or not negatives:
+                raise RuntimeError(
+                    "Event-factor BCE requires train-only positive/negative counts"
+                )
+            positive_values = torch.as_tensor(
+                positives, dtype=torch.float32, device=self.device
+            )
+            negative_values = torch.as_tensor(
+                negatives, dtype=torch.float32, device=self.device
+            )
+            if (
+                torch.any(positive_values <= 0)
+                or torch.any(negative_values < 0)
+                or not torch.isfinite(positive_values).all()
+                or not torch.isfinite(negative_values).all()
+            ):
+                raise ValueError("Event-factor calibration counts are invalid")
+            pos_weight = torch.sqrt(
+                negative_values / positive_values
+            ).clamp(0.25, 4.0)
+            self.args.event_factor_pos_weight = [
+                float(value) for value in pos_weight.detach().cpu().tolist()
+            ]
+            return nn.BCEWithLogitsLoss(pos_weight=pos_weight)
 
         counts = getattr(self.args, "scene_wiki_calibration_counts", None)
         if not counts:
@@ -690,14 +865,21 @@ class Exp_TimeDART(Exp_Basic):
         diff_losses = []
         ce_losses = []
         scene_ce_losses = []
+        event_bce_losses = []
         grad_norms = []
         regime_confusion = np.zeros(
             (int(self.args.num_modes), int(self.args.num_modes)), dtype=np.int64
         )
         scene_confusion = None
+        event_confusion = None
+        event_sample_stats = None
         if getattr(self.args, "prompt_router", "trend") == "hybrid_wiki":
             scene_modes = int(self.args.scene_wiki_num_modes)
             scene_confusion = np.zeros((scene_modes, scene_modes), dtype=np.int64)
+        elif getattr(self.args, "prompt_router", "trend") == "compositional_wiki":
+            event_modes = int(self.args.scene_wiki_num_modes)
+            event_confusion = np.zeros((event_modes, 4), dtype=np.int64)
+            event_sample_stats = np.zeros(6, dtype=np.int64)
 
         model_criterion = (
             self._select_criterion()
@@ -705,7 +887,7 @@ class Exp_TimeDART(Exp_Basic):
         ce_criterion = (
             nn.CrossEntropyLoss()
         )
-        scene_ce_criterion = self._scene_ce_criterion()
+        wiki_auxiliary_criterion = self._wiki_auxiliary_criterion()
 
         self.model.train()
 
@@ -772,10 +954,27 @@ class Exp_TimeDART(Exp_Basic):
                     total_loss = diff_loss
 
                 if scene_logits is not None and scene_labels is not None:
-                    scene_ce_loss = scene_ce_criterion(scene_logits, scene_labels)
-                    total_loss = total_loss + self.args.lambda_scene_ce * scene_ce_loss
+                    wiki_auxiliary_loss = wiki_auxiliary_criterion(
+                        scene_logits, scene_labels
+                    )
+                    auxiliary_weight = (
+                        self.args.lambda_event_bce
+                        if event_confusion is not None
+                        else self.args.lambda_scene_ce
+                    )
+                    total_loss = total_loss + auxiliary_weight * wiki_auxiliary_loss
                 else:
-                    scene_ce_loss = torch.zeros((), device=diff_loss.device)
+                    wiki_auxiliary_loss = torch.zeros((), device=diff_loss.device)
+                scene_ce_loss = (
+                    wiki_auxiliary_loss
+                    if scene_confusion is not None
+                    else torch.zeros((), device=diff_loss.device)
+                )
+                event_bce_loss = (
+                    wiki_auxiliary_loss
+                    if event_confusion is not None
+                    else torch.zeros((), device=diff_loss.device)
+                )
 
             self.grad_scaler.scale(
                 total_loss
@@ -809,6 +1008,7 @@ class Exp_TimeDART(Exp_Basic):
             diff_losses.append(diff_loss.item())
             ce_losses.append(ce_loss.item())
             scene_ce_losses.append(scene_ce_loss.item())
+            event_bce_losses.append(event_bce_loss.item())
             if logits is not None and pseudo_labels is not None:
                 predictions = logits.detach().argmax(dim=-1)
                 labels = pseudo_labels.detach().reshape(-1)
@@ -819,6 +1019,12 @@ class Exp_TimeDART(Exp_Basic):
                     scene_confusion,
                     scene_predictions,
                     scene_labels.detach().reshape(-1),
+                )
+            if event_confusion is not None and scene_logits is not None and scene_labels is not None:
+                event_sample_stats += update_event_factor_confusion(
+                    event_confusion,
+                    scene_logits,
+                    scene_labels,
                 )
 
         model_scheduler.step()
@@ -831,14 +1037,21 @@ class Exp_TimeDART(Exp_Basic):
             if scene_confusion is not None
             else {}
         )
+        event_metrics = (
+            summarize_event_factor_confusion(event_confusion, event_sample_stats)
+            if event_confusion is not None
+            else {}
+        )
         return {
             "total_loss": float(np.mean(total_losses)),
             "diff_loss": float(np.mean(diff_losses)),
             "ce_loss": float(np.mean(ce_losses)),
             "scene_ce_loss": float(np.mean(scene_ce_losses)),
+            "event_bce_loss": float(np.mean(event_bce_losses)),
             "grad_norm": float(np.mean(grad_norms)) if grad_norms else 0.0,
             **regime_metrics,
             **scene_metrics,
+            **event_metrics,
         }
 
     def valid_one_epoch(
@@ -849,13 +1062,20 @@ class Exp_TimeDART(Exp_Basic):
         diff_losses = []
         ce_losses = []
         scene_ce_losses = []
+        event_bce_losses = []
         regime_confusion = np.zeros(
             (int(self.args.num_modes), int(self.args.num_modes)), dtype=np.int64
         )
         scene_confusion = None
+        event_confusion = None
+        event_sample_stats = None
         if getattr(self.args, "prompt_router", "trend") == "hybrid_wiki":
             scene_modes = int(self.args.scene_wiki_num_modes)
             scene_confusion = np.zeros((scene_modes, scene_modes), dtype=np.int64)
+        elif getattr(self.args, "prompt_router", "trend") == "compositional_wiki":
+            event_modes = int(self.args.scene_wiki_num_modes)
+            event_confusion = np.zeros((event_modes, 4), dtype=np.int64)
+            event_sample_stats = np.zeros(6, dtype=np.int64)
 
         model_criterion = (
             self._select_criterion()
@@ -863,7 +1083,7 @@ class Exp_TimeDART(Exp_Basic):
         ce_criterion = (
             nn.CrossEntropyLoss()
         )
-        scene_ce_criterion = self._scene_ce_criterion()
+        wiki_auxiliary_criterion = self._wiki_auxiliary_criterion()
 
         self.model.eval()
 
@@ -926,15 +1146,33 @@ class Exp_TimeDART(Exp_Basic):
                         total_loss = diff_loss
 
                     if scene_logits is not None and scene_labels is not None:
-                        scene_ce_loss = scene_ce_criterion(scene_logits, scene_labels)
-                        total_loss = total_loss + self.args.lambda_scene_ce * scene_ce_loss
+                        wiki_auxiliary_loss = wiki_auxiliary_criterion(
+                            scene_logits, scene_labels
+                        )
+                        auxiliary_weight = (
+                            self.args.lambda_event_bce
+                            if event_confusion is not None
+                            else self.args.lambda_scene_ce
+                        )
+                        total_loss = total_loss + auxiliary_weight * wiki_auxiliary_loss
                     else:
-                        scene_ce_loss = torch.zeros((), device=diff_loss.device)
+                        wiki_auxiliary_loss = torch.zeros((), device=diff_loss.device)
+                    scene_ce_loss = (
+                        wiki_auxiliary_loss
+                        if scene_confusion is not None
+                        else torch.zeros((), device=diff_loss.device)
+                    )
+                    event_bce_loss = (
+                        wiki_auxiliary_loss
+                        if event_confusion is not None
+                        else torch.zeros((), device=diff_loss.device)
+                    )
 
                 total_losses.append(total_loss.item())
                 diff_losses.append(diff_loss.item())
                 ce_losses.append(ce_loss.item())
                 scene_ce_losses.append(scene_ce_loss.item())
+                event_bce_losses.append(event_bce_loss.item())
                 if logits is not None and pseudo_labels is not None:
                     predictions = logits.detach().argmax(dim=-1)
                     labels = pseudo_labels.detach().reshape(-1)
@@ -946,6 +1184,12 @@ class Exp_TimeDART(Exp_Basic):
                         scene_predictions,
                         scene_labels.detach().reshape(-1),
                     )
+                if event_confusion is not None and scene_logits is not None and scene_labels is not None:
+                    event_sample_stats += update_event_factor_confusion(
+                        event_confusion,
+                        scene_logits,
+                        scene_labels,
+                    )
 
         regime_metrics = summarize_regime_confusion(regime_confusion)
         scene_metrics = (
@@ -956,13 +1200,20 @@ class Exp_TimeDART(Exp_Basic):
             if scene_confusion is not None
             else {}
         )
+        event_metrics = (
+            summarize_event_factor_confusion(event_confusion, event_sample_stats)
+            if event_confusion is not None
+            else {}
+        )
         return {
             "total_loss": float(np.mean(total_losses)),
             "diff_loss": float(np.mean(diff_losses)),
             "ce_loss": float(np.mean(ce_losses)),
             "scene_ce_loss": float(np.mean(scene_ce_losses)),
+            "event_bce_loss": float(np.mean(event_bce_losses)),
             **regime_metrics,
             **scene_metrics,
+            **event_metrics,
         }
 
     def train(self, setting):
@@ -973,7 +1224,11 @@ class Exp_TimeDART(Exp_Basic):
             self._get_data(flag="val")
         )
         core_model = self.model.module if isinstance(self.model, nn.DataParallel) else self.model
-        if getattr(core_model, "prompt_router", "trend") in ("scene_wiki", "hybrid_wiki"):
+        if getattr(core_model, "prompt_router", "trend") in (
+            "scene_wiki",
+            "hybrid_wiki",
+            "compositional_wiki",
+        ):
             # A random-init ablation has no pretraining checkpoint carrying the
             # scaler buffers. Reinstall the scaler from this run's training split
             # before the epoch-0 validation; never inspect validation/test data.
@@ -1056,6 +1311,12 @@ class Exp_TimeDART(Exp_Basic):
                 f"{initial_selection_value:.7f}"
             )
             initial_diagnostics = initial_validation["diagnostics"]
+            if "event_wiki_zero_intervention_fraction" in initial_diagnostics:
+                initial_summary += (
+                    " EventWiki(zero/active): "
+                    f"{initial_diagnostics['event_wiki_zero_intervention_fraction']:.3f}/"
+                    f"{initial_diagnostics['event_wiki_mean_active_factors']:.3f}"
+                )
             if "val_available_mae_kw" in initial_diagnostics:
                 initial_summary += (
                     " Available MAE(kW): "
@@ -1314,6 +1575,12 @@ class Exp_TimeDART(Exp_Basic):
                     " WikiPromptGate: "
                     f"{diagnostics['scene_wiki_prompt_gate']:.5f}"
                 )
+            if "event_wiki_zero_intervention_fraction" in diagnostics:
+                epoch_summary += (
+                    " EventWiki(zero/active): "
+                    f"{diagnostics['event_wiki_zero_intervention_fraction']:.3f}/"
+                    f"{diagnostics['event_wiki_mean_active_factors']:.3f}"
+                )
             if "val_available_mae_kw" in diagnostics:
                 epoch_summary += (
                     " Available MAE(kW): "
@@ -1499,6 +1766,7 @@ class Exp_TimeDART(Exp_Basic):
         truth_batches = []
         persistence_batches = []
         scene_label_batches = []
+        wiki_activation_batches = []
         vali_data = getattr(vali_loader, "dataset", None)
         core_model = (
             self.model.module
@@ -1563,20 +1831,37 @@ class Exp_TimeDART(Exp_Basic):
                     if getattr(core_model, "prompt_router", "trend") in (
                         "scene_wiki",
                         "hybrid_wiki",
+                        "compositional_wiki",
                     ):
                         raw_history = (
                             batch_x
                             * core_model.scene_scaler_scale.view(1, 1, -1)
                             + core_model.scene_scaler_mean.view(1, 1, -1)
                         )
-                        _, scene_labels = compute_scene_wiki_rule_logits(
-                            raw_history,
-                            core_model.feature_columns,
-                            rated_power=core_model.rated_power,
-                            scene_ids=core_model.scene_wiki_scene_ids,
-                            **core_model.scene_wiki_rule_kwargs,
-                        )
+                        if core_model.prompt_router == "compositional_wiki":
+                            _, scene_labels = compute_event_factor_rule_logits(
+                                raw_history,
+                                core_model.feature_columns,
+                                rated_power=core_model.rated_power,
+                                factor_ids=core_model.scene_wiki_scene_ids,
+                                **core_model.scene_wiki_rule_kwargs,
+                            )
+                        else:
+                            _, scene_labels = compute_scene_wiki_rule_logits(
+                                raw_history,
+                                core_model.feature_columns,
+                                rated_power=core_model.rated_power,
+                                scene_ids=core_model.scene_wiki_scene_ids,
+                                **core_model.scene_wiki_rule_kwargs,
+                            )
                         scene_label_batches.append(scene_labels.detach().cpu().numpy())
+                        factor_activations = getattr(
+                            core_model, "_last_wiki_factor_activations", None
+                        )
+                        if factor_activations is not None:
+                            wiki_activation_batches.append(
+                                factor_activations.detach().float().cpu().numpy()
+                            )
 
                     mixer = getattr(core_model, "channel_mixer", None)
                     if mixer is not None and hasattr(core_model, "_operating_context"):
@@ -1716,8 +2001,22 @@ class Exp_TimeDART(Exp_Basic):
         )
         if scene_label_batches:
             scene_labels = np.concatenate(scene_label_batches, axis=0)
-            for scene_index, scene_id in enumerate(core_model.scene_wiki_scene_ids):
-                selected = scene_labels == scene_index
+            if core_model.prompt_router == "compositional_wiki":
+                selections = [
+                    (factor_id, scene_labels[:, factor_index] >= 0.5)
+                    for factor_index, factor_id in enumerate(
+                        core_model.scene_wiki_scene_ids
+                    )
+                ]
+                selections.append(("no_intervention", ~scene_labels.astype(bool).any(axis=1)))
+            else:
+                selections = [
+                    (scene_id, scene_labels == scene_index)
+                    for scene_index, scene_id in enumerate(
+                        core_model.scene_wiki_scene_ids
+                    )
+                ]
+            for scene_id, selected in selections:
                 diagnostics[f"val_scene_{scene_id}_windows"] = int(selected.sum())
                 if not selected.any():
                     continue
@@ -1744,6 +2043,22 @@ class Exp_TimeDART(Exp_Basic):
                         - scene_metrics["mae"]
                         / max(scene_persistence["mae"], np.finfo(float).eps)
                     )
+                )
+        if wiki_activation_batches:
+            activations = np.concatenate(wiki_activation_batches, axis=0)
+            active = activations > 0.0
+            diagnostics["event_wiki_zero_intervention_fraction"] = float(
+                (~active.any(axis=1)).mean()
+            )
+            diagnostics["event_wiki_mean_active_factors"] = float(
+                active.sum(axis=1).mean()
+            )
+            for factor_index, factor_id in enumerate(core_model.scene_wiki_scene_ids):
+                diagnostics[f"event_wiki_{factor_id}_activation_fraction"] = float(
+                    active[:, factor_index].mean()
+                )
+                diagnostics[f"event_wiki_{factor_id}_mean_strength"] = float(
+                    activations[:, factor_index].mean()
                 )
         if vali_data is not None and hasattr(vali_data, "target_available_mask"):
             available = np.asarray(vali_data.target_available_mask(), dtype=bool)

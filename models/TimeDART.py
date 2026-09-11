@@ -12,6 +12,7 @@ from layers.TimeDART_EncDec import (
     RegimePredictor,
     SoftPromptGenerator,
     SceneWikiPromptRouter,
+    CompositionalEventWikiRouter,
     DilatedConvEncoder,
     ClsEmbedding,
     ClsHead,
@@ -22,6 +23,8 @@ from layers.TimeDART_EncDec import (
 from layers.Embed import Patch, PatchEmbedding, PositionalEncoding, TokenEmbedding_TimeDART
 from utils.regime_labels import compute_regime_pseudo_labels_from_series
 from utils.wind_regime_wiki import (
+    EVENT_FACTOR_IDS,
+    compute_event_factor_rule_logits,
     compute_scene_wiki_rule_logits,
     load_wind_regime_wiki_bundle,
 )
@@ -221,14 +224,18 @@ class Model(nn.Module):
         # regime classifier/dictionary.
         if self.use_soft_prompt:
             self.num_modes = getattr(args, "num_modes", 3)
-            if self.prompt_router in ("trend", "hybrid_wiki") and self.num_modes != 3:
+            if self.prompt_router in (
+                "trend",
+                "hybrid_wiki",
+                "compositional_wiki",
+            ) and self.num_modes != 3:
                 raise ValueError(
                     "The pseudo-label definition requires "
                     "num_modes=3"
                 )
 
             self.prompt_dim = args.d_model
-            if self.prompt_router in ("trend", "hybrid_wiki"):
+            if self.prompt_router in ("trend", "hybrid_wiki", "compositional_wiki"):
                 # This is the project's original train-calibrated prompt branch.
                 # In the hybrid model it remains the base representation rather
                 # than being replaced by a generic semantic retriever.
@@ -252,7 +259,11 @@ class Model(nn.Module):
                     torch.tensor(float("nan") if up is None else float(up)),
                 )
 
-            if self.prompt_router in ("scene_wiki", "hybrid_wiki"):
+            if self.prompt_router in (
+                "scene_wiki",
+                "hybrid_wiki",
+                "compositional_wiki",
+            ):
                 bundle = load_wind_regime_wiki_bundle(
                     args.scene_wiki_embeddings,
                     expected_scene_ids=getattr(args, "scene_wiki_scene_ids", None),
@@ -271,25 +282,45 @@ class Model(nn.Module):
                         "hybrid_wiki requires an exception Wiki whose first scene is "
                         "no_exception"
                     )
+                if self.prompt_router == "compositional_wiki" and tuple(
+                    bundle["scene_ids"]
+                ) != EVENT_FACTOR_IDS:
+                    raise ValueError(
+                        "compositional_wiki requires the fixed four-factor event Wiki"
+                    )
                 self.scene_wiki_scene_ids = tuple(bundle["scene_ids"])
                 self.scene_wiki_num_modes = len(self.scene_wiki_scene_ids)
+                self.scene_wiki_config_sha256 = args.scene_wiki_config_sha256
                 self.scene_wiki_bundle_sha256 = bundle["sha256"]
                 self.scene_wiki_encoder_name = bundle["encoder_name"]
-                self.scene_wiki_router = SceneWikiPromptRouter(
-                    bundle["embeddings"],
-                    d_model=args.d_model,
-                    num_features=self.enc_in,
-                    channel_prior=channel_prior_vector(
+                router_kwargs = {
+                    "d_model": args.d_model,
+                    "num_features": self.enc_in,
+                    "channel_prior": channel_prior_vector(
                         self.feature_columns,
                         physics_init=True,
                     ),
-                    top_k=args.scene_wiki_top_k,
-                    temperature=args.scene_wiki_temperature,
-                    rule_weight=args.scene_wiki_rule_weight,
-                    prompt_gate_init=args.scene_wiki_prompt_gate_init,
-                    null_scene_index=(0 if self.prompt_router == "hybrid_wiki" else None),
-                    dropout=args.dropout,
-                )
+                    "top_k": args.scene_wiki_top_k,
+                    "temperature": args.scene_wiki_temperature,
+                    "rule_weight": args.scene_wiki_rule_weight,
+                    "prompt_gate_init": args.scene_wiki_prompt_gate_init,
+                    "dropout": args.dropout,
+                }
+                if self.prompt_router == "compositional_wiki":
+                    self.scene_wiki_router = CompositionalEventWikiRouter(
+                        bundle["embeddings"],
+                        activation_threshold=args.scene_wiki_activation_threshold,
+                        confidence_power=args.scene_wiki_confidence_power,
+                        **router_kwargs,
+                    )
+                else:
+                    self.scene_wiki_router = SceneWikiPromptRouter(
+                        bundle["embeddings"],
+                        null_scene_index=(
+                            0 if self.prompt_router == "hybrid_wiki" else None
+                        ),
+                        **router_kwargs,
+                    )
                 self.register_buffer(
                     "scene_scaler_mean",
                     torch.full((self.enc_in,), float("nan")),
@@ -306,10 +337,18 @@ class Model(nn.Module):
                     "rated_power_min_ratio": float(args.scene_wiki_rated_power_min_ratio),
                     "gust_std_min_mps": float(args.scene_wiki_gust_std_min_mps),
                     "gust_step_min_mps": float(args.scene_wiki_gust_step_min_mps),
-                    "ramp_delta_min_ratio": float(args.scene_wiki_ramp_delta_min_ratio),
                 }
+                if self.prompt_router != "compositional_wiki":
+                    self.scene_wiki_rule_kwargs["ramp_delta_min_ratio"] = float(
+                        args.scene_wiki_ramp_delta_min_ratio
+                    )
                 self.rated_power = float(args.rated_power)
-            if self.prompt_router not in ("trend", "scene_wiki", "hybrid_wiki"):
+            if self.prompt_router not in (
+                "trend",
+                "scene_wiki",
+                "hybrid_wiki",
+                "compositional_wiki",
+            ):
                 raise ValueError(f"Unknown prompt router: {self.prompt_router}")
         else:
             self.prompt_dim = (
@@ -404,7 +443,12 @@ class Model(nn.Module):
 
             scene_logits = None
             scene_labels = None
-            if self.prompt_router in ("scene_wiki", "hybrid_wiki"):
+            event_activations = None
+            if self.prompt_router in (
+                "scene_wiki",
+                "hybrid_wiki",
+                "compositional_wiki",
+            ):
                 if not torch.isfinite(self.scene_scaler_mean).all() or not torch.isfinite(
                     self.scene_scaler_scale
                 ).all():
@@ -416,19 +460,34 @@ class Model(nn.Module):
                     label_source * self.scene_scaler_scale.view(1, 1, -1)
                     + self.scene_scaler_mean.view(1, 1, -1)
                 )
-                rule_logits, scene_labels = compute_scene_wiki_rule_logits(
-                    raw_history,
-                    self.feature_columns,
-                    rated_power=self.rated_power,
-                    scene_ids=self.scene_wiki_scene_ids,
-                    **self.scene_wiki_rule_kwargs,
-                )
-                wiki_prompt, scene_logits, scene_probs = self.scene_wiki_router(
-                    channel_hidden,
-                    rule_logits=rule_logits,
-                )
+                if self.prompt_router == "compositional_wiki":
+                    rule_logits, scene_labels = compute_event_factor_rule_logits(
+                        raw_history,
+                        self.feature_columns,
+                        rated_power=self.rated_power,
+                        factor_ids=self.scene_wiki_scene_ids,
+                        **self.scene_wiki_rule_kwargs,
+                    )
+                    (
+                        wiki_prompt,
+                        scene_logits,
+                        scene_probs,
+                        event_activations,
+                    ) = self.scene_wiki_router(channel_hidden, rule_logits=rule_logits)
+                else:
+                    rule_logits, scene_labels = compute_scene_wiki_rule_logits(
+                        raw_history,
+                        self.feature_columns,
+                        rated_power=self.rated_power,
+                        scene_ids=self.scene_wiki_scene_ids,
+                        **self.scene_wiki_rule_kwargs,
+                    )
+                    wiki_prompt, scene_logits, scene_probs = self.scene_wiki_router(
+                        channel_hidden,
+                        rule_logits=rule_logits,
+                    )
 
-            if self.prompt_router in ("trend", "hybrid_wiki"):
+            if self.prompt_router in ("trend", "hybrid_wiki", "compositional_wiki"):
                 regime_logits, regime_probs = (
                     self.regime_predictor(
                         target_hidden
@@ -467,6 +526,16 @@ class Model(nn.Module):
                         * torch.sigmoid(self.scene_wiki_router.prompt_gate_logit)
                     ).detach()
                     sample_prompt = sample_prompt + retrieval_confidence.unsqueeze(-1) * wiki_prompt
+                elif self.prompt_router == "compositional_wiki":
+                    # The router already applies physical support, confidence
+                    # thresholding, Top-K sparsity and the learnable residual gate.
+                    # If every factor abstains, wiki_prompt is exactly zero.
+                    sample_prompt = sample_prompt + wiki_prompt
+                    self._last_wiki_intervention = (
+                        event_activations.amax(dim=-1)
+                        * torch.sigmoid(self.scene_wiki_router.prompt_gate_logit)
+                    ).detach()
+                    self._last_wiki_factor_activations = event_activations.detach()
             else:
                 regime_logits = scene_logits
                 regime_probs = scene_probs
@@ -514,8 +583,12 @@ class Model(nn.Module):
                 soft_prompt,
                 regime_logits,
                 pseudo_labels,
-                scene_logits if self.prompt_router == "hybrid_wiki" else None,
-                scene_labels if self.prompt_router == "hybrid_wiki" else None,
+                scene_logits
+                if self.prompt_router in ("hybrid_wiki", "compositional_wiki")
+                else None,
+                scene_labels
+                if self.prompt_router in ("hybrid_wiki", "compositional_wiki")
+                else None,
             )
 
         prompt_emb = (
@@ -539,7 +612,11 @@ class Model(nn.Module):
     def set_scene_scaler(self, mean, scale):
         """Install scaler statistics fitted on the training split only."""
 
-        if self.prompt_router not in ("scene_wiki", "hybrid_wiki"):
+        if self.prompt_router not in (
+            "scene_wiki",
+            "hybrid_wiki",
+            "compositional_wiki",
+        ):
             return
         mean_tensor = torch.as_tensor(
             mean, dtype=self.scene_scaler_mean.dtype, device=self.scene_scaler_mean.device
@@ -701,13 +778,21 @@ class Model(nn.Module):
             )
 
         if self.use_soft_prompt:
-            return {
+            result = {
                 "pred": predict_x,
                 "regime_logits": regime_logits,
                 "pseudo_labels": pseudo_labels,
-                "scene_logits": scene_logits,
-                "scene_labels": scene_labels,
+                "scene_logits": (
+                    scene_logits if self.prompt_router == "hybrid_wiki" else None
+                ),
+                "scene_labels": (
+                    scene_labels if self.prompt_router == "hybrid_wiki" else None
+                ),
             }
+            if self.prompt_router == "compositional_wiki":
+                result["event_logits"] = scene_logits
+                result["event_targets"] = scene_labels
+            return result
 
         return predict_x
 
@@ -1308,7 +1393,7 @@ class PromptGuidedModel(Model):
             result = self.pretrain(batch_x)
 
             if isinstance(result, dict):
-                if self.prompt_router == "hybrid_wiki":
+                if self.prompt_router in ("hybrid_wiki", "compositional_wiki"):
                     return result
                 return (
                     result["pred"],

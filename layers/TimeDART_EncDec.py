@@ -385,6 +385,8 @@ class SceneWikiPromptRouter(nn.Module):
             raise ValueError("scene_wiki_top_k must be between 1 and num_scenes")
         if float(temperature) <= 0:
             raise ValueError("scene_wiki_temperature must be positive")
+        if float(rule_weight) < 0:
+            raise ValueError("scene_wiki_rule_weight cannot be negative")
         self.num_scenes = int(keys.size(0))
         self.top_k = int(top_k)
         self.temperature = float(temperature)
@@ -460,6 +462,138 @@ class SceneWikiPromptRouter(nn.Module):
             prompt_probabilities, prompt_values
         )
         return prompt, retrieval_logits, probabilities
+
+
+class CompositionalEventWikiRouter(nn.Module):
+    """Compose sparse event-factor residuals over the ordinary trend prompt.
+
+    Each frozen semantic anchor represents one observable physical event.  The
+    router uses independent sigmoid scores (not a mutually exclusive softmax),
+    keeps at most ``top_k`` factors, and requires both semantic confidence and
+    positive physical-rule margin.  Consequently an all-absent or ambiguous
+    event vector produces an exact zero residual rather than a learned null
+    prompt that could silently perturb normal operation.
+    """
+
+    def __init__(
+        self,
+        semantic_embeddings,
+        d_model,
+        *,
+        num_features=None,
+        channel_prior=None,
+        top_k=2,
+        temperature=0.2,
+        rule_weight=2.0,
+        prompt_gate_init=-2.2,
+        activation_threshold=0.55,
+        confidence_power=1.0,
+        dropout=0.1,
+    ):
+        super().__init__()
+        keys = torch.as_tensor(semantic_embeddings, dtype=torch.float32)
+        if keys.ndim != 2 or keys.size(0) < 1 or keys.size(1) < 1:
+            raise ValueError(
+                "semantic_embeddings must have shape [num_factors, hidden_size]"
+            )
+        if not torch.isfinite(keys).all():
+            raise ValueError("semantic_embeddings contain non-finite values")
+        if not 1 <= int(top_k) <= int(keys.size(0)):
+            raise ValueError("scene_wiki_top_k must be between 1 and num_factors")
+        if float(temperature) <= 0:
+            raise ValueError("scene_wiki_temperature must be positive")
+        if not 0.0 <= float(activation_threshold) < 1.0:
+            raise ValueError("Wiki activation threshold must be in [0, 1)")
+        if float(confidence_power) <= 0:
+            raise ValueError("Wiki confidence power must be positive")
+
+        self.num_factors = int(keys.size(0))
+        # Keep the generic attribute for audit/checkpoint utilities shared with
+        # the legacy single-label router.
+        self.num_scenes = self.num_factors
+        self.top_k = int(top_k)
+        self.temperature = float(temperature)
+        self.rule_weight = float(rule_weight)
+        self.activation_threshold = float(activation_threshold)
+        self.confidence_power = float(confidence_power)
+        self.prompt_gate_logit = nn.Parameter(
+            torch.tensor(float(prompt_gate_init), dtype=torch.float32)
+        )
+        self.register_buffer("semantic_keys", F.normalize(keys, dim=-1))
+        self.num_features = int(num_features) if num_features is not None else None
+        if self.num_features is not None:
+            prior = torch.as_tensor(channel_prior, dtype=torch.float32).reshape(-1)
+            if prior.numel() != self.num_features:
+                raise ValueError("Event Wiki channel prior must match num_features")
+            self.log_channel_weight = nn.Parameter(torch.log(prior.clamp_min(1e-4)))
+        else:
+            self.log_channel_weight = None
+        self.semantic_projection = nn.Linear(keys.size(1), d_model, bias=False)
+        self.query_encoder = nn.Sequential(
+            nn.LayerNorm(2 * d_model),
+            nn.Dropout(dropout),
+            nn.Linear(2 * d_model, d_model),
+            nn.GELU(),
+            nn.Linear(d_model, d_model),
+        )
+        self.prompt_delta = nn.Parameter(torch.zeros(self.num_factors, d_model))
+        self.prompt_norm = nn.LayerNorm(d_model)
+
+    def forward(self, x_out, rule_logits):
+        if x_out.ndim == 4:
+            if self.log_channel_weight is None or x_out.size(1) != self.num_features:
+                raise ValueError(
+                    "Event Wiki multichannel input does not match its configured features"
+                )
+            weights = F.softmax(self.log_channel_weight, dim=0).view(1, -1, 1, 1)
+            x_out = (x_out * weights).sum(dim=1)
+        if x_out.ndim != 3:
+            raise ValueError(
+                "Event Wiki expects [batch,patch,d_model] or multichannel 4D, "
+                f"got {x_out.shape}"
+            )
+
+        state = torch.cat([x_out.mean(dim=1), x_out[:, -1]], dim=-1)
+        query = F.normalize(self.query_encoder(state), dim=-1)
+        projected_keys = self.semantic_projection(self.semantic_keys)
+        retrieval_keys = F.normalize(projected_keys, dim=-1)
+        retrieval_logits = torch.matmul(query, retrieval_keys.transpose(0, 1))
+        retrieval_logits = retrieval_logits / self.temperature
+        if rule_logits.shape != retrieval_logits.shape:
+            raise ValueError(
+                "event rule logits must match retrieval logits: "
+                f"{rule_logits.shape} != {retrieval_logits.shape}"
+            )
+        if not torch.isfinite(rule_logits).all():
+            raise ValueError("event rule logits contain non-finite values")
+
+        # Semantic confidence is evaluated independently.  A strong physical
+        # rule is not allowed to manufacture semantic confidence by being added
+        # to the retrieval logit; both branches must support intervention.
+        probabilities = torch.sigmoid(retrieval_logits)
+        confidence = (
+            (probabilities - self.activation_threshold)
+            / max(1.0 - self.activation_threshold, 1e-6)
+        ).clamp(0.0, 1.0)
+        confidence = confidence.pow(self.confidence_power)
+        # Positive signed margin is mandatory.  Rule weight controls how fast
+        # physical support saturates, while zero/negative evidence remains an
+        # exact zero and can never be rescued by semantic similarity alone.
+        positive_margin = rule_logits.clamp(0.0, 1.0)
+        physical_support = 1.0 - torch.exp(-self.rule_weight * positive_margin)
+        activations = confidence * physical_support
+        if self.top_k < self.num_factors:
+            keep = activations.topk(self.top_k, dim=-1).indices
+            support = torch.zeros_like(activations, dtype=torch.bool)
+            support.scatter_(1, keep, True)
+            activations = activations.masked_fill(~support, 0.0)
+
+        prompt_values = self.prompt_norm(projected_keys + self.prompt_delta)
+        active_count = (activations > 0).sum(dim=-1, keepdim=True).to(activations.dtype)
+        composition_scale = active_count.clamp_min(1.0).sqrt()
+        prompt = torch.matmul(activations, prompt_values) / composition_scale
+        prompt = torch.sigmoid(self.prompt_gate_logit) * prompt
+        return prompt, retrieval_logits, probabilities, activations
 
 
 class PromptGuidedDecoderBlock(nn.Module):

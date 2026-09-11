@@ -13,6 +13,7 @@ from exp.exp_timedart_v2 import Exp_TimeDART_v2
 from utils.run_tags import bounded_component, experiment_setting, forecast_result_tag
 from utils.experiment_audit import checkpoint_info
 from utils.wind_regime_wiki import (
+    EVENT_FACTOR_IDS,
     load_wind_regime_wiki_bundle,
     load_wind_regime_wiki_spec,
 )
@@ -401,11 +402,11 @@ def build_parser():
     )
     parser.add_argument(
         "--prompt_router",
-        choices=["trend", "scene_wiki", "hybrid_wiki"],
+        choices=["trend", "scene_wiki", "hybrid_wiki", "compositional_wiki"],
         default="trend",
         help=(
-            "3-trend prompt, Wiki replacement ablation, or the proposed causal "
-            "trend + exception-Wiki residual prompt"
+            "3-trend prompt, Wiki replacement ablation, legacy single-label "
+            "hybrid, or sparse compositional event-Wiki residual prompting"
         ),
     )
     parser.add_argument("--num_modes", type=int, default=3)
@@ -423,6 +424,8 @@ def build_parser():
     parser.add_argument("--scene_wiki_temperature", type=float, default=0.2)
     parser.add_argument("--scene_wiki_rule_weight", type=float, default=2.0)
     parser.add_argument("--scene_wiki_prompt_gate_init", type=float, default=-2.2)
+    parser.add_argument("--scene_wiki_activation_threshold", type=float, default=0.55)
+    parser.add_argument("--scene_wiki_confidence_power", type=float, default=1.0)
     parser.add_argument("--scene_wiki_recent_steps", type=int, default=None)
     parser.add_argument("--scene_wiki_low_wind_max_mps", type=float, default=None)
     parser.add_argument("--scene_wiki_active_wind_min_mps", type=float, default=None)
@@ -436,7 +439,16 @@ def build_parser():
         "--lambda_scene_ce",
         type=float,
         default=0.02,
-        help="auxiliary exception-scene CE weight for hybrid_wiki pretraining",
+        help="legacy auxiliary exception-scene CE weight",
+    )
+    parser.add_argument(
+        "--lambda_event_bce",
+        type=float,
+        default=None,
+        help=(
+            "multi-label event-factor BCE weight for compositional_wiki; "
+            "defaults to lambda_scene_ce for command compatibility"
+        ),
     )
     parser.add_argument(
         "--regime_target_index",
@@ -520,7 +532,11 @@ def pretrain_signature(args):
                 f"rq{args.regime_calibration_quantile:g}",
             ]
         )
-        if args.prompt_router in ("scene_wiki", "hybrid_wiki"):
+        if args.prompt_router in (
+            "scene_wiki",
+            "hybrid_wiki",
+            "compositional_wiki",
+        ):
             parts.extend(
                 [
                     f"wk{args.scene_wiki_bundle_sha256[:12]}",
@@ -529,6 +545,14 @@ def pretrain_signature(args):
                     f"wg{args.scene_wiki_prompt_gate_init:g}",
                 ]
             )
+            if args.prompt_router == "compositional_wiki":
+                parts.extend(
+                    [
+                        f"ef{args.scene_wiki_num_modes}",
+                        f"at{args.scene_wiki_activation_threshold:g}",
+                        f"cp{args.scene_wiki_confidence_power:g}",
+                    ]
+                )
     if args.data == "SDWPF":
         # Fold-specific pretraining is required: a checkpoint trained on later
         # rolling folds must never be auto-discovered for an earlier fold.
@@ -633,9 +657,17 @@ def configure_args(args):
             args.op_context = False
         if args.revin_keep_wind is None:
             args.revin_keep_wind = False
-    if args.prompt_router in ("scene_wiki", "hybrid_wiki"):
+    if args.lambda_event_bce is None:
+        args.lambda_event_bce = args.lambda_scene_ce
+    if args.prompt_router in (
+        "scene_wiki",
+        "hybrid_wiki",
+        "compositional_wiki",
+    ):
         if args.lambda_scene_ce < 0:
             raise ValueError("lambda_scene_ce cannot be negative")
+        if args.lambda_event_bce < 0:
+            raise ValueError("lambda_event_bce cannot be negative")
         if args.model != "PromptTimeDART" or args.downstream_task != "forecast":
             raise ValueError(
                 f"--prompt_router {args.prompt_router} currently requires "
@@ -644,17 +676,17 @@ def configure_args(args):
         if args.data != "SDWPF":
             raise ValueError(f"--prompt_router {args.prompt_router} currently requires SDWPF")
         if args.scene_wiki_config is None:
-            args.scene_wiki_config = (
-                "configs/wind_exception_wiki.json"
-                if args.prompt_router == "hybrid_wiki"
-                else "configs/wind_regime_wiki.json"
-            )
+            args.scene_wiki_config = {
+                "scene_wiki": "configs/wind_regime_wiki.json",
+                "hybrid_wiki": "configs/wind_exception_wiki.json",
+                "compositional_wiki": "configs/wind_event_factor_wiki.json",
+            }[args.prompt_router]
         if args.scene_wiki_embeddings is None:
-            args.scene_wiki_embeddings = (
-                "outputs/wiki/wind_exception_wiki_qwen.npz"
-                if args.prompt_router == "hybrid_wiki"
-                else "outputs/wiki/wind_regime_wiki_qwen.npz"
-            )
+            args.scene_wiki_embeddings = {
+                "scene_wiki": "outputs/wiki/wind_regime_wiki_qwen.npz",
+                "hybrid_wiki": "outputs/wiki/wind_exception_wiki_qwen.npz",
+                "compositional_wiki": "outputs/wiki/wind_event_factor_wiki_qwen.npz",
+            }[args.prompt_router]
         spec = load_wind_regime_wiki_spec(args.scene_wiki_config)
         bundle = load_wind_regime_wiki_bundle(
             args.scene_wiki_embeddings,
@@ -665,7 +697,7 @@ def configure_args(args):
                 "Wiki embeddings were built from a different config. Rebuild the bundle."
             )
         defaults = spec.get("rule_defaults", {})
-        rule_names = (
+        rule_names = [
             "recent_steps",
             "low_wind_max_mps",
             "active_wind_min_mps",
@@ -673,8 +705,9 @@ def configure_args(args):
             "rated_power_min_ratio",
             "gust_std_min_mps",
             "gust_step_min_mps",
-            "ramp_delta_min_ratio",
-        )
+        ]
+        if args.prompt_router != "compositional_wiki":
+            rule_names.append("ramp_delta_min_ratio")
         for name in rule_names:
             attr = f"scene_wiki_{name}"
             if getattr(args, attr) is None:
@@ -689,7 +722,7 @@ def configure_args(args):
         if args.prompt_router == "scene_wiki":
             args.num_modes = args.scene_wiki_num_modes
             args.regime_label_method = "scene_wiki"
-        else:
+        elif args.prompt_router == "hybrid_wiki":
             if tuple(spec["scene_ids"][:1]) != ("no_exception",):
                 raise ValueError(
                     "hybrid_wiki requires configs/wind_exception_wiki.json or an "
@@ -699,19 +732,37 @@ def configure_args(args):
                 raise ValueError("hybrid_wiki retains the original three trend modes")
             if args.regime_label_method in ("auto", "scene_wiki"):
                 args.regime_label_method = "trend_quantile"
+        else:
+            if tuple(spec["scene_ids"]) != EVENT_FACTOR_IDS:
+                raise ValueError(
+                    "compositional_wiki requires configs/wind_event_factor_wiki.json "
+                    f"with factor order {EVENT_FACTOR_IDS}"
+                )
+            if args.num_modes != 3:
+                raise ValueError(
+                    "compositional_wiki retains the original three trend modes"
+                )
+            if args.regime_label_method in ("auto", "scene_wiki"):
+                args.regime_label_method = "trend_quantile"
         if not 1 <= args.scene_wiki_top_k <= args.scene_wiki_num_modes:
             raise ValueError("scene_wiki_top_k must be between 1 and the scene count")
         if args.scene_wiki_temperature <= 0:
             raise ValueError("scene_wiki_temperature must be positive")
         if args.scene_wiki_rule_weight < 0:
             raise ValueError("scene_wiki_rule_weight cannot be negative")
+        if not 0.0 <= args.scene_wiki_activation_threshold < 1.0:
+            raise ValueError("scene_wiki_activation_threshold must be in [0, 1)")
+        if args.scene_wiki_confidence_power <= 0:
+            raise ValueError("scene_wiki_confidence_power must be positive")
         if int(args.scene_wiki_recent_steps) < 3:
             raise ValueError("scene_wiki_recent_steps must be at least 3")
-        for name in (
+        ratio_rule_names = [
             "low_power_max_ratio",
             "rated_power_min_ratio",
-            "ramp_delta_min_ratio",
-        ):
+        ]
+        if args.prompt_router != "compositional_wiki":
+            ratio_rule_names.append("ramp_delta_min_ratio")
+        for name in ratio_rule_names:
             value = float(getattr(args, f"scene_wiki_{name}"))
             if not 0.0 < value <= 1.0:
                 raise ValueError(f"scene_wiki_{name} must be in (0, 1]")
@@ -724,9 +775,10 @@ def configure_args(args):
             if float(getattr(args, f"scene_wiki_{name}")) < 0.0:
                 raise ValueError(f"scene_wiki_{name} cannot be negative")
         print(
-            "[INFO] Scene Wiki prompt router: "
-            f"mode={args.prompt_router} scenes={args.scene_wiki_num_modes} "
+            "[INFO] Semantic Wiki prompt router: "
+            f"mode={args.prompt_router} entries={args.scene_wiki_num_modes} "
             f"top_k={args.scene_wiki_top_k} "
+            f"activation_threshold={args.scene_wiki_activation_threshold:g} "
             f"encoder={args.scene_wiki_encoder_name} "
             f"bundle_sha256={args.scene_wiki_bundle_sha256[:12]}"
         )
@@ -817,11 +869,15 @@ def load_finetuned_model(exp, checkpoint_path):
             "prompt_router",
             "scene_wiki_config_sha256",
             "scene_wiki_bundle_sha256",
+            "scene_wiki_scene_ids",
             "scene_wiki_top_k",
             "scene_wiki_temperature",
             "scene_wiki_rule_weight",
             "scene_wiki_prompt_gate_init",
+            "scene_wiki_activation_threshold",
+            "scene_wiki_confidence_power",
             "lambda_scene_ce",
+            "lambda_event_bce",
             "scene_wiki_num_modes",
             "scene_wiki_recent_steps",
             "scene_wiki_low_wind_max_mps",

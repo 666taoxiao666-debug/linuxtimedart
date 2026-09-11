@@ -3,41 +3,43 @@
 This protocol keeps the final 20% of timestamps sealed until all model and
 hyper-parameter choices are frozen.
 
-## Causal Trend-Wiki Residual Prompting (CTWRP)
+## Physically Composable Event-Wiki Residual Prompting (PCE-WRP)
 
-The proposed PromptTimeDART route is `hybrid_wiki`. It does **not** replace the
-project's original prompts with a generic semantic prompt bank. The original
-three train-quantile-calibrated prompts (stable, ramp-up and ramp-down) remain
-the base temporal prompt. A separate five-card exception Wiki in
-`configs/wind_exception_wiki.json` contains `no_exception`, gust/turbulence,
-high-wind low-power, rated saturation and low-wind idle. The high-wind
-low-power card is deliberately not called curtailment because SCADA history
-alone cannot identify its cause.
+The proposed PromptTimeDART route is `compositional_wiki`. It preserves the
+three train-quantile-calibrated trend prompts (stable, ramp-up and ramp-down)
+as the ordinary temporal prior. A separate event-factor Wiki in
+`configs/wind_event_factor_wiki.json` contains four observable factors:
+gust/turbulence, high-wind low-power, rated saturation and low-wind idle. These
+are independent labels rather than one mutually exclusive scene, so, for
+example, gust and rated saturation can be active in the same historical
+window. High-wind low-power is deliberately not called curtailment because
+SCADA history alone cannot identify its cause.
 
 For each historical window, the final prompt is
-`trend_prompt + confidence * exception_wiki_residual`. The Wiki residual is
-exactly zero when `no_exception` is selected and shrinks when Top-K retrieval
-is uncertain. Therefore Wiki semantics are used to correct ordinary trend
-continuation only when a causal, observable exception is supported. Both the
-trend classifier and the exception retriever receive separate train-only
-pseudo-label supervision; inverse-square-root class weights prevent the common
-`no_exception` state from hiding rare events.
+`trend_prompt + sum(active_factor_residuals)`. A factor is active only when
+both its history-only physical rule has positive support and its learned
+semantic probability exceeds the frozen activation threshold. Top-K keeps the
+composition sparse; confidence controls each residual's magnitude. If no
+factor passes both gates, the event residual is mathematically exactly zero,
+so the Wiki cannot perturb an ordinary window. Independent BCE supervision
+trains the four semantic factors from train-only pseudo-labels, with bounded
+train-only imbalance weights.
 
 On the first run, the entry script uses the frozen model selected by
-`WIKI_LLM_PATH` to encode the five exception cards once. It writes
-`outputs/wiki/wind_exception_wiki_qwen.npz`; no LLM is called inside training or
-inference. The time-series encoder then performs Top-2 soft retrieval over
+`WIKI_LLM_PATH` to encode the four versioned event-factor cards once. It writes
+`outputs/wiki/wind_event_factor_wiki_qwen.npz`; no LLM is called inside
+training or inference. The time-series encoder then retrieves and composes
 those frozen semantic anchors using historical SCADA only. Train-split scaler
-statistics, Wiki/config hashes, scene support and prompt parameters are saved
-in the audit manifest and checkpoint.
+statistics, Wiki/config hashes, factor co-occurrence, null-window support,
+activation statistics and prompt parameters are saved in the audit artifacts.
 
 To build the semantic anchors explicitly (optional, because training scripts
 do this automatically when the bundle is absent):
 
 ```bash
 python scripts/build_wind_regime_wiki.py \
-  --config configs/wind_exception_wiki.json \
-  --output outputs/wiki/wind_exception_wiki_qwen.npz \
+  --config configs/wind_event_factor_wiki.json \
+  --output outputs/wiki/wind_event_factor_wiki_qwen.npz \
   --llm_path Qwen/Qwen2.5-0.5B
 ```
 
@@ -49,19 +51,22 @@ PROMPT_ROUTER=trend REGIME_LABEL_METHOD=trend_quantile \
 bash scripts/train/SDWPF_paper_cv.sh
 ```
 
-`PROMPT_ROUTER=scene_wiki` plus the seven-card config remains only as the
-"Wiki replaces trend prompts" ablation. The publishable comparison is:
-original trend prompts vs Wiki replacement vs full CTWRP. Do not mix their
-checkpoints: every router requires fold/seed-matched pretraining followed by
-matched fine-tuning.
+`PROMPT_ROUTER=hybrid_wiki` retains the old single-label five-card exception
+Wiki, while `PROMPT_ROUTER=scene_wiki` retains the seven-card "Wiki replaces
+trend prompts" route. They are ablations, not aliases for the proposed method.
+Do not mix their checkpoints: every router requires fold/seed-matched
+pretraining followed by matched fine-tuning.
 
 Novelty boundary: Top-K semantic-anchor retrieval itself is prior art, and so
 is generic hard/soft prompt fusion. The hypothesis tested here is narrower:
 an ordinary trend prompt should remain authoritative for common dynamics,
-while a causally detected, uncertainty-gated semantic memory contributes only
-an exception residual. This must be supported by the three-router comparison,
-per-exception metrics and a random-embedding control before it is described as
-an empirical contribution.
+while multiple observable physical factors contribute sparse,
+confidence-gated semantic residuals and abstain exactly on unsupported
+windows. This must be supported by trend vs legacy single-label vs
+compositional routing, single-factor vs multi-factor composition, no-gate,
+no-abstention and random-embedding controls. Report per-factor performance,
+co-occurrence performance, null-window false intervention and forecast skill;
+otherwise the mechanism is not established.
 
 ## Log layout
 

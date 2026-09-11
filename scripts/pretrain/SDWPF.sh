@@ -16,13 +16,17 @@ TRAIN_EPOCHS="${TRAIN_EPOCHS:-20}"
 LEARNING_RATE="${LEARNING_RATE:-0.0001}"
 LAMBDA_CE="${LAMBDA_CE:-0.02}"
 LAMBDA_SCENE_CE="${LAMBDA_SCENE_CE:-0.02}"
-PROMPT_ROUTER="${PROMPT_ROUTER:-hybrid_wiki}"
+LAMBDA_EVENT_BCE="${LAMBDA_EVENT_BCE:-0.02}"
+PROMPT_ROUTER="${PROMPT_ROUTER:-compositional_wiki}"
 if [[ "${PROMPT_ROUTER}" == "scene_wiki" ]]; then
     REGIME_LABEL_METHOD="scene_wiki"
 else
     REGIME_LABEL_METHOD="${REGIME_LABEL_METHOD:-trend_quantile}"
 fi
-if [[ "${PROMPT_ROUTER}" == "hybrid_wiki" ]]; then
+if [[ "${PROMPT_ROUTER}" == "compositional_wiki" ]]; then
+    SCENE_WIKI_CONFIG="${SCENE_WIKI_CONFIG:-configs/wind_event_factor_wiki.json}"
+    SCENE_WIKI_EMBEDDINGS="${SCENE_WIKI_EMBEDDINGS:-outputs/wiki/wind_event_factor_wiki_qwen.npz}"
+elif [[ "${PROMPT_ROUTER}" == "hybrid_wiki" ]]; then
     SCENE_WIKI_CONFIG="${SCENE_WIKI_CONFIG:-configs/wind_exception_wiki.json}"
     SCENE_WIKI_EMBEDDINGS="${SCENE_WIKI_EMBEDDINGS:-outputs/wiki/wind_exception_wiki_qwen.npz}"
 else
@@ -33,6 +37,8 @@ SCENE_WIKI_TOP_K="${SCENE_WIKI_TOP_K:-2}"
 SCENE_WIKI_TEMPERATURE="${SCENE_WIKI_TEMPERATURE:-0.2}"
 SCENE_WIKI_RULE_WEIGHT="${SCENE_WIKI_RULE_WEIGHT:-2.0}"
 SCENE_WIKI_PROMPT_GATE_INIT="${SCENE_WIKI_PROMPT_GATE_INIT:--2.2}"
+SCENE_WIKI_ACTIVATION_THRESHOLD="${SCENE_WIKI_ACTIVATION_THRESHOLD:-0.55}"
+SCENE_WIKI_CONFIDENCE_POWER="${SCENE_WIKI_CONFIDENCE_POWER:-1.0}"
 WIKI_LLM_PATH="${WIKI_LLM_PATH:-Qwen/Qwen2.5-0.5B}"
 WIKI_BUILD_DEVICE="${WIKI_BUILD_DEVICE:-auto}"
 REGIME_CALIBRATION_QUANTILE="${REGIME_CALIBRATION_QUANTILE:-0.3333333333}"
@@ -47,7 +53,7 @@ export CUBLAS_WORKSPACE_CONFIG="${CUBLAS_WORKSPACE_CONFIG:-:4096:8}"
 
 sdwpf_wiki_prepare
 
-LOG_PARAMETERS="h${PRED_LEN}_${SPLIT}_f${FOLD}of${N_FOLDS}_s${SEED}_lr${LEARNING_RATE}_lce${LAMBDA_CE}_lsce${LAMBDA_SCENE_CE}_${PROMPT_ROUTER}_reg${REGIME_LABEL_METHOD}_rq${REGIME_CALIBRATION_QUANTILE}_ep${TRAIN_EPOCHS}_pat${PATIENCE}"
+LOG_PARAMETERS="h${PRED_LEN}_${SPLIT}_f${FOLD}of${N_FOLDS}_s${SEED}_lr${LEARNING_RATE}_lce${LAMBDA_CE}_lebce${LAMBDA_EVENT_BCE}_${PROMPT_ROUTER}_reg${REGIME_LABEL_METHOD}_rq${REGIME_CALIBRATION_QUANTILE}_ep${TRAIN_EPOCHS}_pat${PATIENCE}"
 sdwpf_log_init "pretrain" "${LOG_PARAMETERS}" "pretrain.log" "${RUN_ID}"
 sdwpf_log_install_exit_trap
 LOG_ENV_FILE="$(sdwpf_log_sidecar env)"
@@ -68,6 +74,7 @@ LOG_SUMMARY_FILE="$(sdwpf_log_sidecar summary.txt)"
     echo "LEARNING_RATE=${LEARNING_RATE}"
     echo "LAMBDA_CE=${LAMBDA_CE}"
     echo "LAMBDA_SCENE_CE=${LAMBDA_SCENE_CE}"
+    echo "LAMBDA_EVENT_BCE=${LAMBDA_EVENT_BCE}"
     echo "PROMPT_ROUTER=${PROMPT_ROUTER}"
     echo "SCENE_WIKI_CONFIG=${SCENE_WIKI_CONFIG}"
     echo "SCENE_WIKI_EMBEDDINGS=${SCENE_WIKI_EMBEDDINGS}"
@@ -75,6 +82,8 @@ LOG_SUMMARY_FILE="$(sdwpf_log_sidecar summary.txt)"
     echo "SCENE_WIKI_TEMPERATURE=${SCENE_WIKI_TEMPERATURE}"
     echo "SCENE_WIKI_RULE_WEIGHT=${SCENE_WIKI_RULE_WEIGHT}"
     echo "SCENE_WIKI_PROMPT_GATE_INIT=${SCENE_WIKI_PROMPT_GATE_INIT}"
+    echo "SCENE_WIKI_ACTIVATION_THRESHOLD=${SCENE_WIKI_ACTIVATION_THRESHOLD}"
+    echo "SCENE_WIKI_CONFIDENCE_POWER=${SCENE_WIKI_CONFIDENCE_POWER}"
     echo "WIKI_LLM_PATH=${WIKI_LLM_PATH}"
     echo "REGIME_LABEL_METHOD=${REGIME_LABEL_METHOD}"
     echo "REGIME_CALIBRATION_QUANTILE=${REGIME_CALIBRATION_QUANTILE}"
@@ -119,6 +128,7 @@ COMMAND=(python -u run.py
     --learning_rate "${LEARNING_RATE}" \
     --lambda_ce "${LAMBDA_CE}" \
     --lambda_scene_ce "${LAMBDA_SCENE_CE}" \
+    --lambda_event_bce "${LAMBDA_EVENT_BCE}" \
     --prompt_router "${PROMPT_ROUTER}" \
     --scene_wiki_config "${SCENE_WIKI_CONFIG}" \
     --scene_wiki_embeddings "${SCENE_WIKI_EMBEDDINGS}" \
@@ -126,6 +136,8 @@ COMMAND=(python -u run.py
     --scene_wiki_temperature "${SCENE_WIKI_TEMPERATURE}" \
     --scene_wiki_rule_weight "${SCENE_WIKI_RULE_WEIGHT}" \
     --scene_wiki_prompt_gate_init "${SCENE_WIKI_PROMPT_GATE_INIT}" \
+    --scene_wiki_activation_threshold "${SCENE_WIKI_ACTIVATION_THRESHOLD}" \
+    --scene_wiki_confidence_power "${SCENE_WIKI_CONFIDENCE_POWER}" \
     --regime_label_method "${REGIME_LABEL_METHOD}" \
     --regime_calibration_quantile "${REGIME_CALIBRATION_QUANTILE}" \
     --regime_calibration_samples "${REGIME_CALIBRATION_SAMPLES}" \
@@ -140,7 +152,7 @@ COMMAND=(python -u run.py
 
 echo "COMPLETED_AT=$(date --iso-8601=seconds)" >> "${LOG_ENV_FILE}"
 {
-    grep -E '^Epoch:|^Hybrid exception Wiki |^Validation loss decreased|^Pretrain early stopping|^\[AUDIT\] (Run manifest:|REGIME_CALIBRATION=|SCENE_WIKI_CALIBRATION=)' \
+    grep -E '^Epoch:|^Legacy Wiki |^Event Wiki |^Validation loss decreased|^Pretrain early stopping|^\[AUDIT\] (Run manifest:|REGIME_CALIBRATION=|SCENE_WIKI_CALIBRATION=|EVENT_FACTOR_CALIBRATION=)' \
         "${SDWPF_LOG_FILE}" || true
 } > "${LOG_SUMMARY_FILE}"
 echo "[PRETRAIN] Log: ${SDWPF_LOG_FILE}"

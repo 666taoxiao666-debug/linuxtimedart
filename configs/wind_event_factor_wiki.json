@@ -1,0 +1,59 @@
+{
+  "schema_version": 2,
+  "name": "SDWPF compositional physical-event semantic memory",
+  "language": "en",
+  "entry_type": "event_factor",
+  "composition": "sparse_confidence_gated_additive_residual",
+  "null_behavior": "exact_zero_residual_when_no_factor_is_supported",
+  "description": "Independent observable event factors that add a conservative residual to the train-calibrated stable/up/down trend prompt. Multiple factors may coexist. The all-zero factor vector means that the Wiki must not intervene.",
+  "rule_defaults": {
+    "recent_steps": 12,
+    "low_wind_max_mps": 3.0,
+    "active_wind_min_mps": 5.0,
+    "low_power_max_ratio": 0.08,
+    "rated_power_min_ratio": 0.9,
+    "gust_std_min_mps": 1.0,
+    "gust_step_min_mps": 2.0
+  },
+  "scenes": [
+    {
+      "id": "gust_or_turbulent",
+      "title": "Gust or turbulence event factor",
+      "prompt": "As one composable residual factor, recent wind-speed variability or abrupt wind jumps indicate that smooth trend continuation may lag. Apply only a confidence-controlled correction and combine it with any simultaneously supported physical factor.",
+      "observable_evidence": [
+        "recent wind-speed standard deviation above its frozen threshold",
+        "or recent absolute wind-speed step above its frozen threshold",
+        "historical SCADA only"
+      ]
+    },
+    {
+      "id": "high_wind_low_power",
+      "title": "High-wind low-power event factor",
+      "prompt": "As one composable residual factor, sufficient observed wind with persistently low observed power calls for conservative continuation rather than aggressive recovery. This is an observable state, not a diagnosis of curtailment, failure, or shutdown cause.",
+      "observable_evidence": [
+        "recent mean wind speed above the active-wind threshold",
+        "recent mean power below a rated-power ratio threshold",
+        "historical SCADA only"
+      ]
+    },
+    {
+      "id": "rated_saturation",
+      "title": "Rated-saturation event factor",
+      "prompt": "As one composable residual factor, power close to rated capacity should restrain an unconstrained upward trend while preserving a decline already visible in the history.",
+      "observable_evidence": [
+        "recent mean power near rated capacity",
+        "historical SCADA only"
+      ]
+    },
+    {
+      "id": "low_wind_idle",
+      "title": "Low-wind idle event factor",
+      "prompt": "As one composable residual factor, low recent wind together with low recent power supports a conservative near-zero correction unless recovery is already evidenced by the ordinary trend prompt.",
+      "observable_evidence": [
+        "recent mean wind below the low-wind threshold",
+        "recent mean power below a rated-power ratio threshold",
+        "historical SCADA only"
+      ]
+    }
+  ]
+}

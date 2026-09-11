@@ -194,6 +194,61 @@ def transfer_weights(weights_path, model, exclude_head=True, device="cpu", stric
     """
 
     checkpoint = torch.load(weights_path, map_location=device)
+    if isinstance(checkpoint, dict):
+        source_router = checkpoint.get("prompt_router")
+        target_router = getattr(model, "prompt_router", None)
+        if source_router and target_router and source_router != target_router:
+            raise RuntimeError(
+                "Pre-training checkpoint prompt router is incompatible with the "
+                f"target model: checkpoint={source_router!r}, target={target_router!r}. "
+                "Retrain pre-training for the selected router; do not silently "
+                "reuse a legacy single-label Wiki checkpoint."
+            )
+        if source_router == "compositional_wiki" and target_router == source_router:
+            target_wiki_router = getattr(model, "scene_wiki_router", None)
+            contract = {
+                "scene_wiki_config_sha256": getattr(
+                    model, "scene_wiki_config_sha256", None
+                ),
+                "scene_wiki_bundle_sha256": getattr(
+                    model, "scene_wiki_bundle_sha256", None
+                ),
+                "scene_wiki_scene_ids": list(
+                    getattr(model, "scene_wiki_scene_ids", ())
+                ),
+                "scene_wiki_activation_threshold": getattr(
+                    target_wiki_router, "activation_threshold", None
+                ),
+                "scene_wiki_confidence_power": getattr(
+                    target_wiki_router, "confidence_power", None
+                ),
+                "scene_wiki_top_k": getattr(target_wiki_router, "top_k", None),
+                "scene_wiki_temperature": getattr(
+                    target_wiki_router, "temperature", None
+                ),
+                "scene_wiki_rule_weight": getattr(
+                    target_wiki_router, "rule_weight", None
+                ),
+                "scene_wiki_rule_kwargs": dict(
+                    getattr(model, "scene_wiki_rule_kwargs", {})
+                ),
+            }
+            missing_contract = [key for key in contract if key not in checkpoint]
+            if missing_contract:
+                raise RuntimeError(
+                    "Compositional Wiki checkpoint lacks required method metadata: "
+                    + ", ".join(missing_contract)
+                )
+            mismatched_contract = [
+                f"{key}: checkpoint={checkpoint[key]!r}, target={target!r}"
+                for key, target in contract.items()
+                if checkpoint[key] != target
+            ]
+            if mismatched_contract:
+                raise RuntimeError(
+                    "Compositional Wiki checkpoint contract mismatch:\n- "
+                    + "\n- ".join(mismatched_contract)
+                )
     if isinstance(checkpoint, dict) and "model_state_dict" in checkpoint:
         source_state = checkpoint["model_state_dict"]
     elif isinstance(checkpoint, dict):
@@ -206,7 +261,7 @@ def transfer_weights(weights_path, model, exclude_head=True, device="cpu", stric
         for name, value in source_state.items()
     }
     target_state = model.state_dict()
-    ignored_tokens = (
+    ignored_prefixes = (
         "head.",
         "projection.",
         "denoising_patch_decoder.",
@@ -216,7 +271,7 @@ def transfer_weights(weights_path, model, exclude_head=True, device="cpu", stric
     matched = {}
     shape_mismatches = {}
     for name, value in source_state.items():
-        if exclude_head and any(token in name for token in ignored_tokens):
+        if exclude_head and name.startswith(ignored_prefixes):
             continue
         if name not in target_state:
             continue

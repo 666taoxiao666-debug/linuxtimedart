@@ -2,7 +2,9 @@
 
 # Shared offline preparation for the SDWPF semantic prompt Wiki.
 sdwpf_wiki_prepare() {
-    if [[ "${PROMPT_ROUTER}" != "scene_wiki" && "${PROMPT_ROUTER}" != "hybrid_wiki" ]]; then
+    if [[ "${PROMPT_ROUTER}" != "scene_wiki" \
+        && "${PROMPT_ROUTER}" != "hybrid_wiki" \
+        && "${PROMPT_ROUTER}" != "compositional_wiki" ]]; then
         return 0
     fi
     if [[ -f "${SCENE_WIKI_EMBEDDINGS}" ]]; then

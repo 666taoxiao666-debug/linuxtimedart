@@ -25,13 +25,16 @@ FORECAST_PLOT_POINTS="${FORECAST_PLOT_POINTS:-150}"
 FORECAST_PLOT_TURBINE_ID="${FORECAST_PLOT_TURBINE_ID:-}"
 FORECAST_PLOT_START="${FORECAST_PLOT_START:-}"
 REGIME_PROMPT="${REGIME_PROMPT:-1}"
-PROMPT_ROUTER="${PROMPT_ROUTER:-hybrid_wiki}"
+PROMPT_ROUTER="${PROMPT_ROUTER:-compositional_wiki}"
 if [[ "${PROMPT_ROUTER}" == "scene_wiki" ]]; then
     REGIME_LABEL_METHOD="scene_wiki"
 else
     REGIME_LABEL_METHOD="${REGIME_LABEL_METHOD:-trend_quantile}"
 fi
-if [[ "${PROMPT_ROUTER}" == "hybrid_wiki" ]]; then
+if [[ "${PROMPT_ROUTER}" == "compositional_wiki" ]]; then
+    SCENE_WIKI_CONFIG="${SCENE_WIKI_CONFIG:-configs/wind_event_factor_wiki.json}"
+    SCENE_WIKI_EMBEDDINGS="${SCENE_WIKI_EMBEDDINGS:-outputs/wiki/wind_event_factor_wiki_qwen.npz}"
+elif [[ "${PROMPT_ROUTER}" == "hybrid_wiki" ]]; then
     SCENE_WIKI_CONFIG="${SCENE_WIKI_CONFIG:-configs/wind_exception_wiki.json}"
     SCENE_WIKI_EMBEDDINGS="${SCENE_WIKI_EMBEDDINGS:-outputs/wiki/wind_exception_wiki_qwen.npz}"
 else
@@ -42,6 +45,8 @@ SCENE_WIKI_TOP_K="${SCENE_WIKI_TOP_K:-2}"
 SCENE_WIKI_TEMPERATURE="${SCENE_WIKI_TEMPERATURE:-0.2}"
 SCENE_WIKI_RULE_WEIGHT="${SCENE_WIKI_RULE_WEIGHT:-2.0}"
 SCENE_WIKI_PROMPT_GATE_INIT="${SCENE_WIKI_PROMPT_GATE_INIT:--2.2}"
+SCENE_WIKI_ACTIVATION_THRESHOLD="${SCENE_WIKI_ACTIVATION_THRESHOLD:-0.55}"
+SCENE_WIKI_CONFIDENCE_POWER="${SCENE_WIKI_CONFIDENCE_POWER:-1.0}"
 WIKI_LLM_PATH="${WIKI_LLM_PATH:-Qwen/Qwen2.5-0.5B}"
 WIKI_BUILD_DEVICE="${WIKI_BUILD_DEVICE:-auto}"
 REGIME_CALIBRATION_QUANTILE="${REGIME_CALIBRATION_QUANTILE:-0.3333333333}"
@@ -81,6 +86,8 @@ PLOT_ARGS+=(--scene_wiki_top_k "${SCENE_WIKI_TOP_K}")
 PLOT_ARGS+=(--scene_wiki_temperature "${SCENE_WIKI_TEMPERATURE}")
 PLOT_ARGS+=(--scene_wiki_rule_weight "${SCENE_WIKI_RULE_WEIGHT}")
 PLOT_ARGS+=(--scene_wiki_prompt_gate_init "${SCENE_WIKI_PROMPT_GATE_INIT}")
+PLOT_ARGS+=(--scene_wiki_activation_threshold "${SCENE_WIKI_ACTIVATION_THRESHOLD}")
+PLOT_ARGS+=(--scene_wiki_confidence_power "${SCENE_WIKI_CONFIDENCE_POWER}")
 PLOT_ARGS+=(--regime_label_method "${REGIME_LABEL_METHOD}")
 PLOT_ARGS+=(--regime_calibration_quantile "${REGIME_CALIBRATION_QUANTILE}")
 if [[ -n "${FORECAST_PLOT_TURBINE_ID}" ]]; then

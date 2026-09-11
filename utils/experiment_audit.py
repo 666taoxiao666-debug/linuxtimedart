@@ -311,7 +311,11 @@ def model_runtime_summary(model, args=None) -> dict:
     calibration = getattr(core, "regime_calibration", None)
     if calibration is not None:
         result["regime_calibration"] = _jsonable(calibration)
-    if getattr(core, "prompt_router", None) in ("scene_wiki", "hybrid_wiki"):
+    if getattr(core, "prompt_router", None) in (
+        "scene_wiki",
+        "hybrid_wiki",
+        "compositional_wiki",
+    ):
         router = core.scene_wiki_router
         channel_weights = None
         if getattr(router, "log_channel_weight", None) is not None:
@@ -324,6 +328,7 @@ def model_runtime_summary(model, args=None) -> dict:
         result["scene_wiki"] = {
             "scene_ids": list(getattr(core, "scene_wiki_scene_ids", ())),
             "encoder": getattr(core, "scene_wiki_encoder_name", None),
+            "config_sha256": getattr(core, "scene_wiki_config_sha256", None),
             "bundle_sha256": getattr(core, "scene_wiki_bundle_sha256", None),
             "prompt_gate": float(
                 torch.sigmoid(router.prompt_gate_logit.detach())
@@ -332,11 +337,37 @@ def model_runtime_summary(model, args=None) -> dict:
             ),
             "retrieval_channel_weights": channel_weights,
         }
+        if getattr(core, "prompt_router", None) == "compositional_wiki":
+            result["scene_wiki"].update(
+                {
+                    "entry_type": "multi_label_event_factor",
+                    "activation_threshold": float(router.activation_threshold),
+                    "confidence_power": float(router.confidence_power),
+                    "top_k": int(router.top_k),
+                    "null_behavior": "exact_zero_without_positive_physical_support",
+                }
+            )
         intervention = getattr(core, "_last_wiki_intervention", None)
         if intervention is not None and intervention.numel():
             values = intervention.detach().float().cpu()
             result["scene_wiki"]["last_intervention_mean"] = float(values.mean())
             result["scene_wiki"]["last_intervention_max"] = float(values.max())
+        factor_activations = getattr(core, "_last_wiki_factor_activations", None)
+        if factor_activations is not None and factor_activations.numel():
+            values = factor_activations.detach().float().cpu()
+            active = values > 0.0
+            result["scene_wiki"]["last_zero_intervention_fraction"] = float(
+                (~active.any(dim=1)).float().mean().item()
+            )
+            result["scene_wiki"]["last_mean_active_factors"] = float(
+                active.float().sum(dim=1).mean().item()
+            )
+            result["scene_wiki"]["last_factor_activation_fraction"] = {
+                factor_id: float(active[:, index].float().mean().item())
+                for index, factor_id in enumerate(
+                    getattr(core, "scene_wiki_scene_ids", ())
+                )
+            }
     transfer_audit = getattr(core, "pretrain_transfer_audit", None)
     if transfer_audit is not None:
         result["pretrain_transfer"] = _jsonable(transfer_audit)
