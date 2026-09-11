@@ -311,7 +311,7 @@ def model_runtime_summary(model, args=None) -> dict:
     calibration = getattr(core, "regime_calibration", None)
     if calibration is not None:
         result["regime_calibration"] = _jsonable(calibration)
-    if getattr(core, "prompt_router", None) == "scene_wiki":
+    if getattr(core, "prompt_router", None) in ("scene_wiki", "hybrid_wiki"):
         router = core.scene_wiki_router
         channel_weights = None
         if getattr(router, "log_channel_weight", None) is not None:
@@ -332,6 +332,11 @@ def model_runtime_summary(model, args=None) -> dict:
             ),
             "retrieval_channel_weights": channel_weights,
         }
+        intervention = getattr(core, "_last_wiki_intervention", None)
+        if intervention is not None and intervention.numel():
+            values = intervention.detach().float().cpu()
+            result["scene_wiki"]["last_intervention_mean"] = float(values.mean())
+            result["scene_wiki"]["last_intervention_max"] = float(values.max())
     transfer_audit = getattr(core, "pretrain_transfer_audit", None)
     if transfer_audit is not None:
         result["pretrain_transfer"] = _jsonable(transfer_audit)

@@ -25,14 +25,19 @@ FORECAST_PLOT_POINTS="${FORECAST_PLOT_POINTS:-150}"
 FORECAST_PLOT_TURBINE_ID="${FORECAST_PLOT_TURBINE_ID:-}"
 FORECAST_PLOT_START="${FORECAST_PLOT_START:-}"
 REGIME_PROMPT="${REGIME_PROMPT:-1}"
-PROMPT_ROUTER="${PROMPT_ROUTER:-scene_wiki}"
+PROMPT_ROUTER="${PROMPT_ROUTER:-hybrid_wiki}"
 if [[ "${PROMPT_ROUTER}" == "scene_wiki" ]]; then
     REGIME_LABEL_METHOD="scene_wiki"
 else
     REGIME_LABEL_METHOD="${REGIME_LABEL_METHOD:-trend_quantile}"
 fi
-SCENE_WIKI_CONFIG="${SCENE_WIKI_CONFIG:-configs/wind_regime_wiki.json}"
-SCENE_WIKI_EMBEDDINGS="${SCENE_WIKI_EMBEDDINGS:-outputs/wiki/wind_regime_wiki_qwen.npz}"
+if [[ "${PROMPT_ROUTER}" == "hybrid_wiki" ]]; then
+    SCENE_WIKI_CONFIG="${SCENE_WIKI_CONFIG:-configs/wind_exception_wiki.json}"
+    SCENE_WIKI_EMBEDDINGS="${SCENE_WIKI_EMBEDDINGS:-outputs/wiki/wind_exception_wiki_qwen.npz}"
+else
+    SCENE_WIKI_CONFIG="${SCENE_WIKI_CONFIG:-configs/wind_regime_wiki.json}"
+    SCENE_WIKI_EMBEDDINGS="${SCENE_WIKI_EMBEDDINGS:-outputs/wiki/wind_regime_wiki_qwen.npz}"
+fi
 SCENE_WIKI_TOP_K="${SCENE_WIKI_TOP_K:-2}"
 SCENE_WIKI_TEMPERATURE="${SCENE_WIKI_TEMPERATURE:-0.2}"
 SCENE_WIKI_RULE_WEIGHT="${SCENE_WIKI_RULE_WEIGHT:-2.0}"

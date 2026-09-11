@@ -221,24 +221,58 @@ class Model(nn.Module):
         # regime classifier/dictionary.
         if self.use_soft_prompt:
             self.num_modes = getattr(args, "num_modes", 3)
-            if self.prompt_router == "trend" and self.num_modes != 3:
+            if self.prompt_router in ("trend", "hybrid_wiki") and self.num_modes != 3:
                 raise ValueError(
                     "The pseudo-label definition requires "
                     "num_modes=3"
                 )
 
             self.prompt_dim = args.d_model
-            if self.prompt_router == "scene_wiki":
+            if self.prompt_router in ("trend", "hybrid_wiki"):
+                # This is the project's original train-calibrated prompt branch.
+                # In the hybrid model it remains the base representation rather
+                # than being replaced by a generic semantic retriever.
+                self.regime_predictor = RegimePredictor(
+                    d_model=args.d_model,
+                    num_modes=self.num_modes,
+                    dropout=args.dropout,
+                )
+                self.soft_prompt_generator = SoftPromptGenerator(
+                    num_modes=self.num_modes,
+                    d_model=args.d_model,
+                )
+                down = getattr(args, "regime_down_thresh", None)
+                up = getattr(args, "regime_up_thresh", None)
+                self.register_buffer(
+                    "regime_down_thresh",
+                    torch.tensor(float("nan") if down is None else float(down)),
+                )
+                self.register_buffer(
+                    "regime_up_thresh",
+                    torch.tensor(float("nan") if up is None else float(up)),
+                )
+
+            if self.prompt_router in ("scene_wiki", "hybrid_wiki"):
                 bundle = load_wind_regime_wiki_bundle(
                     args.scene_wiki_embeddings,
                     expected_scene_ids=getattr(args, "scene_wiki_scene_ids", None),
                 )
-                if self.num_modes != len(bundle["scene_ids"]):
+                if self.prompt_router == "scene_wiki" and self.num_modes != len(
+                    bundle["scene_ids"]
+                ):
                     raise ValueError(
                         "num_modes must equal the Wiki scene count: "
                         f"{self.num_modes} != {len(bundle['scene_ids'])}"
                     )
+                if self.prompt_router == "hybrid_wiki" and tuple(
+                    bundle["scene_ids"]
+                )[:1] != ("no_exception",):
+                    raise ValueError(
+                        "hybrid_wiki requires an exception Wiki whose first scene is "
+                        "no_exception"
+                    )
                 self.scene_wiki_scene_ids = tuple(bundle["scene_ids"])
+                self.scene_wiki_num_modes = len(self.scene_wiki_scene_ids)
                 self.scene_wiki_bundle_sha256 = bundle["sha256"]
                 self.scene_wiki_encoder_name = bundle["encoder_name"]
                 self.scene_wiki_router = SceneWikiPromptRouter(
@@ -253,6 +287,7 @@ class Model(nn.Module):
                     temperature=args.scene_wiki_temperature,
                     rule_weight=args.scene_wiki_rule_weight,
                     prompt_gate_init=args.scene_wiki_prompt_gate_init,
+                    null_scene_index=(0 if self.prompt_router == "hybrid_wiki" else None),
                     dropout=args.dropout,
                 )
                 self.register_buffer(
@@ -274,27 +309,7 @@ class Model(nn.Module):
                     "ramp_delta_min_ratio": float(args.scene_wiki_ramp_delta_min_ratio),
                 }
                 self.rated_power = float(args.rated_power)
-            elif self.prompt_router == "trend":
-                self.regime_predictor = RegimePredictor(
-                    d_model=args.d_model,
-                    num_modes=self.num_modes,
-                    dropout=args.dropout,
-                )
-                self.soft_prompt_generator = SoftPromptGenerator(
-                    num_modes=self.num_modes,
-                    d_model=args.d_model,
-                )
-                down = getattr(args, "regime_down_thresh", None)
-                up = getattr(args, "regime_up_thresh", None)
-                self.register_buffer(
-                    "regime_down_thresh",
-                    torch.tensor(float("nan") if down is None else float(down)),
-                )
-                self.register_buffer(
-                    "regime_up_thresh",
-                    torch.tensor(float("nan") if up is None else float(up)),
-                )
-            else:
+            if self.prompt_router not in ("trend", "scene_wiki", "hybrid_wiki"):
                 raise ValueError(f"Unknown prompt router: {self.prompt_router}")
         else:
             self.prompt_dim = (
@@ -387,7 +402,9 @@ class Model(nn.Module):
             )
             target_hidden = channel_hidden[:, target_index]
 
-            if self.prompt_router == "scene_wiki":
+            scene_logits = None
+            scene_labels = None
+            if self.prompt_router in ("scene_wiki", "hybrid_wiki"):
                 if not torch.isfinite(self.scene_scaler_mean).all() or not torch.isfinite(
                     self.scene_scaler_scale
                 ).all():
@@ -403,13 +420,15 @@ class Model(nn.Module):
                     raw_history,
                     self.feature_columns,
                     rated_power=self.rated_power,
+                    scene_ids=self.scene_wiki_scene_ids,
                     **self.scene_wiki_rule_kwargs,
                 )
-                sample_prompt, regime_logits, regime_probs = self.scene_wiki_router(
+                wiki_prompt, scene_logits, scene_probs = self.scene_wiki_router(
                     channel_hidden,
                     rule_logits=rule_logits,
                 )
-            else:
+
+            if self.prompt_router in ("trend", "hybrid_wiki"):
                 regime_logits, regime_probs = (
                     self.regime_predictor(
                         target_hidden
@@ -421,6 +440,37 @@ class Model(nn.Module):
                         regime_probs
                     )
                 )
+                if self.prompt_router == "hybrid_wiki":
+                    # Causal Trend-Wiki Residual Prompting (CTWRP): the original
+                    # trend prompt explains ordinary stable/up/down dynamics.
+                    # Wiki semantics can only add a residual when the history
+                    # supports an exception and retrieval is confident.
+                    event_probability = 1.0 - scene_probs[:, 0]
+                    if self.scene_wiki_router.top_k <= 1:
+                        retrieval_confidence = torch.ones_like(event_probability)
+                    else:
+                        entropy = -(
+                            scene_probs.clamp_min(1e-8)
+                            * scene_probs.clamp_min(1e-8).log()
+                        ).sum(dim=-1)
+                        normalizer = torch.log(
+                            torch.tensor(
+                                float(self.scene_wiki_router.top_k),
+                                device=entropy.device,
+                                dtype=entropy.dtype,
+                            )
+                        )
+                        retrieval_confidence = (1.0 - entropy / normalizer).clamp(0.0, 1.0)
+                    self._last_wiki_intervention = (
+                        event_probability
+                        * retrieval_confidence
+                        * torch.sigmoid(self.scene_wiki_router.prompt_gate_logit)
+                    ).detach()
+                    sample_prompt = sample_prompt + retrieval_confidence.unsqueeze(-1) * wiki_prompt
+            else:
+                regime_logits = scene_logits
+                regime_probs = scene_probs
+                sample_prompt = wiki_prompt
 
             # Channel-independent encoder rows belonging
             # to the same sample receive the same
@@ -464,6 +514,8 @@ class Model(nn.Module):
                 soft_prompt,
                 regime_logits,
                 pseudo_labels,
+                scene_logits if self.prompt_router == "hybrid_wiki" else None,
+                scene_labels if self.prompt_router == "hybrid_wiki" else None,
             )
 
         prompt_emb = (
@@ -482,12 +534,12 @@ class Model(nn.Module):
             else None
         )
 
-        return prompt_emb, None, None
+        return prompt_emb, None, None, None, None
 
     def set_scene_scaler(self, mean, scale):
         """Install scaler statistics fitted on the training split only."""
 
-        if self.prompt_router != "scene_wiki":
+        if self.prompt_router not in ("scene_wiki", "hybrid_wiki"):
             return
         mean_tensor = torch.as_tensor(
             mean, dtype=self.scene_scaler_mean.dtype, device=self.scene_scaler_mean.device
@@ -584,6 +636,8 @@ class Model(nn.Module):
             prompt_emb,
             regime_logits,
             pseudo_labels,
+            scene_logits,
+            scene_labels,
         ) = self._build_prompt(
             x_out,
             label_source,
@@ -651,6 +705,8 @@ class Model(nn.Module):
                 "pred": predict_x,
                 "regime_logits": regime_logits,
                 "pseudo_labels": pseudo_labels,
+                "scene_logits": scene_logits,
+                "scene_labels": scene_labels,
             }
 
         return predict_x
@@ -721,7 +777,7 @@ class Model(nn.Module):
         )
 
         if self.use_soft_prompt:
-            prompt_emb, _, _ = (
+            prompt_emb, _, _, _, _ = (
                 self._build_prompt(
                     x,
                     label_source,
@@ -1252,6 +1308,8 @@ class PromptGuidedModel(Model):
             result = self.pretrain(batch_x)
 
             if isinstance(result, dict):
+                if self.prompt_router == "hybrid_wiki":
+                    return result
                 return (
                     result["pred"],
                     result["regime_logits"],

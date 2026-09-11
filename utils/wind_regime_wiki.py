@@ -20,6 +20,20 @@ REQUIRED_SCENE_IDS = (
     "low_wind_idle",
 )
 
+# The full seven-scene Wiki is retained as a replacement-router ablation.  The
+# proposed hybrid router deliberately removes the three ordinary trend scenes:
+# those are already represented by the project's original quantile-calibrated
+# soft prompts.  Its Wiki therefore models only exceptions plus an explicit
+# "do not intervene" anchor.
+EXCEPTION_SCENE_IDS = (
+    "no_exception",
+    "gust_or_turbulent",
+    "high_wind_low_power",
+    "rated_saturation",
+    "low_wind_idle",
+)
+VALID_SCENE_ORDERS = (REQUIRED_SCENE_IDS, EXCEPTION_SCENE_IDS)
+
 
 def sha256_file(path) -> str:
     digest = hashlib.sha256()
@@ -39,10 +53,10 @@ def load_wind_regime_wiki_spec(path) -> dict:
     if not isinstance(scenes, list) or not scenes:
         raise ValueError("Wind-regime Wiki must contain a non-empty scenes list")
     scene_ids = tuple(str(scene.get("id", "")).strip() for scene in scenes)
-    if scene_ids != REQUIRED_SCENE_IDS:
+    if scene_ids not in VALID_SCENE_ORDERS:
         raise ValueError(
             "Wind-regime Wiki scene order is part of the checkpoint contract; "
-            f"expected {REQUIRED_SCENE_IDS}, got {scene_ids}"
+            f"expected one of {VALID_SCENE_ORDERS}, got {scene_ids}"
         )
     if len(set(scene_ids)) != len(scene_ids):
         raise ValueError("Wind-regime Wiki scene ids must be unique")
@@ -107,6 +121,7 @@ def compute_scene_wiki_rule_logits(
     gust_std_min_mps: float = 1.0,
     gust_step_min_mps: float = 2.0,
     ramp_delta_min_ratio: float = 0.1,
+    scene_ids=None,
 ):
     """Return deterministic scene priors and labels from observed history only.
 
@@ -160,8 +175,15 @@ def compute_scene_wiki_rule_logits(
     labels[high_wind_low_power] = 4
     labels[rated] = 5
     labels[low_idle] = 6
+    scene_ids = tuple(scene_ids or REQUIRED_SCENE_IDS)
+    if scene_ids == EXCEPTION_SCENE_IDS:
+        # normal stable/up/down -> no_exception; four exceptional states retain
+        # their identity.  This avoids duplicating the original trend prompts.
+        labels = torch.where(labels <= 2, torch.zeros_like(labels), labels - 2)
+    elif scene_ids != REQUIRED_SCENE_IDS:
+        raise ValueError(f"Unsupported Scene Wiki order: {scene_ids}")
     rule_logits = torch.nn.functional.one_hot(
-        labels, num_classes=len(REQUIRED_SCENE_IDS)
+        labels, num_classes=len(scene_ids)
     ).to(dtype=history_raw.dtype)
     return rule_logits, labels
 
@@ -173,6 +195,7 @@ def audit_scene_wiki_labels_from_dataset(
     rated_power: float,
     max_samples: int = 50000,
     rule_kwargs=None,
+    scene_ids=None,
 ) -> dict:
     """Count Wiki pseudo-label support using deterministic training windows."""
 
@@ -189,7 +212,10 @@ def audit_scene_wiki_labels_from_dataset(
     offsets = np.arange(int(dataset.seq_len), dtype=np.int64)
     mean = np.asarray(dataset.scaler.mean_, dtype=np.float32)
     scale = np.asarray(dataset.scaler.scale_, dtype=np.float32)
-    counts = np.zeros(len(REQUIRED_SCENE_IDS), dtype=np.int64)
+    scene_ids = tuple(scene_ids or REQUIRED_SCENE_IDS)
+    if scene_ids not in VALID_SCENE_ORDERS:
+        raise ValueError(f"Unsupported Scene Wiki order: {scene_ids}")
+    counts = np.zeros(len(scene_ids), dtype=np.int64)
     kwargs = dict(rule_kwargs or {})
     for offset in range(0, len(starts), 2048):
         chunk_starts = starts[offset : offset + 2048]
@@ -200,6 +226,7 @@ def audit_scene_wiki_labels_from_dataset(
             torch.as_tensor(raw, dtype=torch.float32),
             feature_columns,
             rated_power=rated_power,
+            scene_ids=scene_ids,
             **kwargs,
         )
         counts += np.bincount(labels.cpu().numpy(), minlength=len(counts))
@@ -207,7 +234,7 @@ def audit_scene_wiki_labels_from_dataset(
         "method": "scene_wiki",
         "source_split": "train",
         "sample_count": int(counts.sum()),
-        "scene_ids": list(REQUIRED_SCENE_IDS),
+        "scene_ids": list(scene_ids),
         "class_counts": [int(value) for value in counts],
         "class_fractions": [float(value / max(1, counts.sum())) for value in counts],
     }

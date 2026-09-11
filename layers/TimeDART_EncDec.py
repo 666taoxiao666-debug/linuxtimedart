@@ -370,6 +370,7 @@ class SceneWikiPromptRouter(nn.Module):
         temperature=0.2,
         rule_weight=2.0,
         prompt_gate_init=-2.2,
+        null_scene_index=None,
         dropout=0.1,
     ):
         super().__init__()
@@ -388,6 +389,13 @@ class SceneWikiPromptRouter(nn.Module):
         self.top_k = int(top_k)
         self.temperature = float(temperature)
         self.rule_weight = float(rule_weight)
+        self.null_scene_index = (
+            None if null_scene_index is None else int(null_scene_index)
+        )
+        if self.null_scene_index is not None and not (
+            0 <= self.null_scene_index < self.num_scenes
+        ):
+            raise ValueError("null_scene_index must identify a valid Wiki scene")
         self.prompt_gate_logit = nn.Parameter(
             torch.tensor(float(prompt_gate_init), dtype=torch.float32)
         )
@@ -444,8 +452,12 @@ class SceneWikiPromptRouter(nn.Module):
             routing_logits = masked
         probabilities = F.softmax(routing_logits, dim=-1)
         prompt_values = self.prompt_norm(projected_keys + self.prompt_delta)
+        prompt_probabilities = probabilities
+        if self.null_scene_index is not None:
+            prompt_probabilities = probabilities.clone()
+            prompt_probabilities[:, self.null_scene_index] = 0.0
         prompt = torch.sigmoid(self.prompt_gate_logit) * torch.matmul(
-            probabilities, prompt_values
+            prompt_probabilities, prompt_values
         )
         return prompt, retrieval_logits, probabilities
 

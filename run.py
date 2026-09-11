@@ -401,19 +401,22 @@ def build_parser():
     )
     parser.add_argument(
         "--prompt_router",
-        choices=["trend", "scene_wiki"],
+        choices=["trend", "scene_wiki", "hybrid_wiki"],
         default="trend",
-        help="legacy 3-trend prompt or LLM-encoded wind-regime Wiki retrieval",
+        help=(
+            "3-trend prompt, Wiki replacement ablation, or the proposed causal "
+            "trend + exception-Wiki residual prompt"
+        ),
     )
     parser.add_argument("--num_modes", type=int, default=3)
     parser.add_argument(
         "--scene_wiki_config",
-        default="configs/wind_regime_wiki.json",
+        default=None,
         help="versioned observable-scene definitions",
     )
     parser.add_argument(
         "--scene_wiki_embeddings",
-        default="outputs/wiki/wind_regime_wiki_qwen.npz",
+        default=None,
         help="offline LLM embeddings built before training",
     )
     parser.add_argument("--scene_wiki_top_k", type=int, default=2)
@@ -429,6 +432,12 @@ def build_parser():
     parser.add_argument("--scene_wiki_gust_step_min_mps", type=float, default=None)
     parser.add_argument("--scene_wiki_ramp_delta_min_ratio", type=float, default=None)
     parser.add_argument("--lambda_ce", type=float, default=0.1)
+    parser.add_argument(
+        "--lambda_scene_ce",
+        type=float,
+        default=0.02,
+        help="auxiliary exception-scene CE weight for hybrid_wiki pretraining",
+    )
     parser.add_argument(
         "--regime_target_index",
         type=int,
@@ -511,7 +520,7 @@ def pretrain_signature(args):
                 f"rq{args.regime_calibration_quantile:g}",
             ]
         )
-        if args.prompt_router == "scene_wiki":
+        if args.prompt_router in ("scene_wiki", "hybrid_wiki"):
             parts.extend(
                 [
                     f"wk{args.scene_wiki_bundle_sha256[:12]}",
@@ -624,13 +633,28 @@ def configure_args(args):
             args.op_context = False
         if args.revin_keep_wind is None:
             args.revin_keep_wind = False
-    if args.prompt_router == "scene_wiki":
+    if args.prompt_router in ("scene_wiki", "hybrid_wiki"):
+        if args.lambda_scene_ce < 0:
+            raise ValueError("lambda_scene_ce cannot be negative")
         if args.model != "PromptTimeDART" or args.downstream_task != "forecast":
             raise ValueError(
-                "--prompt_router scene_wiki currently requires PromptTimeDART forecast"
+                f"--prompt_router {args.prompt_router} currently requires "
+                "PromptTimeDART forecast"
             )
         if args.data != "SDWPF":
-            raise ValueError("--prompt_router scene_wiki currently requires SDWPF")
+            raise ValueError(f"--prompt_router {args.prompt_router} currently requires SDWPF")
+        if args.scene_wiki_config is None:
+            args.scene_wiki_config = (
+                "configs/wind_exception_wiki.json"
+                if args.prompt_router == "hybrid_wiki"
+                else "configs/wind_regime_wiki.json"
+            )
+        if args.scene_wiki_embeddings is None:
+            args.scene_wiki_embeddings = (
+                "outputs/wiki/wind_exception_wiki_qwen.npz"
+                if args.prompt_router == "hybrid_wiki"
+                else "outputs/wiki/wind_regime_wiki_qwen.npz"
+            )
         spec = load_wind_regime_wiki_spec(args.scene_wiki_config)
         bundle = load_wind_regime_wiki_bundle(
             args.scene_wiki_embeddings,
@@ -661,9 +685,21 @@ def configure_args(args):
         args.scene_wiki_config_sha256 = spec["sha256"]
         args.scene_wiki_bundle_sha256 = bundle["sha256"]
         args.scene_wiki_encoder_name = bundle["encoder_name"]
-        args.num_modes = len(spec["scene_ids"])
-        args.regime_label_method = "scene_wiki"
-        if not 1 <= args.scene_wiki_top_k <= args.num_modes:
+        args.scene_wiki_num_modes = len(spec["scene_ids"])
+        if args.prompt_router == "scene_wiki":
+            args.num_modes = args.scene_wiki_num_modes
+            args.regime_label_method = "scene_wiki"
+        else:
+            if tuple(spec["scene_ids"][:1]) != ("no_exception",):
+                raise ValueError(
+                    "hybrid_wiki requires configs/wind_exception_wiki.json or an "
+                    "equivalent Wiki beginning with no_exception"
+                )
+            if args.num_modes != 3:
+                raise ValueError("hybrid_wiki retains the original three trend modes")
+            if args.regime_label_method in ("auto", "scene_wiki"):
+                args.regime_label_method = "trend_quantile"
+        if not 1 <= args.scene_wiki_top_k <= args.scene_wiki_num_modes:
             raise ValueError("scene_wiki_top_k must be between 1 and the scene count")
         if args.scene_wiki_temperature <= 0:
             raise ValueError("scene_wiki_temperature must be positive")
@@ -689,7 +725,8 @@ def configure_args(args):
                 raise ValueError(f"scene_wiki_{name} cannot be negative")
         print(
             "[INFO] Scene Wiki prompt router: "
-            f"scenes={args.num_modes} top_k={args.scene_wiki_top_k} "
+            f"mode={args.prompt_router} scenes={args.scene_wiki_num_modes} "
+            f"top_k={args.scene_wiki_top_k} "
             f"encoder={args.scene_wiki_encoder_name} "
             f"bundle_sha256={args.scene_wiki_bundle_sha256[:12]}"
         )
@@ -784,6 +821,8 @@ def load_finetuned_model(exp, checkpoint_path):
             "scene_wiki_temperature",
             "scene_wiki_rule_weight",
             "scene_wiki_prompt_gate_init",
+            "lambda_scene_ce",
+            "scene_wiki_num_modes",
             "scene_wiki_recent_steps",
             "scene_wiki_low_wind_max_mps",
             "scene_wiki_active_wind_min_mps",

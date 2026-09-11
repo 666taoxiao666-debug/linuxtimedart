@@ -8,6 +8,7 @@ import torch
 
 from layers.TimeDART_EncDec import SceneWikiPromptRouter
 from utils.wind_regime_wiki import (
+    EXCEPTION_SCENE_IDS,
     REQUIRED_SCENE_IDS,
     compute_scene_wiki_rule_logits,
     load_wind_regime_wiki_spec,
@@ -16,6 +17,7 @@ from utils.wind_regime_wiki import (
 
 ROOT = Path(__file__).resolve().parents[1]
 WIKI_CONFIG = ROOT / "configs" / "wind_regime_wiki.json"
+EXCEPTION_WIKI_CONFIG = ROOT / "configs" / "wind_exception_wiki.json"
 
 
 def _write_bundle(path, spec, hidden_size=16):
@@ -63,6 +65,30 @@ class SceneWikiTests(unittest.TestCase):
         self.assertEqual(labels.tolist(), list(range(7)))
         self.assertEqual(tuple(logits.shape), (7, 7))
 
+    def test_exception_wiki_preserves_trends_as_no_intervention(self):
+        spec = load_wind_regime_wiki_spec(EXCEPTION_WIKI_CONFIG)
+        self.assertEqual(tuple(spec["scene_ids"]), EXCEPTION_SCENE_IDS)
+        history = torch.zeros(7, 12, 2)
+        history[:, :, 0] = 7.0
+        history[:, :, 1] = 700.0
+        history[1, :, 1] = torch.linspace(200.0, 700.0, 12)
+        history[2, :, 1] = torch.linspace(700.0, 200.0, 12)
+        history[3, :, 0] = torch.tensor([5.0, 8.0] * 6)
+        history[4, :, 0] = 8.0
+        history[4, :, 1] = 20.0
+        history[5, :, 0] = 11.0
+        history[5, :, 1] = 1450.0
+        history[6, :, 0] = 2.0
+        history[6, :, 1] = 0.0
+        logits, labels = compute_scene_wiki_rule_logits(
+            history,
+            ["Wspd", "power"],
+            rated_power=1500.0,
+            scene_ids=spec["scene_ids"],
+        )
+        self.assertEqual(labels.tolist(), [0, 0, 0, 1, 2, 3, 4])
+        self.assertEqual(tuple(logits.shape), (7, 5))
+
     def test_top_k_router_probabilities_are_normalized_and_sparse(self):
         router = SceneWikiPromptRouter(
             np.random.default_rng(2024).standard_normal((7, 16)).astype(np.float32),
@@ -81,6 +107,71 @@ class SceneWikiTests(unittest.TestCase):
         self.assertEqual(tuple(logits.shape), (4, 7))
         self.assertTrue(torch.allclose(probabilities.sum(dim=-1), torch.ones(4)))
         self.assertTrue(torch.all((probabilities > 0).sum(dim=-1) <= 2))
+
+    def test_null_scene_produces_no_wiki_residual(self):
+        router = SceneWikiPromptRouter(
+            np.random.default_rng(2024).standard_normal((5, 16)).astype(np.float32),
+            d_model=8,
+            top_k=1,
+            rule_weight=100.0,
+            null_scene_index=0,
+            dropout=0.0,
+        )
+        x_out = torch.randn(3, 10, 8)
+        rule = torch.nn.functional.one_hot(torch.zeros(3, dtype=torch.long), 5).float()
+        prompt, _, probabilities = router(x_out, rule)
+        self.assertTrue(torch.allclose(prompt, torch.zeros_like(prompt)))
+        self.assertEqual(probabilities.argmax(dim=-1).tolist(), [0, 0, 0])
+
+    @unittest.skipUnless(
+        importlib.util.find_spec("reformer_pytorch"),
+        "full run.py dependencies are not installed",
+    )
+    def test_hybrid_router_keeps_trend_and_exception_supervision_separate(self):
+        from models.TimeDART import PromptGuidedModel
+        from run import build_parser, configure_args
+
+        spec = load_wind_regime_wiki_spec(EXCEPTION_WIKI_CONFIG)
+        with tempfile.TemporaryDirectory() as temporary:
+            bundle = Path(temporary) / "exception_wiki.npz"
+            _write_bundle(bundle, spec)
+            args = configure_args(
+                build_parser().parse_args(
+                    [
+                        "--task_name", "pretrain",
+                        "--model_id", "SDWPF",
+                        "--model", "PromptTimeDART",
+                        "--data", "SDWPF",
+                        "--prompt_router", "hybrid_wiki",
+                        "--scene_wiki_config", str(EXCEPTION_WIKI_CONFIG),
+                        "--scene_wiki_embeddings", str(bundle),
+                        "--input_len", "24",
+                        "--pred_len", "6",
+                        "--patch_len", "6",
+                        "--stride", "6",
+                        "--d_model", "16",
+                        "--d_ff", "32",
+                        "--n_heads", "4",
+                        "--e_layers", "1",
+                        "--d_layers", "1",
+                        "--no-use_gpu",
+                    ]
+                )
+            )
+            args.device = torch.device("cpu")
+            args.time_steps = 8
+            args.dropout = 0.0
+            args.head_dropout = 0.0
+            model = PromptGuidedModel(args)
+            model.set_scene_scaler(np.zeros(8), np.ones(8))
+            with torch.no_grad():
+                model.regime_down_thresh.fill_(-0.1)
+                model.regime_up_thresh.fill_(0.1)
+            output = model(torch.zeros(2, 24, 8))
+        self.assertIsInstance(output, dict)
+        self.assertEqual(tuple(output["regime_logits"].shape), (2, 3))
+        self.assertEqual(tuple(output["scene_logits"].shape), (2, 5))
+        self.assertEqual(output["scene_labels"].tolist(), [4, 4])
 
     @unittest.skipUnless(
         importlib.util.find_spec("reformer_pytorch"),

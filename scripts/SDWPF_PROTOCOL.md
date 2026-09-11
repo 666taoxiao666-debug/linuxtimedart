@@ -3,17 +3,29 @@
 This protocol keeps the final 20% of timestamps sealed until all model and
 hyper-parameter choices are frozen.
 
-## Causal LLM Scene Wiki prompt
+## Causal Trend-Wiki Residual Prompting (CTWRP)
 
-The default PromptTimeDART route is now `scene_wiki`. Seven observable wind
-operating scenes are versioned in `configs/wind_regime_wiki.json`: stable,
-ramp-up, ramp-down, gust/turbulence, high-wind low-power, rated saturation and
-low-wind idle. The high-wind low-power card is deliberately not called
-curtailment because SCADA history alone cannot identify its cause.
+The proposed PromptTimeDART route is `hybrid_wiki`. It does **not** replace the
+project's original prompts with a generic semantic prompt bank. The original
+three train-quantile-calibrated prompts (stable, ramp-up and ramp-down) remain
+the base temporal prompt. A separate five-card exception Wiki in
+`configs/wind_exception_wiki.json` contains `no_exception`, gust/turbulence,
+high-wind low-power, rated saturation and low-wind idle. The high-wind
+low-power card is deliberately not called curtailment because SCADA history
+alone cannot identify its cause.
+
+For each historical window, the final prompt is
+`trend_prompt + confidence * exception_wiki_residual`. The Wiki residual is
+exactly zero when `no_exception` is selected and shrinks when Top-K retrieval
+is uncertain. Therefore Wiki semantics are used to correct ordinary trend
+continuation only when a causal, observable exception is supported. Both the
+trend classifier and the exception retriever receive separate train-only
+pseudo-label supervision; inverse-square-root class weights prevent the common
+`no_exception` state from hiding rare events.
 
 On the first run, the entry script uses the frozen model selected by
-`WIKI_LLM_PATH` to encode the seven text cards once. It writes
-`outputs/wiki/wind_regime_wiki_qwen.npz`; no LLM is called inside training or
+`WIKI_LLM_PATH` to encode the five exception cards once. It writes
+`outputs/wiki/wind_exception_wiki_qwen.npz`; no LLM is called inside training or
 inference. The time-series encoder then performs Top-2 soft retrieval over
 those frozen semantic anchors using historical SCADA only. Train-split scaler
 statistics, Wiki/config hashes, scene support and prompt parameters are saved
@@ -24,21 +36,32 @@ do this automatically when the bundle is absent):
 
 ```bash
 python scripts/build_wind_regime_wiki.py \
-  --config configs/wind_regime_wiki.json \
-  --output outputs/wiki/wind_regime_wiki_qwen.npz \
+  --config configs/wind_exception_wiki.json \
+  --output outputs/wiki/wind_exception_wiki_qwen.npz \
   --llm_path Qwen/Qwen2.5-0.5B
 ```
 
-For the legacy three-way trend-prompt control experiment, set both variables:
+Required mechanism controls are separate complete runs (with matched
+pretraining and fine-tuning checkpoints):
 
 ```bash
 PROMPT_ROUTER=trend REGIME_LABEL_METHOD=trend_quantile \
 bash scripts/train/SDWPF_paper_cv.sh
 ```
 
-Do not compare the Scene Wiki run with old checkpoints as if only one module
-changed. Its Wiki router has seven modes and therefore requires fold/seed-
-matched pretraining followed by matched fine-tuning.
+`PROMPT_ROUTER=scene_wiki` plus the seven-card config remains only as the
+"Wiki replaces trend prompts" ablation. The publishable comparison is:
+original trend prompts vs Wiki replacement vs full CTWRP. Do not mix their
+checkpoints: every router requires fold/seed-matched pretraining followed by
+matched fine-tuning.
+
+Novelty boundary: Top-K semantic-anchor retrieval itself is prior art, and so
+is generic hard/soft prompt fusion. The hypothesis tested here is narrower:
+an ordinary trend prompt should remain authoritative for common dynamics,
+while a causally detected, uncertainty-gated semantic memory contributes only
+an exception residual. This must be supported by the three-router comparison,
+per-exception metrics and a random-embedding control before it is described as
+an empirical contribution.
 
 ## Log layout
 

@@ -15,14 +15,20 @@ PATIENCE="${PATIENCE:-3}"
 TRAIN_EPOCHS="${TRAIN_EPOCHS:-20}"
 LEARNING_RATE="${LEARNING_RATE:-0.0001}"
 LAMBDA_CE="${LAMBDA_CE:-0.02}"
-PROMPT_ROUTER="${PROMPT_ROUTER:-scene_wiki}"
+LAMBDA_SCENE_CE="${LAMBDA_SCENE_CE:-0.02}"
+PROMPT_ROUTER="${PROMPT_ROUTER:-hybrid_wiki}"
 if [[ "${PROMPT_ROUTER}" == "scene_wiki" ]]; then
     REGIME_LABEL_METHOD="scene_wiki"
 else
     REGIME_LABEL_METHOD="${REGIME_LABEL_METHOD:-trend_quantile}"
 fi
-SCENE_WIKI_CONFIG="${SCENE_WIKI_CONFIG:-configs/wind_regime_wiki.json}"
-SCENE_WIKI_EMBEDDINGS="${SCENE_WIKI_EMBEDDINGS:-outputs/wiki/wind_regime_wiki_qwen.npz}"
+if [[ "${PROMPT_ROUTER}" == "hybrid_wiki" ]]; then
+    SCENE_WIKI_CONFIG="${SCENE_WIKI_CONFIG:-configs/wind_exception_wiki.json}"
+    SCENE_WIKI_EMBEDDINGS="${SCENE_WIKI_EMBEDDINGS:-outputs/wiki/wind_exception_wiki_qwen.npz}"
+else
+    SCENE_WIKI_CONFIG="${SCENE_WIKI_CONFIG:-configs/wind_regime_wiki.json}"
+    SCENE_WIKI_EMBEDDINGS="${SCENE_WIKI_EMBEDDINGS:-outputs/wiki/wind_regime_wiki_qwen.npz}"
+fi
 SCENE_WIKI_TOP_K="${SCENE_WIKI_TOP_K:-2}"
 SCENE_WIKI_TEMPERATURE="${SCENE_WIKI_TEMPERATURE:-0.2}"
 SCENE_WIKI_RULE_WEIGHT="${SCENE_WIKI_RULE_WEIGHT:-2.0}"
@@ -41,7 +47,7 @@ export CUBLAS_WORKSPACE_CONFIG="${CUBLAS_WORKSPACE_CONFIG:-:4096:8}"
 
 sdwpf_wiki_prepare
 
-LOG_PARAMETERS="h${PRED_LEN}_${SPLIT}_f${FOLD}of${N_FOLDS}_s${SEED}_lr${LEARNING_RATE}_lce${LAMBDA_CE}_${PROMPT_ROUTER}_reg${REGIME_LABEL_METHOD}_rq${REGIME_CALIBRATION_QUANTILE}_ep${TRAIN_EPOCHS}_pat${PATIENCE}"
+LOG_PARAMETERS="h${PRED_LEN}_${SPLIT}_f${FOLD}of${N_FOLDS}_s${SEED}_lr${LEARNING_RATE}_lce${LAMBDA_CE}_lsce${LAMBDA_SCENE_CE}_${PROMPT_ROUTER}_reg${REGIME_LABEL_METHOD}_rq${REGIME_CALIBRATION_QUANTILE}_ep${TRAIN_EPOCHS}_pat${PATIENCE}"
 sdwpf_log_init "pretrain" "${LOG_PARAMETERS}" "pretrain.log" "${RUN_ID}"
 sdwpf_log_install_exit_trap
 LOG_ENV_FILE="$(sdwpf_log_sidecar env)"
@@ -61,6 +67,7 @@ LOG_SUMMARY_FILE="$(sdwpf_log_sidecar summary.txt)"
     echo "TRAIN_EPOCHS=${TRAIN_EPOCHS}"
     echo "LEARNING_RATE=${LEARNING_RATE}"
     echo "LAMBDA_CE=${LAMBDA_CE}"
+    echo "LAMBDA_SCENE_CE=${LAMBDA_SCENE_CE}"
     echo "PROMPT_ROUTER=${PROMPT_ROUTER}"
     echo "SCENE_WIKI_CONFIG=${SCENE_WIKI_CONFIG}"
     echo "SCENE_WIKI_EMBEDDINGS=${SCENE_WIKI_EMBEDDINGS}"
@@ -111,6 +118,7 @@ COMMAND=(python -u run.py
     --patience "${PATIENCE}" \
     --learning_rate "${LEARNING_RATE}" \
     --lambda_ce "${LAMBDA_CE}" \
+    --lambda_scene_ce "${LAMBDA_SCENE_CE}" \
     --prompt_router "${PROMPT_ROUTER}" \
     --scene_wiki_config "${SCENE_WIKI_CONFIG}" \
     --scene_wiki_embeddings "${SCENE_WIKI_EMBEDDINGS}" \
@@ -132,7 +140,7 @@ COMMAND=(python -u run.py
 
 echo "COMPLETED_AT=$(date --iso-8601=seconds)" >> "${LOG_ENV_FILE}"
 {
-    grep -E '^Epoch:|^Validation loss decreased|^Pretrain early stopping|^\[AUDIT\] (Run manifest:|REGIME_CALIBRATION=|SCENE_WIKI_CALIBRATION=)' \
+    grep -E '^Epoch:|^Hybrid exception Wiki |^Validation loss decreased|^Pretrain early stopping|^\[AUDIT\] (Run manifest:|REGIME_CALIBRATION=|SCENE_WIKI_CALIBRATION=)' \
         "${SDWPF_LOG_FILE}" || true
 } > "${LOG_SUMMARY_FILE}"
 echo "[PRETRAIN] Log: ${SDWPF_LOG_FILE}"

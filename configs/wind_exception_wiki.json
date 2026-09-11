@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "name": "SDWPF causal exception wiki for trend-residual prompting",
+  "language": "en",
+  "description": "Semantic residual prompts for observable exceptions. Ordinary stable/up/down dynamics remain owned by the original train-calibrated trend prompt branch.",
+  "rule_defaults": {
+    "recent_steps": 12,
+    "low_wind_max_mps": 3.0,
+    "active_wind_min_mps": 5.0,
+    "low_power_max_ratio": 0.08,
+    "rated_power_min_ratio": 0.9,
+    "gust_std_min_mps": 1.0,
+    "gust_step_min_mps": 2.0,
+    "ramp_delta_min_ratio": 0.1
+  },
+  "scenes": [
+    {
+      "id": "no_exception",
+      "title": "No observable exception",
+      "prompt": "No exceptional turbine state is observable in the historical SCADA window. Do not override the ordinary stable, upward-ramp, or downward-ramp trend prompt.",
+      "observable_evidence": ["ordinary recent operation", "defer to the trend prompt", "history only"]
+    },
+    {
+      "id": "gust_or_turbulent",
+      "title": "Gusty or turbulent exception",
+      "prompt": "Recent wind speed contains unusually large variability or an abrupt jump. Correct the ordinary trend continuation conservatively because a smooth trend prompt may lag this transition.",
+      "observable_evidence": ["large recent wind-speed standard deviation or step", "history only"]
+    },
+    {
+      "id": "high_wind_low_power",
+      "title": "High wind with unexpectedly low power",
+      "prompt": "Wind is sufficient for generation but observed power remains unexpectedly low. Treat this only as an observable exception, not a diagnosed cause; suppress aggressive recovery until historical evidence supports it.",
+      "observable_evidence": ["active wind speed", "low observed power", "cause unknown", "history only"]
+    },
+    {
+      "id": "rated_saturation",
+      "title": "Rated-power saturation exception",
+      "prompt": "Observed power is close to rated capacity. Correct an unconstrained rising trend so the forecast respects saturation while still permitting a decline already visible in history.",
+      "observable_evidence": ["power near rated capacity", "history only"]
+    },
+    {
+      "id": "low_wind_idle",
+      "title": "Low-wind idle exception",
+      "prompt": "Recent wind is below or near cut-in and observed power is low. Correct ordinary continuation toward a near-zero state unless recovery is already visible in the historical window.",
+      "observable_evidence": ["low recent wind speed", "low recent power", "history only"]
+    }
+  ]
+}
