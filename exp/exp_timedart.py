@@ -47,6 +47,27 @@ from sklearn.metrics import accuracy_score, f1_score
 warnings.filterwarnings("ignore")
 
 
+class _LifecycleWeightedBCE(nn.Module):
+    """Factor-wise BCE masked by frozen train-only lifecycle reliability."""
+
+    def __init__(self, pos_weight, factor_weight):
+        super().__init__()
+        self.register_buffer("pos_weight", pos_weight)
+        self.register_buffer("factor_weight", factor_weight)
+
+    def forward(self, logits, targets):
+        loss = torch.nn.functional.binary_cross_entropy_with_logits(
+            logits,
+            targets,
+            pos_weight=self.pos_weight,
+            reduction="none",
+        )
+        denominator = self.factor_weight.sum() * max(1, int(logits.shape[0]))
+        if float(denominator.detach().cpu()) <= 0.0:
+            return logits.sum() * 0.0
+        return (loss * self.factor_weight.view(1, -1)).sum() / denominator
+
+
 def _dynamic_channel_scale_sample(mixer, context):
     """Return per-sample channel scales, excluding static-only mixers."""
 
@@ -132,12 +153,17 @@ class Exp_TimeDART(Exp_Basic):
             self.args.regime_calibration_source = "train"
             if prompt_router == "compositional_wiki":
                 positive_counts = scene_audit["positive_counts"]
+                reliability = list(
+                    getattr(self.args, "scene_wiki_factor_reliability", []) or []
+                )
+                if len(reliability) != len(positive_counts):
+                    raise ValueError("Event Wiki lifecycle reliability/count mismatch")
                 missing = [
                     factor_id
-                    for factor_id, count in zip(
-                        scene_audit["factor_ids"], positive_counts
+                    for factor_id, count, weight in zip(
+                        scene_audit["factor_ids"], positive_counts, reliability
                     )
-                    if count <= 0
+                    if weight > 0.0 and count <= 0
                 ]
                 if missing:
                     raise ValueError(
@@ -151,6 +177,7 @@ class Exp_TimeDART(Exp_Basic):
                     f"source=train samples={scene_audit['sample_count']} "
                     f"factors={';'.join(scene_audit['factor_ids'])} "
                     f"positive_counts={';'.join(str(value) for value in positive_counts)} "
+                    f"lifecycle_weights={';'.join(f'{value:.6f}' for value in reliability)} "
                     f"no_intervention={scene_audit['no_intervention_count']} "
                     f"mean_active={scene_audit['mean_active_factors']:.6f} "
                     f"config_sha256={scene_audit['wiki_config_sha256'][:12]} "
@@ -754,6 +781,9 @@ class Exp_TimeDART(Exp_Basic):
                     {},
                 )
             ),
+            "scene_wiki_factor_reliability": list(
+                getattr(self.args, "scene_wiki_factor_reliability", []) or []
+            ),
             "lambda_event_bce": getattr(self.args, "lambda_event_bce", None),
             "event_factor_positive_counts": getattr(
                 self.args, "event_factor_positive_counts", None
@@ -830,20 +860,28 @@ class Exp_TimeDART(Exp_Basic):
             negative_values = torch.as_tensor(
                 negatives, dtype=torch.float32, device=self.device
             )
+            factor_weight = torch.as_tensor(
+                getattr(self.args, "scene_wiki_factor_reliability", None),
+                dtype=torch.float32,
+                device=self.device,
+            )
             if (
-                torch.any(positive_values <= 0)
+                positive_values.shape != factor_weight.shape
+                or torch.any((positive_values <= 0) & (factor_weight > 0))
                 or torch.any(negative_values < 0)
                 or not torch.isfinite(positive_values).all()
                 or not torch.isfinite(negative_values).all()
+                or not torch.isfinite(factor_weight).all()
+                or torch.any(factor_weight < 0)
             ):
                 raise ValueError("Event-factor calibration counts are invalid")
             pos_weight = torch.sqrt(
-                negative_values / positive_values
+                negative_values / positive_values.clamp_min(1.0)
             ).clamp(0.25, 4.0)
             self.args.event_factor_pos_weight = [
                 float(value) for value in pos_weight.detach().cpu().tolist()
             ]
-            return nn.BCEWithLogitsLoss(pos_weight=pos_weight)
+            return _LifecycleWeightedBCE(pos_weight, factor_weight)
 
         counts = getattr(self.args, "scene_wiki_calibration_counts", None)
         if not counts:

@@ -480,6 +480,7 @@ class CompositionalEventWikiRouter(nn.Module):
         semantic_embeddings,
         d_model,
         *,
+        factor_reliability=None,
         num_features=None,
         channel_prior=None,
         top_k=2,
@@ -520,6 +521,23 @@ class CompositionalEventWikiRouter(nn.Module):
             torch.tensor(float(prompt_gate_init), dtype=torch.float32)
         )
         self.register_buffer("semantic_keys", F.normalize(keys, dim=-1))
+        reliability = torch.as_tensor(
+            (
+                torch.ones(self.num_factors, dtype=torch.float32)
+                if factor_reliability is None
+                else factor_reliability
+            ),
+            dtype=torch.float32,
+        ).reshape(-1)
+        if reliability.numel() != self.num_factors:
+            raise ValueError("factor_reliability must match num_factors")
+        if not torch.isfinite(reliability).all() or (
+            (reliability < 0.0) | (reliability > 1.0)
+        ).any():
+            raise ValueError("factor_reliability must be finite and in [0, 1]")
+        # Frozen lifecycle confidence.  It is estimated offline from train-only
+        # OOF evidence; optimization must not learn it from validation/test loss.
+        self.register_buffer("factor_reliability", reliability)
         self.num_features = int(num_features) if num_features is not None else None
         if self.num_features is not None:
             prior = torch.as_tensor(channel_prior, dtype=torch.float32).reshape(-1)
@@ -581,7 +599,11 @@ class CompositionalEventWikiRouter(nn.Module):
         # exact zero and can never be rescued by semantic similarity alone.
         positive_margin = rule_logits.clamp(0.0, 1.0)
         physical_support = 1.0 - torch.exp(-self.rule_weight * positive_margin)
-        activations = confidence * physical_support
+        activations = (
+            confidence
+            * physical_support
+            * self.factor_reliability.view(1, -1)
+        )
         if self.top_k < self.num_factors:
             keep = activations.topk(self.top_k, dim=-1).indices
             support = torch.zeros_like(activations, dtype=torch.bool)

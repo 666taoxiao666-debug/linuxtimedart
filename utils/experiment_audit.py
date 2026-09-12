@@ -345,6 +345,13 @@ def model_runtime_summary(model, args=None) -> dict:
                     "confidence_power": float(router.confidence_power),
                     "top_k": int(router.top_k),
                     "null_behavior": "exact_zero_without_positive_physical_support",
+                    "factor_reliability": {
+                        factor_id: float(value)
+                        for factor_id, value in zip(
+                            getattr(core, "scene_wiki_scene_ids", ()),
+                            router.factor_reliability.detach().cpu().tolist(),
+                        )
+                    },
                 }
             )
         intervention = getattr(core, "_last_wiki_intervention", None)

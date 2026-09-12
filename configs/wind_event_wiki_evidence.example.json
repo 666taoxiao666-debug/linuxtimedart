@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "example_only": true,
+  "source_split": "train_oof",
+  "utility_definition": "1 - candidate_mae / reference_mae; positive means improvement",
+  "as_of_step": 100000,
+  "source_turbines": [1, 2, 3],
+  "held_out_turbines": [4],
+  "candidates": []
+}

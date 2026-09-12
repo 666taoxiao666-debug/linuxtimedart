@@ -1,5 +1,5 @@
 {
-  "schema_version": 2,
+  "schema_version": 3,
   "name": "SDWPF compositional physical-event semantic memory",
   "language": "en",
   "entry_type": "event_factor",
@@ -24,7 +24,14 @@
         "recent wind-speed standard deviation above its frozen threshold",
         "or recent absolute wind-speed step above its frozen threshold",
         "historical SCADA only"
-      ]
+      ],
+      "rule": {
+        "combine": "any",
+        "conditions": [
+          {"feature": "Wspd", "statistic": "std", "operator": "above", "threshold_key": "gust_std_min_mps"},
+          {"feature": "Wspd", "statistic": "max_abs_step", "operator": "above", "threshold_key": "gust_step_min_mps"}
+        ]
+      }
     },
     {
       "id": "high_wind_low_power",
@@ -34,7 +41,14 @@
         "recent mean wind speed above the active-wind threshold",
         "recent mean power below a rated-power ratio threshold",
         "historical SCADA only"
-      ]
+      ],
+      "rule": {
+        "combine": "all",
+        "conditions": [
+          {"feature": "Wspd", "statistic": "mean", "operator": "above", "threshold_key": "active_wind_min_mps"},
+          {"feature": "power_ratio", "statistic": "mean", "operator": "below", "threshold_key": "low_power_max_ratio"}
+        ]
+      }
     },
     {
       "id": "rated_saturation",
@@ -43,7 +57,13 @@
       "observable_evidence": [
         "recent mean power near rated capacity",
         "historical SCADA only"
-      ]
+      ],
+      "rule": {
+        "combine": "all",
+        "conditions": [
+          {"feature": "power_ratio", "statistic": "mean", "operator": "above", "threshold_key": "rated_power_min_ratio", "scale": 0.1}
+        ]
+      }
     },
     {
       "id": "low_wind_idle",
@@ -53,7 +73,14 @@
         "recent mean wind below the low-wind threshold",
         "recent mean power below a rated-power ratio threshold",
         "historical SCADA only"
-      ]
+      ],
+      "rule": {
+        "combine": "all",
+        "conditions": [
+          {"feature": "Wspd", "statistic": "mean", "operator": "below", "threshold_key": "low_wind_max_mps"},
+          {"feature": "power_ratio", "statistic": "mean", "operator": "below", "threshold_key": "low_power_max_ratio"}
+        ]
+      }
     }
   ]
 }

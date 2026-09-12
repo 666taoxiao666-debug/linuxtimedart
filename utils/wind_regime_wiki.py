@@ -43,7 +43,127 @@ EVENT_FACTOR_IDS = (
     "rated_saturation",
     "low_wind_idle",
 )
-VALID_SCENE_ORDERS = (REQUIRED_SCENE_IDS, EXCEPTION_SCENE_IDS, EVENT_FACTOR_IDS)
+VALID_SCENE_ORDERS = (REQUIRED_SCENE_IDS, EXCEPTION_SCENE_IDS)
+
+EVENT_RULE_STATISTICS = {"mean", "std", "max_abs_step", "last", "trend_delta"}
+EVENT_RULE_OPERATORS = {"above", "below"}
+EVENT_RULE_COMBINERS = {"all", "any"}
+
+
+BASE_EVENT_FACTOR_RULES = (
+    {
+        "combine": "any",
+        "conditions": [
+            {
+                "feature": "Wspd",
+                "statistic": "std",
+                "operator": "above",
+                "threshold_key": "gust_std_min_mps",
+            },
+            {
+                "feature": "Wspd",
+                "statistic": "max_abs_step",
+                "operator": "above",
+                "threshold_key": "gust_step_min_mps",
+            },
+        ],
+    },
+    {
+        "combine": "all",
+        "conditions": [
+            {
+                "feature": "Wspd",
+                "statistic": "mean",
+                "operator": "above",
+                "threshold_key": "active_wind_min_mps",
+            },
+            {
+                "feature": "power_ratio",
+                "statistic": "mean",
+                "operator": "below",
+                "threshold_key": "low_power_max_ratio",
+            },
+        ],
+    },
+    {
+        "combine": "all",
+        "conditions": [
+            {
+                "feature": "power_ratio",
+                "statistic": "mean",
+                "operator": "above",
+                "threshold_key": "rated_power_min_ratio",
+                "scale": 0.1,
+            }
+        ],
+    },
+    {
+        "combine": "all",
+        "conditions": [
+            {
+                "feature": "Wspd",
+                "statistic": "mean",
+                "operator": "below",
+                "threshold_key": "low_wind_max_mps",
+            },
+            {
+                "feature": "power_ratio",
+                "statistic": "mean",
+                "operator": "below",
+                "threshold_key": "low_power_max_ratio",
+            },
+        ],
+    },
+)
+
+
+def validate_event_factor_rule(rule, rule_defaults, *, factor_id="event_factor"):
+    """Validate the small observable-rule DSL; no executable code is allowed."""
+
+    if not isinstance(rule, dict):
+        raise ValueError(f"Event factor {factor_id!r} requires a rule object")
+    combine = str(rule.get("combine", ""))
+    if combine not in EVENT_RULE_COMBINERS:
+        raise ValueError(f"Event factor {factor_id!r} has unsupported combine={combine!r}")
+    conditions = rule.get("conditions")
+    if not isinstance(conditions, list) or not conditions:
+        raise ValueError(f"Event factor {factor_id!r} requires rule conditions")
+    for index, condition in enumerate(conditions):
+        if not isinstance(condition, dict):
+            raise ValueError(f"Event factor {factor_id!r} condition {index} is not an object")
+        feature = str(condition.get("feature", "")).strip()
+        statistic = str(condition.get("statistic", ""))
+        operator = str(condition.get("operator", ""))
+        if not feature:
+            raise ValueError(f"Event factor {factor_id!r} condition {index} has no feature")
+        if statistic not in EVENT_RULE_STATISTICS:
+            raise ValueError(
+                f"Event factor {factor_id!r} has unsupported statistic={statistic!r}"
+            )
+        if operator not in EVENT_RULE_OPERATORS:
+            raise ValueError(
+                f"Event factor {factor_id!r} has unsupported operator={operator!r}"
+            )
+        has_value = "threshold" in condition
+        has_key = "threshold_key" in condition
+        if has_value == has_key:
+            raise ValueError(
+                f"Event factor {factor_id!r} condition {index} must define exactly "
+                "one of threshold or threshold_key"
+            )
+        threshold = (
+            condition["threshold"]
+            if has_value
+            else rule_defaults.get(str(condition["threshold_key"]))
+        )
+        if threshold is None or not np.isfinite(float(threshold)):
+            raise ValueError(
+                f"Event factor {factor_id!r} condition {index} has no finite threshold"
+            )
+        if "scale" in condition and (
+            not np.isfinite(float(condition["scale"])) or float(condition["scale"]) <= 0
+        ):
+            raise ValueError(f"Event factor {factor_id!r} condition scale must be positive")
 
 
 def sha256_file(path) -> str:
@@ -64,7 +184,8 @@ def load_wind_regime_wiki_spec(path) -> dict:
     if not isinstance(scenes, list) or not scenes:
         raise ValueError("Wind-regime Wiki must contain a non-empty scenes list")
     scene_ids = tuple(str(scene.get("id", "")).strip() for scene in scenes)
-    if scene_ids not in VALID_SCENE_ORDERS:
+    entry_type = str(spec.get("entry_type", "scene"))
+    if entry_type != "event_factor" and scene_ids not in VALID_SCENE_ORDERS:
         raise ValueError(
             "Wind-regime Wiki scene order is part of the checkpoint contract; "
             f"expected one of {VALID_SCENE_ORDERS}, got {scene_ids}"
@@ -77,7 +198,28 @@ def load_wind_regime_wiki_spec(path) -> dict:
     defaults = spec.get("rule_defaults", {})
     if not isinstance(defaults, dict):
         raise ValueError("rule_defaults must be a JSON object")
+    factor_rules = []
+    factor_reliability = []
+    if entry_type == "event_factor":
+        for scene in scenes:
+            validate_event_factor_rule(
+                scene.get("rule"), defaults, factor_id=scene.get("id")
+            )
+            factor_rules.append(scene["rule"])
+            lifecycle = scene.get("lifecycle", {})
+            if lifecycle is not None and not isinstance(lifecycle, dict):
+                raise ValueError(
+                    f"Event factor {scene.get('id')!r} lifecycle must be an object"
+                )
+            reliability = float((lifecycle or {}).get("deployment_weight", 1.0))
+            if not np.isfinite(reliability) or not 0.0 <= reliability <= 1.0:
+                raise ValueError(
+                    f"Event factor {scene.get('id')!r} deployment_weight must be in [0, 1]"
+                )
+            factor_reliability.append(reliability)
     spec["scene_ids"] = list(scene_ids)
+    spec["factor_rules"] = factor_rules
+    spec["factor_reliability"] = factor_reliability
     spec["sha256"] = sha256_file(source)
     return spec
 
@@ -98,6 +240,11 @@ def load_wind_regime_wiki_bundle(path, expected_scene_ids=None) -> dict:
         scene_ids = tuple(str(value) for value in bundle["scene_ids"].tolist())
         encoder_name = str(bundle["encoder_name"].item())
         config_sha256 = str(bundle["config_sha256"].item())
+        factor_reliability = (
+            np.asarray(bundle["factor_reliability"], dtype=np.float32)
+            if "factor_reliability" in bundle.files
+            else np.ones(len(scene_ids), dtype=np.float32)
+        )
     if embeddings.ndim != 2 or embeddings.shape[0] != len(scene_ids):
         raise ValueError(
             "Wiki embeddings must have shape [num_scenes, hidden_size], got "
@@ -105,6 +252,15 @@ def load_wind_regime_wiki_bundle(path, expected_scene_ids=None) -> dict:
         )
     if not np.isfinite(embeddings).all():
         raise ValueError("Wiki embeddings contain non-finite values")
+    if factor_reliability.shape != (len(scene_ids),):
+        raise ValueError(
+            "Wiki factor_reliability must have shape [num_scenes], got "
+            f"{factor_reliability.shape}"
+        )
+    if not np.isfinite(factor_reliability).all() or (
+        (factor_reliability < 0.0) | (factor_reliability > 1.0)
+    ).any():
+        raise ValueError("Wiki factor_reliability must be finite and in [0, 1]")
     if expected_scene_ids is not None and tuple(expected_scene_ids) != scene_ids:
         raise ValueError(
             "Wiki embedding scene order does not match the JSON config: "
@@ -115,6 +271,7 @@ def load_wind_regime_wiki_bundle(path, expected_scene_ids=None) -> dict:
         "scene_ids": scene_ids,
         "encoder_name": encoder_name,
         "config_sha256": config_sha256,
+        "factor_reliability": factor_reliability,
         "sha256": sha256_file(source),
     }
 
@@ -212,6 +369,8 @@ def compute_event_factor_rule_logits(
     gust_std_min_mps: float = 1.0,
     gust_step_min_mps: float = 2.0,
     factor_ids=None,
+    factor_rules=None,
+    rule_defaults=None,
 ):
     """Return causal signed evidence and independent event-factor targets.
 
@@ -230,77 +389,99 @@ def compute_event_factor_rule_logits(
     if not torch.isfinite(history_raw).all():
         raise ValueError("Event Wiki history contains non-finite values")
     names = {str(name): index for index, name in enumerate(feature_columns)}
-    if "Wspd" not in names or "power" not in names:
-        raise ValueError("Event Wiki routing requires named Wspd and power channels")
+    if "power" not in names:
+        raise ValueError("Event Wiki routing requires a named power channel")
     if not np.isfinite(float(rated_power)) or float(rated_power) <= 0:
         raise ValueError("rated_power must be finite and positive")
 
     factor_ids = tuple(factor_ids or EVENT_FACTOR_IDS)
-    if factor_ids != EVENT_FACTOR_IDS:
-        raise ValueError(
-            "Event-factor order is part of the checkpoint contract; expected "
-            f"{EVENT_FACTOR_IDS}, got {factor_ids}"
-        )
+    factor_rules = tuple(factor_rules or BASE_EVENT_FACTOR_RULES)
+    if len(factor_ids) != len(factor_rules) or not factor_ids:
+        raise ValueError("Event factor ids and executable rules must have equal non-zero length")
+    thresholds = {
+        str(key): float(value) for key, value in (rule_defaults or {}).items()
+    }
+    thresholds.update({
+        "low_wind_max_mps": float(low_wind_max_mps),
+        "active_wind_min_mps": float(active_wind_min_mps),
+        "low_power_max_ratio": float(low_power_max_ratio),
+        "rated_power_min_ratio": float(rated_power_min_ratio),
+        "gust_std_min_mps": float(gust_std_min_mps),
+        "gust_step_min_mps": float(gust_step_min_mps),
+    })
+    for factor_id, rule in zip(factor_ids, factor_rules):
+        validate_event_factor_rule(rule, thresholds, factor_id=factor_id)
 
     steps = max(3, min(int(recent_steps), int(history_raw.size(1))))
     recent = history_raw[:, -steps:, :]
-    wind = recent[:, :, names["Wspd"]]
-    power_ratio = recent[:, :, names["power"]] / float(rated_power)
-    wind_mean = wind.mean(dim=1)
-    power_mean = power_ratio.mean(dim=1)
-    wind_std = wind.std(dim=1, unbiased=False)
-    max_wind_step = wind[:, 1:].sub(wind[:, :-1]).abs().amax(dim=1)
-
-    low_idle = (wind_mean < float(low_wind_max_mps)) & (
-        power_mean < float(low_power_max_ratio)
-    )
-    high_wind_low_power = (wind_mean > float(active_wind_min_mps)) & (
-        power_mean < float(low_power_max_ratio)
-    )
-    rated = power_mean > float(rated_power_min_ratio)
-    gust = (wind_std > float(gust_std_min_mps)) | (
-        max_wind_step > float(gust_step_min_mps)
-    )
-    targets = torch.stack(
-        (gust, high_wind_low_power, rated, low_idle), dim=-1
-    ).to(dtype=history_raw.dtype)
-
     eps = torch.finfo(history_raw.dtype).eps
 
     def above(value, threshold, scale=None):
-        denominator = max(float(scale if scale is not None else threshold), float(eps))
+        denominator = max(
+            abs(float(scale if scale is not None else threshold)), float(eps)
+        )
         return ((value - float(threshold)) / denominator).clamp(-1.0, 1.0)
 
     def below(value, threshold, scale=None):
-        denominator = max(float(scale if scale is not None else threshold), float(eps))
+        denominator = max(
+            abs(float(scale if scale is not None else threshold)), float(eps)
+        )
         return ((float(threshold) - value) / denominator).clamp(-1.0, 1.0)
 
-    gust_evidence = torch.maximum(
-        above(wind_std, gust_std_min_mps),
-        above(max_wind_step, gust_step_min_mps),
-    )
-    high_wind_low_power_evidence = torch.minimum(
-        above(wind_mean, active_wind_min_mps),
-        below(power_mean, low_power_max_ratio),
-    )
-    rated_evidence = above(
-        power_mean,
-        rated_power_min_ratio,
-        scale=max(1.0 - float(rated_power_min_ratio), 1e-6),
-    )
-    low_wind_idle_evidence = torch.minimum(
-        below(wind_mean, low_wind_max_mps),
-        below(power_mean, low_power_max_ratio),
-    )
-    rule_logits = torch.stack(
-        (
-            gust_evidence,
-            high_wind_low_power_evidence,
-            rated_evidence,
-            low_wind_idle_evidence,
-        ),
-        dim=-1,
-    )
+    def statistic(condition):
+        feature = str(condition["feature"])
+        if feature == "power_ratio":
+            series = recent[:, :, names["power"]] / float(rated_power)
+        else:
+            if feature not in names:
+                raise ValueError(
+                    f"Event Wiki rule references unavailable feature {feature!r}"
+                )
+            series = recent[:, :, names[feature]]
+        name = str(condition["statistic"])
+        if name == "mean":
+            return series.mean(dim=1)
+        if name == "std":
+            return series.std(dim=1, unbiased=False)
+        if name == "max_abs_step":
+            return series[:, 1:].sub(series[:, :-1]).abs().amax(dim=1)
+        if name == "last":
+            return series[:, -1]
+        if name == "trend_delta":
+            edge = max(1, steps // 3)
+            return series[:, -edge:].mean(dim=1) - series[:, :edge].mean(dim=1)
+        raise AssertionError(f"Unvalidated statistic: {name}")
+
+    evidence_columns = []
+    target_columns = []
+    for rule in factor_rules:
+        condition_evidence = []
+        condition_targets = []
+        for condition in rule["conditions"]:
+            value = statistic(condition)
+            threshold = float(
+                condition["threshold"]
+                if "threshold" in condition
+                else thresholds[str(condition["threshold_key"])]
+            )
+            scale = condition.get("scale")
+            margin = (
+                above(value, threshold, scale=scale)
+                if condition["operator"] == "above"
+                else below(value, threshold, scale=scale)
+            )
+            condition_evidence.append(margin)
+            condition_targets.append(margin > 0.0)
+        stacked_evidence = torch.stack(condition_evidence, dim=-1)
+        stacked_targets = torch.stack(condition_targets, dim=-1)
+        if rule["combine"] == "all":
+            evidence_columns.append(stacked_evidence.amin(dim=-1))
+            target_columns.append(stacked_targets.all(dim=-1))
+        else:
+            evidence_columns.append(stacked_evidence.amax(dim=-1))
+            target_columns.append(stacked_targets.any(dim=-1))
+    rule_logits = torch.stack(evidence_columns, dim=-1)
+    targets = torch.stack(target_columns, dim=-1).to(dtype=history_raw.dtype)
     return rule_logits, targets
 
 
@@ -383,8 +564,8 @@ def audit_event_factor_labels_from_dataset(
     mean = np.asarray(dataset.scaler.mean_, dtype=np.float32)
     scale = np.asarray(dataset.scaler.scale_, dtype=np.float32)
     factor_ids = tuple(factor_ids or EVENT_FACTOR_IDS)
-    if factor_ids != EVENT_FACTOR_IDS:
-        raise ValueError(f"Unsupported event-factor order: {factor_ids}")
+    if not factor_ids:
+        raise ValueError("Event-factor audit requires at least one factor")
 
     positive_counts = np.zeros(len(factor_ids), dtype=np.int64)
     cooccurrence = np.zeros((len(factor_ids), len(factor_ids)), dtype=np.int64)

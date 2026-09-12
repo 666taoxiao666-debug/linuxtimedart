@@ -232,6 +232,15 @@ def transfer_weights(weights_path, model, exclude_head=True, device="cpu", stric
                 "scene_wiki_rule_kwargs": dict(
                     getattr(model, "scene_wiki_rule_kwargs", {})
                 ),
+                "scene_wiki_factor_reliability": [
+                    float(value)
+                    for value in getattr(
+                        target_wiki_router, "factor_reliability", torch.empty(0)
+                    )
+                    .detach()
+                    .cpu()
+                    .tolist()
+                ],
             }
             missing_contract = [key for key in contract if key not in checkpoint]
             if missing_contract:

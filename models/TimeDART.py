@@ -23,7 +23,6 @@ from layers.TimeDART_EncDec import (
 from layers.Embed import Patch, PatchEmbedding, PositionalEncoding, TokenEmbedding_TimeDART
 from utils.regime_labels import compute_regime_pseudo_labels_from_series
 from utils.wind_regime_wiki import (
-    EVENT_FACTOR_IDS,
     compute_event_factor_rule_logits,
     compute_scene_wiki_rule_logits,
     load_wind_regime_wiki_bundle,
@@ -282,12 +281,6 @@ class Model(nn.Module):
                         "hybrid_wiki requires an exception Wiki whose first scene is "
                         "no_exception"
                     )
-                if self.prompt_router == "compositional_wiki" and tuple(
-                    bundle["scene_ids"]
-                ) != EVENT_FACTOR_IDS:
-                    raise ValueError(
-                        "compositional_wiki requires the fixed four-factor event Wiki"
-                    )
                 self.scene_wiki_scene_ids = tuple(bundle["scene_ids"])
                 self.scene_wiki_num_modes = len(self.scene_wiki_scene_ids)
                 self.scene_wiki_config_sha256 = args.scene_wiki_config_sha256
@@ -309,6 +302,7 @@ class Model(nn.Module):
                 if self.prompt_router == "compositional_wiki":
                     self.scene_wiki_router = CompositionalEventWikiRouter(
                         bundle["embeddings"],
+                        factor_reliability=bundle["factor_reliability"],
                         activation_threshold=args.scene_wiki_activation_threshold,
                         confidence_power=args.scene_wiki_confidence_power,
                         **router_kwargs,
@@ -338,6 +332,13 @@ class Model(nn.Module):
                     "gust_std_min_mps": float(args.scene_wiki_gust_std_min_mps),
                     "gust_step_min_mps": float(args.scene_wiki_gust_step_min_mps),
                 }
+                if self.prompt_router == "compositional_wiki":
+                    self.scene_wiki_rule_kwargs.update(
+                        {
+                            "factor_rules": list(args.scene_wiki_factor_rules),
+                            "rule_defaults": dict(args.scene_wiki_rule_defaults),
+                        }
+                    )
                 if self.prompt_router != "compositional_wiki":
                     self.scene_wiki_rule_kwargs["ramp_delta_min_ratio"] = float(
                         args.scene_wiki_ramp_delta_min_ratio

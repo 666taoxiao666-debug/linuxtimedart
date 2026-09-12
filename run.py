@@ -13,7 +13,6 @@ from exp.exp_timedart_v2 import Exp_TimeDART_v2
 from utils.run_tags import bounded_component, experiment_setting, forecast_result_tag
 from utils.experiment_audit import checkpoint_info
 from utils.wind_regime_wiki import (
-    EVENT_FACTOR_IDS,
     load_wind_regime_wiki_bundle,
     load_wind_regime_wiki_spec,
 )
@@ -719,6 +718,11 @@ def configure_args(args):
         args.scene_wiki_bundle_sha256 = bundle["sha256"]
         args.scene_wiki_encoder_name = bundle["encoder_name"]
         args.scene_wiki_num_modes = len(spec["scene_ids"])
+        args.scene_wiki_factor_rules = list(spec.get("factor_rules", []))
+        args.scene_wiki_rule_defaults = dict(defaults)
+        args.scene_wiki_factor_reliability = [
+            float(value) for value in spec.get("factor_reliability", [])
+        ]
         if args.prompt_router == "scene_wiki":
             args.num_modes = args.scene_wiki_num_modes
             args.regime_label_method = "scene_wiki"
@@ -733,10 +737,33 @@ def configure_args(args):
             if args.regime_label_method in ("auto", "scene_wiki"):
                 args.regime_label_method = "trend_quantile"
         else:
-            if tuple(spec["scene_ids"]) != EVENT_FACTOR_IDS:
+            if spec.get("entry_type") != "event_factor":
                 raise ValueError(
-                    "compositional_wiki requires configs/wind_event_factor_wiki.json "
-                    f"with factor order {EVENT_FACTOR_IDS}"
+                    "compositional_wiki requires an entry_type='event_factor' Wiki"
+                )
+            available_rule_features = set(args.feature_columns) | {"power_ratio"}
+            missing_rule_features = sorted(
+                {
+                    str(condition["feature"])
+                    for rule in args.scene_wiki_factor_rules
+                    for condition in rule["conditions"]
+                    if str(condition["feature"]) not in available_rule_features
+                }
+            )
+            if missing_rule_features:
+                raise ValueError(
+                    "Event Wiki rules reference features absent from this dataset: "
+                    + ", ".join(missing_rule_features)
+                )
+            if not np.allclose(
+                bundle["factor_reliability"],
+                np.asarray(args.scene_wiki_factor_reliability, dtype=np.float32),
+                rtol=0.0,
+                atol=1e-7,
+            ):
+                raise ValueError(
+                    "Wiki embedding reliability differs from the JSON lifecycle. "
+                    "Rebuild the embedding bundle."
                 )
             if args.num_modes != 3:
                 raise ValueError(
@@ -779,6 +806,7 @@ def configure_args(args):
             f"mode={args.prompt_router} entries={args.scene_wiki_num_modes} "
             f"top_k={args.scene_wiki_top_k} "
             f"activation_threshold={args.scene_wiki_activation_threshold:g} "
+            f"active_entries={sum(value > 0 for value in args.scene_wiki_factor_reliability) if args.prompt_router == 'compositional_wiki' else args.scene_wiki_num_modes} "
             f"encoder={args.scene_wiki_encoder_name} "
             f"bundle_sha256={args.scene_wiki_bundle_sha256[:12]}"
         )
@@ -876,6 +904,8 @@ def load_finetuned_model(exp, checkpoint_path):
             "scene_wiki_prompt_gate_init",
             "scene_wiki_activation_threshold",
             "scene_wiki_confidence_power",
+            "scene_wiki_factor_rules",
+            "scene_wiki_factor_reliability",
             "lambda_scene_ce",
             "lambda_event_bce",
             "scene_wiki_num_modes",

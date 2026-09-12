@@ -70,6 +70,10 @@ def main():
         scene_ids=np.asarray(spec["scene_ids"]),
         encoder_name=np.asarray(str(args.llm_path)),
         config_sha256=np.asarray(spec["sha256"]),
+        factor_reliability=np.asarray(
+            spec.get("factor_reliability") or np.ones(len(spec["scene_ids"])),
+            dtype=np.float32,
+        ),
     )
     os.replace(temporary, output)
     print(
