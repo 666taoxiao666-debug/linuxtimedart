@@ -20,6 +20,8 @@ from utils.wind_regime_wiki import (
 
 def build_parser():
     parser = argparse.ArgumentParser(description="TimeDART")
+    parser.add_argument("--wiki_diagnostic", action="store_true",
+                        help="Paired validation-only event residual intervention audit")
 
     # Basic configuration
     parser.add_argument("--task_name", required=True, choices=["pretrain", "finetune"])
@@ -943,6 +945,13 @@ def load_finetuned_model(exp, checkpoint_path):
 
 def main():
     args = configure_args(build_parser().parse_args())
+    if args.wiki_diagnostic and not (
+        args.is_training == 0 and args.task_name == "finetune"
+        and args.downstream_task == "forecast" and args.data == "SDWPF"
+        and args.report_split == "val" and args.sdwpf_split == "rolling_holdout"
+        and args.prompt_router == "compositional_wiki"
+    ):
+        raise ValueError("Wiki diagnostics require SDWPF compositional_wiki validation-only evaluation")
     seed = args.seed
     if args.deterministic:
         os.environ.setdefault("CUBLAS_WORKSPACE_CONFIG", ":4096:8")
@@ -987,6 +996,10 @@ def main():
         )
         exp = exp_map[args.model](args)
         load_finetuned_model(exp, checkpoint)
+        if args.wiki_diagnostic:
+            from utils.wiki_diagnostic import run_wiki_diagnostic
+            run_wiki_diagnostic(exp)
+            return
         exp.cls_test() if args.downstream_task == "classification" else exp.test()
         return
 
