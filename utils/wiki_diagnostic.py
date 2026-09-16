@@ -149,5 +149,9 @@ def run_wiki_diagnostic(exp):
                "wiki_bundle": checkpoint_info(args.scene_wiki_embeddings),
                "parameters": vars(args)}
     (output / "diagnostic_summary.json").write_text(json.dumps(summary, indent=2, default=str), encoding="utf-8")
-    print(json.dumps(summary, indent=2, default=str), flush=True)
+    # Keep full checkpoint/config provenance in the JSON, not hundreds of
+    # nested manifest lines in the terminal (which obscure completion).
+    brief = {k: v for k, v in summary.items()
+             if k not in ("parameters", "checkpoint", "wiki_config", "wiki_bundle")}
+    print(json.dumps(brief, indent=2), flush=True)
     print(f"[WIKI-DIAG] Results: {output.resolve()}", flush=True)
