@@ -3,7 +3,7 @@ import tempfile
 from pathlib import Path
 import numpy as np
 import torch
-from utils.wiki_diagnostic import paired_forward, group_metrics
+from utils.wiki_diagnostic import paired_forward, group_metrics, without_event_forward
 
 
 class Router(torch.nn.Module):
@@ -51,6 +51,10 @@ class WikiDiagnosticTests(unittest.TestCase):
                 x = torch.zeros(2, 24, 8)
                 on, off, captured = paired_forward(model, model.scene_wiki_router, x)
                 torch.testing.assert_close(model(x), on)
+                for index in range(4):
+                    removed = without_event_forward(model, model.scene_wiki_router, x, index)
+                    self.assertTrue(torch.isfinite(removed).all())
+                torch.testing.assert_close(model(x), on)
             self.assertEqual(on.shape, off.shape)
             self.assertEqual(on.shape[1], 6)
             self.assertEqual(captured[0].shape, (2, 4))
@@ -77,6 +81,36 @@ class WikiDiagnosticTests(unittest.TestCase):
         self.assertEqual(result["mae_gain_kw"], 1.)
         empty = group_metrics(on, off, truth, np.array([False, False]), "empty")
         self.assertIsNone(empty["mae_gain_kw"])
+
+    def test_delete_contribution_preserves_other_event_scale(self):
+        class AdditiveRouter(torch.nn.Module):
+            def __init__(self):
+                super().__init__()
+                self.num_factors = 3
+                self.register_buffer("semantic_keys", torch.tensor([[2., 0.], [0., 4.], [9., 9.]]))
+                self.semantic_projection = torch.nn.Identity()
+                self.prompt_norm = torch.nn.Identity()
+                self.prompt_delta = torch.nn.Parameter(torch.zeros(3, 2))
+                self.prompt_gate_logit = torch.nn.Parameter(torch.tensor(0.))
+            def forward(self, x):
+                a = x
+                values = self.semantic_keys + self.prompt_delta
+                p = (a @ values) / (a > 0).sum(-1, keepdim=True).clamp_min(1).sqrt() * .5
+                return p, a, a, a
+        class Model(torch.nn.Module):
+            def __init__(self):
+                super().__init__()
+                self.router = AdditiveRouter()
+            def forward(self, x):
+                return self.router(x)[0] + 7
+        model = Model().eval()
+        x = torch.tensor([[1., 1., 0.], [0., 0., 0.]])
+        original = model(x)
+        removed = without_event_forward(model, model.router, x, 0)
+        torch.testing.assert_close(removed[0], torch.tensor([7., 7.+2/(2**.5)]))
+        torch.testing.assert_close(removed[1], original[1])
+        torch.testing.assert_close(without_event_forward(model, model.router, x, 2), original)
+        self.assertEqual(len(model.router._forward_hooks), 0)
 
 
 if __name__ == "__main__":

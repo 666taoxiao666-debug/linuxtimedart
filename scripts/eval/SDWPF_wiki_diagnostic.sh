@@ -29,7 +29,7 @@ for f in $FOLDS; do
     done
 done
 RUN_ID="${RUN_ID:-wiki_diag_$(date +%Y%m%d_%H%M%S)}"
-sdwpf_log_init wiki_diagnostic "h${PRED_LEN}_val_folds${FOLDS// /-}_seeds${SEEDS// /-}_paired_event_on-off" diagnostic.log "$RUN_ID"
+sdwpf_log_init wiki_diagnostic "h${PRED_LEN}_val_folds${FOLDS// /-}_seeds${SEEDS// /-}_single${WIKI_DIAGNOSTIC_SINGLE_EVENTS:-0}" diagnostic.log "$RUN_ID"
 sdwpf_log_install_exit_trap
 DIAG_DIR="$SDWPF_LOG_DIR"
 sdwpf_log_capture

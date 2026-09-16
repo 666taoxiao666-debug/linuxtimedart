@@ -56,6 +56,31 @@ def group_metrics(on, off, truth, mask, name):
             "win_fraction": float((aw < bw).mean())}
 
 
+def without_event_forward(model, router, x, index):
+    """Delete one additive contribution, keeping top-k and normalization fixed.
+
+    This is a fixed-context intervention, not re-routing the remaining events.
+    Re-normalizing after deletion would also change every retained contribution.
+    """
+    if model.training:
+        raise ValueError("Event interventions require eval mode")
+    if not 0 <= index < router.num_factors:
+        raise ValueError("Invalid event index")
+    def remove(module, inputs, output):
+        activations = output[3]
+        values = module.prompt_norm(
+            module.semantic_projection(module.semantic_keys) + module.prompt_delta)
+        denominator = (activations > 0).sum(-1, keepdim=True).to(activations.dtype).clamp_min(1).sqrt()
+        contribution = (activations[:, index:index+1] * values[index:index+1]
+                        / denominator * torch.sigmoid(module.prompt_gate_logit))
+        return (output[0] - contribution, *output[1:])
+    handle = router.register_forward_hook(remove)
+    try:
+        return model(x)
+    finally:
+        handle.remove()
+
+
 def run_wiki_diagnostic(exp):
     args = exp.args
     if args.report_split != "val" or args.sdwpf_split != "rolling_holdout":
@@ -74,12 +99,19 @@ def run_wiki_diagnostic(exp):
     output.mkdir(parents=True, exist_ok=True)
     model.eval()
     parts = {k: [] for k in ("on", "off", "truth", "rules", "prob", "activation")}
+    factors = list(model.scene_wiki_scene_ids)
+    event_keys = ([f"without_{j}" for j in range(len(factors))]
+                  if getattr(args, "wiki_diagnostic_single_events", False) else [])
+    parts.update({k: [] for k in event_keys})
     with torch.no_grad():
         for i, (x, y, _, _) in enumerate(loader):
             x = x.float().to(exp.device)
             with exp._autocast():
                 on, off, (rules, prob, activation) = paired_forward(
                     model, model.scene_wiki_router, x)
+                for j, key in enumerate(event_keys):
+                    prediction = without_event_forward(model, model.scene_wiki_router, x, j)
+                    parts[key].append(prediction[:, -args.pred_len:, -1].detach().float().cpu().numpy())
             for key, value in (("on", on), ("off", off), ("truth", y)):
                 parts[key].append(value[:, -args.pred_len:, -1].detach().float().cpu().numpy())
             for key, value in (("rules", rules), ("prob", prob), ("activation", activation)):
@@ -92,7 +124,7 @@ def run_wiki_diagnostic(exp):
     for value in arrays.values():
         if not np.isfinite(value).all():
             raise ValueError("Non-finite values in diagnostic outputs")
-    for key in ("on", "off", "truth"):
+    for key in ("on", "off", "truth", *event_keys):
         arrays[key] = inverse_transform_target(dataset, arrays[key])
         if not np.isfinite(arrays[key]).all():
             raise ValueError("Non-finite inverse-transformed predictions or labels")
@@ -104,6 +136,22 @@ def run_wiki_diagnostic(exp):
     if not {"TurbID", "forecast_start"}.issubset(metadata.columns):
         raise ValueError("Turbine/time metadata is required for paired comparison")
     on, off, truth = (arrays[k] for k in ("on", "off", "truth"))
+    if event_keys:
+        event_rows, event_horizons = [], []
+        for j, key in enumerate(event_keys):
+            for group, mask in (("all", np.ones(len(on), dtype=bool)),
+                                ("event_active", active[:, j])):
+                row = group_metrics(on, arrays[key], truth, mask, group)
+                row["factor"] = factors[j]
+                row["mean_abs_prediction_change_kw"] = (
+                    float(np.abs(on[mask]-arrays[key][mask]).mean()) if mask.any() else None)
+                event_rows.append(row)
+                for h in range(args.pred_len):
+                    row = group_metrics(on[:, h:h+1], arrays[key][:, h:h+1],
+                                        truth[:, h:h+1], mask, group)
+                    event_horizons.append({**row, "factor": factors[j], "horizon": h+1})
+        pd.DataFrame(event_rows).to_csv(output / "single_event_metrics.csv", index=False)
+        pd.DataFrame(event_horizons).to_csv(output / "single_event_horizon_metrics.csv", index=False)
     metadata["mae_on_kw"] = np.abs(on-truth).mean(axis=1)
     metadata["mae_off_kw"] = np.abs(off-truth).mean(axis=1)
     metadata["mae_gain_kw"] = metadata.mae_off_kw - metadata.mae_on_kw
@@ -144,6 +192,8 @@ def run_wiki_diagnostic(exp):
                "null_max_prediction_delta_kw": float(np.max(np.abs(on[null]-off[null]))) if null_count else None,
                "all": rows[0], "factor_ids": factors,
                "note": "Fixed-checkpoint intervention, not a retrained ablation; groups overlap",
+               "single_event_intervention": bool(event_keys),
+               "single_event_definition": "Remove one additive prompt contribution; keep original top-k and composition denominator; positive gain favors retaining event",
                "checkpoint": checkpoint_info(args.loaded_finetune_checkpoint),
                "wiki_config": checkpoint_info(args.scene_wiki_config),
                "wiki_bundle": checkpoint_info(args.scene_wiki_embeddings),

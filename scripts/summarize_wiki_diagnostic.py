@@ -52,6 +52,13 @@ def summarize(root):
             for row in csv.DictReader(handle):
                 lines.append(f"  {row['group']}: windows={row['windows']} "
                              f"gain_kw={row['mae_gain_kw']}")
+        single = path.parent / "single_event_metrics.csv"
+        if single.is_file():
+            lines.append("  SINGLE EVENT: positive gain favors retaining this event")
+            with single.open(encoding="utf-8", newline="") as handle:
+                for row in csv.DictReader(handle):
+                    lines.append(f"    {row['factor']} {row['group']}: n={row['windows']} "
+                                 f"gain_kw={row['mae_gain_kw']} change_kw={row['mean_abs_prediction_change_kw']}")
     return rows, "\n".join(lines) + "\n"
 
 

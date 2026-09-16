@@ -81,6 +81,9 @@ esac
 PLOT_ARGS=(--forecast_plot_points "${FORECAST_PLOT_POINTS}")
 if [[ "${WIKI_DIAGNOSTIC:-0}" == "1" ]]; then
     PLOT_ARGS+=(--wiki_diagnostic)
+    if [[ "${WIKI_DIAGNOSTIC_SINGLE_EVENTS:-0}" == "1" ]]; then
+        PLOT_ARGS+=(--wiki_diagnostic_single_events)
+    fi
 fi
 PLOT_ARGS+=(--prompt_router "${PROMPT_ROUTER}")
 PLOT_ARGS+=(--scene_wiki_config "${SCENE_WIKI_CONFIG}")

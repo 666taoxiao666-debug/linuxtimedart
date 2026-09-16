@@ -22,6 +22,8 @@ def build_parser():
     parser = argparse.ArgumentParser(description="TimeDART")
     parser.add_argument("--wiki_diagnostic", action="store_true",
                         help="Paired validation-only event residual intervention audit")
+    parser.add_argument("--wiki_diagnostic_single_events", action="store_true",
+                        help="Also remove each event contribution with other contributions fixed")
 
     # Basic configuration
     parser.add_argument("--task_name", required=True, choices=["pretrain", "finetune"])
