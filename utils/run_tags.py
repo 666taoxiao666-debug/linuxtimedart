@@ -83,6 +83,8 @@ def experiment_setting(args, run_index):
         f"keepw{int(getattr(args, 'revin_keep_wind', False))}_"
         f"router{getattr(args, 'prompt_router', 'trend')}_"
         f"uw{int(getattr(args, 'utility_wiki', False))}_"
+        f"ulr{getattr(args, 'utility_learning_rate', 0.0)}_"
+        f"uif{getattr(args, 'utility_intervention_floor', 0.5)}_"
         f"split{getattr(args, 'sdwpf_split', 'time')}_fold{getattr(args, 'sdwpf_fold', 0)}_"
         f"seed{args.seed}"
     )

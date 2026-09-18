@@ -16,6 +16,10 @@ horizon-wise utility decision:
 4. **Selective intervention.** The higher-utility available granularity is used
    only when its predicted gain exceeds the configured threshold. Otherwise the
    final output is exactly the trend forecast.
+5. **Candidate specialization.** On training data only, every physically
+   available event/composition branch is fitted to the target and ranked against
+   a detached trend baseline. This prevents hard abstention from starving the
+   knowledge branches before the utility estimator learns to select them.
 
 For horizon `h` and candidate granularity `g`, the train-only supervision target is
 
@@ -28,6 +32,13 @@ The inference decision is
 subject to the hard physical-availability mask. Validation/test labels never
 enter retrieval, granularity selection, or intervention decisions.
 
+Once a candidate passes the threshold, its blend strength starts at
+`utility_intervention_floor` and grows with the predicted gain. Thus a reported
+intervention is a material correction rather than a numerically negligible gate.
+The forecast modules and utility estimator use separate learning rates: the
+former remain conservative while the latter can learn the sparse selection task
+more quickly.
+
 ## Checkpoint and leakage contract
 
 - The compositional Wiki and trend encoder retain the existing fold-matched
@@ -38,8 +49,8 @@ enter retrieval, granularity selection, or intervention decisions.
 - Utility targets are computed only inside the training loop from the current
   training batch. Validation remains read-only and selects checkpoints using the
   configured forecast metric.
-- Evaluation requires the same `utility_wiki`, temperature, and minimum-gain
-  settings recorded in the fine-tuning manifest.
+- Evaluation requires the same `utility_wiki`, temperature, minimum-gain, and
+  intervention-floor settings recorded in the fine-tuning manifest.
 
 ## Required paper comparisons
 

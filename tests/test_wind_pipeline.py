@@ -287,6 +287,44 @@ class OptimizerGroupTests(unittest.TestCase):
         self.assertCountEqual(grouped, expected)
         self.assertEqual(len(grouped), len(set(grouped)))
 
+    def test_utility_estimator_has_an_independent_learning_rate(self):
+        class TinyUtilityModel(torch.nn.Module):
+            def __init__(self):
+                super().__init__()
+                self.backbone = torch.nn.Linear(2, 2)
+                self.head = torch.nn.Linear(2, 1)
+                self.utility_gate = torch.nn.Linear(2, 2)
+
+        experiment = object.__new__(Exp_TimeDART)
+        experiment.model = TinyUtilityModel()
+        experiment.args = SimpleNamespace(
+            task_name="finetune",
+            downstream_task="forecast",
+            learning_rate=1e-6,
+            new_module_learning_rate=5e-6,
+            utility_learning_rate=3e-5,
+            utility_wiki=True,
+            weight_decay=1e-4,
+        )
+        optimizer = Exp_TimeDART._select_optimizer(experiment)
+        self.assertEqual(
+            [group["group_name"] for group in optimizer.param_groups],
+            ["transferred_backbone", "new_forecast_modules", "utility_estimator"],
+        )
+        self.assertEqual(
+            [group["target_lr"] for group in optimizer.param_groups],
+            [1e-6, 5e-6, 3e-5],
+        )
+        grouped = [
+            id(parameter)
+            for group in optimizer.param_groups
+            for parameter in group["params"]
+        ]
+        self.assertCountEqual(
+            grouped, [id(parameter) for parameter in experiment.model.parameters()]
+        )
+        self.assertEqual(len(grouped), len(set(grouped)))
+
 
 class CutoffTests(unittest.TestCase):
     def test_rolling_train_never_includes_later_fold_test(self):

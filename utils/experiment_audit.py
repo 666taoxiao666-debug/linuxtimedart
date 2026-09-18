@@ -301,6 +301,15 @@ def model_runtime_summary(model, args=None) -> dict:
         "utility_wiki",
     ):
         result[name] = _jsonable(getattr(core, name, None))
+    utility_gate = getattr(core, "utility_gate", None)
+    if utility_gate is not None:
+        result["utility_gate"] = {
+            "temperature": _jsonable(getattr(utility_gate, "temperature", None)),
+            "min_gain": _jsonable(getattr(utility_gate, "min_gain", None)),
+            "intervention_floor": _jsonable(
+                getattr(utility_gate, "intervention_floor", None)
+            ),
+        }
     if hasattr(core, "regime_down_thresh") and hasattr(core, "regime_up_thresh"):
         down = float(core.regime_down_thresh.detach().cpu().item())
         up = float(core.regime_up_thresh.detach().cpu().item())

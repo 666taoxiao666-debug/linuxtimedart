@@ -430,6 +430,7 @@ class Model(nn.Module):
                     pred_len=args.pred_len,
                     temperature=args.utility_gate_temperature,
                     min_gain=args.utility_min_gain,
+                    intervention_floor=args.utility_intervention_floor,
                     dropout=args.dropout,
                 )
 

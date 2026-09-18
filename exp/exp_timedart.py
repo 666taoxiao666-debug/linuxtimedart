@@ -14,7 +14,10 @@ from utils.forecast_losses import ForecastLoss
 from utils.run_tags import forecast_result_tag
 from utils.sdwpf_logging import tensorboard_log_directory
 from utils.experiment_audit import checkpoint_info, model_runtime_summary, write_run_manifest
-from utils.utility_wiki import utility_supervision_loss
+from utils.utility_wiki import (
+    utility_candidate_specialization_loss,
+    utility_supervision_loss,
+)
 from utils.regime_labels import (
     calibrate_regime_thresholds_from_dataset,
     summarize_regime_confusion,
@@ -302,11 +305,15 @@ class Exp_TimeDART(Exp_Basic):
     def _select_optimizer(self):
         base_lr = float(self.args.learning_rate)
         new_module_lr = float(getattr(self.args, "new_module_learning_rate", 0.0))
+        utility_lr = float(getattr(self.args, "utility_learning_rate", new_module_lr))
+        use_utility_group = bool(getattr(self.args, "utility_wiki", False))
         use_groups = (
             self.args.task_name == "finetune"
             and self.args.downstream_task == "forecast"
-            and new_module_lr > 0
-            and not np.isclose(new_module_lr, base_lr)
+            and (
+                (new_module_lr > 0 and not np.isclose(new_module_lr, base_lr))
+                or (use_utility_group and not np.isclose(utility_lr, base_lr))
+            )
         )
         if not use_groups:
             model_optim = optim.AdamW(
@@ -325,27 +332,27 @@ class Exp_TimeDART(Exp_Basic):
             "head.",
             "channel_mixer.",
             "residual_gate_logit",
-            "utility_gate.",
         )
         transferred = []
         newly_initialized = []
+        utility_parameters = []
         for name, parameter in self.model.named_parameters():
             if not parameter.requires_grad:
                 continue
             clean_name = name.removeprefix("module.")
-            destination = (
-                newly_initialized
-                if any(token in clean_name for token in new_tokens)
-                else transferred
-            )
+            if use_utility_group and "utility_gate." in clean_name:
+                destination = utility_parameters
+            elif any(token in clean_name for token in new_tokens):
+                destination = newly_initialized
+            else:
+                destination = transferred
             destination.append(parameter)
         if not newly_initialized or not transferred:
             raise RuntimeError(
                 "Differential fine-tuning LR requested, but optimizer parameter "
                 "groups could not be separated"
             )
-        model_optim = optim.AdamW(
-            [
+        parameter_groups = [
                 {
                     "params": transferred,
                     "lr": base_lr,
@@ -358,15 +365,33 @@ class Exp_TimeDART(Exp_Basic):
                     "target_lr": new_module_lr,
                     "group_name": "new_forecast_modules",
                 },
-            ],
+            ]
+        if use_utility_group:
+            if not utility_parameters:
+                raise RuntimeError(
+                    "utility_wiki is enabled, but no utility_gate parameters were found"
+                )
+            parameter_groups.append(
+                {
+                    "params": utility_parameters,
+                    "lr": utility_lr,
+                    "target_lr": utility_lr,
+                    "group_name": "utility_estimator",
+                }
+            )
+        model_optim = optim.AdamW(
+            parameter_groups,
             weight_decay=self.args.weight_decay,
         )
-        print(
-            "Optimizer groups: "
-            f"backbone={sum(p.numel() for p in transferred):,} params @ {base_lr:g}; "
-            f"new_modules={sum(p.numel() for p in newly_initialized):,} params "
-            f"@ {new_module_lr:g}"
-        )
+        group_summary = [
+            f"backbone={sum(p.numel() for p in transferred):,} params @ {base_lr:g}",
+            f"forecast={sum(p.numel() for p in newly_initialized):,} params @ {new_module_lr:g}",
+        ]
+        if utility_parameters:
+            group_summary.append(
+                f"utility={sum(p.numel() for p in utility_parameters):,} params @ {utility_lr:g}"
+            )
+        print("Optimizer groups: " + "; ".join(group_summary))
         return model_optim
 
     def _select_criterion(self):
@@ -1381,6 +1406,8 @@ class Exp_TimeDART(Exp_Basic):
                     "train_mae": np.nan,
                     "train_grad_norm": 0.0,
                     "train_utility_loss": np.nan,
+                    "train_utility_candidate_loss": np.nan,
+                    "train_utility_ranking_loss": np.nan,
                     "val_loss": float(initial_validation["loss"]),
                     "val_mse": float(initial_validation["mse"]),
                     "val_mae": float(initial_validation["mae"]),
@@ -1417,6 +1444,7 @@ class Exp_TimeDART(Exp_Basic):
                     "selection_value": float(initial_selection_value),
                     "learning_rate": 0.0,
                     "new_module_learning_rate": 0.0,
+                    "utility_learning_rate": 0.0,
                     **initial_validation["diagnostics"],
                 }
             )
@@ -1445,6 +1473,8 @@ class Exp_TimeDART(Exp_Basic):
             train_point_count = 0
             grad_norms = []
             train_utility_losses = []
+            train_utility_candidate_losses = []
+            train_utility_ranking_losses = []
 
             progress = tqdm(
                 train_loader,
@@ -1515,13 +1545,31 @@ class Exp_TimeDART(Exp_Basic):
                         batch_y,
                     )
                     utility_loss = forecast_loss.new_zeros(())
+                    utility_candidate_loss = forecast_loss.new_zeros(())
+                    utility_ranking_loss = forecast_loss.new_zeros(())
                     if getattr(core_model, "utility_wiki", False):
                         utility_loss, _ = utility_supervision_loss(
                             core_model._last_utility_aux,
                             batch_y,
                             eps=self.args.utility_target_eps,
                         )
-                    loss = forecast_loss + self.args.utility_loss_weight * utility_loss
+                        (
+                            utility_candidate_loss,
+                            utility_ranking_loss,
+                            _,
+                        ) = utility_candidate_specialization_loss(
+                            core_model._last_utility_aux,
+                            batch_y,
+                            margin=self.args.utility_ranking_margin,
+                        )
+                    loss = (
+                        forecast_loss
+                        + self.args.utility_loss_weight * utility_loss
+                        + self.args.utility_candidate_loss_weight
+                        * utility_candidate_loss
+                        + self.args.utility_ranking_loss_weight
+                        * utility_ranking_loss
+                    )
 
                 train_error = pred_x.detach().float() - batch_y.detach().float()
                 train_squared_error += train_error.square().sum().item()
@@ -1561,15 +1609,13 @@ class Exp_TimeDART(Exp_Basic):
                 train_loss.append(
                     loss.item()
                 )
-            if "utility_abstention_fraction" in initial_diagnostics:
-                initial_summary += (
-                    " UtilityWiki(abstain/event/combo/gate): "
-                    f"{initial_diagnostics['utility_abstention_fraction']:.3f}/"
-                    f"{initial_diagnostics['utility_single_event_fraction']:.3f}/"
-                    f"{initial_diagnostics['utility_composition_fraction']:.3f}/"
-                    f"{initial_diagnostics['utility_mean_strength']:.3f}"
-                )
                 train_utility_losses.append(float(utility_loss.detach().cpu().item()))
+                train_utility_candidate_losses.append(
+                    float(utility_candidate_loss.detach().cpu().item())
+                )
+                train_utility_ranking_losses.append(
+                    float(utility_ranking_loss.detach().cpu().item())
+                )
 
             train_loss = np.mean(
                 train_loss
@@ -1578,6 +1624,12 @@ class Exp_TimeDART(Exp_Basic):
             train_mae = train_absolute_error / max(1, train_point_count)
             train_grad_norm = float(np.mean(grad_norms)) if grad_norms else 0.0
             train_utility_loss = float(np.mean(train_utility_losses))
+            train_utility_candidate_loss = float(
+                np.mean(train_utility_candidate_losses)
+            )
+            train_utility_ranking_loss = float(
+                np.mean(train_utility_ranking_losses)
+            )
 
             validation = self.valid(
                 vali_loader,
@@ -1592,10 +1644,10 @@ class Exp_TimeDART(Exp_Basic):
                 self.args.early_stop_metric
             ]
 
-            current_lr = max(
-                group["lr"]
-                for group
-                in model_optim.param_groups
+            current_lr = max(group["lr"] for group in model_optim.param_groups)
+            lr_summary = "/".join(
+                f"{group.get('group_name', 'group')}={group['lr']:.3g}"
+                for group in model_optim.param_groups
             )
 
             end_time = time.time()
@@ -1606,6 +1658,8 @@ class Exp_TimeDART(Exp_Basic):
                 f"Time: {end_time - start_time:.2f}s | "
                 f"Train Loss: {train_loss:.7f} "
                 f"Utility Loss: {train_utility_loss:.7f} "
+                f"Candidate Loss: {train_utility_candidate_loss:.7f} "
+                f"Ranking Loss: {train_utility_ranking_loss:.7f} "
                 f"Vali Loss: {vali_loss:.7f} "
                 f"Vali MSE: {validation['mse']:.7f} "
                 f"Vali MAE: {validation['mae']:.7f} "
@@ -1616,9 +1670,7 @@ class Exp_TimeDART(Exp_Basic):
                 f"RMSE Skill: {validation['original_rmse_skill_vs_persistence_pct']:+.2f}% "
                 f"Gate: {validation['diagnostics'].get('residual_gate', 0.0):.5f} "
                 f"GradNorm: {train_grad_norm:.3f} "
-                f"LR(backbone/new): "
-                f"{model_optim.param_groups[0]['lr']:.3g}/"
-                f"{model_optim.param_groups[-1]['lr']:.3g} "
+                f"LR({lr_summary}) "
                 f"Select({self.args.early_stop_metric}): {selection_value:.7f}"
             )
             scale_parts = []
@@ -1693,6 +1745,8 @@ class Exp_TimeDART(Exp_Basic):
                     "train_mae": float(train_mae),
                     "train_grad_norm": train_grad_norm,
                     "train_utility_loss": train_utility_loss,
+                    "train_utility_candidate_loss": train_utility_candidate_loss,
+                    "train_utility_ranking_loss": train_utility_ranking_loss,
                     "val_loss": float(
                         vali_loss
                     ),
@@ -1729,7 +1783,24 @@ class Exp_TimeDART(Exp_Basic):
                     ),
                     "learning_rate": float(model_optim.param_groups[0]["lr"]),
                     "new_module_learning_rate": float(
-                        model_optim.param_groups[-1]["lr"]
+                        next(
+                            (
+                                group["lr"]
+                                for group in model_optim.param_groups
+                                if group.get("group_name") == "new_forecast_modules"
+                            ),
+                            model_optim.param_groups[0]["lr"],
+                        )
+                    ),
+                    "utility_learning_rate": float(
+                        next(
+                            (
+                                group["lr"]
+                                for group in model_optim.param_groups
+                                if group.get("group_name") == "utility_estimator"
+                            ),
+                            0.0,
+                        )
                     ),
                     **validation["diagnostics"],
                 }

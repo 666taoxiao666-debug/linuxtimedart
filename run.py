@@ -438,6 +438,15 @@ def build_parser():
         ),
     )
     parser.add_argument("--utility_loss_weight", type=float, default=0.1)
+    parser.add_argument("--utility_candidate_loss_weight", type=float, default=0.1)
+    parser.add_argument("--utility_ranking_loss_weight", type=float, default=0.1)
+    parser.add_argument("--utility_ranking_margin", type=float, default=0.01)
+    parser.add_argument(
+        "--utility_learning_rate",
+        type=float,
+        default=3e-5,
+        help="learning rate used only by the utility estimator",
+    )
     parser.add_argument("--utility_gate_temperature", type=float, default=0.25)
     parser.add_argument(
         "--utility_min_gain",
@@ -450,6 +459,12 @@ def build_parser():
         type=float,
         default=0.05,
         help="stabilizer for train-only relative error-reduction targets",
+    )
+    parser.add_argument(
+        "--utility_intervention_floor",
+        type=float,
+        default=0.5,
+        help="minimum blend strength after a utility candidate is selected",
     )
     parser.add_argument("--scene_wiki_recent_steps", type=int, default=None)
     parser.add_argument("--scene_wiki_low_wind_max_mps", type=float, default=None)
@@ -702,10 +717,20 @@ def configure_args(args):
             raise ValueError("--utility_wiki requires --mix_channels for one power target")
     if args.utility_loss_weight < 0.0:
         raise ValueError("utility_loss_weight cannot be negative")
+    if args.utility_candidate_loss_weight < 0.0:
+        raise ValueError("utility_candidate_loss_weight cannot be negative")
+    if args.utility_ranking_loss_weight < 0.0:
+        raise ValueError("utility_ranking_loss_weight cannot be negative")
+    if args.utility_ranking_margin < 0.0:
+        raise ValueError("utility_ranking_margin cannot be negative")
+    if args.utility_learning_rate <= 0.0:
+        raise ValueError("utility_learning_rate must be positive")
     if args.utility_gate_temperature <= 0.0:
         raise ValueError("utility_gate_temperature must be positive")
     if args.utility_target_eps <= 0.0:
         raise ValueError("utility_target_eps must be positive")
+    if not 0.0 <= args.utility_intervention_floor <= 1.0:
+        raise ValueError("utility_intervention_floor must be in [0, 1]")
     if args.prompt_router in (
         "scene_wiki",
         "hybrid_wiki",
@@ -946,6 +971,7 @@ def load_finetuned_model(exp, checkpoint_path):
             "utility_wiki",
             "utility_gate_temperature",
             "utility_min_gain",
+            "utility_intervention_floor",
             "scene_wiki_config_sha256",
             "scene_wiki_bundle_sha256",
             "scene_wiki_scene_ids",

@@ -10,7 +10,10 @@ from layers.TimeDART_EncDec import (
     CompositionalEventWikiRouter,
     UtilityGranularityGate,
 )
-from utils.utility_wiki import utility_supervision_loss
+from utils.utility_wiki import (
+    utility_candidate_specialization_loss,
+    utility_supervision_loss,
+)
 from utils.wind_regime_wiki import (
     EVENT_FACTOR_IDS,
     compute_event_factor_rule_logits,
@@ -60,8 +63,8 @@ class CompositionalWikiTests(unittest.TestCase):
         self.assertEqual(tuple(utilities.shape), (1, 3, 2))
         self.assertEqual(granularity.tolist(), [[1, 2, 0]])
         self.assertEqual(availability.tolist(), [[True, True]])
-        self.assertGreater(float(strength[0, 0]), 0.0)
-        self.assertGreater(float(strength[0, 1]), 0.0)
+        self.assertGreaterEqual(float(strength[0, 0]), 0.5)
+        self.assertGreaterEqual(float(strength[0, 1]), 0.5)
         self.assertEqual(float(strength[0, 2]), 0.0)
 
     def test_utility_gate_exactly_abstains_without_physical_evidence(self):
@@ -95,6 +98,59 @@ class CompositionalWikiTests(unittest.TestCase):
         loss.backward()
         self.assertIsNotNone(scores.grad)
         self.assertLess(float(scores.grad[..., 0].mean()), 0.0)
+
+    def test_candidate_specialization_trains_best_available_branch(self):
+        target = torch.ones(1, 2, 1)
+        event = torch.zeros(1, 2, 1, requires_grad=True)
+        composition = torch.full((1, 2, 1), 2.0, requires_grad=True)
+        aux = {
+            "availability": torch.tensor([[True, False]]),
+            "base_prediction": torch.zeros(1, 2, 1),
+            "event_prediction": event,
+            "composition_prediction": composition,
+        }
+        candidate_loss, ranking_loss, stats = (
+            utility_candidate_specialization_loss(aux, target, margin=0.1)
+        )
+        (candidate_loss + ranking_loss).backward()
+        self.assertGreater(float(candidate_loss), 0.0)
+        self.assertGreater(float(ranking_loss), 0.0)
+        self.assertIsNotNone(event.grad)
+        self.assertGreater(float(event.grad.abs().sum()), 0.0)
+        self.assertTrue(composition.grad is None or not bool(composition.grad.any()))
+        self.assertEqual(stats["oracle_event_fraction"], 1.0)
+
+    def test_candidate_specialization_abstains_without_evidence(self):
+        candidate = torch.zeros(1, 2, 1, requires_grad=True)
+        aux = {
+            "availability": torch.tensor([[False, False]]),
+            "base_prediction": torch.zeros(1, 2, 1),
+            "event_prediction": candidate,
+            "composition_prediction": candidate,
+        }
+        candidate_loss, ranking_loss, stats = (
+            utility_candidate_specialization_loss(aux, torch.ones(1, 2, 1))
+        )
+        self.assertEqual(float(candidate_loss), 0.0)
+        self.assertEqual(float(ranking_loss), 0.0)
+        self.assertEqual(stats["available_fraction"], 0.0)
+
+    def test_candidate_specialization_does_not_starve_composition(self):
+        target = torch.ones(1, 1, 1)
+        event = torch.zeros(1, 1, 1, requires_grad=True)
+        composition = torch.full((1, 1, 1), 3.0, requires_grad=True)
+        aux = {
+            "availability": torch.tensor([[True, True]]),
+            "base_prediction": torch.zeros(1, 1, 1),
+            "event_prediction": event,
+            "composition_prediction": composition,
+        }
+        candidate_loss, ranking_loss, _ = utility_candidate_specialization_loss(
+            aux, target, margin=0.1
+        )
+        (candidate_loss + ranking_loss).backward()
+        self.assertGreater(float(event.grad.abs().sum()), 0.0)
+        self.assertGreater(float(composition.grad.abs().sum()), 0.0)
 
     def test_event_factor_order_is_checkpoint_contract(self):
         spec = load_wind_regime_wiki_spec(EVENT_WIKI_CONFIG)

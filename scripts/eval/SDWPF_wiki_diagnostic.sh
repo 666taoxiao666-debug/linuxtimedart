@@ -17,7 +17,7 @@ for name in SCENE_WIKI_CONFIG SCENE_WIKI_EMBEDDINGS SCENE_WIKI_TOP_K SCENE_WIKI_
     [[ -n "$value" ]] || { echo "Missing CV parameter: $name" >&2; exit 2; }
     export "$name=$value"
 done
-for name in UTILITY_WIKI UTILITY_GATE_TEMPERATURE UTILITY_MIN_GAIN; do
+for name in UTILITY_WIKI UTILITY_GATE_TEMPERATURE UTILITY_MIN_GAIN UTILITY_INTERVENTION_FLOOR; do
     value="$(read_value "${WIKI_CV_DIR}/cv.env" "$name")"
     [[ -z "$value" ]] || export "$name=$value"
 done

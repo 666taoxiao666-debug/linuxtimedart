@@ -654,6 +654,7 @@ class UtilityGranularityGate(nn.Module):
         hidden_dim=None,
         temperature=0.25,
         min_gain=0.0,
+        intervention_floor=0.5,
         dropout=0.1,
     ):
         super().__init__()
@@ -661,11 +662,14 @@ class UtilityGranularityGate(nn.Module):
             raise ValueError("num_factors and pred_len must be positive")
         if float(temperature) <= 0.0:
             raise ValueError("utility gate temperature must be positive")
+        if not 0.0 <= float(intervention_floor) <= 1.0:
+            raise ValueError("utility intervention floor must be in [0, 1]")
         hidden_dim = int(hidden_dim or d_model)
         self.num_factors = int(num_factors)
         self.pred_len = int(pred_len)
         self.temperature = float(temperature)
         self.min_gain = float(min_gain)
+        self.intervention_floor = float(intervention_floor)
         self.utility_estimator = nn.Sequential(
             nn.LayerNorm(2 * int(d_model) + 2 * self.num_factors),
             nn.Linear(2 * int(d_model) + 2 * self.num_factors, hidden_dim),
@@ -703,10 +707,13 @@ class UtilityGranularityGate(nn.Module):
         masked = utilities.masked_fill(~availability.unsqueeze(1), -1e4)
         selected_utility, selected_index = masked.max(dim=-1)
         selected_available = availability.gather(1, selected_index).bool()
-        positive_margin = torch.relu(selected_utility - self.min_gain)
-        strength = torch.tanh(positive_margin / self.temperature)
-        strength = strength * selected_available.to(strength.dtype)
         intervene = selected_available & (selected_utility > self.min_gain)
+        positive_margin = torch.relu(selected_utility - self.min_gain)
+        confidence = torch.tanh(positive_margin / self.temperature)
+        strength = self.intervention_floor + (
+            1.0 - self.intervention_floor
+        ) * confidence
+        strength = strength * intervene.to(strength.dtype)
         # 0=trend/no intervention, 1=single event, 2=composition.
         granularity = torch.where(
             intervene, selected_index + 1, torch.zeros_like(selected_index)
