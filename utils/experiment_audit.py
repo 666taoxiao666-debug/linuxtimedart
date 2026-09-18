@@ -298,6 +298,7 @@ def model_runtime_summary(model, args=None) -> dict:
         "residual_forecast",
         "regime_label_method",
         "prompt_router",
+        "utility_wiki",
     ):
         result[name] = _jsonable(getattr(core, name, None))
     if hasattr(core, "regime_down_thresh") and hasattr(core, "regime_up_thresh"):
@@ -354,6 +355,15 @@ def model_runtime_summary(model, args=None) -> dict:
                     },
                 }
             )
+            utility_gate = getattr(core, "utility_gate", None)
+            if utility_gate is not None:
+                result["scene_wiki"]["utility_decision"] = {
+                    "granularities": ["single_event", "composition"],
+                    "prediction_scope": "per_horizon",
+                    "temperature": float(utility_gate.temperature),
+                    "min_gain": float(utility_gate.min_gain),
+                    "abstention": "exact_trend_fallback_without_positive_utility",
+                }
         intervention = getattr(core, "_last_wiki_intervention", None)
         if intervention is not None and intervention.numel():
             values = intervention.detach().float().cpu()

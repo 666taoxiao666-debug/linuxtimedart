@@ -429,6 +429,28 @@ def build_parser():
     parser.add_argument("--scene_wiki_prompt_gate_init", type=float, default=-2.2)
     parser.add_argument("--scene_wiki_activation_threshold", type=float, default=0.55)
     parser.add_argument("--scene_wiki_confidence_power", type=float, default=1.0)
+    parser.add_argument(
+        "--utility_wiki",
+        action="store_true",
+        help=(
+            "fine-tune a horizon-wise utility gate that jointly chooses single-event "
+            "or compositional Wiki granularity and can abstain exactly"
+        ),
+    )
+    parser.add_argument("--utility_loss_weight", type=float, default=0.1)
+    parser.add_argument("--utility_gate_temperature", type=float, default=0.25)
+    parser.add_argument(
+        "--utility_min_gain",
+        type=float,
+        default=0.02,
+        help="minimum predicted relative error reduction required to intervene",
+    )
+    parser.add_argument(
+        "--utility_target_eps",
+        type=float,
+        default=0.05,
+        help="stabilizer for train-only relative error-reduction targets",
+    )
     parser.add_argument("--scene_wiki_recent_steps", type=int, default=None)
     parser.add_argument("--scene_wiki_low_wind_max_mps", type=float, default=None)
     parser.add_argument("--scene_wiki_active_wind_min_mps", type=float, default=None)
@@ -662,6 +684,28 @@ def configure_args(args):
             args.revin_keep_wind = False
     if args.lambda_event_bce is None:
         args.lambda_event_bce = args.lambda_scene_ce
+    if args.utility_wiki:
+        if not (
+            args.task_name == "finetune"
+            and args.downstream_task == "forecast"
+            and args.model == "PromptTimeDART"
+            and args.data == "SDWPF"
+            and args.prompt_router == "compositional_wiki"
+        ):
+            raise ValueError(
+                "--utility_wiki requires SDWPF PromptTimeDART forecast fine-tuning "
+                "with --prompt_router compositional_wiki"
+            )
+        if args.disable_regime_prompt:
+            raise ValueError("--utility_wiki cannot be combined with --disable_regime_prompt")
+        if not args.mix_channels:
+            raise ValueError("--utility_wiki requires --mix_channels for one power target")
+    if args.utility_loss_weight < 0.0:
+        raise ValueError("utility_loss_weight cannot be negative")
+    if args.utility_gate_temperature <= 0.0:
+        raise ValueError("utility_gate_temperature must be positive")
+    if args.utility_target_eps <= 0.0:
+        raise ValueError("utility_target_eps must be positive")
     if args.prompt_router in (
         "scene_wiki",
         "hybrid_wiki",
@@ -899,6 +943,9 @@ def load_finetuned_model(exp, checkpoint_path):
             "regime_label_method",
             "regime_calibration_quantile",
             "prompt_router",
+            "utility_wiki",
+            "utility_gate_temperature",
+            "utility_min_gain",
             "scene_wiki_config_sha256",
             "scene_wiki_bundle_sha256",
             "scene_wiki_scene_ids",

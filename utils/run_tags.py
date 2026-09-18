@@ -49,6 +49,7 @@ def forecast_result_tag(args):
         f"phy{int(trained('sdwpf_physics_features', False))}",
         f"keepw{int(trained('revin_keep_wind', False))}",
         f"router{trained('prompt_router', 'trend')}",
+        f"uw{int(trained('utility_wiki', False))}",
         f"split{trained('sdwpf_split', 'time')}",
         f"fold{trained('sdwpf_fold', 0)}",
         f"seed{trained('seed')}",
@@ -81,6 +82,7 @@ def experiment_setting(args, run_index):
         f"phy{int(getattr(args, 'sdwpf_physics_features', False))}_"
         f"keepw{int(getattr(args, 'revin_keep_wind', False))}_"
         f"router{getattr(args, 'prompt_router', 'trend')}_"
+        f"uw{int(getattr(args, 'utility_wiki', False))}_"
         f"split{getattr(args, 'sdwpf_split', 'time')}_fold{getattr(args, 'sdwpf_fold', 0)}_"
         f"seed{args.seed}"
     )

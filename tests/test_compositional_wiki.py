@@ -6,7 +6,11 @@ from pathlib import Path
 import numpy as np
 import torch
 
-from layers.TimeDART_EncDec import CompositionalEventWikiRouter
+from layers.TimeDART_EncDec import (
+    CompositionalEventWikiRouter,
+    UtilityGranularityGate,
+)
+from utils.utility_wiki import utility_supervision_loss
 from utils.wind_regime_wiki import (
     EVENT_FACTOR_IDS,
     compute_event_factor_rule_logits,
@@ -36,6 +40,62 @@ def _write_bundle(path, spec, hidden_size=16):
 
 
 class CompositionalWikiTests(unittest.TestCase):
+    def test_utility_gate_jointly_selects_granularity_per_horizon(self):
+        gate = UtilityGranularityGate(
+            d_model=4,
+            num_factors=3,
+            pred_len=3,
+            temperature=0.25,
+            dropout=0.0,
+        )
+        with torch.no_grad():
+            gate.utility_estimator[-1].bias.copy_(
+                torch.tensor([0.8, 0.2, -0.4, 0.7, -0.1, -0.2])
+            )
+        utilities, granularity, strength, availability = gate(
+            torch.zeros(1, 2, 4),
+            torch.tensor([[0.8, 0.4, 0.0]]),
+            torch.tensor([[1.0, 0.5, -1.0]]),
+        )
+        self.assertEqual(tuple(utilities.shape), (1, 3, 2))
+        self.assertEqual(granularity.tolist(), [[1, 2, 0]])
+        self.assertEqual(availability.tolist(), [[True, True]])
+        self.assertGreater(float(strength[0, 0]), 0.0)
+        self.assertGreater(float(strength[0, 1]), 0.0)
+        self.assertEqual(float(strength[0, 2]), 0.0)
+
+    def test_utility_gate_exactly_abstains_without_physical_evidence(self):
+        gate = UtilityGranularityGate(
+            d_model=4, num_factors=2, pred_len=3, dropout=0.0
+        )
+        with torch.no_grad():
+            gate.utility_estimator[-1].bias.fill_(10.0)
+        _, granularity, strength, availability = gate(
+            torch.randn(2, 3, 4),
+            torch.zeros(2, 2),
+            torch.full((2, 2), -1.0),
+        )
+        self.assertFalse(bool(availability.any()))
+        self.assertTrue(torch.equal(granularity, torch.zeros_like(granularity)))
+        self.assertTrue(torch.equal(strength, torch.zeros_like(strength)))
+
+    def test_utility_supervision_uses_candidate_gain_and_backpropagates(self):
+        scores = torch.zeros(1, 2, 2, requires_grad=True)
+        target = torch.ones(1, 2, 1)
+        aux = {
+            "utilities": scores,
+            "availability": torch.tensor([[True, True]]),
+            "base_prediction": torch.zeros(1, 2, 1),
+            "event_prediction": torch.ones(1, 2, 1),
+            "composition_prediction": torch.full((1, 2, 1), 2.0),
+        }
+        loss, targets = utility_supervision_loss(aux, target)
+        self.assertTrue(torch.allclose(targets[..., 0], torch.ones(1, 2)))
+        self.assertTrue(torch.allclose(targets[..., 1], torch.zeros(1, 2)))
+        loss.backward()
+        self.assertIsNotNone(scores.grad)
+        self.assertLess(float(scores.grad[..., 0].mean()), 0.0)
+
     def test_event_factor_order_is_checkpoint_contract(self):
         spec = load_wind_regime_wiki_spec(EVENT_WIKI_CONFIG)
         self.assertEqual(tuple(spec["scene_ids"]), EVENT_FACTOR_IDS)
@@ -157,6 +217,67 @@ class CompositionalWikiTests(unittest.TestCase):
         importlib.util.find_spec("reformer_pytorch"),
         "full model dependencies are not installed",
     )
+    def test_utility_model_forward_has_exact_initial_trend_fallback(self):
+        from models.TimeDART import PromptGuidedModel
+        from run import build_parser, configure_args
+
+        spec = load_wind_regime_wiki_spec(EVENT_WIKI_CONFIG)
+        with tempfile.TemporaryDirectory() as temporary:
+            bundle = Path(temporary) / "event_wiki.npz"
+            _write_bundle(bundle, spec)
+            args = configure_args(
+                build_parser().parse_args(
+                    [
+                        "--task_name", "finetune",
+                        "--model_id", "SDWPF",
+                        "--model", "PromptTimeDART",
+                        "--data", "SDWPF",
+                        "--prompt_router", "compositional_wiki",
+                        "--utility_wiki",
+                        "--scene_wiki_config", str(EVENT_WIKI_CONFIG),
+                        "--scene_wiki_embeddings", str(bundle),
+                        "--input_len", "24",
+                        "--pred_len", "3",
+                        "--patch_len", "6",
+                        "--stride", "6",
+                        "--d_model", "16",
+                        "--d_ff", "32",
+                        "--n_heads", "4",
+                        "--e_layers", "1",
+                        "--d_layers", "1",
+                        "--no-use_gpu",
+                    ]
+                )
+            )
+            args.device = torch.device("cpu")
+            args.dropout = 0.0
+            args.head_dropout = 0.0
+            model = PromptGuidedModel(args).eval()
+            model.set_scene_scaler(np.zeros(8), np.ones(8))
+            with torch.no_grad():
+                model.regime_down_thresh.fill_(-0.1)
+                model.regime_up_thresh.fill_(0.1)
+                output = model(torch.zeros(2, 24, 8))
+
+        self.assertEqual(tuple(output.shape), (2, 3, 1))
+        self.assertEqual(tuple(model._last_utility_aux["utilities"].shape), (2, 3, 2))
+        self.assertTrue(
+            torch.equal(
+                model._last_utility_aux["granularity"],
+                torch.zeros(2, 3, dtype=torch.long),
+            )
+        )
+        self.assertTrue(
+            torch.equal(
+                model._last_utility_aux["strength"],
+                torch.zeros(2, 3),
+            )
+        )
+
+    @unittest.skipUnless(
+        importlib.util.find_spec("reformer_pytorch"),
+        "full model dependencies are not installed",
+    )
     def test_model_keeps_trend_logits_and_returns_event_targets(self):
         from exp.exp_timedart import Exp_TimeDART
         from models.TimeDART import PromptGuidedModel
@@ -213,6 +334,18 @@ class CompositionalWikiTests(unittest.TestCase):
                 PromptGuidedModel(args),
                 strict=True,
             )
+            args.task_name = "finetune"
+            args.utility_wiki = True
+            args.mix_channels = True
+            args.channel_prior = True
+            args.op_context = True
+            args.revin_keep_wind = True
+            args.c_out = 1
+            utility_model = transfer_weights(
+                Path(temporary) / "event_pretrain.pth",
+                PromptGuidedModel(args),
+                strict=True,
+            )
 
         self.assertIsInstance(output, dict)
         self.assertEqual(tuple(output["regime_logits"].shape), (2, 3))
@@ -226,6 +359,13 @@ class CompositionalWikiTests(unittest.TestCase):
         self.assertEqual(checkpoint["scene_wiki_activation_threshold"], 0.55)
         self.assertEqual(
             transferred.pretrain_transfer_audit[
+                "required_backbone_coverage_pct"
+            ],
+            100.0,
+        )
+        self.assertTrue(hasattr(utility_model, "utility_gate"))
+        self.assertEqual(
+            utility_model.pretrain_transfer_audit[
                 "required_backbone_coverage_pct"
             ],
             100.0,

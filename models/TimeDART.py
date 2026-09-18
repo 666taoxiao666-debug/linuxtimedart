@@ -13,6 +13,7 @@ from layers.TimeDART_EncDec import (
     SoftPromptGenerator,
     SceneWikiPromptRouter,
     CompositionalEventWikiRouter,
+    UtilityGranularityGate,
     DilatedConvEncoder,
     ClsEmbedding,
     ClsHead,
@@ -116,6 +117,7 @@ class Model(nn.Module):
             "legacy_volatility",
         )
         self.prompt_router = getattr(args, "prompt_router", "trend")
+        self.utility_wiki = bool(getattr(args, "utility_wiki", False))
         self.features = getattr(args, "features", "M")
         self.enc_in = int(getattr(args, "enc_in", 1))
         self.feature_columns = list(getattr(args, "feature_columns", None) or [])
@@ -417,6 +419,20 @@ class Model(nn.Module):
                     self.head.forecast_head.bias
                 )
 
+            if self.utility_wiki:
+                if not self.use_soft_prompt or self.prompt_router != "compositional_wiki":
+                    raise ValueError(
+                        "utility_wiki requires the compositional_wiki prompt router"
+                    )
+                self.utility_gate = UtilityGranularityGate(
+                    d_model=args.d_model,
+                    num_factors=self.scene_wiki_router.num_factors,
+                    pred_len=args.pred_len,
+                    temperature=args.utility_gate_temperature,
+                    min_gain=args.utility_min_gain,
+                    dropout=args.dropout,
+                )
+
     def _build_prompt(
         self,
         x_out,
@@ -531,7 +547,31 @@ class Model(nn.Module):
                     # The router already applies physical support, confidence
                     # thresholding, Top-K sparsity and the learnable residual gate.
                     # If every factor abstains, wiki_prompt is exactly zero.
-                    sample_prompt = sample_prompt + wiki_prompt
+                    trend_prompt = sample_prompt
+                    if self.utility_wiki and self.task_name == "finetune":
+                        strongest = event_activations.argmax(dim=-1, keepdim=True)
+                        strongest_activations = torch.zeros_like(event_activations)
+                        strongest_activations.scatter_(
+                            1,
+                            strongest,
+                            event_activations.gather(1, strongest),
+                        )
+                        self._last_utility_prompt_state = {
+                            "target_hidden": target_hidden,
+                            "trend_prompt": trend_prompt,
+                            "event_prompt": self.scene_wiki_router.compose_activations(
+                                strongest_activations
+                            ),
+                            "composition_prompt": wiki_prompt,
+                            "activations": event_activations,
+                            "rule_logits": rule_logits,
+                        }
+                        # The utility path decodes all three branches in
+                        # forecast(); this return value is only a shape-safe
+                        # placeholder and is not used for the final output.
+                        sample_prompt = trend_prompt
+                    else:
+                        sample_prompt = trend_prompt + wiki_prompt
                     self._last_wiki_intervention = (
                         event_activations.amax(dim=-1)
                         * torch.sigmoid(self.scene_wiki_router.prompt_gate_logit)
@@ -871,20 +911,54 @@ class Model(nn.Module):
                     num_features,
                 )
             )
-            x = x + prompt_emb.unsqueeze(1)
+            if not self.utility_wiki:
+                x = x + prompt_emb.unsqueeze(1)
 
-        x = x.reshape(
-            batch_size,
-            num_features,
-            -1,
-            self.d_model,
-        )
+        def decode(encoded):
+            decoded = encoded.reshape(
+                batch_size,
+                num_features,
+                -1,
+                self.d_model,
+            )
+            if self.channel_mixer is not None:
+                decoded = self.channel_mixer(decoded, context=context)
+            return self.head(decoded)
 
-        if self.channel_mixer is not None:
-            x = self.channel_mixer(x, context=context)
+        if self.utility_wiki:
+            state = self._last_utility_prompt_state
 
-        # Forecast
-        x = self.head(x)
+            def add_sample_prompt(sample_prompt):
+                repeated = sample_prompt.repeat_interleave(num_features, dim=0)
+                return x + repeated.unsqueeze(1)
+
+            branch_encoded = torch.cat(
+                [
+                    add_sample_prompt(state["trend_prompt"]),
+                    add_sample_prompt(state["trend_prompt"] + state["event_prompt"]),
+                    add_sample_prompt(
+                        state["trend_prompt"] + state["composition_prompt"]
+                    ),
+                ],
+                dim=0,
+            )
+            branch_context = (
+                context.repeat(3, 1) if context is not None else None
+            )
+            decoded = branch_encoded.reshape(
+                3 * batch_size,
+                num_features,
+                -1,
+                self.d_model,
+            )
+            if self.channel_mixer is not None:
+                decoded = self.channel_mixer(decoded, context=branch_context)
+            branch_forecasts = self.head(decoded).reshape(
+                3, batch_size, self.pred_len, -1
+            )
+            base_x, event_x, composition_x = branch_forecasts.unbind(dim=0)
+        else:
+            x = decode(x)
 
         # Denormalise either as an absolute forecast
         # or as a correction to the persistence baseline.
@@ -892,7 +966,38 @@ class Model(nn.Module):
         # the last observation is already on the
         # original input scale.
         power_slice = slice(-1, None) if self.mix_channels else slice(None)
-        if self.residual_forecast:
+        def restore_scale(forecast):
+            if self.residual_forecast:
+                if self.use_norm:
+                    forecast = forecast * stdevs[:, :, power_slice]
+                residual_gate = torch.sigmoid(self.residual_gate_logit)
+                return last_observation[:, :, power_slice] + residual_gate * forecast
+            if self.use_norm:
+                forecast = forecast * stdevs[:, :, power_slice]
+                forecast = forecast + means[:, :, power_slice]
+            return forecast
+
+        if self.utility_wiki:
+            base_x = restore_scale(base_x)
+            event_x = restore_scale(event_x)
+            composition_x = restore_scale(composition_x)
+            utilities, granularity, utility_strength, availability = self.utility_gate(
+                state["target_hidden"], state["activations"], state["rule_logits"]
+            )
+            use_composition = (granularity == 2).unsqueeze(-1)
+            selected_x = torch.where(use_composition, composition_x, event_x)
+            x = base_x + utility_strength.unsqueeze(-1) * (selected_x - base_x)
+            self._last_utility_aux = {
+                "utilities": utilities,
+                "granularity": granularity,
+                "strength": utility_strength,
+                "availability": availability,
+                "base_prediction": base_x,
+                "event_prediction": event_x,
+                "composition_prediction": composition_x,
+            }
+            self._last_wiki_intervention = utility_strength.detach().amax(dim=-1)
+        elif self.residual_forecast:
             if self.use_norm:
                 x = x * stdevs[:, :, power_slice]
             # Start close to the hard-to-beat persistence baseline.  Unlike a

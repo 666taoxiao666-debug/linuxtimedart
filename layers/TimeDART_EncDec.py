@@ -557,6 +557,27 @@ class CompositionalEventWikiRouter(nn.Module):
         self.prompt_delta = nn.Parameter(torch.zeros(self.num_factors, d_model))
         self.prompt_norm = nn.LayerNorm(d_model)
 
+    def compose_activations(self, activations):
+        """Turn a chosen event subset into a residual prompt.
+
+        This is intentionally separate from retrieval so downstream code can
+        compare a coarse, single-event lookup with the full compositional
+        lookup without rerunning or weakening the physical-evidence filter.
+        """
+        if activations.ndim != 2 or activations.size(1) != self.num_factors:
+            raise ValueError(
+                "event activations must have shape [batch,num_factors], got "
+                f"{tuple(activations.shape)}"
+            )
+        if not torch.isfinite(activations).all() or torch.any(activations < 0.0):
+            raise ValueError("event activations must be finite and non-negative")
+        projected_keys = self.semantic_projection(self.semantic_keys)
+        prompt_values = self.prompt_norm(projected_keys + self.prompt_delta)
+        active_count = (activations > 0).sum(dim=-1, keepdim=True).to(activations.dtype)
+        composition_scale = active_count.clamp_min(1.0).sqrt()
+        prompt = torch.matmul(activations, prompt_values) / composition_scale
+        return torch.sigmoid(self.prompt_gate_logit) * prompt
+
     def forward(self, x_out, rule_logits):
         if x_out.ndim == 4:
             if self.log_channel_weight is None or x_out.size(1) != self.num_features:
@@ -610,12 +631,87 @@ class CompositionalEventWikiRouter(nn.Module):
             support.scatter_(1, keep, True)
             activations = activations.masked_fill(~support, 0.0)
 
-        prompt_values = self.prompt_norm(projected_keys + self.prompt_delta)
-        active_count = (activations > 0).sum(dim=-1, keepdim=True).to(activations.dtype)
-        composition_scale = active_count.clamp_min(1.0).sqrt()
-        prompt = torch.matmul(activations, prompt_values) / composition_scale
-        prompt = torch.sigmoid(self.prompt_gate_logit) * prompt
+        prompt = self.compose_activations(activations)
         return prompt, retrieval_logits, probabilities, activations
+
+
+class UtilityGranularityGate(nn.Module):
+    """Jointly select Wiki granularity and intervention time per horizon.
+
+    The two learned utility channels estimate the relative error reduction of
+    (1) the strongest physically supported event and (2) the complete event
+    composition.  Physical availability is a hard precondition.  If neither
+    candidate has positive predicted utility, the gate returns an exact zero
+    and the ordinary trend forecast remains unchanged.
+    """
+
+    def __init__(
+        self,
+        d_model,
+        num_factors,
+        pred_len,
+        *,
+        hidden_dim=None,
+        temperature=0.25,
+        min_gain=0.0,
+        dropout=0.1,
+    ):
+        super().__init__()
+        if int(num_factors) < 1 or int(pred_len) < 1:
+            raise ValueError("num_factors and pred_len must be positive")
+        if float(temperature) <= 0.0:
+            raise ValueError("utility gate temperature must be positive")
+        hidden_dim = int(hidden_dim or d_model)
+        self.num_factors = int(num_factors)
+        self.pred_len = int(pred_len)
+        self.temperature = float(temperature)
+        self.min_gain = float(min_gain)
+        self.utility_estimator = nn.Sequential(
+            nn.LayerNorm(2 * int(d_model) + 2 * self.num_factors),
+            nn.Linear(2 * int(d_model) + 2 * self.num_factors, hidden_dim),
+            nn.GELU(),
+            nn.Dropout(dropout),
+            nn.Linear(hidden_dim, 2 * self.pred_len),
+        )
+        # The initial model is exactly the trend-only branch.  Supervised
+        # train-split utility targets decide when interventions become active.
+        nn.init.zeros_(self.utility_estimator[-1].weight)
+        nn.init.zeros_(self.utility_estimator[-1].bias)
+
+    def forward(self, target_hidden, activations, rule_logits):
+        if target_hidden.ndim != 3:
+            raise ValueError("target_hidden must have shape [batch,patch,d_model]")
+        expected = (target_hidden.size(0), self.num_factors)
+        if tuple(activations.shape) != expected or tuple(rule_logits.shape) != expected:
+            raise ValueError("utility evidence tensors must have shape [batch,num_factors]")
+        state = torch.cat(
+            [
+                target_hidden.mean(dim=1),
+                target_hidden[:, -1],
+                activations,
+                rule_logits.clamp(0.0, 1.0),
+            ],
+            dim=-1,
+        )
+        utilities = self.utility_estimator(state).reshape(
+            target_hidden.size(0), self.pred_len, 2
+        )
+        active_count = (activations > 0.0).sum(dim=-1)
+        availability = torch.stack(
+            [active_count >= 1, active_count >= 2], dim=-1
+        )
+        masked = utilities.masked_fill(~availability.unsqueeze(1), -1e4)
+        selected_utility, selected_index = masked.max(dim=-1)
+        selected_available = availability.gather(1, selected_index).bool()
+        positive_margin = torch.relu(selected_utility - self.min_gain)
+        strength = torch.tanh(positive_margin / self.temperature)
+        strength = strength * selected_available.to(strength.dtype)
+        intervene = selected_available & (selected_utility > self.min_gain)
+        # 0=trend/no intervention, 1=single event, 2=composition.
+        granularity = torch.where(
+            intervene, selected_index + 1, torch.zeros_like(selected_index)
+        )
+        return utilities, granularity, strength, availability
 
 
 class PromptGuidedDecoderBlock(nn.Module):

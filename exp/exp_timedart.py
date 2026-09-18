@@ -14,6 +14,7 @@ from utils.forecast_losses import ForecastLoss
 from utils.run_tags import forecast_result_tag
 from utils.sdwpf_logging import tensorboard_log_directory
 from utils.experiment_audit import checkpoint_info, model_runtime_summary, write_run_manifest
+from utils.utility_wiki import utility_supervision_loss
 from utils.regime_labels import (
     calibrate_regime_thresholds_from_dataset,
     summarize_regime_confusion,
@@ -320,7 +321,12 @@ class Exp_TimeDART(Exp_Basic):
             )
             return model_optim
 
-        new_tokens = ("head.", "channel_mixer.", "residual_gate_logit")
+        new_tokens = (
+            "head.",
+            "channel_mixer.",
+            "residual_gate_logit",
+            "utility_gate.",
+        )
         transferred = []
         newly_initialized = []
         for name, parameter in self.model.named_parameters():
@@ -1374,6 +1380,7 @@ class Exp_TimeDART(Exp_Basic):
                     "train_mse": np.nan,
                     "train_mae": np.nan,
                     "train_grad_norm": 0.0,
+                    "train_utility_loss": np.nan,
                     "val_loss": float(initial_validation["loss"]),
                     "val_mse": float(initial_validation["mse"]),
                     "val_mae": float(initial_validation["mae"]),
@@ -1437,6 +1444,7 @@ class Exp_TimeDART(Exp_Basic):
             train_absolute_error = 0.0
             train_point_count = 0
             grad_norms = []
+            train_utility_losses = []
 
             progress = tqdm(
                 train_loader,
@@ -1502,10 +1510,18 @@ class Exp_TimeDART(Exp_Basic):
                         f_dim:,
                     ]
 
-                    loss = model_criteria(
+                    forecast_loss = model_criteria(
                         pred_x,
                         batch_y,
                     )
+                    utility_loss = forecast_loss.new_zeros(())
+                    if getattr(core_model, "utility_wiki", False):
+                        utility_loss, _ = utility_supervision_loss(
+                            core_model._last_utility_aux,
+                            batch_y,
+                            eps=self.args.utility_target_eps,
+                        )
+                    loss = forecast_loss + self.args.utility_loss_weight * utility_loss
 
                 train_error = pred_x.detach().float() - batch_y.detach().float()
                 train_squared_error += train_error.square().sum().item()
@@ -1545,6 +1561,15 @@ class Exp_TimeDART(Exp_Basic):
                 train_loss.append(
                     loss.item()
                 )
+            if "utility_abstention_fraction" in initial_diagnostics:
+                initial_summary += (
+                    " UtilityWiki(abstain/event/combo/gate): "
+                    f"{initial_diagnostics['utility_abstention_fraction']:.3f}/"
+                    f"{initial_diagnostics['utility_single_event_fraction']:.3f}/"
+                    f"{initial_diagnostics['utility_composition_fraction']:.3f}/"
+                    f"{initial_diagnostics['utility_mean_strength']:.3f}"
+                )
+                train_utility_losses.append(float(utility_loss.detach().cpu().item()))
 
             train_loss = np.mean(
                 train_loss
@@ -1552,6 +1577,7 @@ class Exp_TimeDART(Exp_Basic):
             train_mse = train_squared_error / max(1, train_point_count)
             train_mae = train_absolute_error / max(1, train_point_count)
             train_grad_norm = float(np.mean(grad_norms)) if grad_norms else 0.0
+            train_utility_loss = float(np.mean(train_utility_losses))
 
             validation = self.valid(
                 vali_loader,
@@ -1579,6 +1605,7 @@ class Exp_TimeDART(Exp_Basic):
                 f"Epoch: {epoch + 1}, Steps: {len(train_loader)}, "
                 f"Time: {end_time - start_time:.2f}s | "
                 f"Train Loss: {train_loss:.7f} "
+                f"Utility Loss: {train_utility_loss:.7f} "
                 f"Vali Loss: {vali_loss:.7f} "
                 f"Vali MSE: {validation['mse']:.7f} "
                 f"Vali MAE: {validation['mae']:.7f} "
@@ -1619,6 +1646,14 @@ class Exp_TimeDART(Exp_Basic):
                     f"{diagnostics['event_wiki_zero_intervention_fraction']:.3f}/"
                     f"{diagnostics['event_wiki_mean_active_factors']:.3f}"
                 )
+            if "utility_abstention_fraction" in diagnostics:
+                epoch_summary += (
+                    " UtilityWiki(abstain/event/combo/gate): "
+                    f"{diagnostics['utility_abstention_fraction']:.3f}/"
+                    f"{diagnostics['utility_single_event_fraction']:.3f}/"
+                    f"{diagnostics['utility_composition_fraction']:.3f}/"
+                    f"{diagnostics['utility_mean_strength']:.3f}"
+                )
             if "val_available_mae_kw" in diagnostics:
                 epoch_summary += (
                     " Available MAE(kW): "
@@ -1657,6 +1692,7 @@ class Exp_TimeDART(Exp_Basic):
                     "train_mse": float(train_mse),
                     "train_mae": float(train_mae),
                     "train_grad_norm": train_grad_norm,
+                    "train_utility_loss": train_utility_loss,
                     "val_loss": float(
                         vali_loss
                     ),
@@ -1805,6 +1841,10 @@ class Exp_TimeDART(Exp_Basic):
         persistence_batches = []
         scene_label_batches = []
         wiki_activation_batches = []
+        utility_granularity_batches = []
+        utility_strength_batches = []
+        utility_score_batches = []
+        utility_availability_batches = []
         vali_data = getattr(vali_loader, "dataset", None)
         core_model = (
             self.model.module
@@ -1842,6 +1882,21 @@ class Exp_TimeDART(Exp_Basic):
                     pred_x = self.model(
                         batch_x
                     )
+
+                    if getattr(core_model, "utility_wiki", False):
+                        utility_aux = core_model._last_utility_aux
+                        utility_granularity_batches.append(
+                            utility_aux["granularity"].detach().cpu().numpy()
+                        )
+                        utility_strength_batches.append(
+                            utility_aux["strength"].detach().float().cpu().numpy()
+                        )
+                        utility_score_batches.append(
+                            utility_aux["utilities"].detach().float().cpu().numpy()
+                        )
+                        utility_availability_batches.append(
+                            utility_aux["availability"].detach().cpu().numpy()
+                        )
 
                     f_dim = (
                         -1
@@ -2098,6 +2153,45 @@ class Exp_TimeDART(Exp_Basic):
                 diagnostics[f"event_wiki_{factor_id}_mean_strength"] = float(
                     activations[:, factor_index].mean()
                 )
+        if utility_granularity_batches:
+            granularities = np.concatenate(utility_granularity_batches, axis=0)
+            strengths = np.concatenate(utility_strength_batches, axis=0)
+            utility_scores = np.concatenate(utility_score_batches, axis=0)
+            availability = np.concatenate(utility_availability_batches, axis=0)
+            diagnostics["utility_abstention_fraction"] = float(
+                (granularities == 0).mean()
+            )
+            diagnostics["utility_single_event_fraction"] = float(
+                (granularities == 1).mean()
+            )
+            diagnostics["utility_composition_fraction"] = float(
+                (granularities == 2).mean()
+            )
+            diagnostics["utility_mean_strength"] = float(strengths.mean())
+            diagnostics["utility_single_event_available_fraction"] = float(
+                availability[:, 0].mean()
+            )
+            diagnostics["utility_composition_available_fraction"] = float(
+                availability[:, 1].mean()
+            )
+            diagnostics["utility_single_event_score_mean"] = float(
+                utility_scores[..., 0][
+                    np.broadcast_to(
+                        availability[:, None, 0], utility_scores[..., 0].shape
+                    )
+                ].mean()
+                if availability[:, 0].any()
+                else 0.0
+            )
+            diagnostics["utility_composition_score_mean"] = float(
+                utility_scores[..., 1][
+                    np.broadcast_to(
+                        availability[:, None, 1], utility_scores[..., 1].shape
+                    )
+                ].mean()
+                if availability[:, 1].any()
+                else 0.0
+            )
         if vali_data is not None and hasattr(vali_data, "target_available_mask"):
             available = np.asarray(vali_data.target_available_mask(), dtype=bool)
             if available.shape == pred_original.shape[:2] and available.any():

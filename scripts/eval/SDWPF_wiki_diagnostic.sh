@@ -17,6 +17,10 @@ for name in SCENE_WIKI_CONFIG SCENE_WIKI_EMBEDDINGS SCENE_WIKI_TOP_K SCENE_WIKI_
     [[ -n "$value" ]] || { echo "Missing CV parameter: $name" >&2; exit 2; }
     export "$name=$value"
 done
+for name in UTILITY_WIKI UTILITY_GATE_TEMPERATURE UTILITY_MIN_GAIN; do
+    value="$(read_value "${WIKI_CV_DIR}/cv.env" "$name")"
+    [[ -z "$value" ]] || export "$name=$value"
+done
 [[ -f "$SCENE_WIKI_CONFIG" && -f "$SCENE_WIKI_EMBEDDINGS" ]] || { echo "Missing frozen Wiki files" >&2; exit 2; }
 # Validate all selected checkpoints before doing any inference. Do not execute
 # pipeline.env as shell code; read only the expected values.
