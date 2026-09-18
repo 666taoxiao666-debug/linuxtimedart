@@ -294,6 +294,8 @@ class OptimizerGroupTests(unittest.TestCase):
                 self.backbone = torch.nn.Linear(2, 2)
                 self.head = torch.nn.Linear(2, 1)
                 self.utility_gate = torch.nn.Linear(2, 2)
+                self.utility_event_adapter = torch.nn.Linear(2, 1)
+                self.utility_composition_adapter = torch.nn.Linear(2, 1)
 
         experiment = object.__new__(Exp_TimeDART)
         experiment.model = TinyUtilityModel()
@@ -315,6 +317,16 @@ class OptimizerGroupTests(unittest.TestCase):
             [group["target_lr"] for group in optimizer.param_groups],
             [1e-6, 5e-6, 3e-5],
         )
+        forecast_parameter_ids = {
+            id(parameter) for parameter in optimizer.param_groups[1]["params"]
+        }
+        for adapter in (
+            experiment.model.utility_event_adapter,
+            experiment.model.utility_composition_adapter,
+        ):
+            self.assertTrue(
+                all(id(parameter) in forecast_parameter_ids for parameter in adapter.parameters())
+            )
         grouped = [
             id(parameter)
             for group in optimizer.param_groups

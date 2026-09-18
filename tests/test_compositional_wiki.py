@@ -101,13 +101,14 @@ class CompositionalWikiTests(unittest.TestCase):
 
     def test_candidate_specialization_trains_best_available_branch(self):
         target = torch.ones(1, 2, 1)
+        base = torch.zeros(1, 2, 1, requires_grad=True)
         event = torch.zeros(1, 2, 1, requires_grad=True)
         composition = torch.full((1, 2, 1), 2.0, requires_grad=True)
         aux = {
             "availability": torch.tensor([[True, False]]),
-            "base_prediction": torch.zeros(1, 2, 1),
-            "event_prediction": event,
-            "composition_prediction": composition,
+            "base_prediction": base,
+            "event_prediction": base.detach() + event,
+            "composition_prediction": base.detach() + composition,
         }
         candidate_loss, ranking_loss, stats = (
             utility_candidate_specialization_loss(aux, target, margin=0.1)
@@ -117,6 +118,7 @@ class CompositionalWikiTests(unittest.TestCase):
         self.assertGreater(float(ranking_loss), 0.0)
         self.assertIsNotNone(event.grad)
         self.assertGreater(float(event.grad.abs().sum()), 0.0)
+        self.assertIsNone(base.grad)
         self.assertTrue(composition.grad is None or not bool(composition.grad.any()))
         self.assertEqual(stats["oracle_event_fraction"], 1.0)
 
@@ -327,6 +329,32 @@ class CompositionalWikiTests(unittest.TestCase):
             torch.equal(
                 model._last_utility_aux["strength"],
                 torch.zeros(2, 3),
+            )
+        )
+        self.assertTrue(
+            torch.equal(
+                model._last_utility_aux["event_prediction"],
+                model._last_utility_aux["base_prediction"],
+            )
+        )
+        self.assertTrue(
+            torch.equal(
+                model._last_utility_aux["composition_prediction"],
+                model._last_utility_aux["base_prediction"],
+            )
+        )
+        self.assertTrue(
+            torch.equal(
+                model.utility_event_adapter.forecast_head.weight,
+                torch.zeros_like(model.utility_event_adapter.forecast_head.weight),
+            )
+        )
+        self.assertTrue(
+            torch.equal(
+                model.utility_composition_adapter.forecast_head.weight,
+                torch.zeros_like(
+                    model.utility_composition_adapter.forecast_head.weight
+                ),
             )
         )
 

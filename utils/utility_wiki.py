@@ -81,17 +81,34 @@ def utility_candidate_specialization_loss(aux, target, margin=0.01):
             "oracle_composition_fraction": 0.0,
         }
 
-    channel_mask = availability.unsqueeze(2).expand_as(candidates)
     expanded_target = target.unsqueeze(-1).expand_as(candidates)
-    specialization = torch.nn.functional.smooth_l1_loss(
-        candidates[channel_mask], expanded_target[channel_mask], reduction="mean"
-    )
-
     base_error = (aux["base_prediction"].detach() - target).abs().mean(dim=2)
     ranking_terms = torch.relu(
         candidate_error - base_error.unsqueeze(-1) + float(margin)
     )
-    ranking = ranking_terms[availability].mean()
+    specialization_terms = []
+    balanced_ranking_terms = []
+    for candidate_index in range(candidates.size(-1)):
+        branch_mask = availability[..., candidate_index]
+        if not bool(branch_mask.any()):
+            continue
+        branch_channel_mask = branch_mask.unsqueeze(2).expand_as(
+            candidates[..., candidate_index]
+        )
+        specialization_terms.append(
+            torch.nn.functional.smooth_l1_loss(
+                candidates[..., candidate_index][branch_channel_mask],
+                expanded_target[..., candidate_index][branch_channel_mask],
+                reduction="mean",
+            )
+        )
+        balanced_ranking_terms.append(
+            ranking_terms[..., candidate_index][branch_mask].mean()
+        )
+    # Equal branch weighting prevents the rarer composition adapter from being
+    # overwhelmed by the much more frequent single-event windows.
+    specialization = torch.stack(specialization_terms).mean()
+    ranking = torch.stack(balanced_ranking_terms).mean()
     available_count = available.sum().clamp_min(1)
     stats = {
         "available_fraction": float(available.float().mean().detach().cpu()),

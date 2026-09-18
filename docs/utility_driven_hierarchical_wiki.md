@@ -20,6 +20,10 @@ horizon-wise utility decision:
    available event/composition branch is fitted to the target and ranked against
    a detached trend baseline. This prevents hard abstention from starving the
    knowledge branches before the utility estimator learns to select them.
+6. **Isolated residual adaptation.** Single-event and composition knowledge use
+   separate zero-initialized residual adapters over their prompt-induced feature
+   contrasts. Candidate supervision updates these adapters without pulling the
+   shared trend head away from its validated solution.
 
 For horizon `h` and candidate granularity `g`, the train-only supervision target is
 

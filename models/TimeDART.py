@@ -433,6 +433,28 @@ class Model(nn.Module):
                     intervention_floor=args.utility_intervention_floor,
                     dropout=args.dropout,
                 )
+                # Granularity-specific residual adapters keep Wiki supervision
+                # from updating the shared trend head.  They start as exact
+                # zero corrections, so old pretraining checkpoints retain the
+                # trend-only fallback until train-split evidence proves gain.
+                self.utility_event_adapter = FlattenHead(
+                    seq_len=self.seq_len,
+                    d_model=args.d_model,
+                    pred_len=args.pred_len,
+                    dropout=args.head_dropout,
+                )
+                self.utility_composition_adapter = FlattenHead(
+                    seq_len=self.seq_len,
+                    d_model=args.d_model,
+                    pred_len=args.pred_len,
+                    dropout=args.head_dropout,
+                )
+                for adapter in (
+                    self.utility_event_adapter,
+                    self.utility_composition_adapter,
+                ):
+                    nn.init.zeros_(adapter.forecast_head.weight)
+                    nn.init.zeros_(adapter.forecast_head.bias)
 
     def _build_prompt(
         self,
@@ -954,10 +976,25 @@ class Model(nn.Module):
             )
             if self.channel_mixer is not None:
                 decoded = self.channel_mixer(decoded, context=branch_context)
-            branch_forecasts = self.head(decoded).reshape(
-                3, batch_size, self.pred_len, -1
+            branch_features = decoded.size(1)
+            branch_hidden = decoded.reshape(
+                3,
+                batch_size,
+                branch_features,
+                -1,
+                self.d_model,
             )
-            base_x, event_x, composition_x = branch_forecasts.unbind(dim=0)
+            base_hidden, event_hidden, composition_hidden = branch_hidden.unbind(dim=0)
+            base_x = self.head(base_hidden)
+            # The contrast tensors are fixed inputs to the residual adapters.
+            # Candidate losses therefore cannot drag the shared trend encoder,
+            # channel mixer, or forecast head away from their validated path.
+            event_contrast = (event_hidden - base_hidden).detach()
+            composition_contrast = (composition_hidden - base_hidden).detach()
+            event_correction = self.utility_event_adapter(event_contrast)
+            composition_correction = self.utility_composition_adapter(
+                composition_contrast
+            )
         else:
             x = decode(x)
 
@@ -978,10 +1015,17 @@ class Model(nn.Module):
                 forecast = forecast + means[:, :, power_slice]
             return forecast
 
+        def restore_correction(correction):
+            if self.use_norm:
+                correction = correction * stdevs[:, :, power_slice]
+            return correction
+
         if self.utility_wiki:
             base_x = restore_scale(base_x)
-            event_x = restore_scale(event_x)
-            composition_x = restore_scale(composition_x)
+            event_correction = restore_correction(event_correction)
+            composition_correction = restore_correction(composition_correction)
+            event_x = base_x + event_correction
+            composition_x = base_x + composition_correction
             utilities, granularity, utility_strength, availability = self.utility_gate(
                 state["target_hidden"], state["activations"], state["rule_logits"]
             )
@@ -994,8 +1038,15 @@ class Model(nn.Module):
                 "strength": utility_strength,
                 "availability": availability,
                 "base_prediction": base_x,
-                "event_prediction": event_x,
-                "composition_prediction": composition_x,
+                # Numerically identical to event_x/composition_x, but the
+                # detached base prevents candidate-only losses from modifying
+                # the shared trend predictor.
+                "event_prediction": base_x.detach() + event_correction,
+                "composition_prediction": (
+                    base_x.detach() + composition_correction
+                ),
+                "event_correction": event_correction,
+                "composition_correction": composition_correction,
             }
             self._last_wiki_intervention = utility_strength.detach().amax(dim=-1)
         elif self.residual_forecast:

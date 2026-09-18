@@ -332,6 +332,8 @@ class Exp_TimeDART(Exp_Basic):
             "head.",
             "channel_mixer.",
             "residual_gate_logit",
+            "utility_event_adapter.",
+            "utility_composition_adapter.",
         )
         transferred = []
         newly_initialized = []
@@ -1359,6 +1361,7 @@ class Exp_TimeDART(Exp_Basic):
                 self.args.early_stop_metric
             ]
             validation_unit = "kW" if self.args.data == "SDWPF" else "original"
+            metric_suffix = "kw" if self.args.data == "SDWPF" else "original"
             initial_summary = (
                 "Epoch: 0, Steps: 0, Time: 0.00s | "
                 "Train Loss: n/a "
@@ -1706,6 +1709,25 @@ class Exp_TimeDART(Exp_Basic):
                     f"{diagnostics['utility_composition_fraction']:.3f}/"
                     f"{diagnostics['utility_mean_strength']:.3f}"
                 )
+            candidate_gain_parts = []
+            for candidate_name in ("event", "composition"):
+                gain_key = (
+                    f"utility_{candidate_name}_candidate_gain_vs_base_pct"
+                )
+                correction_key = (
+                    f"utility_{candidate_name}_correction_abs_mean_{metric_suffix}"
+                )
+                if gain_key in diagnostics:
+                    candidate_gain_parts.append(
+                        f"{candidate_name}="
+                        f"{diagnostics[gain_key]:+.2f}%/"
+                        f"{diagnostics[correction_key]:.2f}{validation_unit}"
+                    )
+            if candidate_gain_parts:
+                epoch_summary += (
+                    " WikiCandidate(gain/correction): "
+                    + ",".join(candidate_gain_parts)
+                )
             if "val_available_mae_kw" in diagnostics:
                 epoch_summary += (
                     " Available MAE(kW): "
@@ -1713,7 +1735,6 @@ class Exp_TimeDART(Exp_Basic):
                     "Available MAE Skill: "
                     f"{diagnostics['val_available_mae_skill_pct']:+.2f}%"
                 )
-            metric_suffix = "kw" if self.args.data == "SDWPF" else "original"
             first_horizon = diagnostics.get(f"val_h01_mae_{metric_suffix}")
             last_horizon = diagnostics.get(
                 f"val_h{self.args.pred_len:02d}_mae_{metric_suffix}"
@@ -1916,6 +1937,9 @@ class Exp_TimeDART(Exp_Basic):
         utility_strength_batches = []
         utility_score_batches = []
         utility_availability_batches = []
+        utility_base_prediction_batches = []
+        utility_event_prediction_batches = []
+        utility_composition_prediction_batches = []
         vali_data = getattr(vali_loader, "dataset", None)
         core_model = (
             self.model.module
@@ -1967,6 +1991,27 @@ class Exp_TimeDART(Exp_Basic):
                         )
                         utility_availability_batches.append(
                             utility_aux["availability"].detach().cpu().numpy()
+                        )
+                        utility_base_prediction_batches.append(
+                            utility_aux["base_prediction"]
+                            .detach()
+                            .float()
+                            .cpu()
+                            .numpy()
+                        )
+                        utility_event_prediction_batches.append(
+                            utility_aux["event_prediction"]
+                            .detach()
+                            .float()
+                            .cpu()
+                            .numpy()
+                        )
+                        utility_composition_prediction_batches.append(
+                            utility_aux["composition_prediction"]
+                            .detach()
+                            .float()
+                            .cpu()
+                            .numpy()
                         )
 
                     f_dim = (
@@ -2263,6 +2308,70 @@ class Exp_TimeDART(Exp_Basic):
                 if availability[:, 1].any()
                 else 0.0
             )
+            branch_predictions = (
+                ("event", np.concatenate(utility_event_prediction_batches, axis=0)),
+                (
+                    "composition",
+                    np.concatenate(utility_composition_prediction_batches, axis=0),
+                ),
+            )
+            utility_base_scaled = np.concatenate(
+                utility_base_prediction_batches, axis=0
+            )
+            if can_inverse_target:
+                utility_base_original = utility_base_scaled * target_scale + target_mean
+            else:
+                utility_base_original = utility_base_scaled
+            if rated_power > 0:
+                utility_base_original = np.clip(
+                    utility_base_original, 0.0, rated_power
+                )
+            for candidate_index, (candidate_name, candidate_scaled) in enumerate(
+                branch_predictions
+            ):
+                candidate_original = (
+                    candidate_scaled * target_scale + target_mean
+                    if can_inverse_target
+                    else candidate_scaled
+                )
+                if rated_power > 0:
+                    candidate_original = np.clip(
+                        candidate_original, 0.0, rated_power
+                    )
+                candidate_available = availability[:, candidate_index].astype(bool)
+                if not candidate_available.any():
+                    continue
+                candidate_metrics = forecast_metrics(
+                    candidate_original[candidate_available],
+                    true_original[candidate_available],
+                    rated_power=rated_power or None,
+                )
+                base_metrics = forecast_metrics(
+                    utility_base_original[candidate_available],
+                    true_original[candidate_available],
+                    rated_power=rated_power or None,
+                )
+                diagnostics[
+                    f"utility_{candidate_name}_candidate_mae_{metric_suffix}"
+                ] = float(candidate_metrics["mae"])
+                diagnostics[
+                    f"utility_{candidate_name}_candidate_gain_vs_base_pct"
+                ] = float(
+                    100.0
+                    * (
+                        1.0
+                        - candidate_metrics["mae"]
+                        / max(base_metrics["mae"], np.finfo(float).eps)
+                    )
+                )
+                diagnostics[
+                    f"utility_{candidate_name}_correction_abs_mean_{metric_suffix}"
+                ] = float(
+                    np.abs(
+                        candidate_original[candidate_available]
+                        - utility_base_original[candidate_available]
+                    ).mean()
+                )
         if vali_data is not None and hasattr(vali_data, "target_available_mask"):
             available = np.asarray(vali_data.target_available_mask(), dtype=bool)
             if available.shape == pred_original.shape[:2] and available.any():
