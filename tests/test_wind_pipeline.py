@@ -311,21 +311,21 @@ class OptimizerGroupTests(unittest.TestCase):
         optimizer = Exp_TimeDART._select_optimizer(experiment)
         self.assertEqual(
             [group["group_name"] for group in optimizer.param_groups],
-            ["transferred_backbone", "new_forecast_modules", "utility_estimator"],
+            ["transferred_backbone", "new_forecast_modules", "utility_modules"],
         )
         self.assertEqual(
             [group["target_lr"] for group in optimizer.param_groups],
             [1e-6, 5e-6, 3e-5],
         )
-        forecast_parameter_ids = {
-            id(parameter) for parameter in optimizer.param_groups[1]["params"]
+        utility_parameter_ids = {
+            id(parameter) for parameter in optimizer.param_groups[2]["params"]
         }
         for adapter in (
             experiment.model.utility_event_adapter,
             experiment.model.utility_composition_adapter,
         ):
             self.assertTrue(
-                all(id(parameter) in forecast_parameter_ids for parameter in adapter.parameters())
+                all(id(parameter) in utility_parameter_ids for parameter in adapter.parameters())
             )
         grouped = [
             id(parameter)

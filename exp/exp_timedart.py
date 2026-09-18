@@ -332,6 +332,9 @@ class Exp_TimeDART(Exp_Basic):
             "head.",
             "channel_mixer.",
             "residual_gate_logit",
+        )
+        utility_tokens = (
+            "utility_gate.",
             "utility_event_adapter.",
             "utility_composition_adapter.",
         )
@@ -342,7 +345,9 @@ class Exp_TimeDART(Exp_Basic):
             if not parameter.requires_grad:
                 continue
             clean_name = name.removeprefix("module.")
-            if use_utility_group and "utility_gate." in clean_name:
+            if use_utility_group and any(
+                token in clean_name for token in utility_tokens
+            ):
                 destination = utility_parameters
             elif any(token in clean_name for token in new_tokens):
                 destination = newly_initialized
@@ -378,7 +383,7 @@ class Exp_TimeDART(Exp_Basic):
                     "params": utility_parameters,
                     "lr": utility_lr,
                     "target_lr": utility_lr,
-                    "group_name": "utility_estimator",
+                    "group_name": "utility_modules",
                 }
             )
         model_optim = optim.AdamW(
@@ -1818,7 +1823,7 @@ class Exp_TimeDART(Exp_Basic):
                             (
                                 group["lr"]
                                 for group in model_optim.param_groups
-                                if group.get("group_name") == "utility_estimator"
+                                if group.get("group_name") == "utility_modules"
                             ),
                             0.0,
                         )

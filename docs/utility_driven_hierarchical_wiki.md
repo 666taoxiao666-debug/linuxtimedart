@@ -39,9 +39,9 @@ enter retrieval, granularity selection, or intervention decisions.
 Once a candidate passes the threshold, its blend strength starts at
 `utility_intervention_floor` and grows with the predicted gain. Thus a reported
 intervention is a material correction rather than a numerically negligible gate.
-The forecast modules and utility estimator use separate learning rates: the
-former remain conservative while the latter can learn the sparse selection task
-more quickly.
+The shared forecast modules and isolated Wiki modules use separate learning
+rates: the trend path remains conservative while the utility estimator and
+residual adapters learn sparse selection/correction more quickly.
 
 ## Checkpoint and leakage contract
 
