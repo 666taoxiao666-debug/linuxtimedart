@@ -11,6 +11,7 @@ from layers.TimeDART_EncDec import (
     UtilityGranularityGate,
 )
 from utils.utility_wiki import (
+    selected_intervention_metrics,
     utility_candidate_specialization_loss,
     utility_decision_loss,
     utility_supervision_loss,
@@ -142,6 +143,32 @@ class CompositionalWikiTests(unittest.TestCase):
         self.assertEqual(float(loss), 0.0)
         self.assertTrue(torch.equal(scores.grad, torch.zeros_like(scores)))
         self.assertEqual(stats["oracle_abstain_fraction"], 1.0)
+
+    def test_selected_intervention_metrics_use_only_routed_horizons(self):
+        metrics = selected_intervention_metrics(
+            granularity=torch.tensor([[1, 0, 1]]),
+            strength=torch.tensor([[0.5, 0.0, 1.0]]),
+            base_prediction=torch.tensor([[[0.0], [9.0], [0.0]]]),
+            candidate_prediction=torch.tensor([[[2.0], [0.0], [0.5]]]),
+            target=torch.tensor([[[1.0], [0.0], [1.0]]]),
+            selected_index=1,
+        )
+        self.assertEqual(metrics["count"], 2)
+        self.assertAlmostEqual(metrics["gain_vs_base_pct"], 75.0)
+        self.assertEqual(metrics["harmful_fraction"], 0.0)
+        self.assertAlmostEqual(metrics["correction_abs_mean"], 0.75)
+
+    def test_selected_intervention_metrics_report_empty_branch(self):
+        metrics = selected_intervention_metrics(
+            granularity=torch.zeros(1, 2, dtype=torch.long),
+            strength=torch.zeros(1, 2),
+            base_prediction=torch.zeros(1, 2, 1),
+            candidate_prediction=torch.ones(1, 2, 1),
+            target=torch.zeros(1, 2, 1),
+            selected_index=2,
+        )
+        self.assertEqual(metrics["count"], 0)
+        self.assertTrue(np.isnan(metrics["gain_vs_base_pct"]))
 
     def test_candidate_specialization_trains_best_available_branch(self):
         target = torch.ones(1, 2, 1)

@@ -15,6 +15,7 @@ from utils.run_tags import forecast_result_tag
 from utils.sdwpf_logging import tensorboard_log_directory
 from utils.experiment_audit import checkpoint_info, model_runtime_summary, write_run_manifest
 from utils.utility_wiki import (
+    selected_intervention_metrics,
     utility_candidate_specialization_loss,
     utility_decision_loss,
     utility_supervision_loss,
@@ -1753,6 +1754,25 @@ class Exp_TimeDART(Exp_Basic):
                     " WikiCandidate(gain/correction): "
                     + ",".join(candidate_gain_parts)
                 )
+            selected_gain_parts = []
+            for candidate_name in ("event", "composition"):
+                count = diagnostics.get(f"utility_{candidate_name}_selected_count", 0)
+                gain = diagnostics.get(
+                    f"utility_{candidate_name}_selected_gain_vs_base_pct"
+                )
+                harmful = diagnostics.get(
+                    f"utility_{candidate_name}_selected_harmful_fraction"
+                )
+                if count and gain is not None and harmful is not None:
+                    selected_gain_parts.append(
+                        f"{candidate_name}={gain:+.2f}%/"
+                        f"harm{100.0 * harmful:.1f}%/n{int(count)}"
+                    )
+            if selected_gain_parts:
+                epoch_summary += (
+                    " WikiSelected(gain/harm/count): "
+                    + ",".join(selected_gain_parts)
+                )
             if "val_available_mae_kw" in diagnostics:
                 epoch_summary += (
                     " Available MAE(kW): "
@@ -2398,6 +2418,18 @@ class Exp_TimeDART(Exp_Basic):
                         - utility_base_original[candidate_available]
                     ).mean()
                 )
+                selected_metrics = selected_intervention_metrics(
+                    granularities,
+                    strengths,
+                    utility_base_original,
+                    candidate_original,
+                    true_original,
+                    selected_index=candidate_index + 1,
+                )
+                for selected_name, selected_value in selected_metrics.items():
+                    diagnostics[
+                        f"utility_{candidate_name}_selected_{selected_name}"
+                    ] = selected_value
         if vali_data is not None and hasattr(vali_data, "target_available_mask"):
             available = np.asarray(vali_data.target_available_mask(), dtype=bool)
             if available.shape == pred_original.shape[:2] and available.any():

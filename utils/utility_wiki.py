@@ -133,6 +133,63 @@ def utility_decision_loss(
     return loss, stats
 
 
+def selected_intervention_metrics(
+    granularity,
+    strength,
+    base_prediction,
+    candidate_prediction,
+    target,
+    *,
+    selected_index,
+):
+    """Measure realized gain only where a particular Wiki branch was selected."""
+
+    granularity = torch.as_tensor(granularity)
+    strength = torch.as_tensor(strength, dtype=torch.float64)
+    base_prediction = torch.as_tensor(base_prediction, dtype=torch.float64)
+    candidate_prediction = torch.as_tensor(
+        candidate_prediction, dtype=torch.float64
+    )
+    target = torch.as_tensor(target, dtype=torch.float64)
+    if granularity.shape != strength.shape:
+        raise ValueError("granularity and strength must have the same shape")
+    if not (
+        base_prediction.shape == candidate_prediction.shape == target.shape
+        and base_prediction.shape[:2] == granularity.shape
+    ):
+        raise ValueError("utility predictions must have shape [sample,horizon,channel]")
+
+    selected = granularity == int(selected_index)
+    selected_count = int(selected.sum().item())
+    if selected_count == 0:
+        return {
+            "count": 0,
+            "gain_vs_base_pct": float("nan"),
+            "harmful_fraction": float("nan"),
+            "correction_abs_mean": float("nan"),
+        }
+
+    blended = base_prediction + strength.unsqueeze(-1) * (
+        candidate_prediction - base_prediction
+    )
+    base_error = (base_prediction - target).abs().mean(dim=-1)
+    selected_error = (blended - target).abs().mean(dim=-1)
+    base_mae = base_error[selected].mean()
+    selected_mae = selected_error[selected].mean()
+    gain = 100.0 * (
+        1.0 - selected_mae / base_mae.clamp_min(torch.finfo(torch.float64).eps)
+    )
+    correction = (blended - base_prediction).abs().mean(dim=-1)
+    return {
+        "count": selected_count,
+        "gain_vs_base_pct": float(gain.item()),
+        "harmful_fraction": float(
+            (selected_error[selected] > base_error[selected]).double().mean().item()
+        ),
+        "correction_abs_mean": float(correction[selected].mean().item()),
+    }
+
+
 def utility_candidate_specialization_loss(aux, target, margin=0.01):
     """Teach physically available Wiki branches to become useful corrections.
 
