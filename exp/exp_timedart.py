@@ -16,6 +16,7 @@ from utils.sdwpf_logging import tensorboard_log_directory
 from utils.experiment_audit import checkpoint_info, model_runtime_summary, write_run_manifest
 from utils.utility_wiki import (
     utility_candidate_specialization_loss,
+    utility_decision_loss,
     utility_supervision_loss,
 )
 from utils.regime_labels import (
@@ -1414,6 +1415,7 @@ class Exp_TimeDART(Exp_Basic):
                     "train_mae": np.nan,
                     "train_grad_norm": 0.0,
                     "train_utility_loss": np.nan,
+                    "train_utility_decision_loss": np.nan,
                     "train_utility_candidate_loss": np.nan,
                     "train_utility_ranking_loss": np.nan,
                     "val_loss": float(initial_validation["loss"]),
@@ -1481,6 +1483,7 @@ class Exp_TimeDART(Exp_Basic):
             train_point_count = 0
             grad_norms = []
             train_utility_losses = []
+            train_utility_decision_losses = []
             train_utility_candidate_losses = []
             train_utility_ranking_losses = []
 
@@ -1553,6 +1556,7 @@ class Exp_TimeDART(Exp_Basic):
                         batch_y,
                     )
                     utility_loss = forecast_loss.new_zeros(())
+                    utility_decision = forecast_loss.new_zeros(())
                     utility_candidate_loss = forecast_loss.new_zeros(())
                     utility_ranking_loss = forecast_loss.new_zeros(())
                     if getattr(core_model, "utility_wiki", False):
@@ -1560,6 +1564,13 @@ class Exp_TimeDART(Exp_Basic):
                             core_model._last_utility_aux,
                             batch_y,
                             eps=self.args.utility_target_eps,
+                        )
+                        utility_decision, _ = utility_decision_loss(
+                            core_model._last_utility_aux,
+                            batch_y,
+                            eps=self.args.utility_target_eps,
+                            min_gain=self.args.utility_min_gain,
+                            temperature=self.args.utility_gate_temperature,
                         )
                         (
                             utility_candidate_loss,
@@ -1573,6 +1584,8 @@ class Exp_TimeDART(Exp_Basic):
                     loss = (
                         forecast_loss
                         + self.args.utility_loss_weight * utility_loss
+                        + self.args.utility_decision_loss_weight
+                        * utility_decision
                         + self.args.utility_candidate_loss_weight
                         * utility_candidate_loss
                         + self.args.utility_ranking_loss_weight
@@ -1618,6 +1631,9 @@ class Exp_TimeDART(Exp_Basic):
                     loss.item()
                 )
                 train_utility_losses.append(float(utility_loss.detach().cpu().item()))
+                train_utility_decision_losses.append(
+                    float(utility_decision.detach().cpu().item())
+                )
                 train_utility_candidate_losses.append(
                     float(utility_candidate_loss.detach().cpu().item())
                 )
@@ -1632,6 +1648,9 @@ class Exp_TimeDART(Exp_Basic):
             train_mae = train_absolute_error / max(1, train_point_count)
             train_grad_norm = float(np.mean(grad_norms)) if grad_norms else 0.0
             train_utility_loss = float(np.mean(train_utility_losses))
+            train_utility_decision_loss = float(
+                np.mean(train_utility_decision_losses)
+            )
             train_utility_candidate_loss = float(
                 np.mean(train_utility_candidate_losses)
             )
@@ -1666,6 +1685,7 @@ class Exp_TimeDART(Exp_Basic):
                 f"Time: {end_time - start_time:.2f}s | "
                 f"Train Loss: {train_loss:.7f} "
                 f"Utility Loss: {train_utility_loss:.7f} "
+                f"Decision Loss: {train_utility_decision_loss:.7f} "
                 f"Candidate Loss: {train_utility_candidate_loss:.7f} "
                 f"Ranking Loss: {train_utility_ranking_loss:.7f} "
                 f"Vali Loss: {vali_loss:.7f} "
@@ -1771,6 +1791,7 @@ class Exp_TimeDART(Exp_Basic):
                     "train_mae": float(train_mae),
                     "train_grad_norm": train_grad_norm,
                     "train_utility_loss": train_utility_loss,
+                    "train_utility_decision_loss": train_utility_decision_loss,
                     "train_utility_candidate_loss": train_utility_candidate_loss,
                     "train_utility_ranking_loss": train_utility_ranking_loss,
                     "val_loss": float(

@@ -13,14 +13,19 @@ horizon-wise utility decision:
 3. **Per-horizon gain estimation.** A small utility estimator predicts the
    relative absolute-error reduction of both knowledge branches against the
    trend branch for every forecast step.
-4. **Selective intervention.** The higher-utility available granularity is used
+4. **Decision-aligned supervision.** A balanced train-only three-way objective
+   directly teaches abstention, single-event retrieval, and compositional
+   retrieval. Its abstention logit is the same minimum-gain boundary used at
+   inference, so utility regression and the actual routing decision cannot
+   silently optimize different tasks.
+5. **Selective intervention.** The higher-utility available granularity is used
    only when its predicted gain exceeds the configured threshold. Otherwise the
    final output is exactly the trend forecast.
-5. **Candidate specialization.** On training data only, every physically
+6. **Candidate specialization.** On training data only, every physically
    available event/composition branch is fitted to the target and ranked against
    a detached trend baseline. This prevents hard abstention from starving the
    knowledge branches before the utility estimator learns to select them.
-6. **Isolated residual adaptation.** Single-event and composition knowledge use
+7. **Isolated residual adaptation.** Single-event and composition knowledge use
    separate zero-initialized residual adapters over their prompt-induced feature
    contrasts. Candidate supervision updates these adapters without pulling the
    shared trend head away from its validated solution.
@@ -35,6 +40,12 @@ The inference decision is
 
 subject to the hard physical-availability mask. Validation/test labels never
 enter retrieval, granularity selection, or intervention decisions.
+
+The decision loss uses the same rule to construct a training action:
+`abstain` when neither available branch exceeds `tau`; otherwise it labels the
+larger realized-gain branch. Losses are averaged per present action class before
+being combined, preventing frequent abstention windows from suppressing rare
+but useful compositional events.
 
 Once a candidate passes the threshold, its blend strength starts at
 `utility_intervention_floor` and grows with the predicted gain. Thus a reported

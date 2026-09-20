@@ -438,6 +438,7 @@ def build_parser():
         ),
     )
     parser.add_argument("--utility_loss_weight", type=float, default=0.1)
+    parser.add_argument("--utility_decision_loss_weight", type=float, default=0.2)
     parser.add_argument("--utility_candidate_loss_weight", type=float, default=0.1)
     parser.add_argument("--utility_ranking_loss_weight", type=float, default=0.1)
     parser.add_argument("--utility_ranking_margin", type=float, default=0.01)
@@ -717,6 +718,8 @@ def configure_args(args):
             raise ValueError("--utility_wiki requires --mix_channels for one power target")
     if args.utility_loss_weight < 0.0:
         raise ValueError("utility_loss_weight cannot be negative")
+    if args.utility_decision_loss_weight < 0.0:
+        raise ValueError("utility_decision_loss_weight cannot be negative")
     if args.utility_candidate_loss_weight < 0.0:
         raise ValueError("utility_candidate_loss_weight cannot be negative")
     if args.utility_ranking_loss_weight < 0.0:

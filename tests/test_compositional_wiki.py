@@ -12,6 +12,7 @@ from layers.TimeDART_EncDec import (
 )
 from utils.utility_wiki import (
     utility_candidate_specialization_loss,
+    utility_decision_loss,
     utility_supervision_loss,
 )
 from utils.wind_regime_wiki import (
@@ -98,6 +99,49 @@ class CompositionalWikiTests(unittest.TestCase):
         loss.backward()
         self.assertIsNotNone(scores.grad)
         self.assertLess(float(scores.grad[..., 0].mean()), 0.0)
+
+    def test_utility_decision_loss_teaches_abstain_event_and_composition(self):
+        scores = torch.zeros(3, 1, 2, requires_grad=True)
+        target = torch.ones(3, 1, 1)
+        aux = {
+            "utilities": scores,
+            "availability": torch.tensor(
+                [[True, True], [True, True], [True, True]]
+            ),
+            "base_prediction": torch.zeros(3, 1, 1),
+            # row 0: event wins; row 1: both hurt; row 2: composition wins.
+            "event_prediction": torch.tensor([[[1.0]], [[2.0]], [[0.5]]]),
+            "composition_prediction": torch.tensor([[[0.5]], [[3.0]], [[1.0]]]),
+        }
+        loss, stats = utility_decision_loss(
+            aux,
+            target,
+            min_gain=0.0,
+            temperature=0.25,
+        )
+        loss.backward()
+        self.assertGreater(float(loss), 0.0)
+        self.assertIsNotNone(scores.grad)
+        self.assertLess(float(scores.grad[0, 0, 0]), 0.0)
+        self.assertLess(float(scores.grad[2, 0, 1]), 0.0)
+        self.assertAlmostEqual(stats["oracle_abstain_fraction"], 1.0 / 3.0)
+        self.assertAlmostEqual(stats["oracle_event_fraction"], 1.0 / 3.0)
+        self.assertAlmostEqual(stats["oracle_composition_fraction"], 1.0 / 3.0)
+
+    def test_utility_decision_loss_ignores_windows_without_physical_evidence(self):
+        scores = torch.zeros(1, 2, 2, requires_grad=True)
+        aux = {
+            "utilities": scores,
+            "availability": torch.tensor([[False, False]]),
+            "base_prediction": torch.zeros(1, 2, 1),
+            "event_prediction": torch.ones(1, 2, 1),
+            "composition_prediction": torch.ones(1, 2, 1),
+        }
+        loss, stats = utility_decision_loss(aux, torch.ones(1, 2, 1))
+        loss.backward()
+        self.assertEqual(float(loss), 0.0)
+        self.assertTrue(torch.equal(scores.grad, torch.zeros_like(scores)))
+        self.assertEqual(stats["oracle_abstain_fraction"], 1.0)
 
     def test_candidate_specialization_trains_best_available_branch(self):
         target = torch.ones(1, 2, 1)
