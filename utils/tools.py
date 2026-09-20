@@ -184,20 +184,38 @@ def compare_tensors(tensor1, tensor2):
 
     return result.type_as(torch.LongTensor())
 
-def transfer_weights(weights_path, model, exclude_head=True, device="cpu", strict=True):
+def transfer_weights(
+    weights_path,
+    model,
+    exclude_head=True,
+    device="cpu",
+    strict=True,
+    *,
+    require_full_target=False,
+    preserve_target_prefixes=(),
+    allow_prompt_router_mismatch=False,
+    audit_attribute="pretrain_transfer_audit",
+):
     """Transfer a pre-trained backbone and fail on silent incompatibilities.
 
     Checkpoints may contain a plain state dict or a ``model_state_dict`` entry.
     ``module.`` prefixes from DataParallel are normalised.  Forecast/rebuild
-    heads are intentionally ignored, while encoder and prompt parameters that
-    exist in the target model are required when ``strict`` is true.
+    heads are intentionally ignored by default, while encoder and prompt
+    parameters that exist in the target model are required when ``strict`` is
+    true.  A validated finetune overlay can instead require every shared target
+    tensor while explicitly preserving target-only modules.
     """
 
     checkpoint = torch.load(weights_path, map_location=device)
     if isinstance(checkpoint, dict):
         source_router = checkpoint.get("prompt_router")
         target_router = getattr(model, "prompt_router", None)
-        if source_router and target_router and source_router != target_router:
+        if (
+            source_router
+            and target_router
+            and source_router != target_router
+            and not allow_prompt_router_mismatch
+        ):
             raise RuntimeError(
                 "Pre-training checkpoint prompt router is incompatible with the "
                 f"target model: checkpoint={source_router!r}, target={target_router!r}. "
@@ -270,6 +288,14 @@ def transfer_weights(weights_path, model, exclude_head=True, device="cpu", stric
         for name, value in source_state.items()
     }
     target_state = model.state_dict()
+    preserve_target_prefixes = tuple(str(value) for value in preserve_target_prefixes)
+
+    def is_preserved(name):
+        return any(
+            name == prefix or name.startswith(prefix)
+            for prefix in preserve_target_prefixes
+        )
+
     ignored_prefixes = (
         "head.",
         "projection.",
@@ -280,6 +306,8 @@ def transfer_weights(weights_path, model, exclude_head=True, device="cpu", stric
     matched = {}
     shape_mismatches = {}
     for name, value in source_state.items():
+        if is_preserved(name):
+            continue
         if exclude_head and name.startswith(ignored_prefixes):
             continue
         if name not in target_state:
@@ -309,15 +337,20 @@ def transfer_weights(weights_path, model, exclude_head=True, device="cpu", stric
     if any(name.startswith("scene_wiki_router.") for name in target_state):
         required_prefixes.append("scene_wiki_router.")
         required_state_names.update({"scene_scaler_mean", "scene_scaler_scale"})
-    if strict:
-        missing_required = [
+    if require_full_target:
+        required_target_names = [
+            name for name in target_state if not is_preserved(name)
+        ]
+    else:
+        required_target_names = [
             name
             for name in target_state
-            if (
-                name in required_state_names
-                or any(name.startswith(prefix) for prefix in required_prefixes)
-            )
-            and name not in matched
+            if name in required_state_names
+            or any(name.startswith(prefix) for prefix in required_prefixes)
+        ]
+    if strict:
+        missing_required = [
+            name for name in required_target_names if name not in matched
         ]
         if missing_required:
             preview = ", ".join(missing_required[:20])
@@ -339,10 +372,7 @@ def transfer_weights(weights_path, model, exclude_head=True, device="cpu", stric
         int(parameter.numel()) for parameter in target_parameters.values()
     )
     required_parameter_names = [
-        name
-        for name in target_parameters
-        if name in required_state_names
-        or any(name.startswith(prefix) for prefix in required_prefixes)
+        name for name in target_parameters if name in required_target_names
     ]
     required_parameter_elements = sum(
         int(target_parameters[name].numel()) for name in required_parameter_names
@@ -364,8 +394,13 @@ def transfer_weights(weights_path, model, exclude_head=True, device="cpu", stric
         "required_backbone_coverage_pct": 100.0
         * matched_required_elements
         / max(1, required_parameter_elements),
+        "require_full_target": bool(require_full_target),
+        "preserved_target_prefixes": list(preserve_target_prefixes),
+        "preserved_target_state_tensors": int(
+            sum(1 for name in target_state if is_preserved(name))
+        ),
     }
-    model.pretrain_transfer_audit = transfer_audit
+    setattr(model, audit_attribute, transfer_audit)
     print(
         "Transferred "
         f"{transfer_audit['matched_state_tensors']} state tensors / "
@@ -375,6 +410,36 @@ def transfer_weights(weights_path, model, exclude_head=True, device="cpu", stric
         f"from {weights_path}"
     )
     return model.to(device)
+
+
+def overlay_forecast_weights(weights_path, model, device="cpu"):
+    """Overlay a validated trend forecaster onto a Wiki-augmented model.
+
+    Every tensor shared with the trend model, including the supervised forecast
+    head, is mandatory.  Wiki routing state and utility-only adapters are kept
+    from the already-loaded compositional checkpoint (or their safe zero-init),
+    because those tensors do not exist in a trend-only checkpoint.
+    """
+
+    preserve_prefixes = (
+        "scene_scaler_mean",
+        "scene_scaler_scale",
+        "scene_wiki_router.",
+        "utility_gate.",
+        "utility_event_adapter.",
+        "utility_composition_adapter.",
+    )
+    return transfer_weights(
+        weights_path,
+        model,
+        exclude_head=False,
+        device=device,
+        strict=True,
+        require_full_target=True,
+        preserve_target_prefixes=preserve_prefixes,
+        allow_prompt_router_mismatch=True,
+        audit_attribute="overlay_transfer_audit",
+    )
 
 def show_series(batch_x, batch_x_m, pred_batch_x, idx, time_points=336):
 

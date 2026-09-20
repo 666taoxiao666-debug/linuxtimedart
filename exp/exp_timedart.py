@@ -3,6 +3,7 @@ from exp.exp_basic import Exp_Basic
 from utils.tools import (
     EarlyStopping,
     adjust_learning_rate,
+    overlay_forecast_weights,
     transfer_weights,
     show_series,
     show_matrix,
@@ -275,11 +276,10 @@ class Exp_TimeDART(Exp_Basic):
 
         if getattr(self.args, "overlay_checkpoint", None):
             print(f"Overlaying validated forecast ckpt: {self.args.overlay_checkpoint}")
-            model = transfer_weights(
+            model = overlay_forecast_weights(
                 self.args.overlay_checkpoint,
                 model,
                 device=self.device,
-                strict=True,
             )
 
         if self.args.use_multi_gpu:

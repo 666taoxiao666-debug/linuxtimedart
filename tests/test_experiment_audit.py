@@ -16,7 +16,7 @@ from utils.experiment_audit import (
     write_run_manifest,
 )
 from utils.run_tags import experiment_setting, forecast_result_tag
-from utils.tools import transfer_weights
+from utils.tools import overlay_forecast_weights, transfer_weights
 
 
 class _WindowDataset:
@@ -48,6 +48,18 @@ class _TransferModel(nn.Module):
         self.enc_embedding = nn.Linear(2, 2)
         self.encoder = nn.Linear(2, 2)
         self.head = nn.Linear(2, 1)
+
+
+class _OverlayTargetModel(_TransferModel):
+    def __init__(self):
+        super().__init__()
+        self.prompt_router = "compositional_wiki"
+        self.register_buffer("scene_scaler_mean", torch.full((2,), 7.0))
+        self.register_buffer("scene_scaler_scale", torch.full((2,), 8.0))
+        self.scene_wiki_router = nn.Linear(2, 2)
+        self.utility_gate = nn.Linear(2, 2)
+        self.utility_event_adapter = nn.Linear(2, 1)
+        self.utility_composition_adapter = nn.Linear(2, 1)
 
 
 class ExperimentAuditTests(unittest.TestCase):
@@ -213,6 +225,56 @@ class ExperimentAuditTests(unittest.TestCase):
         self.assertEqual(audit["required_backbone_coverage_pct"], 100.0)
         self.assertGreater(audit["matched_parameter_elements"], 0)
         self.assertLess(audit["target_parameter_coverage_pct"], 100.0)
+
+    def test_forecast_overlay_loads_head_and_preserves_wiki_modules(self):
+        source = _TransferModel()
+        target = _OverlayTargetModel()
+        with torch.no_grad():
+            for parameter in source.parameters():
+                parameter.fill_(3.0)
+        preserved = {
+            name: value.clone()
+            for name, value in target.state_dict().items()
+            if name.startswith("scene_") or name.startswith("utility_")
+        }
+        target.pretrain_transfer_audit = {"stage": "compositional_pretrain"}
+        with tempfile.TemporaryDirectory() as temporary:
+            checkpoint = Path(temporary) / "trend_finetune.pth"
+            torch.save(
+                {
+                    "prompt_router": "trend",
+                    "model_state_dict": source.state_dict(),
+                },
+                checkpoint,
+            )
+            overlaid = overlay_forecast_weights(checkpoint, target)
+
+        self.assertTrue(torch.equal(overlaid.head.weight, source.head.weight))
+        self.assertTrue(torch.equal(overlaid.head.bias, source.head.bias))
+        for name, expected in preserved.items():
+            self.assertTrue(torch.equal(overlaid.state_dict()[name], expected), name)
+        self.assertEqual(
+            overlaid.pretrain_transfer_audit,
+            {"stage": "compositional_pretrain"},
+        )
+        self.assertEqual(
+            overlaid.overlay_transfer_audit["required_backbone_coverage_pct"],
+            100.0,
+        )
+        self.assertGreater(
+            overlaid.overlay_transfer_audit["preserved_target_state_tensors"],
+            0,
+        )
+
+    def test_forecast_overlay_rejects_missing_shared_parameter(self):
+        source = _TransferModel()
+        source_state = source.state_dict()
+        source_state.pop("encoder.weight")
+        with tempfile.TemporaryDirectory() as temporary:
+            checkpoint = Path(temporary) / "incomplete_trend_finetune.pth"
+            torch.save({"model_state_dict": source_state}, checkpoint)
+            with self.assertRaisesRegex(RuntimeError, "encoder.weight"):
+                overlay_forecast_weights(checkpoint, _OverlayTargetModel())
 
 
 if __name__ == "__main__":
