@@ -84,6 +84,54 @@ class CompositionalWikiTests(unittest.TestCase):
         self.assertTrue(torch.equal(granularity, torch.zeros_like(granularity)))
         self.assertTrue(torch.equal(strength, torch.zeros_like(strength)))
 
+    def test_utility_gate_explicitly_uses_trend_probabilities(self):
+        gate = UtilityGranularityGate(
+            d_model=4,
+            num_factors=2,
+            pred_len=1,
+            num_trend_modes=3,
+            min_gain=-10.0,
+            dropout=0.0,
+        ).eval()
+        first_linear = gate.utility_estimator[1]
+        final_linear = gate.utility_estimator[-1]
+        trend_offset = 2 * 4
+        with torch.no_grad():
+            first_linear.weight.zero_()
+            first_linear.bias.zero_()
+            first_linear.weight[0, trend_offset] = 1.0
+            final_linear.weight.zero_()
+            final_linear.bias.zero_()
+            final_linear.weight[0, 0] = 1.0
+        hidden = torch.zeros(1, 2, 4)
+        activations = torch.tensor([[1.0, 0.0]])
+        rules = torch.tensor([[1.0, -1.0]])
+        down, *_ = gate(
+            hidden,
+            activations,
+            rules,
+            torch.tensor([[1.0, 0.0, 0.0]]),
+        )
+        stable, *_ = gate(
+            hidden,
+            activations,
+            rules,
+            torch.tensor([[0.0, 1.0, 0.0]]),
+        )
+        self.assertFalse(torch.allclose(down, stable))
+
+    def test_utility_gate_rejects_misaligned_trend_probabilities(self):
+        gate = UtilityGranularityGate(
+            d_model=4, num_factors=2, pred_len=1, num_trend_modes=3
+        )
+        with self.assertRaisesRegex(ValueError, "trend_probs"):
+            gate(
+                torch.zeros(1, 2, 4),
+                torch.ones(1, 2),
+                torch.ones(1, 2),
+                torch.ones(1, 2),
+            )
+
     def test_utility_supervision_uses_candidate_gain_and_backpropagates(self):
         scores = torch.zeros(1, 2, 2, requires_grad=True)
         target = torch.ones(1, 2, 1)

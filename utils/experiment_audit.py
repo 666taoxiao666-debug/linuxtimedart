@@ -306,6 +306,13 @@ def model_runtime_summary(model, args=None) -> dict:
         result["utility_gate"] = {
             "temperature": _jsonable(getattr(utility_gate, "temperature", None)),
             "min_gain": _jsonable(getattr(utility_gate, "min_gain", None)),
+            "conditioning": "history_plus_event_evidence_plus_trend_probabilities",
+            "num_trend_modes": _jsonable(
+                getattr(utility_gate, "num_trend_modes", None)
+            ),
+            "adapter_warmup_epochs": int(
+                getattr(args, "utility_adapter_warmup_epochs", 0)
+            ),
             "intervention_floor": _jsonable(
                 getattr(utility_gate, "intervention_floor", None)
             ),
@@ -369,6 +376,7 @@ def model_runtime_summary(model, args=None) -> dict:
                 result["scene_wiki"]["utility_decision"] = {
                     "granularities": ["single_event", "composition"],
                     "prediction_scope": "per_horizon",
+                    "trend_conditioning": ["down", "stable", "up"],
                     "temperature": float(utility_gate.temperature),
                     "min_gain": float(utility_gate.min_gain),
                     "abstention": "exact_trend_fallback_without_positive_utility",

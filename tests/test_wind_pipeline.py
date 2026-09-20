@@ -380,6 +380,68 @@ class OptimizerGroupTests(unittest.TestCase):
             )
         )
 
+    def test_staged_utility_training_separates_adapter_and_gate_updates(self):
+        class TinyUtilityModel(torch.nn.Module):
+            def __init__(self):
+                super().__init__()
+                self.backbone = torch.nn.Linear(2, 2)
+                self.utility_gate = torch.nn.Linear(2, 2)
+                self.utility_event_adapter = torch.nn.Linear(2, 1)
+                self.utility_composition_adapter = torch.nn.Linear(2, 1)
+
+        experiment = object.__new__(Exp_TimeDART)
+        experiment.model = TinyUtilityModel()
+        experiment.args = SimpleNamespace(
+            task_name="finetune",
+            downstream_task="forecast",
+            learning_rate=1e-6,
+            new_module_learning_rate=5e-6,
+            utility_learning_rate=3e-5,
+            utility_wiki=True,
+            freeze_non_utility=True,
+            utility_adapter_warmup_epochs=2,
+            weight_decay=1e-4,
+        )
+        Exp_TimeDART._select_optimizer(experiment)
+
+        phase = Exp_TimeDART._configure_utility_training_phase(experiment, 0)
+        self.assertEqual(phase, "adapter_warmup")
+        self.assertTrue(
+            all(
+                not parameter.requires_grad
+                for parameter in experiment.model.utility_gate.parameters()
+            )
+        )
+        self.assertTrue(
+            all(
+                parameter.requires_grad
+                for module in (
+                    experiment.model.utility_event_adapter,
+                    experiment.model.utility_composition_adapter,
+                )
+                for parameter in module.parameters()
+            )
+        )
+
+        phase = Exp_TimeDART._configure_utility_training_phase(experiment, 2)
+        self.assertEqual(phase, "utility_gate")
+        self.assertTrue(
+            all(
+                parameter.requires_grad
+                for parameter in experiment.model.utility_gate.parameters()
+            )
+        )
+        self.assertTrue(
+            all(
+                not parameter.requires_grad
+                for module in (
+                    experiment.model.utility_event_adapter,
+                    experiment.model.utility_composition_adapter,
+                )
+                for parameter in module.parameters()
+            )
+        )
+
 
 class CutoffTests(unittest.TestCase):
     def test_rolling_train_never_includes_later_fold_test(self):

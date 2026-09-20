@@ -651,6 +651,7 @@ class UtilityGranularityGate(nn.Module):
         num_factors,
         pred_len,
         *,
+        num_trend_modes=3,
         hidden_dim=None,
         temperature=0.25,
         min_gain=0.0,
@@ -658,8 +659,10 @@ class UtilityGranularityGate(nn.Module):
         dropout=0.1,
     ):
         super().__init__()
-        if int(num_factors) < 1 or int(pred_len) < 1:
-            raise ValueError("num_factors and pred_len must be positive")
+        if int(num_factors) < 1 or int(pred_len) < 1 or int(num_trend_modes) < 1:
+            raise ValueError(
+                "num_factors, pred_len and num_trend_modes must be positive"
+            )
         if float(temperature) <= 0.0:
             raise ValueError("utility gate temperature must be positive")
         if not 0.0 <= float(intervention_floor) <= 1.0:
@@ -667,12 +670,18 @@ class UtilityGranularityGate(nn.Module):
         hidden_dim = int(hidden_dim or d_model)
         self.num_factors = int(num_factors)
         self.pred_len = int(pred_len)
+        self.num_trend_modes = int(num_trend_modes)
         self.temperature = float(temperature)
         self.min_gain = float(min_gain)
         self.intervention_floor = float(intervention_floor)
+        state_dim = (
+            2 * int(d_model)
+            + 2 * self.num_factors
+            + self.num_trend_modes
+        )
         self.utility_estimator = nn.Sequential(
-            nn.LayerNorm(2 * int(d_model) + 2 * self.num_factors),
-            nn.Linear(2 * int(d_model) + 2 * self.num_factors, hidden_dim),
+            nn.LayerNorm(state_dim),
+            nn.Linear(state_dim, hidden_dim),
             nn.GELU(),
             nn.Dropout(dropout),
             nn.Linear(hidden_dim, 2 * self.pred_len),
@@ -682,16 +691,27 @@ class UtilityGranularityGate(nn.Module):
         nn.init.zeros_(self.utility_estimator[-1].weight)
         nn.init.zeros_(self.utility_estimator[-1].bias)
 
-    def forward(self, target_hidden, activations, rule_logits):
+    def forward(self, target_hidden, activations, rule_logits, trend_probs=None):
         if target_hidden.ndim != 3:
             raise ValueError("target_hidden must have shape [batch,patch,d_model]")
         expected = (target_hidden.size(0), self.num_factors)
         if tuple(activations.shape) != expected or tuple(rule_logits.shape) != expected:
             raise ValueError("utility evidence tensors must have shape [batch,num_factors]")
+        if trend_probs is None:
+            trend_probs = target_hidden.new_zeros(
+                target_hidden.size(0), self.num_trend_modes
+            )
+        expected_trend = (target_hidden.size(0), self.num_trend_modes)
+        if tuple(trend_probs.shape) != expected_trend:
+            raise ValueError(
+                "trend_probs must have shape [batch,num_trend_modes], "
+                f"got {tuple(trend_probs.shape)}"
+            )
         state = torch.cat(
             [
                 target_hidden.mean(dim=1),
                 target_hidden[:, -1],
+                trend_probs,
                 activations,
                 rule_logits.clamp(0.0, 1.0),
             ],

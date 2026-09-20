@@ -456,6 +456,15 @@ def build_parser():
     parser.add_argument("--utility_ranking_loss_weight", type=float, default=0.1)
     parser.add_argument("--utility_ranking_margin", type=float, default=0.01)
     parser.add_argument(
+        "--utility_adapter_warmup_epochs",
+        type=int,
+        default=0,
+        help=(
+            "with a frozen validated base, first train event/composition residual "
+            "adapters for this many epochs before training the utility gate"
+        ),
+    )
+    parser.add_argument(
         "--utility_learning_rate",
         type=float,
         default=3e-5,
@@ -752,6 +761,14 @@ def configure_args(args):
         raise ValueError("utility_ranking_loss_weight cannot be negative")
     if args.utility_ranking_margin < 0.0:
         raise ValueError("utility_ranking_margin cannot be negative")
+    if args.utility_adapter_warmup_epochs < 0:
+        raise ValueError("utility_adapter_warmup_epochs cannot be negative")
+    if args.utility_adapter_warmup_epochs >= args.train_epochs:
+        raise ValueError("utility_adapter_warmup_epochs must be less than train_epochs")
+    if args.utility_adapter_warmup_epochs and not args.freeze_non_utility:
+        raise ValueError(
+            "utility_adapter_warmup_epochs requires --freeze_non_utility"
+        )
     if args.utility_learning_rate <= 0.0:
         raise ValueError("utility_learning_rate must be positive")
     if args.utility_gate_temperature <= 0.0:
@@ -1001,6 +1018,7 @@ def load_finetuned_model(exp, checkpoint_path):
             "utility_gate_temperature",
             "utility_min_gain",
             "utility_intervention_floor",
+            "utility_adapter_warmup_epochs",
             "scene_wiki_config_sha256",
             "scene_wiki_bundle_sha256",
             "scene_wiki_scene_ids",

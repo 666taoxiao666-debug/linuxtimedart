@@ -483,6 +483,45 @@ class Exp_TimeDART(Exp_Basic):
 
         return criterion
 
+    def _configure_utility_training_phase(self, epoch):
+        """Use fixed candidate outcomes when learning the intervention gate."""
+
+        warmup_epochs = int(
+            getattr(self.args, "utility_adapter_warmup_epochs", 0)
+        )
+        staged = (
+            bool(getattr(self.args, "utility_wiki", False))
+            and bool(getattr(self.args, "freeze_non_utility", False))
+            and warmup_epochs > 0
+        )
+        if not staged:
+            return "joint"
+
+        adapter_warmup = int(epoch) < warmup_epochs
+        gate_count = 0
+        adapter_count = 0
+        for name, parameter in self.model.named_parameters():
+            clean_name = name.removeprefix("module.")
+            if "utility_gate." in clean_name:
+                parameter.requires_grad_(not adapter_warmup)
+                gate_count += parameter.numel()
+            elif (
+                "utility_event_adapter." in clean_name
+                or "utility_composition_adapter." in clean_name
+            ):
+                parameter.requires_grad_(adapter_warmup)
+                adapter_count += parameter.numel()
+        if gate_count == 0 or adapter_count == 0:
+            raise RuntimeError(
+                "Staged Utility-Wiki training requires both gate and adapter parameters"
+            )
+        phase = "adapter_warmup" if adapter_warmup else "utility_gate"
+        print(
+            "[UTILITY] Training phase: "
+            f"{phase} (gate={gate_count:,}, adapters={adapter_count:,} params)"
+        )
+        return phase
+
     def pretrain(self):
         train_data, train_loader = (
             self._get_data(flag="train")
@@ -1464,6 +1503,8 @@ class Exp_TimeDART(Exp_Basic):
             history.append(
                 {
                     "epoch": 0,
+                    "utility_phase": "validated_trend_baseline",
+                    "selection_eligible": True,
                     "train_loss": np.nan,
                     "train_mse": np.nan,
                     "train_mae": np.nan,
@@ -1530,6 +1571,7 @@ class Exp_TimeDART(Exp_Basic):
         for epoch in range(
             self.args.train_epochs
         ):
+            utility_phase = self._configure_utility_training_phase(epoch)
             iter_count = 0
             train_loss = []
             train_squared_error = 0.0
@@ -1635,16 +1677,36 @@ class Exp_TimeDART(Exp_Basic):
                             batch_y,
                             margin=self.args.utility_ranking_margin,
                         )
-                    loss = (
-                        forecast_loss
-                        + self.args.utility_loss_weight * utility_loss
-                        + self.args.utility_decision_loss_weight
-                        * utility_decision
-                        + self.args.utility_candidate_loss_weight
-                        * utility_candidate_loss
-                        + self.args.utility_ranking_loss_weight
-                        * utility_ranking_loss
-                    )
+                    if utility_phase == "adapter_warmup":
+                        # First make both physically available candidates useful.
+                        # The trend base and utility gate are frozen, so no moving
+                        # decision target or baseline degradation is possible.
+                        loss = (
+                            self.args.utility_candidate_loss_weight
+                            * utility_candidate_loss
+                            + self.args.utility_ranking_loss_weight
+                            * utility_ranking_loss
+                        )
+                    elif utility_phase == "utility_gate":
+                        # Candidate outcomes are now fixed; learn only whether,
+                        # where and at which granularity they should intervene.
+                        loss = (
+                            forecast_loss
+                            + self.args.utility_loss_weight * utility_loss
+                            + self.args.utility_decision_loss_weight
+                            * utility_decision
+                        )
+                    else:
+                        loss = (
+                            forecast_loss
+                            + self.args.utility_loss_weight * utility_loss
+                            + self.args.utility_decision_loss_weight
+                            * utility_decision
+                            + self.args.utility_candidate_loss_weight
+                            * utility_candidate_loss
+                            + self.args.utility_ranking_loss_weight
+                            * utility_ranking_loss
+                        )
 
                 train_error = pred_x.detach().float() - batch_y.detach().float()
                 train_squared_error += train_error.square().sum().item()
@@ -1737,6 +1799,7 @@ class Exp_TimeDART(Exp_Basic):
             epoch_summary = (
                 f"Epoch: {epoch + 1}, Steps: {len(train_loader)}, "
                 f"Time: {end_time - start_time:.2f}s | "
+                f"Phase: {utility_phase} "
                 f"Train Loss: {train_loss:.7f} "
                 f"Utility Loss: {train_utility_loss:.7f} "
                 f"Decision Loss: {train_utility_decision_loss:.7f} "
@@ -1787,6 +1850,23 @@ class Exp_TimeDART(Exp_Basic):
                     f"{diagnostics['utility_single_event_fraction']:.3f}/"
                     f"{diagnostics['utility_composition_fraction']:.3f}/"
                     f"{diagnostics['utility_mean_strength']:.3f}"
+                )
+            trend_utility_parts = []
+            for trend_name in ("down", "stable", "up"):
+                gain_key = f"utility_trend_{trend_name}_gain_vs_base_pct"
+                intervention_key = (
+                    f"utility_trend_{trend_name}_intervention_fraction"
+                )
+                if gain_key in diagnostics:
+                    trend_utility_parts.append(
+                        f"{trend_name}="
+                        f"{diagnostics[gain_key]:+.2f}%/"
+                        f"int{100.0 * diagnostics[intervention_key]:.1f}%"
+                    )
+            if trend_utility_parts:
+                epoch_summary += (
+                    " TrendConditionedWiki(gain/intervention): "
+                    + ",".join(trend_utility_parts)
                 )
             candidate_gain_parts = []
             for candidate_name in ("event", "composition"):
@@ -1857,6 +1937,8 @@ class Exp_TimeDART(Exp_Basic):
             history.append(
                 {
                     "epoch": epoch + 1,
+                    "utility_phase": utility_phase,
+                    "selection_eligible": utility_phase != "adapter_warmup",
                     "train_loss": float(
                         train_loss
                     ),
@@ -1950,15 +2032,21 @@ class Exp_TimeDART(Exp_Basic):
                 epoch + 1,
             )
 
-            early_stopping(
-                selection_value,
-                self.model,
-                path=path,
-            )
+            if utility_phase == "adapter_warmup":
+                print(
+                    "[UTILITY] Adapter warm-up validation is diagnostic only; "
+                    "checkpoint selection and patience are deferred."
+                )
+            else:
+                early_stopping(
+                    selection_value,
+                    self.model,
+                    path=path,
+                )
 
-            if early_stopping.early_stop:
-                print("Early stopping")
-                break
+                if early_stopping.early_stop:
+                    print("Early stopping")
+                    break
 
             if self.args.lradj != "step":
                 adjust_learning_rate(
@@ -1981,7 +2069,15 @@ class Exp_TimeDART(Exp_Basic):
             )
         )
 
-        best_record = min(history, key=lambda record: record["selection_value"])
+        eligible_history = [
+            record
+            for record in history
+            if bool(record.get("selection_eligible", True))
+        ]
+        best_record = min(
+            eligible_history,
+            key=lambda record: record["selection_value"],
+        )
         self.args.selected_finetune_checkpoint = os.path.abspath(best_model_path)
         write_run_manifest(
             path,
@@ -2038,6 +2134,7 @@ class Exp_TimeDART(Exp_Basic):
         utility_granularity_batches = []
         utility_strength_batches = []
         utility_score_batches = []
+        utility_trend_probability_batches = []
         utility_availability_batches = []
         utility_base_prediction_batches = []
         utility_event_prediction_batches = []
@@ -2090,6 +2187,13 @@ class Exp_TimeDART(Exp_Basic):
                         )
                         utility_score_batches.append(
                             utility_aux["utilities"].detach().float().cpu().numpy()
+                        )
+                        utility_trend_probability_batches.append(
+                            utility_aux["trend_probs"]
+                            .detach()
+                            .float()
+                            .cpu()
+                            .numpy()
                         )
                         utility_availability_batches.append(
                             utility_aux["availability"].detach().cpu().numpy()
@@ -2375,6 +2479,9 @@ class Exp_TimeDART(Exp_Basic):
             granularities = np.concatenate(utility_granularity_batches, axis=0)
             strengths = np.concatenate(utility_strength_batches, axis=0)
             utility_scores = np.concatenate(utility_score_batches, axis=0)
+            trend_probabilities = np.concatenate(
+                utility_trend_probability_batches, axis=0
+            )
             availability = np.concatenate(utility_availability_batches, axis=0)
             diagnostics["utility_abstention_fraction"] = float(
                 (granularities == 0).mean()
@@ -2427,6 +2534,32 @@ class Exp_TimeDART(Exp_Basic):
             if rated_power > 0:
                 utility_base_original = np.clip(
                     utility_base_original, 0.0, rated_power
+                )
+            trend_indices = trend_probabilities.argmax(axis=-1)
+            trend_names = ("down", "stable", "up")
+            for trend_index, trend_name in enumerate(trend_names):
+                sample_mask = trend_indices == trend_index
+                diagnostics[f"utility_trend_{trend_name}_samples"] = int(
+                    sample_mask.sum()
+                )
+                if not sample_mask.any():
+                    continue
+                trend_base_mae = np.abs(
+                    utility_base_original[sample_mask] - true_original[sample_mask]
+                ).mean()
+                trend_selected_mae = np.abs(
+                    pred_original[sample_mask] - true_original[sample_mask]
+                ).mean()
+                diagnostics[
+                    f"utility_trend_{trend_name}_intervention_fraction"
+                ] = float((granularities[sample_mask] != 0).mean())
+                diagnostics[f"utility_trend_{trend_name}_gain_vs_base_pct"] = float(
+                    100.0
+                    * (
+                        1.0
+                        - trend_selected_mae
+                        / max(trend_base_mae, np.finfo(float).eps)
+                    )
                 )
             for candidate_index, (candidate_name, candidate_scaled) in enumerate(
                 branch_predictions

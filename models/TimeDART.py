@@ -428,6 +428,7 @@ class Model(nn.Module):
                     d_model=args.d_model,
                     num_factors=self.scene_wiki_router.num_factors,
                     pred_len=args.pred_len,
+                    num_trend_modes=self.num_modes,
                     temperature=args.utility_gate_temperature,
                     min_gain=args.utility_min_gain,
                     intervention_floor=args.utility_intervention_floor,
@@ -581,6 +582,7 @@ class Model(nn.Module):
                         )
                         self._last_utility_prompt_state = {
                             "target_hidden": target_hidden,
+                            "trend_probs": regime_probs,
                             "trend_prompt": trend_prompt,
                             "event_prompt": self.scene_wiki_router.compose_activations(
                                 strongest_activations
@@ -986,14 +988,16 @@ class Model(nn.Module):
             )
             base_hidden, event_hidden, composition_hidden = branch_hidden.unbind(dim=0)
             base_x = self.head(base_hidden)
-            # The contrast tensors are fixed inputs to the residual adapters.
-            # Candidate losses therefore cannot drag the shared trend encoder,
-            # channel mixer, or forecast head away from their validated path.
-            event_contrast = (event_hidden - base_hidden).detach()
-            composition_contrast = (composition_hidden - base_hidden).detach()
-            event_correction = self.utility_event_adapter(event_contrast)
+            # Each residual adapter sees the complete trend-conditioned event
+            # state rather than only the prompt difference.  The detach keeps
+            # the validated trend encoder/mixer frozen while preserving the
+            # down/stable/up context that the original trend ablation found
+            # useful.
+            event_state = event_hidden.detach()
+            composition_state = composition_hidden.detach()
+            event_correction = self.utility_event_adapter(event_state)
             composition_correction = self.utility_composition_adapter(
-                composition_contrast
+                composition_state
             )
         else:
             x = decode(x)
@@ -1027,13 +1031,17 @@ class Model(nn.Module):
             event_x = base_x + event_correction
             composition_x = base_x + composition_correction
             utilities, granularity, utility_strength, availability = self.utility_gate(
-                state["target_hidden"], state["activations"], state["rule_logits"]
+                state["target_hidden"],
+                state["activations"],
+                state["rule_logits"],
+                state["trend_probs"],
             )
             use_composition = (granularity == 2).unsqueeze(-1)
             selected_x = torch.where(use_composition, composition_x, event_x)
             x = base_x + utility_strength.unsqueeze(-1) * (selected_x - base_x)
             self._last_utility_aux = {
                 "utilities": utilities,
+                "trend_probs": state["trend_probs"],
                 "granularity": granularity,
                 "strength": utility_strength,
                 "availability": availability,
