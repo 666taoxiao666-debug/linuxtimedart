@@ -54,6 +54,14 @@ The shared forecast modules and isolated Wiki modules use separate learning
 rates: the trend path remains conservative while the utility estimator and
 residual adapters learn sparse selection/correction more quickly.
 
+For the protected two-stage variant, a fold/seed-matched trend fine-tuning
+checkpoint is overlaid after compositional-Wiki pretraining. The complete trend
+forecast path is then frozen and only the utility estimator plus the two Wiki
+residual adapters are optimized. Epoch-zero validation must reproduce the
+selected trend checkpoint; this makes degradation of the validated baseline
+observable before any Wiki update and prevents candidate losses from rewriting
+the base forecaster.
+
 ## Checkpoint and leakage contract
 
 - The compositional Wiki and trend encoder retain the existing fold-matched
@@ -64,6 +72,8 @@ residual adapters learn sparse selection/correction more quickly.
 - Utility targets are computed only inside the training loop from the current
   training batch. Validation remains read-only and selects checkpoints using the
   configured forecast metric.
+- Frozen-base runs record hashes for both the compositional pretraining source
+  and the overlaid trend checkpoint in the run manifest.
 - Evaluation requires the same `utility_wiki`, temperature, minimum-gain, and
   intervention-floor settings recorded in the fine-tuning manifest.
 

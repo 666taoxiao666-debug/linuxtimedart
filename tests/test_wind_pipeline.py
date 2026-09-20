@@ -337,6 +337,49 @@ class OptimizerGroupTests(unittest.TestCase):
         )
         self.assertEqual(len(grouped), len(set(grouped)))
 
+    def test_frozen_base_optimizer_contains_only_utility_modules(self):
+        class TinyUtilityModel(torch.nn.Module):
+            def __init__(self):
+                super().__init__()
+                self.backbone = torch.nn.Linear(2, 2)
+                self.head = torch.nn.Linear(2, 1)
+                self.utility_gate = torch.nn.Linear(2, 2)
+                self.utility_event_adapter = torch.nn.Linear(2, 1)
+                self.utility_composition_adapter = torch.nn.Linear(2, 1)
+
+        experiment = object.__new__(Exp_TimeDART)
+        experiment.model = TinyUtilityModel()
+        experiment.args = SimpleNamespace(
+            task_name="finetune",
+            downstream_task="forecast",
+            learning_rate=1e-6,
+            new_module_learning_rate=5e-6,
+            utility_learning_rate=3e-5,
+            utility_wiki=True,
+            freeze_non_utility=True,
+            weight_decay=1e-4,
+        )
+        optimizer = Exp_TimeDART._select_optimizer(experiment)
+        self.assertEqual(len(optimizer.param_groups), 1)
+        self.assertEqual(optimizer.param_groups[0]["group_name"], "utility_modules")
+        self.assertTrue(
+            all(not parameter.requires_grad for parameter in experiment.model.backbone.parameters())
+        )
+        self.assertTrue(
+            all(not parameter.requires_grad for parameter in experiment.model.head.parameters())
+        )
+        self.assertTrue(
+            all(
+                parameter.requires_grad
+                for module in (
+                    experiment.model.utility_gate,
+                    experiment.model.utility_event_adapter,
+                    experiment.model.utility_composition_adapter,
+                )
+                for parameter in module.parameters()
+            )
+        )
+
 
 class CutoffTests(unittest.TestCase):
     def test_rolling_train_never_includes_later_fold_test(self):

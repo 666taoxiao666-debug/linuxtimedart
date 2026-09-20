@@ -273,6 +273,15 @@ class Exp_TimeDART(Exp_Basic):
                 strict=True,
             )
 
+        if getattr(self.args, "overlay_checkpoint", None):
+            print(f"Overlaying validated forecast ckpt: {self.args.overlay_checkpoint}")
+            model = transfer_weights(
+                self.args.overlay_checkpoint,
+                model,
+                device=self.device,
+                strict=True,
+            )
+
         if self.args.use_multi_gpu:
             print(
                 "Let's use",
@@ -309,6 +318,45 @@ class Exp_TimeDART(Exp_Basic):
         new_module_lr = float(getattr(self.args, "new_module_learning_rate", 0.0))
         utility_lr = float(getattr(self.args, "utility_learning_rate", new_module_lr))
         use_utility_group = bool(getattr(self.args, "utility_wiki", False))
+        utility_tokens = (
+            "utility_gate.",
+            "utility_event_adapter.",
+            "utility_composition_adapter.",
+        )
+        if bool(getattr(self.args, "freeze_non_utility", False)):
+            if not use_utility_group:
+                raise RuntimeError("freeze_non_utility requires utility_wiki")
+            utility_parameters = []
+            frozen_count = 0
+            for name, parameter in self.model.named_parameters():
+                clean_name = name.removeprefix("module.")
+                if any(token in clean_name for token in utility_tokens):
+                    parameter.requires_grad_(True)
+                    utility_parameters.append(parameter)
+                else:
+                    parameter.requires_grad_(False)
+                    frozen_count += parameter.numel()
+            if not utility_parameters:
+                raise RuntimeError("No Utility-Wiki parameters were found to train")
+            model_optim = optim.AdamW(
+                [
+                    {
+                        "params": utility_parameters,
+                        "lr": utility_lr,
+                        "target_lr": utility_lr,
+                        "group_name": "utility_modules",
+                    }
+                ],
+                lr=utility_lr,
+                weight_decay=self.args.weight_decay,
+            )
+            print(
+                "Optimizer groups: "
+                f"frozen_base={frozen_count:,} params; "
+                f"utility={sum(p.numel() for p in utility_parameters):,} params "
+                f"@ {utility_lr:g}"
+            )
+            return model_optim
         use_groups = (
             self.args.task_name == "finetune"
             and self.args.downstream_task == "forecast"
@@ -334,11 +382,6 @@ class Exp_TimeDART(Exp_Basic):
             "head.",
             "channel_mixer.",
             "residual_gate_logit",
-        )
-        utility_tokens = (
-            "utility_gate.",
-            "utility_event_adapter.",
-            "utility_composition_adapter.",
         )
         transferred = []
         newly_initialized = []
@@ -468,7 +511,12 @@ class Exp_TimeDART(Exp_Basic):
             "pretrain",
             model=self.model,
             datasets={"train": train_data, "val": vali_data},
-            checkpoints={"pretrained_source": checkpoint_info(self.args.load_checkpoints)},
+            checkpoints={
+                "pretrained_source": checkpoint_info(self.args.load_checkpoints),
+                "overlay_source": checkpoint_info(
+                    getattr(self.args, "overlay_checkpoint", None)
+                ),
+            },
             extra={"status": "started"},
         )
 
@@ -1326,7 +1374,12 @@ class Exp_TimeDART(Exp_Basic):
             "finetune",
             model=self.model,
             datasets={"train": train_data, "val": vali_data},
-            checkpoints={"pretrained_source": checkpoint_info(self.args.load_checkpoints)},
+            checkpoints={
+                "pretrained_source": checkpoint_info(self.args.load_checkpoints),
+                "overlay_source": checkpoint_info(
+                    getattr(self.args, "overlay_checkpoint", None)
+                ),
+            },
             extra={"status": "started", "setting": setting},
         )
 
@@ -1938,6 +1991,9 @@ class Exp_TimeDART(Exp_Basic):
             datasets={"train": train_data, "val": vali_data},
             checkpoints={
                 "pretrained_source": checkpoint_info(self.args.load_checkpoints),
+                "overlay_source": checkpoint_info(
+                    getattr(self.args, "overlay_checkpoint", None)
+                ),
                 "best_finetuned": checkpoint_info(best_model_path),
             },
             extra={

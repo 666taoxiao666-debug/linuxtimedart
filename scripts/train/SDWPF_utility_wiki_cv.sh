@@ -25,6 +25,8 @@ export UTILITY_INTERVENTION_FLOOR="${UTILITY_INTERVENTION_FLOOR:-0.5}"
 export PRED_LEN="${PRED_LEN:-12}"
 export FOLDS="${FOLDS:-0}"
 export SEEDS="${SEEDS:-2024}"
+export FREEZE_NON_UTILITY="${FREEZE_NON_UTILITY:-0}"
+TREND_CV_DIR="${TREND_CV_DIR:-}"
 
 if [[ -z "${SOURCE_CV_DIR:-}" ]]; then
     echo "[UTILITY-WIKI] SOURCE_CV_DIR is unset; running pretraining + fine-tuning."
@@ -71,11 +73,21 @@ done
     echo "Frozen source Wiki config/embedding file is missing." >&2
     exit 2
 }
+if [[ "${FREEZE_NON_UTILITY}" == "1" ]]; then
+    [[ -n "${TREND_CV_DIR}" && -f "${TREND_CV_DIR}/cv.env" ]] || {
+        echo "FREEZE_NON_UTILITY=1 requires TREND_CV_DIR with cv.env." >&2
+        exit 2
+    }
+    [[ "$(read_value "${TREND_CV_DIR}/cv.env" PROMPT_ROUTER)" == "trend" ]] || {
+        echo "TREND_CV_DIR must be a trend-router CV run." >&2
+        exit 2
+    }
+fi
 
 read -r -a CV_FOLDS <<< "${FOLDS}"
 read -r -a CV_SEEDS <<< "${SEEDS}"
 CV_ID="${CV_ID:-utility_reuse_h${PRED_LEN}_rolling_holdout_${#CV_FOLDS[@]}fold_${#CV_SEEDS[@]}seed_$(date +%Y%m%d_%H%M%S)}"
-LOG_PARAMETERS="reuse_h${PRED_LEN}_folds${FOLDS// /-}_seeds${SEEDS// /-}_ep${TRAIN_EPOCHS}_pat${PATIENCE}_blr${LEARNING_RATE}_nlr${NEW_MODULE_LEARNING_RATE}_ulr${UTILITY_LEARNING_RATE}_ulw${UTILITY_LOSS_WEIGHT}_udlw${UTILITY_DECISION_LOSS_WEIGHT}_uclw${UTILITY_CANDIDATE_LOSS_WEIGHT}_urlw${UTILITY_RANKING_LOSS_WEIGHT}_ugt${UTILITY_GATE_TEMPERATURE}_umg${UTILITY_MIN_GAIN}_uif${UTILITY_INTERVENTION_FLOOR}"
+LOG_PARAMETERS="reuse_h${PRED_LEN}_folds${FOLDS// /-}_seeds${SEEDS// /-}_freeze${FREEZE_NON_UTILITY}_ep${TRAIN_EPOCHS}_pat${PATIENCE}_blr${LEARNING_RATE}_nlr${NEW_MODULE_LEARNING_RATE}_ulr${UTILITY_LEARNING_RATE}_ulw${UTILITY_LOSS_WEIGHT}_udlw${UTILITY_DECISION_LOSS_WEIGHT}_uclw${UTILITY_CANDIDATE_LOSS_WEIGHT}_urlw${UTILITY_RANKING_LOSS_WEIGHT}_ugt${UTILITY_GATE_TEMPERATURE}_umg${UTILITY_MIN_GAIN}_uif${UTILITY_INTERVENTION_FLOOR}"
 sdwpf_log_init "cv_utility" "${LOG_PARAMETERS}" "cv.log" "${CV_ID}"
 sdwpf_log_install_exit_trap
 CV_LOG_DIR="${SDWPF_LOG_DIR}"
@@ -85,6 +97,8 @@ sdwpf_log_capture
     echo "TASK=cv_utility_finetune_only"
     echo "CV_ID=${CV_ID}"
     echo "SOURCE_CV_DIR=${SOURCE_CV_DIR}"
+    echo "TREND_CV_DIR=${TREND_CV_DIR}"
+    echo "FREEZE_NON_UTILITY=${FREEZE_NON_UTILITY}"
     echo "PRED_LEN=${PRED_LEN}"
     echo "SPLIT=rolling_holdout"
     echo "FOLDS=${FOLDS}"
@@ -132,9 +146,23 @@ for fold in "${CV_FOLDS[@]}"; do
         }
         run_dir="${CV_LOG_DIR}/runs/f${fold}_s${seed}"
         mkdir -p "${run_dir}"
+        overlay_checkpoint=""
+        if [[ "${FREEZE_NON_UTILITY}" == "1" ]]; then
+            trend_stage="${TREND_CV_DIR}/runs/f${fold}_s${seed}/pipeline.env"
+            [[ -f "${trend_stage}" ]] || {
+                echo "Missing ${trend_stage}" >&2
+                exit 2
+            }
+            overlay_checkpoint="$(read_value "${trend_stage}" FINETUNE_CHECKPOINT)"
+            [[ -f "${overlay_checkpoint}" ]] || {
+                echo "Missing trend checkpoint: ${overlay_checkpoint}" >&2
+                exit 2
+            }
+        fi
         echo "===== CV fold=${fold} seed=${seed} ====="
         FOLD="${fold}" N_FOLDS=3 SEED="${seed}" SPLIT=rolling_holdout \
         PRED_LEN="${PRED_LEN}" EVAL_STRIDE="${PRED_LEN}" PRETRAIN_RUN_ID="${pretrain_id}" \
+        OVERLAY_CHECKPOINT="${overlay_checkpoint}" FREEZE_NON_UTILITY="${FREEZE_NON_UTILITY}" \
         RUN_ID="${CV_ID}_f${fold}_s${seed}_finetune" \
         SDWPF_LOG_DIR="${run_dir}" SDWPF_LOG_FILE="${run_dir}/finetune.log" \
         bash scripts/finetune/SDWPF_ablation_prompt.sh

@@ -182,6 +182,19 @@ def build_parser():
         help="explicit pre-trained checkpoint; takes priority over automatic discovery",
     )
     parser.add_argument(
+        "--overlay_checkpoint",
+        default=None,
+        help=(
+            "optional second checkpoint overlaid after pretraining; used to seed "
+            "a Wiki residual model from a validated trend forecaster"
+        ),
+    )
+    parser.add_argument(
+        "--freeze_non_utility",
+        action="store_true",
+        help="freeze the transferred forecast path and train only Utility-Wiki modules",
+    )
+    parser.add_argument(
         "--pretrain_init",
         choices=["auto", "none"],
         default="auto",
@@ -716,6 +729,19 @@ def configure_args(args):
             raise ValueError("--utility_wiki cannot be combined with --disable_regime_prompt")
         if not args.mix_channels:
             raise ValueError("--utility_wiki requires --mix_channels for one power target")
+    overlay = str(getattr(args, "overlay_checkpoint", "") or "").strip()
+    if overlay:
+        overlay = os.path.abspath(os.path.expanduser(overlay))
+        if not os.path.isfile(overlay):
+            raise FileNotFoundError(f"Overlay checkpoint not found: {overlay}")
+        args.overlay_checkpoint = overlay
+    else:
+        args.overlay_checkpoint = None
+    if args.freeze_non_utility:
+        if not args.utility_wiki:
+            raise ValueError("--freeze_non_utility requires --utility_wiki")
+        if not args.overlay_checkpoint:
+            raise ValueError("--freeze_non_utility requires --overlay_checkpoint")
     if args.utility_loss_weight < 0.0:
         raise ValueError("utility_loss_weight cannot be negative")
     if args.utility_decision_loss_weight < 0.0:
