@@ -455,6 +455,9 @@ def build_parser():
     parser.add_argument("--utility_candidate_loss_weight", type=float, default=0.1)
     parser.add_argument("--utility_ranking_loss_weight", type=float, default=0.1)
     parser.add_argument("--utility_ranking_margin", type=float, default=0.01)
+    parser.add_argument("--utility_adapter_mode", choices=["legacy", "hierarchical_evidence"], default="legacy")
+    parser.add_argument("--utility_event_max_scale", type=float, default=0.5)
+    parser.add_argument("--utility_composition_max_scale", type=float, default=0.25)
     parser.add_argument(
         "--utility_adapter_warmup_epochs",
         type=int,
@@ -753,6 +756,14 @@ def configure_args(args):
             raise ValueError("--freeze_non_utility requires --overlay_checkpoint")
     if args.utility_loss_weight < 0.0:
         raise ValueError("utility_loss_weight cannot be negative")
+    for name in ("utility_event_max_scale", "utility_composition_max_scale"):
+        if not np.isfinite(getattr(args, name)) or getattr(args, name) <= 0:
+            raise ValueError(f"{name} must be finite and positive")
+    if args.utility_adapter_mode == "hierarchical_evidence":
+        if not args.utility_wiki:
+            raise ValueError("hierarchical_evidence requires --utility_wiki")
+        if args.utility_intervention_floor != 1.0:
+            raise ValueError("hierarchical_evidence requires --utility_intervention_floor 1 to align gain supervision and execution")
     if args.utility_decision_loss_weight < 0.0:
         raise ValueError("utility_decision_loss_weight cannot be negative")
     if args.utility_candidate_loss_weight < 0.0:
@@ -1015,10 +1026,12 @@ def load_finetuned_model(exp, checkpoint_path):
             "regime_calibration_quantile",
             "prompt_router",
             "utility_wiki",
+            "utility_adapter_mode",
+            "utility_event_max_scale",
+            "utility_composition_max_scale",
             "utility_gate_temperature",
             "utility_min_gain",
             "utility_intervention_floor",
-            "utility_adapter_warmup_epochs",
             "scene_wiki_config_sha256",
             "scene_wiki_bundle_sha256",
             "scene_wiki_scene_ids",

@@ -16,6 +16,7 @@ from utils.run_tags import forecast_result_tag
 from utils.sdwpf_logging import tensorboard_log_directory
 from utils.experiment_audit import checkpoint_info, model_runtime_summary, write_run_manifest
 from utils.utility_wiki import (
+    configure_frozen_utility_mode,
     selected_intervention_metrics,
     utility_candidate_specialization_loss,
     utility_decision_loss,
@@ -518,8 +519,17 @@ class Exp_TimeDART(Exp_Basic):
         phase = "adapter_warmup" if adapter_warmup else "utility_gate"
         print(
             "[UTILITY] Training phase: "
-            f"{phase} (gate={gate_count:,}, adapters={adapter_count:,} params)"
+            f"{phase} (gate={gate_count:,}, adapters={adapter_count:,} params) "
+            f"base_mode=eval adapter_mode={getattr(self.args, 'utility_adapter_mode', 'legacy')}"
         )
+        if getattr(self.args, "utility_adapter_mode", "legacy") == "hierarchical_evidence":
+            print(
+                "[UTILITY] HierarchicalEvidence: trend_experts=3 "
+                "composition=event_plus_increment balance=train_history_sqrt_cap3 "
+                f"event_cap={self.args.utility_event_max_scale:g} "
+                f"increment_cap={self.args.utility_composition_max_scale:g} "
+                "cap_units=input_window_target_std gate=cost_sensitive_candidate_conditioned"
+            )
         return phase
 
     def pretrain(self):
@@ -1600,6 +1610,8 @@ class Exp_TimeDART(Exp_Basic):
             )
 
             self.model.train()
+            if getattr(self.args, "freeze_non_utility", False):
+                configure_frozen_utility_mode(self.model)
             start_time = time.time()
 
             for i, (

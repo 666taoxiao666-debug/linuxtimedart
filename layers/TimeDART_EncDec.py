@@ -657,6 +657,7 @@ class UtilityGranularityGate(nn.Module):
         min_gain=0.0,
         intervention_floor=0.5,
         dropout=0.1,
+        candidate_conditioned=False,
     ):
         super().__init__()
         if int(num_factors) < 1 or int(pred_len) < 1 or int(num_trend_modes) < 1:
@@ -674,10 +675,12 @@ class UtilityGranularityGate(nn.Module):
         self.temperature = float(temperature)
         self.min_gain = float(min_gain)
         self.intervention_floor = float(intervention_floor)
+        self.candidate_conditioned = bool(candidate_conditioned)
         state_dim = (
             2 * int(d_model)
             + 2 * self.num_factors
             + self.num_trend_modes
+            + (2 * self.pred_len if self.candidate_conditioned else 0)
         )
         self.utility_estimator = nn.Sequential(
             nn.LayerNorm(state_dim),
@@ -691,7 +694,7 @@ class UtilityGranularityGate(nn.Module):
         nn.init.zeros_(self.utility_estimator[-1].weight)
         nn.init.zeros_(self.utility_estimator[-1].bias)
 
-    def forward(self, target_hidden, activations, rule_logits, trend_probs=None):
+    def forward(self, target_hidden, activations, rule_logits, trend_probs=None, candidate_features=None):
         if target_hidden.ndim != 3:
             raise ValueError("target_hidden must have shape [batch,patch,d_model]")
         expected = (target_hidden.size(0), self.num_factors)
@@ -717,6 +720,11 @@ class UtilityGranularityGate(nn.Module):
             ],
             dim=-1,
         )
+        if self.candidate_conditioned:
+            expected_candidates = (target_hidden.size(0), self.pred_len, 2)
+            if candidate_features is None or tuple(candidate_features.shape) != expected_candidates:
+                raise ValueError("candidate_features must have shape [batch,horizon,2]")
+            state = torch.cat([state, candidate_features.detach().flatten(1)], dim=-1)
         utilities = self.utility_estimator(state).reshape(
             target_hidden.size(0), self.pred_len, 2
         )

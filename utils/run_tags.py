@@ -88,6 +88,11 @@ def experiment_setting(args, run_index):
         f"split{getattr(args, 'sdwpf_split', 'time')}_fold{getattr(args, 'sdwpf_fold', 0)}_"
         f"seed{args.seed}"
     )
+    if getattr(args, "utility_adapter_mode", "legacy") != "legacy":
+        base += (
+            f"_adapter{args.utility_adapter_mode}"
+            f"_ecap{args.utility_event_max_scale}_ccap{args.utility_composition_max_scale}"
+        )
     run_id = getattr(args, "run_id", "") or ""
     if str(run_id).strip():
         return bounded_component(f"{base}_id{safe_component(run_id)}")

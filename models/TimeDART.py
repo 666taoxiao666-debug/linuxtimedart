@@ -23,6 +23,7 @@ from layers.TimeDART_EncDec import (
 )
 from layers.Embed import Patch, PatchEmbedding, PositionalEncoding, TokenEmbedding_TimeDART
 from utils.regime_labels import compute_regime_pseudo_labels_from_series
+from utils.utility_wiki import EvidenceResidualAdapter
 from utils.wind_regime_wiki import (
     compute_event_factor_rule_logits,
     compute_scene_wiki_rule_logits,
@@ -118,6 +119,7 @@ class Model(nn.Module):
         )
         self.prompt_router = getattr(args, "prompt_router", "trend")
         self.utility_wiki = bool(getattr(args, "utility_wiki", False))
+        self.utility_adapter_mode = getattr(args, "utility_adapter_mode", "legacy")
         self.features = getattr(args, "features", "M")
         self.enc_in = int(getattr(args, "enc_in", 1))
         self.feature_columns = list(getattr(args, "feature_columns", None) or [])
@@ -433,6 +435,7 @@ class Model(nn.Module):
                     min_gain=args.utility_min_gain,
                     intervention_floor=args.utility_intervention_floor,
                     dropout=args.dropout,
+                    candidate_conditioned=self.utility_adapter_mode == "hierarchical_evidence",
                 )
                 # Granularity-specific residual adapters keep Wiki supervision
                 # from updating the shared trend head.  They start as exact
@@ -456,6 +459,15 @@ class Model(nn.Module):
                 ):
                     nn.init.zeros_(adapter.forecast_head.weight)
                     nn.init.zeros_(adapter.forecast_head.bias)
+                if self.utility_adapter_mode == "hierarchical_evidence":
+                    self.utility_event_adapter = EvidenceResidualAdapter(
+                        args.d_model, args.pred_len, self.scene_wiki_router.num_factors,
+                        self.num_modes, getattr(args, "utility_event_max_scale", 0.5),
+                    )
+                    self.utility_composition_adapter = EvidenceResidualAdapter(
+                        args.d_model, args.pred_len, self.scene_wiki_router.num_factors,
+                        self.num_modes, getattr(args, "utility_composition_max_scale", 0.25),
+                    )
 
     def _build_prompt(
         self,
@@ -995,10 +1007,21 @@ class Model(nn.Module):
             # useful.
             event_state = event_hidden.detach()
             composition_state = composition_hidden.detach()
-            event_correction = self.utility_event_adapter(event_state)
-            composition_correction = self.utility_composition_adapter(
-                composition_state
-            )
+            if self.utility_adapter_mode == "hierarchical_evidence":
+                conditioning = (state["trend_probs"].detach(),
+                                state["activations"].detach(), state["rule_logits"].detach())
+                event_correction = self.utility_event_adapter(
+                    event_state, base_hidden.detach(), *conditioning,
+                )
+                composition_delta = self.utility_composition_adapter(
+                    composition_state, event_state, *conditioning,
+                )
+                # Composition learns the incremental benefit of finer knowledge;
+                # it cannot drag the single-event expert through its own loss.
+                composition_correction = event_correction.detach() + composition_delta
+            else:
+                event_correction = self.utility_event_adapter(event_state)
+                composition_correction = self.utility_composition_adapter(composition_state)
         else:
             x = decode(x)
 
@@ -1026,6 +1049,11 @@ class Model(nn.Module):
 
         if self.utility_wiki:
             base_x = restore_scale(base_x)
+            candidate_features = None
+            if self.utility_adapter_mode == "hierarchical_evidence":
+                candidate_features = torch.stack([
+                    event_correction.mean(dim=-1), composition_correction.mean(dim=-1),
+                ], dim=-1).detach()
             event_correction = restore_correction(event_correction)
             composition_correction = restore_correction(composition_correction)
             event_x = base_x + event_correction
@@ -1035,11 +1063,14 @@ class Model(nn.Module):
                 state["activations"],
                 state["rule_logits"],
                 state["trend_probs"],
+                candidate_features=candidate_features,
             )
             use_composition = (granularity == 2).unsqueeze(-1)
             selected_x = torch.where(use_composition, composition_x, event_x)
             x = base_x + utility_strength.unsqueeze(-1) * (selected_x - base_x)
             self._last_utility_aux = {
+                "adapter_mode": self.utility_adapter_mode,
+                "activations": state["activations"].detach(),
                 "utilities": utilities,
                 "trend_probs": state["trend_probs"],
                 "granularity": granularity,

@@ -299,11 +299,19 @@ def model_runtime_summary(model, args=None) -> dict:
         "regime_label_method",
         "prompt_router",
         "utility_wiki",
+        "utility_adapter_mode",
     ):
         result[name] = _jsonable(getattr(core, name, None))
     utility_gate = getattr(core, "utility_gate", None)
     if utility_gate is not None:
         result["utility_gate"] = {
+            "candidate_conditioned": bool(getattr(utility_gate, "candidate_conditioned", False)),
+            "candidate_bounds": {
+                "event": getattr(getattr(core, "utility_event_adapter", None), "max_scale", None),
+                "composition_increment": getattr(getattr(core, "utility_composition_adapter", None), "max_scale", None),
+                "units": "input_window_target_std",
+            },
+            "training_balance": "history_trend_event_sqrt_cap3" if getattr(core, "utility_adapter_mode", "legacy") == "hierarchical_evidence" else "legacy",
             "temperature": _jsonable(getattr(utility_gate, "temperature", None)),
             "min_gain": _jsonable(getattr(utility_gate, "min_gain", None)),
             "conditioning": "history_plus_event_evidence_plus_trend_probabilities",
