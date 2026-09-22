@@ -24,6 +24,9 @@ from layers.TimeDART_EncDec import (
 from layers.Embed import Patch, PatchEmbedding, PositionalEncoding, TokenEmbedding_TimeDART
 from utils.regime_labels import compute_regime_pseudo_labels_from_series
 from utils.utility_wiki import EvidenceResidualAdapter
+from utils.utility_calibration import (
+    PHYSICAL_FEATURE_DIM, physical_history_features, utility_action_probabilities,
+)
 from utils.wind_regime_wiki import (
     compute_event_factor_rule_logits,
     compute_scene_wiki_rule_logits,
@@ -435,7 +438,8 @@ class Model(nn.Module):
                     min_gain=args.utility_min_gain,
                     intervention_floor=args.utility_intervention_floor,
                     dropout=args.dropout,
-                    candidate_conditioned=self.utility_adapter_mode == "hierarchical_evidence",
+                    candidate_conditioned=self.utility_adapter_mode in ("hierarchical_evidence", "calibrated_evidence"),
+                    physical_dim=PHYSICAL_FEATURE_DIM if self.utility_adapter_mode == "calibrated_evidence" else 0,
                 )
                 # Granularity-specific residual adapters keep Wiki supervision
                 # from updating the shared trend head.  They start as exact
@@ -459,14 +463,17 @@ class Model(nn.Module):
                 ):
                     nn.init.zeros_(adapter.forecast_head.weight)
                     nn.init.zeros_(adapter.forecast_head.bias)
-                if self.utility_adapter_mode == "hierarchical_evidence":
+                if self.utility_adapter_mode in ("hierarchical_evidence", "calibrated_evidence"):
+                    physical_dim = PHYSICAL_FEATURE_DIM if self.utility_adapter_mode == "calibrated_evidence" else 0
                     self.utility_event_adapter = EvidenceResidualAdapter(
                         args.d_model, args.pred_len, self.scene_wiki_router.num_factors,
                         self.num_modes, getattr(args, "utility_event_max_scale", 0.5),
+                        physical_dim=physical_dim,
                     )
                     self.utility_composition_adapter = EvidenceResidualAdapter(
                         args.d_model, args.pred_len, self.scene_wiki_router.num_factors,
                         self.num_modes, getattr(args, "utility_composition_max_scale", 0.25),
+                        physical_dim=physical_dim,
                     )
 
     def _build_prompt(
@@ -895,6 +902,11 @@ class Model(nn.Module):
         )
         label_source = x
 
+        physical_features = None
+        if self.utility_wiki and self.utility_adapter_mode == "calibrated_evidence":
+            raw_history = label_source * self.scene_scaler_scale.view(1, 1, -1) + self.scene_scaler_mean.view(1, 1, -1)
+            physical_features = physical_history_features(raw_history, self.feature_columns, self.rated_power)
+
         last_observation = (
             x[:, -1:, :].detach()
         )
@@ -1007,14 +1019,14 @@ class Model(nn.Module):
             # useful.
             event_state = event_hidden.detach()
             composition_state = composition_hidden.detach()
-            if self.utility_adapter_mode == "hierarchical_evidence":
+            if self.utility_adapter_mode in ("hierarchical_evidence", "calibrated_evidence"):
                 conditioning = (state["trend_probs"].detach(),
                                 state["activations"].detach(), state["rule_logits"].detach())
                 event_correction = self.utility_event_adapter(
-                    event_state, base_hidden.detach(), *conditioning,
+                    event_state, base_hidden.detach(), *conditioning, physical=physical_features,
                 )
                 composition_delta = self.utility_composition_adapter(
-                    composition_state, event_state, *conditioning,
+                    composition_state, event_state, *conditioning, physical=physical_features,
                 )
                 # Composition learns the incremental benefit of finer knowledge;
                 # it cannot drag the single-event expert through its own loss.
@@ -1050,7 +1062,7 @@ class Model(nn.Module):
         if self.utility_wiki:
             base_x = restore_scale(base_x)
             candidate_features = None
-            if self.utility_adapter_mode == "hierarchical_evidence":
+            if self.utility_adapter_mode in ("hierarchical_evidence", "calibrated_evidence"):
                 candidate_features = torch.stack([
                     event_correction.mean(dim=-1), composition_correction.mean(dim=-1),
                 ], dim=-1).detach()
@@ -1064,12 +1076,29 @@ class Model(nn.Module):
                 state["rule_logits"],
                 state["trend_probs"],
                 candidate_features=candidate_features,
+                physical_features=physical_features,
             )
             use_composition = (granularity == 2).unsqueeze(-1)
             selected_x = torch.where(use_composition, composition_x, event_x)
             x = base_x + utility_strength.unsqueeze(-1) * (selected_x - base_x)
+            hard_prediction = x
+            soft_prediction = x
+            if self.utility_adapter_mode == "calibrated_evidence":
+                probabilities = utility_action_probabilities(
+                    utilities, availability, self.utility_gate.min_gain, self.utility_gate.temperature,
+                )
+                soft_prediction = (
+                    base_x + probabilities[..., 1:2] * event_correction
+                    + probabilities[..., 2:3] * composition_correction
+                )
+                # The root module remains eval() when its backbone is frozen.
+                # Only the trainable gate's mode indicates gate calibration.
+                if self.utility_gate.training:
+                    x = soft_prediction
             self._last_utility_aux = {
                 "adapter_mode": self.utility_adapter_mode,
+                "soft_prediction": soft_prediction,
+                "hard_prediction": hard_prediction,
                 "activations": state["activations"].detach(),
                 "utilities": utilities,
                 "trend_probs": state["trend_probs"],

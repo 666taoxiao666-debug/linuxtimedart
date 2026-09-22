@@ -9,23 +9,24 @@ class EvidenceResidualAdapter(nn.Module):
     future labels or validation statistics enter this module.
     """
 
-    def __init__(self, d_model, pred_len, num_factors, num_modes=3, max_scale=0.5):
+    def __init__(self, d_model, pred_len, num_factors, num_modes=3, max_scale=0.5, physical_dim=0):
         super().__init__()
         self.num_modes = num_modes
         self.pred_len = pred_len
         self.max_scale = float(max_scale)
+        self.physical_dim = int(physical_dim)
         if not 0 < self.max_scale < float("inf"):
             raise ValueError("max_scale must be finite and positive")
         self.features = nn.Sequential(
-            nn.LayerNorm(3 * d_model + 2 * num_factors),
-            nn.Linear(3 * d_model + 2 * num_factors, d_model),
+            nn.LayerNorm(3 * d_model + 2 * num_factors + self.physical_dim),
+            nn.Linear(3 * d_model + 2 * num_factors + self.physical_dim, d_model),
             nn.GELU(),
         )
         self.forecast_head = nn.Linear(d_model, num_modes * pred_len)
         nn.init.zeros_(self.forecast_head.weight)
         nn.init.zeros_(self.forecast_head.bias)
 
-    def forward(self, hidden, reference, trend_probs, activations, rules):
+    def forward(self, hidden, reference, trend_probs, activations, rules, physical=None):
         # hidden/reference: [B,C,P,D]. The contrast explicitly exposes the
         # information added by the requested knowledge granularity.
         evidence = torch.cat([activations, rules.clamp(0, 1)], dim=-1)
@@ -34,6 +35,10 @@ class EvidenceResidualAdapter(nn.Module):
             hidden.mean(dim=2), hidden[:, :, -1],
             (hidden - reference).mean(dim=2), evidence,
         ], dim=-1)
+        if self.physical_dim:
+            if physical is None or physical.shape != (hidden.size(0), self.physical_dim):
+                raise ValueError("Physical history feature shape mismatch")
+            state = torch.cat([state, physical[:, None].expand(-1, hidden.size(1), -1)], dim=-1)
         experts = self.forecast_head(self.features(state)).reshape(
             hidden.size(0), hidden.size(1), self.num_modes, self.pred_len
         )
@@ -69,8 +74,9 @@ def evidence_training_weights(aux):
 def utility_supervision_loss(aux, target, eps=0.05):
     """Train horizon utilities from candidate outcomes on training batches only.
 
-    Utility is the clipped relative absolute-error reduction against the
-    trend-only branch.  Physically unavailable knowledge granularities are
+    Legacy utility is clipped relative absolute-error reduction; calibrated
+    utility is absolute-error reduction in fixed training-scaler units.
+    Physically unavailable knowledge granularities are
     masked, so labels cannot teach the model to bypass the evidence filter.
     """
 
@@ -96,6 +102,10 @@ def utility_supervision_loss(aux, target, eps=0.05):
         base_error.unsqueeze(-1) - candidate_errors
     ) / base_error.unsqueeze(-1).clamp_min(float(eps))
     targets = relative_gain.mean(dim=2).clamp(-1.0, 1.0)
+    if aux.get("adapter_mode") == "calibrated_evidence":
+        # Predictions use one fixed, training-fitted target scaler. Absolute
+        # error reduction in these units is kW reduction / train target std.
+        targets = (base_error.unsqueeze(-1) - candidate_errors).mean(dim=2)
     mask = aux["availability"].unsqueeze(1).expand_as(targets)
     if not bool(mask.any()):
         return aux["utilities"].sum() * 0.0, targets
@@ -149,6 +159,8 @@ def utility_decision_loss(
         (base_error.unsqueeze(-1) - candidate_errors)
         / base_error.unsqueeze(-1).clamp_min(float(eps))
     ).mean(dim=2).clamp(-1.0, 1.0)
+    if aux.get("adapter_mode") == "calibrated_evidence":
+        realized_gain = (base_error.unsqueeze(-1) - candidate_errors).mean(dim=2)
     availability = aux["availability"].unsqueeze(1).expand_as(realized_gain)
     has_evidence = availability.any(dim=-1)
     zero = aux["utilities"].sum() * 0.0
@@ -183,7 +195,7 @@ def utility_decision_loss(
         if bool((evidence_actions == class_index).any())
     ]
     loss = torch.stack(class_terms).mean()
-    if aux.get("adapter_mode") == "hierarchical_evidence":
+    if aux.get("adapter_mode") in ("hierarchical_evidence", "calibrated_evidence"):
         # Preserve natural action frequencies. Add cost-sensitive regret so a
         # rare, badly harmful composition is not promoted by class balancing.
         errors = torch.cat([
@@ -195,7 +207,7 @@ def utility_decision_loss(
         ], dim=-1)
         best_error = errors.masked_fill(~action_available, float("inf")).min(dim=-1).values
         regret = (errors - best_error.unsqueeze(-1)).clamp_min(0)
-        scale = base_error.mean().detach().clamp_min(float(eps))
+        scale = 1.0 if aux.get("adapter_mode") == "calibrated_evidence" else base_error.mean().detach().clamp_min(float(eps))
         probability = torch.softmax(decision_logits, dim=-1)
         expected_regret = (probability * regret / scale).sum(dim=-1)
         loss = per_item.mean() + expected_regret[has_evidence].mean()
@@ -319,8 +331,10 @@ def utility_candidate_specialization_loss(aux, target, margin=0.01):
     )
     specialization_terms = []
     balanced_ranking_terms = []
-    hierarchical = aux.get("adapter_mode") == "hierarchical_evidence"
-    sample_weights = evidence_training_weights(aux) if hierarchical else None
+    hierarchical = aux.get("adapter_mode") in ("hierarchical_evidence", "calibrated_evidence")
+    sample_weights = evidence_training_weights(aux) if aux.get("adapter_mode") == "hierarchical_evidence" else None
+    if aux.get("adapter_mode") == "calibrated_evidence":
+        sample_weights = torch.ones(target.size(0), device=target.device)
     for candidate_index in range(candidates.size(-1)):
         branch_mask = availability[..., candidate_index]
         if not bool(branch_mask.any()):

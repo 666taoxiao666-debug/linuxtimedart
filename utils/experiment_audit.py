@@ -306,12 +306,18 @@ def model_runtime_summary(model, args=None) -> dict:
     if utility_gate is not None:
         result["utility_gate"] = {
             "candidate_conditioned": bool(getattr(utility_gate, "candidate_conditioned", False)),
+            "physical_features": int(getattr(utility_gate, "physical_dim", 0)),
+            "routing_train": "soft" if getattr(core, "utility_adapter_mode", "") == "calibrated_evidence" else "hard",
+            "routing_eval": "hard",
+            "gain_units": "train_target_std" if getattr(core, "utility_adapter_mode", "") == "calibrated_evidence" else "relative_ratio",
+            "calibration_split": getattr(args, "utility_calibration_audit", None),
+            "phase_lr_restart": getattr(core, "utility_adapter_mode", "") == "calibrated_evidence" and getattr(args, "lradj", "") == "step",
             "candidate_bounds": {
                 "event": getattr(getattr(core, "utility_event_adapter", None), "max_scale", None),
                 "composition_increment": getattr(getattr(core, "utility_composition_adapter", None), "max_scale", None),
                 "units": "input_window_target_std",
             },
-            "training_balance": "history_trend_event_sqrt_cap3" if getattr(core, "utility_adapter_mode", "legacy") == "hierarchical_evidence" else "legacy",
+            "training_balance": {"hierarchical_evidence": "history_trend_event_sqrt_cap3", "calibrated_evidence": "natural"}.get(getattr(core, "utility_adapter_mode", "legacy"), "legacy"),
             "temperature": _jsonable(getattr(utility_gate, "temperature", None)),
             "min_gain": _jsonable(getattr(utility_gate, "min_gain", None)),
             "conditioning": "history_plus_event_evidence_plus_trend_probabilities",

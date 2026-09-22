@@ -638,7 +638,7 @@ class CompositionalEventWikiRouter(nn.Module):
 class UtilityGranularityGate(nn.Module):
     """Jointly select Wiki granularity and intervention time per horizon.
 
-    The two learned utility channels estimate the relative error reduction of
+    The two learned utility channels estimate the error reduction of
     (1) the strongest physically supported event and (2) the complete event
     composition.  Physical availability is a hard precondition.  If neither
     candidate has positive predicted utility, the gate returns an exact zero
@@ -658,6 +658,7 @@ class UtilityGranularityGate(nn.Module):
         intervention_floor=0.5,
         dropout=0.1,
         candidate_conditioned=False,
+        physical_dim=0,
     ):
         super().__init__()
         if int(num_factors) < 1 or int(pred_len) < 1 or int(num_trend_modes) < 1:
@@ -676,11 +677,13 @@ class UtilityGranularityGate(nn.Module):
         self.min_gain = float(min_gain)
         self.intervention_floor = float(intervention_floor)
         self.candidate_conditioned = bool(candidate_conditioned)
+        self.physical_dim = int(physical_dim)
         state_dim = (
             2 * int(d_model)
             + 2 * self.num_factors
             + self.num_trend_modes
             + (2 * self.pred_len if self.candidate_conditioned else 0)
+            + self.physical_dim
         )
         self.utility_estimator = nn.Sequential(
             nn.LayerNorm(state_dim),
@@ -694,7 +697,7 @@ class UtilityGranularityGate(nn.Module):
         nn.init.zeros_(self.utility_estimator[-1].weight)
         nn.init.zeros_(self.utility_estimator[-1].bias)
 
-    def forward(self, target_hidden, activations, rule_logits, trend_probs=None, candidate_features=None):
+    def forward(self, target_hidden, activations, rule_logits, trend_probs=None, candidate_features=None, physical_features=None):
         if target_hidden.ndim != 3:
             raise ValueError("target_hidden must have shape [batch,patch,d_model]")
         expected = (target_hidden.size(0), self.num_factors)
@@ -725,6 +728,10 @@ class UtilityGranularityGate(nn.Module):
             if candidate_features is None or tuple(candidate_features.shape) != expected_candidates:
                 raise ValueError("candidate_features must have shape [batch,horizon,2]")
             state = torch.cat([state, candidate_features.detach().flatten(1)], dim=-1)
+        if self.physical_dim:
+            if physical_features is None or physical_features.shape != (target_hidden.size(0), self.physical_dim):
+                raise ValueError("physical_features shape mismatch")
+            state = torch.cat([state, physical_features.detach()], dim=-1)
         utilities = self.utility_estimator(state).reshape(
             target_hidden.size(0), self.pred_len, 2
         )

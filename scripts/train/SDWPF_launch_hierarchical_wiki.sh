@@ -5,7 +5,12 @@ source scripts/lib/sdwpf_log.sh
 
 # One-command background launch; all files live in the dated run directory.
 # Existing fold-matched pretraining and trend forecasts are reused.
-POINTER="outputs/logs/SDWPF/hierarchical_wiki_latest.txt"
+export UTILITY_ADAPTER_MODE="${UTILITY_ADAPTER_MODE:-hierarchical_evidence}"
+LAUNCH_TASK=hierarchical_wiki
+if [[ "$UTILITY_ADAPTER_MODE" == calibrated_evidence ]]; then
+    LAUNCH_TASK=calibrated_wiki
+fi
+POINTER="outputs/logs/SDWPF/${LAUNCH_TASK}_latest.txt"
 case "${1:-}" in
     --status)
         [[ -f "$POINTER" ]] || { echo "No hierarchical Wiki run has been launched."; exit 2; }
@@ -42,7 +47,8 @@ esac
 export SOURCE_CV_DIR="${SOURCE_CV_DIR:-outputs/logs/SDWPF/20260913/002_cv_h12_rolling_holdout_folds0-1-2_seeds2024-2025-2026_blr0_hffcfe2bf396b}"
 export TREND_CV_DIR="${TREND_CV_DIR:-outputs/logs/SDWPF/20260914/001_cv_trend_h12_rolling_holdout_folds0-1-2_seeds2024-2025-202_h36d88ba5e218}"
 export FOLDS="${FOLDS:-0}" SEEDS="${SEEDS:-2024}" PRED_LEN="${PRED_LEN:-12}"
-export UTILITY_ADAPTER_MODE=hierarchical_evidence FREEZE_NON_UTILITY=1
+export FREEZE_NON_UTILITY=1
+export UTILITY_CALIBRATION_FRACTION="${UTILITY_CALIBRATION_FRACTION:-0.2}"
 export UTILITY_EVENT_MAX_SCALE="${UTILITY_EVENT_MAX_SCALE:-0.5}"
 export UTILITY_COMPOSITION_MAX_SCALE="${UTILITY_COMPOSITION_MAX_SCALE:-0.25}"
 export UTILITY_ADAPTER_WARMUP_EPOCHS="${UTILITY_ADAPTER_WARMUP_EPOCHS:-3}"
@@ -56,13 +62,14 @@ export UTILITY_RANKING_MARGIN="${UTILITY_RANKING_MARGIN:-0.0}"
 export UTILITY_GATE_TEMPERATURE="${UTILITY_GATE_TEMPERATURE:-0.25}"
 export UTILITY_TARGET_EPS="${UTILITY_TARGET_EPS:-0.05}"
 export UTILITY_MIN_GAIN="${UTILITY_MIN_GAIN:-0.005}" UTILITY_INTERVENTION_FLOOR=1
-export CV_ID="${CV_ID:-hierarchical_h${PRED_LEN}_$(date +%Y%m%d_%H%M%S)_$$}"
+export CV_ID="${CV_ID:-${LAUNCH_TASK}_h${PRED_LEN}_$(date +%Y%m%d_%H%M%S)_$$}"
 python -c 'import torch; print("PyTorch:", torch.__version__); assert torch.cuda.is_available(), "CUDA unavailable in current environment"'
 for directory in "$SOURCE_CV_DIR" "$TREND_CV_DIR"; do
     [[ -f "$directory/cv.env" ]] || { echo "Missing cv.env: $directory" >&2; exit 2; }
 done
 parameters="h${PRED_LEN}_f${FOLDS// /-}_s${SEEDS// /-}_lr${UTILITY_LEARNING_RATE}_warm${UTILITY_ADAPTER_WARMUP_EPOCHS}_ep${TRAIN_EPOCHS}_pat${PATIENCE}_ecap${UTILITY_EVENT_MAX_SCALE}_ccap${UTILITY_COMPOSITION_MAX_SCALE}_ulw${UTILITY_LOSS_WEIGHT}_dlw${UTILITY_DECISION_LOSS_WEIGHT}_clw${UTILITY_CANDIDATE_LOSS_WEIGHT}_rlw${UTILITY_RANKING_LOSS_WEIGHT}_margin${UTILITY_RANKING_MARGIN}_temp${UTILITY_GATE_TEMPERATURE}_eps${UTILITY_TARGET_EPS}_gain${UTILITY_MIN_GAIN}"
-sdwpf_log_init "hierarchical_wiki" "$parameters" "cv.log" "$CV_ID"
+parameters="${parameters}_calfrac${UTILITY_CALIBRATION_FRACTION}"
+sdwpf_log_init "$LAUNCH_TASK" "$parameters" "cv.log" "$CV_ID"
 printf '%s\n' "$SDWPF_LOG_DIR" > "$POINTER"
 if [[ "${1:-}" == "--foreground" ]]; then
     _SDWPF_LOG_OWNS_DIR=1
@@ -75,5 +82,5 @@ else
     printf '%s\n' "$job_pid" > "$SDWPF_LOG_DIR/launcher.pid"
     echo "PID=$job_pid"
     echo "tail -f '$SDWPF_LOG_DIR/launch.log'"
-    echo "Check results: bash scripts/train/SDWPF_launch_hierarchical_wiki.sh --status"
+    echo "Check results: UTILITY_ADAPTER_MODE=$UTILITY_ADAPTER_MODE bash scripts/train/SDWPF_launch_hierarchical_wiki.sh --status"
 fi

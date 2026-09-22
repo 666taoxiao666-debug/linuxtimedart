@@ -2,6 +2,7 @@
 import argparse
 import csv
 import math
+import re
 from pathlib import Path
 
 
@@ -39,12 +40,37 @@ def compare(wiki_path, trend_path):
     return rows
 
 
+def attach_training_progress(rows, wiki_dir):
+    """Expose degradation hidden by restoring epoch zero; never select oracle."""
+    pattern = re.compile(r"^Epoch:\s*(\d+),.*?Val MAE\(kW\):\s*([-+0-9.eE]+).*?Select\([^)]*\):\s*([-+0-9.eE]+)")
+    for row in rows:
+        path = Path(wiki_dir) / "runs" / f"f{row['fold']}_s{row['seed']}" / "finetune.log"
+        records = []
+        if path.is_file():
+            for line in path.read_text(encoding="utf-8").splitlines():
+                match = pattern.match(line.strip())
+                if match and int(match[1]) > 0 and "Phase: adapter_warmup" not in line:
+                    record = (int(match[1]), float(match[2]), float(match[3]))
+                    if not all(math.isfinite(value) for value in record):
+                        raise ValueError(f"Non-finite trained metric in {path}")
+                    records.append(record)
+        best = min(records, key=lambda item: item[2]) if records else None
+        row.update({
+            "trained_epochs_reported": len(records),
+            "trained_best_epoch": best[0] if best else "",
+            "trained_best_mae_kw": best[1] if best else "",
+            "last_mae_kw": records[-1][1] if records else "",
+        })
+    return rows
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--wiki-dir", required=True, type=Path)
     parser.add_argument("--trend-dir", required=True, type=Path)
     args = parser.parse_args()
     rows = compare(args.wiki_dir / "cv_metrics.csv", args.trend_dir / "cv_metrics.csv")
+    attach_training_progress(rows, args.wiki_dir)
     with (args.wiki_dir / "wiki_vs_trend.csv").open("w", newline="", encoding="utf-8") as stream:
         writer = csv.DictWriter(stream, fieldnames=list(rows[0]))
         writer.writeheader()
@@ -59,6 +85,14 @@ def main():
         f"EPOCH_ZERO_SELECTED={sum(r['best_epoch'] == 0 for r in rows)}\n"
         "EVALUATION_SPLIT=val\n"
     )
+    reported = [r for r in rows if r["trained_epochs_reported"]]
+    summary += f"TRAINED_PROGRESS_RUNS={len(reported)}\n"
+    if len(reported) == len(rows):
+        trained = sum(r["trained_best_mae_kw"] for r in rows) / len(rows)
+        last = sum(r["last_mae_kw"] for r in rows) / len(rows)
+        summary += (f"TRAINED_BEST_MAE_KW={trained:.6f}\nLAST_MAE_KW={last:.6f}\n"
+                    f"TRAINED_BEST_GAIN_VS_TREND_KW={trend - trained:.6f}\n"
+                    f"LAST_GAIN_VS_TREND_KW={trend - last:.6f}\n")
     (args.wiki_dir / "wiki_vs_trend.txt").write_text(summary, encoding="utf-8")
     print(summary, end="")
 

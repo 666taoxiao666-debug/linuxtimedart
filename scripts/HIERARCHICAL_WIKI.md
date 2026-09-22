@@ -1,5 +1,8 @@
 # Hierarchical evidence Wiki: quick server experiment
 
+For the calibrated soft-training/hard-inference follow-up, use
+[CALIBRATED_WIKI.md](CALIBRATED_WIKI.md). This file documents the older mode.
+
 Run from the server checkout with the `timedart` environment active:
 
 ```bash

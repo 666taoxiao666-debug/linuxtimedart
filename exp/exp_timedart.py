@@ -22,6 +22,7 @@ from utils.utility_wiki import (
     utility_decision_loss,
     utility_supervision_loss,
 )
+from utils.utility_calibration import utility_loaders
 from utils.regime_labels import (
     calibrate_regime_thresholds_from_dataset,
     summarize_regime_confusion,
@@ -530,6 +531,10 @@ class Exp_TimeDART(Exp_Basic):
                 f"increment_cap={self.args.utility_composition_max_scale:g} "
                 "cap_units=input_window_target_std gate=cost_sensitive_candidate_conditioned"
             )
+        elif getattr(self.args, "utility_adapter_mode", "legacy") == "calibrated_evidence":
+            print("[UTILITY] CalibratedEvidence: train_routing=soft eval_routing=hard "
+                  "gain=absolute_error_reduction_in_train_scaler_units physical_features=45 "
+                  "adapter_and_gate_targets=chronologically_disjoint candidate_sample_weight=natural")
         return phase
 
     def pretrain(self):
@@ -1399,6 +1404,12 @@ class Exp_TimeDART(Exp_Basic):
             self._get_data(flag="val")
         )
         core_model = self.model.module if isinstance(self.model, nn.DataParallel) else self.model
+        calibrated_utility = getattr(self.args, "utility_adapter_mode", "legacy") == "calibrated_evidence"
+        adapter_loader = gate_loader = train_loader
+        if calibrated_utility:
+            adapter_loader, gate_loader, audit = utility_loaders(train_data, self.args)
+            self.args.utility_calibration_audit = audit
+            print("[AUDIT] UTILITY_CALIBRATION=" + json.dumps(audit, ensure_ascii=False))
         if getattr(core_model, "prompt_router", "trend") in (
             "scene_wiki",
             "hybrid_wiki",
@@ -1447,11 +1458,11 @@ class Exp_TimeDART(Exp_Basic):
         model_scheduler = (
             lr_scheduler.OneCycleLR(
                 optimizer=model_optim,
-                steps_per_epoch=len(
-                    train_loader
+                total_steps=(
+                    self.args.utility_adapter_warmup_epochs * len(adapter_loader)
+                    if calibrated_utility else self.args.train_epochs * len(train_loader)
                 ),
                 pct_start=self.args.pct_start,
-                epochs=self.args.train_epochs,
                 max_lr=[
                     float(group.get("target_lr", self.args.learning_rate))
                     for group in model_optim.param_groups
@@ -1460,6 +1471,7 @@ class Exp_TimeDART(Exp_Basic):
         )
 
         history = []
+        best_trained_value = float("inf")
 
         if getattr(self.args, "validate_before_training", False):
             initial_validation = self.valid(
@@ -1582,6 +1594,19 @@ class Exp_TimeDART(Exp_Basic):
             self.args.train_epochs
         ):
             utility_phase = self._configure_utility_training_phase(epoch)
+            phase_loader = adapter_loader if utility_phase == "adapter_warmup" else gate_loader
+            if (calibrated_utility and self.args.lradj == "step"
+                    and epoch == self.args.utility_adapter_warmup_epochs):
+                # The smaller gate split must not inherit an almost exhausted
+                # schedule after the much larger adapter training phase.
+                model_scheduler = lr_scheduler.OneCycleLR(
+                    model_optim,
+                    total_steps=(self.args.train_epochs - epoch) * len(gate_loader),
+                    pct_start=self.args.pct_start,
+                    max_lr=[float(group.get("target_lr", self.args.learning_rate))
+                            for group in model_optim.param_groups],
+                )
+                print("[AUDIT] UTILITY_GATE_LR_RESTART=independent_one_cycle")
             iter_count = 0
             train_loss = []
             train_squared_error = 0.0
@@ -1594,7 +1619,7 @@ class Exp_TimeDART(Exp_Basic):
             train_utility_ranking_losses = []
 
             progress = tqdm(
-                train_loader,
+                phase_loader,
                 desc="Training",
                 disable=not sys.stderr.isatty(),
                 mininterval=5.0,
@@ -1663,6 +1688,10 @@ class Exp_TimeDART(Exp_Basic):
                         pred_x,
                         batch_y,
                     )
+                    if calibrated_utility:
+                        # One fixed train-fitted target scale makes this MAE
+                        # proportional to kW MAE, not per-window relative gain.
+                        forecast_loss = (pred_x - batch_y).abs().mean()
                     utility_loss = forecast_loss.new_zeros(())
                     utility_decision = forecast_loss.new_zeros(())
                     utility_candidate_loss = forecast_loss.new_zeros(())
@@ -1689,6 +1718,13 @@ class Exp_TimeDART(Exp_Basic):
                             batch_y,
                             margin=self.args.utility_ranking_margin,
                         )
+                    if calibrated_utility and utility_phase == "utility_gate" and i == 0:
+                        gate_parameters = [p for p in core_model.utility_gate.parameters() if p.requires_grad]
+                        direct_grads = torch.autograd.grad(
+                            forecast_loss, gate_parameters, retain_graph=True, allow_unused=True,
+                        )
+                        direct_norm = sum(float(g.detach().square().sum()) for g in direct_grads if g is not None) ** 0.5
+                        print(f"[AUDIT] FORECAST_GATE_GRAD_NORM={direct_norm:.9g} source=calibration_train_batch")
                     if utility_phase == "adapter_warmup":
                         # First make both physically available candidates useful.
                         # The trend base and utility gate are frozen, so no moving
@@ -1809,7 +1845,7 @@ class Exp_TimeDART(Exp_Basic):
 
             validation_unit = "kW" if self.args.data == "SDWPF" else "original"
             epoch_summary = (
-                f"Epoch: {epoch + 1}, Steps: {len(train_loader)}, "
+                f"Epoch: {epoch + 1}, Steps: {len(phase_loader)}, "
                 f"Time: {end_time - start_time:.2f}s | "
                 f"Phase: {utility_phase} "
                 f"Train Loss: {train_loss:.7f} "
@@ -1844,6 +1880,11 @@ class Exp_TimeDART(Exp_Basic):
             if scale_parts:
                 epoch_summary += " ChannelScale(static/dynamic): " + ",".join(scale_parts)
             diagnostics = validation["diagnostics"]
+            if "utility_soft_mae_kw" in diagnostics:
+                epoch_summary += (
+                    f" WikiRoutingMAE(soft/hard/oracle): {diagnostics['utility_soft_mae_kw']:.3f}/"
+                    f"{validation['original_mae']:.3f}/{diagnostics['utility_oracle_mae_kw']:.3f}"
+                )
             if "scene_wiki_prompt_gate" in diagnostics:
                 epoch_summary += (
                     " WikiPromptGate: "
@@ -2050,6 +2091,9 @@ class Exp_TimeDART(Exp_Basic):
                     "checkpoint selection and patience are deferred."
                 )
             else:
+                if calibrated_utility and selection_value < best_trained_value:
+                    best_trained_value = float(selection_value)
+                    torch.save(self.model.state_dict(), os.path.join(path, "checkpoint_best_trained.pth"))
                 early_stopping(
                     selection_value,
                     self.model,
@@ -2068,6 +2112,9 @@ class Exp_TimeDART(Exp_Basic):
                     self.args,
                 )
 
+        if calibrated_utility:
+            torch.save(self.model.state_dict(), os.path.join(path, "checkpoint_last.pth"))
+            print(f"[AUDIT] TRAINED_BEST_SELECTION={best_trained_value:.7f} LAST_SELECTION={history[-1]['selection_value']:.7f}")
         best_model_path = (
             path
             + "/"
@@ -2151,6 +2198,7 @@ class Exp_TimeDART(Exp_Basic):
         utility_base_prediction_batches = []
         utility_event_prediction_batches = []
         utility_composition_prediction_batches = []
+        utility_soft_prediction_batches = []
         vali_data = getattr(vali_loader, "dataset", None)
         core_model = (
             self.model.module
@@ -2191,6 +2239,8 @@ class Exp_TimeDART(Exp_Basic):
 
                     if getattr(core_model, "utility_wiki", False):
                         utility_aux = core_model._last_utility_aux
+                        if core_model.utility_adapter_mode == "calibrated_evidence":
+                            utility_soft_prediction_batches.append(utility_aux["soft_prediction"].detach().float().cpu().numpy())
                         utility_granularity_batches.append(
                             utility_aux["granularity"].detach().cpu().numpy()
                         )
@@ -2547,6 +2597,23 @@ class Exp_TimeDART(Exp_Basic):
                 utility_base_original = np.clip(
                     utility_base_original, 0.0, rated_power
                 )
+            if utility_soft_prediction_batches:
+                soft_scaled = np.concatenate(utility_soft_prediction_batches, axis=0)
+                soft_original = soft_scaled * target_scale + target_mean if can_inverse_target else soft_scaled
+                if rated_power > 0:
+                    soft_original = np.clip(soft_original, 0.0, rated_power)
+                oracle_error = np.abs(utility_base_original - true_original)
+                for candidate_index, (_, scaled) in enumerate(branch_predictions):
+                    original = scaled * target_scale + target_mean if can_inverse_target else scaled
+                    if rated_power > 0:
+                        original = np.clip(original, 0.0, rated_power)
+                    candidate_error = np.abs(original - true_original)
+                    candidate_error = np.where(availability[:, candidate_index, None, None], candidate_error, np.inf)
+                    oracle_error = np.minimum(oracle_error, candidate_error)
+                # Oracle uses validation labels solely as a diagnostic lower
+                # bound; it never chooses a prediction, checkpoint or gradient.
+                diagnostics["utility_soft_mae_kw"] = float(np.abs(soft_original - true_original).mean())
+                diagnostics["utility_oracle_mae_kw"] = float(oracle_error.mean())
             trend_indices = trend_probabilities.argmax(axis=-1)
             trend_names = ("down", "stable", "up")
             for trend_index, trend_name in enumerate(trend_names):

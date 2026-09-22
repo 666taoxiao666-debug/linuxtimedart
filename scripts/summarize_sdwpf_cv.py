@@ -63,6 +63,8 @@ def parse_summary(path: Path) -> list[CVRun]:
             candidates[current] = []
             continue
 
+        if "Phase: adapter_warmup" in line:
+            continue
         epoch = EPOCH_RE.match(line)
         if epoch and current is not None:
             candidates[current].append(

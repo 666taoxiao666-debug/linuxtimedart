@@ -1,16 +1,38 @@
 import tempfile
+import json
 import unittest
 from pathlib import Path
+from unittest.mock import Mock, patch
 
 import numpy as np
 import torch
 from torch import nn
+from torch.utils.data import Dataset, DataLoader
 
 from utils.utility_wiki import (
     EvidenceResidualAdapter, configure_frozen_utility_mode,
     evidence_training_weights, utility_candidate_specialization_loss,
     utility_decision_loss,
 )
+
+
+class _CalibrationWindowDataset(Dataset):
+    def __init__(self, flag):
+        self.flag, self.seq_len, self.pred_len = flag, 24, 3
+        self.window_starts = np.arange(0, 40, 2)
+        offset = 0 if flag == "train" else 1000
+        self.dates = np.datetime64("2020-01-01") + (np.arange(70) + offset).astype("timedelta64[m]")
+        self.data_x = np.zeros((70, 8), dtype=np.float32)
+        self.data_x[:, 0] = np.tile([5., 12.], 35)
+        self.data_x[:, -1] = 700 + 200 * np.sin(np.arange(70) / 5)
+
+    def __len__(self):
+        return len(self.window_starts)
+
+    def __getitem__(self, index):
+        start = self.window_starts[index]
+        return (self.data_x[start:start + 24], self.data_x[start + 24:start + 27],
+                np.zeros((24, 1), dtype=np.float32), np.zeros((3, 1), dtype=np.float32))
 
 
 class HierarchicalUtilityTests(unittest.TestCase):
@@ -95,6 +117,12 @@ class HierarchicalUtilityTests(unittest.TestCase):
         self.assertTrue(torch.all(scores.grad[..., 1] > 0))
 
     def test_full_model_hierarchical_forward_backward_and_reload(self):
+        self._exercise_full_model("hierarchical_evidence")
+
+    def test_full_model_calibrated_forward_backward_and_reload(self):
+        self._exercise_full_model("calibrated_evidence")
+
+    def _exercise_full_model(self, adapter_mode):
         from run import build_parser, configure_args
         from models.TimeDART import PromptGuidedModel
         from utils.wind_regime_wiki import load_wind_regime_wiki_spec
@@ -112,8 +140,13 @@ class HierarchicalUtilityTests(unittest.TestCase):
                 "--task_name", "finetune", "--model_id", "SDWPF",
                 "--model", "PromptTimeDART", "--data", "SDWPF",
                 "--prompt_router", "compositional_wiki", "--utility_wiki",
-                "--utility_adapter_mode", "hierarchical_evidence",
+                "--utility_adapter_mode", adapter_mode,
+                "--is_training", "0", "--freq", "10min",
                 "--utility_intervention_floor", "1",
+                # The synthetic semantic keys are random, not a pretrained
+                # retriever. Enable their soft support while retaining the
+                # physical-rule mask, making this gradient fixture reliable.
+                "--scene_wiki_activation_threshold", "0",
                 "--scene_wiki_config", str(config), "--scene_wiki_embeddings", str(bundle),
                 "--input_len", "24", "--pred_len", "3", "--patch_len", "6", "--stride", "6",
                 "--d_model", "16", "--d_ff", "32", "--n_heads", "4",
@@ -147,12 +180,55 @@ class HierarchicalUtilityTests(unittest.TestCase):
             self.assertTrue(torch.equal(base, aux["base_prediction"]))
             self.assertTrue(torch.equal(aux["event_prediction"], aux["composition_prediction"]))
             self.assertFalse(torch.equal(aux["event_prediction"], base))
+            if adapter_mode == "calibrated_evidence":
+                model.utility_event_adapter.requires_grad_(False)
+                model.utility_composition_adapter.requires_grad_(False)
+                model.utility_gate.requires_grad_(True)
+                model.zero_grad(set_to_none=True)
+                configure_frozen_utility_mode(model)
+                prediction = model(history)
+                self.assertTrue(torch.equal(prediction, model._last_utility_aux["soft_prediction"]))
+                (prediction - (base + 25)).abs().mean().backward()
+                gate_grad = sum(p.grad.abs().sum().item() for p in model.utility_gate.parameters() if p.grad is not None)
+                self.assertGreater(gate_grad, 0.)
+                self.assertTrue(all(p.grad is None for p in model.utility_event_adapter.parameters()))
             model.eval()
             saved = Path(directory) / "checkpoint.pth"
             torch.save(model.state_dict(), saved)
             restored = PromptGuidedModel(args).eval()
             restored.load_state_dict(torch.load(saved, weights_only=True))
             self.assertTrue(torch.equal(model(history), restored(history)))
+            if adapter_mode == "calibrated_evidence":
+                # Exercise the real epoch-zero, two-stage train/valid loop,
+                # unequal loader lengths, scheduler, and all checkpoint saves.
+                from exp.exp_timedart import Exp_TimeDART
+                args.checkpoints = str(Path(directory) / "checkpoints")
+                args.freeze_non_utility = True
+                args.utility_adapter_warmup_epochs = 1
+                args.train_epochs, args.patience, args.batch_size = 3, 3, 8
+                args.lradj, args.pct_start = "step", .2
+                args.validate_before_training = True
+                experiment = Exp_TimeDART.__new__(Exp_TimeDART)
+                experiment.args, experiment.model, experiment.device = args, restored, args.device
+                experiment.writer = Mock()
+                experiment.amp_enabled = False
+                experiment.grad_scaler = torch.amp.GradScaler("cuda", enabled=False)
+                datasets = {flag: _CalibrationWindowDataset(flag) for flag in ("train", "val")}
+                experiment._get_data = lambda flag: (datasets[flag], DataLoader(datasets[flag], batch_size=8))
+                # Scaler already installed above. Scene-support fitting itself
+                # has separate tests; this tiny fixture cannot contain all scenes.
+                experiment._calibrate_regime_labels = Mock()
+                one_cycle = torch.optim.lr_scheduler.OneCycleLR
+                with patch("exp.exp_timedart.lr_scheduler.OneCycleLR", wraps=one_cycle) as scheduler:
+                    experiment.train("tiny_calibrated")
+                self.assertEqual(scheduler.call_count, 2)
+                self.assertEqual([call.kwargs["total_steps"] for call in scheduler.call_args_list], [2, 2])
+                folder = Path(args.checkpoints) / "tiny_calibrated"
+                for name in ("checkpoint.pth", "checkpoint_best_trained.pth", "checkpoint_last.pth"):
+                    self.assertTrue((folder / name).is_file(), name)
+                manifest = json.loads((folder / "run_manifest.json").read_text(encoding="utf-8"))
+                self.assertEqual(manifest["extra"]["epochs_completed"], 3)
+                self.assertLess(args.utility_calibration_audit["adapter_target_end"], args.utility_calibration_audit["gate_target_start"])
 
 
 if __name__ == "__main__":

@@ -455,7 +455,8 @@ def build_parser():
     parser.add_argument("--utility_candidate_loss_weight", type=float, default=0.1)
     parser.add_argument("--utility_ranking_loss_weight", type=float, default=0.1)
     parser.add_argument("--utility_ranking_margin", type=float, default=0.01)
-    parser.add_argument("--utility_adapter_mode", choices=["legacy", "hierarchical_evidence"], default="legacy")
+    parser.add_argument("--utility_adapter_mode", choices=["legacy", "hierarchical_evidence", "calibrated_evidence"], default="legacy")
+    parser.add_argument("--utility_calibration_fraction", type=float, default=0.2)
     parser.add_argument("--utility_event_max_scale", type=float, default=0.5)
     parser.add_argument("--utility_composition_max_scale", type=float, default=0.25)
     parser.add_argument(
@@ -759,11 +760,18 @@ def configure_args(args):
     for name in ("utility_event_max_scale", "utility_composition_max_scale"):
         if not np.isfinite(getattr(args, name)) or getattr(args, name) <= 0:
             raise ValueError(f"{name} must be finite and positive")
-    if args.utility_adapter_mode == "hierarchical_evidence":
+    if args.utility_adapter_mode in ("hierarchical_evidence", "calibrated_evidence"):
         if not args.utility_wiki:
             raise ValueError("hierarchical_evidence requires --utility_wiki")
         if args.utility_intervention_floor != 1.0:
             raise ValueError("hierarchical_evidence requires --utility_intervention_floor 1 to align gain supervision and execution")
+    if args.utility_adapter_mode == "calibrated_evidence":
+        if args.freq != "10min":
+            raise ValueError("calibrated_evidence physical windows require freq=10min")
+        if not 0 < args.utility_calibration_fraction < 0.5:
+            raise ValueError("utility_calibration_fraction must lie in (0, 0.5)")
+        if args.is_training and (not args.freeze_non_utility or args.utility_adapter_warmup_epochs < 1):
+            raise ValueError("calibrated_evidence training requires a frozen overlay and at least one adapter epoch")
     if args.utility_decision_loss_weight < 0.0:
         raise ValueError("utility_decision_loss_weight cannot be negative")
     if args.utility_candidate_loss_weight < 0.0:
