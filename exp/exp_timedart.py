@@ -24,6 +24,7 @@ from utils.utility_wiki import (
 )
 from utils.utility_calibration import utility_loaders
 from utils.regime_labels import (
+    REGIME_NAMES,
     calibrate_regime_thresholds_from_dataset,
     summarize_regime_confusion,
     update_regime_confusion,
@@ -2615,7 +2616,9 @@ class Exp_TimeDART(Exp_Basic):
                 diagnostics["utility_soft_mae_kw"] = float(np.abs(soft_original - true_original).mean())
                 diagnostics["utility_oracle_mae_kw"] = float(oracle_error.mean())
             trend_indices = trend_probabilities.argmax(axis=-1)
-            trend_names = ("down", "stable", "up")
+            # Follow the classifier's pseudo-label IDs: 0=stable, 1=up, 2=down.
+            # Keep the established short diagnostic keys without relabeling IDs.
+            trend_names = tuple(name.removeprefix("ramp_") for name in REGIME_NAMES)
             for trend_index, trend_name in enumerate(trend_names):
                 sample_mask = trend_indices == trend_index
                 diagnostics[f"utility_trend_{trend_name}_samples"] = int(

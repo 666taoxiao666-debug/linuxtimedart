@@ -41,6 +41,30 @@ class _PersistenceModel(nn.Module):
         return batch_x[:, -1:, -1:].expand(-1, 2, -1)
 
 
+class _KnownTrendInterventions(nn.Module):
+    utility_wiki = True
+    utility_adapter_mode = "legacy"
+
+    def forward(self, batch_x):
+        from utils.regime_labels import compute_regime_pseudo_labels_from_series
+        labels = compute_regime_pseudo_labels_from_series(
+            batch_x[..., -1], method="trend_quantile", down_thresh=-1., up_thresh=1.,
+        )
+        base = torch.full((len(batch_x), 2, 1), 10.)
+        # Against zero targets: stable improves 10%, up worsens 10%, down improves 50%.
+        prediction = torch.tensor([9., 11., 5.])[labels, None, None].expand(-1, 2, 1)
+        self._last_utility_aux = {
+            "granularity": torch.ones(len(batch_x), 2, dtype=torch.long),
+            "strength": torch.ones(len(batch_x), 2),
+            "utilities": torch.zeros(len(batch_x), 2, 2),
+            "trend_probs": torch.nn.functional.one_hot(labels, 3).float(),
+            "availability": torch.tensor([[True, False]]).expand(len(batch_x), -1),
+            "base_prediction": base, "event_prediction": prediction,
+            "composition_prediction": base,
+        }
+        return prediction
+
+
 class _TransferModel(nn.Module):
     def __init__(self):
         super().__init__()
@@ -213,6 +237,22 @@ class ExperimentAuditTests(unittest.TestCase):
         result = experiment.valid(loader, nn.MSELoss())
         self.assertAlmostEqual(result["mae"], result["persistence_mae"])
         self.assertAlmostEqual(result["mae_skill_vs_persistence_pct"], 0.0)
+
+    def test_validation_trend_names_match_history_label_semantics(self):
+        experiment = Exp_TimeDART.__new__(Exp_TimeDART)
+        experiment.model = _KnownTrendInterventions()
+        experiment.device = torch.device("cpu")
+        experiment.amp_enabled = False
+        experiment.args = Namespace(features="MS", pred_len=2, feature_columns=["Wspd", "power"])
+        batch_x = torch.zeros(3, 4, 2)
+        batch_x[..., -1] = torch.tensor([[4., 4., 4., 4.], [1., 2., 3., 4.], [4., 3., 2., 1.]])
+        batch_y = torch.zeros(3, 2, 2)
+        marks = torch.zeros(3, 1, 1)
+        result = experiment.valid([(batch_x, batch_y, marks, marks)], nn.MSELoss())
+        for name, gain in (("stable", 10.), ("up", -10.), ("down", 50.)):
+            self.assertEqual(result["diagnostics"][f"utility_trend_{name}_samples"], 1)
+            self.assertAlmostEqual(result["diagnostics"][f"utility_trend_{name}_gain_vs_base_pct"], gain, places=4)
+        self.assertAlmostEqual(result["original_mae"], 25 / 3, places=5)
 
     def test_transfer_audit_reports_complete_required_backbone(self):
         source = _TransferModel()
