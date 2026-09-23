@@ -12,6 +12,9 @@ case "${1:-}" in
         [[ ! -f "$directory/status.env" ]] || cat "$directory/status.env"
         if [[ -f "$directory/summary.txt" ]]; then
             cat "$directory/summary.txt"
+            if [[ -f "$directory/validation_metrics.json" && -f "$directory/gain_calibration.json" ]]; then
+                python scripts/report_gain_calibration.py "$directory"
+            fi
         elif [[ -f "$directory/launch.log" ]]; then
             tail -n 30 "$directory/launch.log"
         fi

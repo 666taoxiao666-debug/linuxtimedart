@@ -64,5 +64,7 @@ bash scripts/train/SDWPF_launch_gain_calibration.sh --status
 `ACTIVE_POLICY_CELLS=0` 表示训练区间未支持任何有效修正，不是程序故障。
 每个事件保留多少趋势/步长单元在 launch.log 的 `[GAIN]` 行中，完整比例、
 区块窗口数和收益在 `gain_calibration.json`，三组验证指标在 `validation_metrics.json`。
+`--status` 还会从已有验证指标打印新策略与旧神经门控的逐事件介入次数、
+介入后收益/伤害比例和各趋势收益；已有结果无需重跑即可查看。
 策略 buffer 随 `checkpoint.pth` 保存，旧无策略 buffer 的 checkpoint 仍可加载。
 不要把此策略 checkpoint 当作下一次专家校准的源；源必须是原训练后的神经门控 checkpoint。
