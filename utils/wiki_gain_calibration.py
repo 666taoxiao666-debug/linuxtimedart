@@ -78,7 +78,7 @@ def fit_gain_policy(base, candidates, target, available, trend, block_ids, *,
 
 
 def route_policy(base, candidates, target, available, trend, alpha, gain,
-                 *, min_gain=.001, clip_bounds=None):
+                 *, min_gain=.001, clip_bounds=None, return_actions=False):
     """Replay the hard, physically masked inference route on train windows."""
     base = np.asarray(base, dtype=np.float64)
     candidates = np.asarray(candidates, dtype=np.float64)
@@ -102,7 +102,10 @@ def route_policy(base, candidates, target, available, trend, alpha, gain,
     prediction = base + np.where(best > min_gain, amplitude * correction, 0.)
     if clip_bounds is not None:
         prediction = np.clip(prediction, *clip_bounds)
-    return np.abs(prediction - target)
+    errors = np.abs(prediction - target)
+    if return_actions:
+        return errors, np.where(best > min_gain, selected + 1, 0)
+    return errors
 
 
 def joint_block_gains(base, candidates, target, available, trend, block_ids,
@@ -169,3 +172,67 @@ def refine_joint_policy(base, candidates, target, available, trend, block_ids,
                               'score_after': after, 'block_gains_before': before_blocks.tolist(),
                               'block_gains_after': after_blocks.tolist(),
                               'removed_groups': removed, 'global_amplitude_multiplier': best_multiplier}
+
+
+def prune_events_on_train_holdout(base, candidates, target, available, trend,
+                                  block_ids, alpha, gain, *, holdout_block,
+                                  min_gain=.001, clip_bounds=None):
+    """Select a small set of event families using only the later TRAIN block.
+
+    This block is a model-selection set, not an untouched estimate of policy
+    performance. Evaluate the resulting frozen policy on the separate val set.
+    """
+    alpha, gain = np.array(alpha, copy=True), np.array(gain, copy=True)
+    mask = np.asarray(block_ids) == holdout_block
+    if not mask.any():
+        raise ValueError('Empty training selection block')
+    base, target = np.asarray(base), np.asarray(target)
+    clipped_base = np.clip(base, *clip_bounds) if clip_bounds is not None else base
+    def realized(a, g):
+        errors, actions = route_policy(base, candidates, target, available, trend,
+                                       a, g, min_gain=min_gain,
+                                       clip_bounds=clip_bounds, return_actions=True)
+        return float((np.abs(clipped_base - target)[mask] - errors[mask]).mean()), errors, actions
+    before, _, _ = realized(alpha, gain)
+    removed = []
+    # Prune by the change in FINAL routed MAE, including any substitute event
+    # that wins once an event is removed. No validation label is read here.
+    while True:
+        current, errors, actions = realized(alpha, gain)
+        best_improvement, best_event, best_trial = 1e-8, None, None
+        for event in range(alpha.shape[-1]):
+            if not np.any(alpha[..., event]):
+                continue
+            trial_alpha, trial_gain = alpha.copy(), gain.copy()
+            trial_alpha[..., event] = 0.
+            trial_gain[..., event] = 0.
+            trial_gain_value, _, _ = realized(trial_alpha, trial_gain)
+            improvement = trial_gain_value - current
+            if improvement > best_improvement:
+                best_improvement = improvement
+                best_event = event
+                best_trial = trial_alpha, trial_gain
+        if best_event is None:
+            break
+        selected = (actions[mask] == best_event + 1)
+        base_error = np.abs(clipped_base - target)[mask]
+        selected_gain = (float((base_error[selected] - errors[mask][selected]).mean())
+                         if selected.any() else None)
+        alpha, gain = best_trial
+        removed.append({'candidate': best_event,
+                        'selected_positions': int(selected.sum()),
+                        'selected_gain_before_pruning': selected_gain,
+                        'joint_gain_improvement': best_improvement})
+    after, final_errors, final_actions = realized(alpha, gain)
+    base_error = np.abs(clipped_base - target)[mask]
+    event_outcomes = []
+    for event in range(alpha.shape[-1]):
+        selected = final_actions[mask] == event + 1
+        event_outcomes.append({'candidate': event, 'selected_positions': int(selected.sum()),
+                               'selected_gain': (float((base_error[selected] - final_errors[mask][selected]).mean())
+                                                 if selected.any() else None)})
+    return alpha, gain, {'selection_block': int(holdout_block),
+                         'joint_gain_before': before, 'joint_gain_after': after,
+                         'removed_events': removed, 'retained_event_outcomes': event_outcomes,
+                         'uses_validation_labels': False,
+                         'train_block_is_independent_evaluation': False}

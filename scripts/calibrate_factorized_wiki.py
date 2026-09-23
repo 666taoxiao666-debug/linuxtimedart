@@ -16,7 +16,7 @@ from exp.exp_timedart import Exp_TimeDART
 from utils.experiment_audit import checkpoint_info, data_file_info, write_run_manifest
 from utils.utility_calibration import split_utility_training
 from utils.wiki_gain_calibration import (calibration_blocks, fit_gain_policy,
-                                         joint_block_gains, refine_joint_policy)
+                                         prune_events_on_train_holdout, refine_joint_policy)
 
 
 def resolve_source(source, fold, seed):
@@ -120,19 +120,27 @@ def calibrate(exp, source_manifest, checkpoint, output, blocks=3, min_windows=32
     alpha, gain, joint_audit = refine_joint_policy(
         **arrays, block_ids=ids, alpha=alpha, gain=gain, fit_blocks=fit_blocks,
         penalty=penalty, min_gain=exp.args.utility_min_gain, clip_bounds=bounds)
-    holdout_gain = float(joint_block_gains(
-        **arrays, block_ids=ids, alpha=alpha, gain=gain, blocks=[blocks - 1],
-        min_gain=exp.args.utility_min_gain, clip_bounds=bounds)[0])
-    # This is a distinct, later portion of original TRAIN. Its labels may
-    # accept or reject the whole frozen policy, but are never used to refit it.
+    alpha, gain, holdout_audit = prune_events_on_train_holdout(
+        **arrays, block_ids=ids, alpha=alpha, gain=gain,
+        holdout_block=blocks - 1, min_gain=exp.args.utility_min_gain,
+        clip_bounds=bounds)
+    holdout_gain = holdout_audit['joint_gain_after']
+    # This later original-TRAIN block now selects a sparse set of event
+    # families. It is not claimed as an independent performance estimate.
     holdout_accepted = np.isfinite(holdout_gain) and holdout_gain > 0.
     if not holdout_accepted:
         alpha[:] = 0.
         gain[:] = 0.
-    joint_audit.update({'holdout_block': blocks - 1, 'holdout_gain_before_decision': holdout_gain,
+    joint_audit.update({'holdout_event_selection': holdout_audit,
                         'holdout_accepted': bool(holdout_accepted),
-                        'fit_uses_holdout_labels': False})
+                        'fit_uses_holdout_labels': True})
     names = [*exp.model.scene_wiki_scene_ids, 'composition']
+    for row in holdout_audit['removed_events']:
+        row['candidate_name'] = names[row['candidate']]
+        row['joint_gain_improvement_kw'] = row['joint_gain_improvement'] * scale
+    for row in holdout_audit['retained_event_outcomes']:
+        row['candidate_name'] = names[row['candidate']]
+        row['selected_gain_kw'] = row['selected_gain'] * scale if row['selected_gain'] is not None else None
     for row in rows:
         row['candidate_name'] = names[row['candidate']]
         row['score_kw'] = row['score'] * scale
@@ -172,8 +180,11 @@ def calibrate(exp, source_manifest, checkpoint, output, blocks=3, min_windows=32
              f'GAIN_VS_TREND_KW={base_mae - new_mae:.6f}',
              f'GAIN_VS_TREND_PCT={100 * (1 - new_mae / max(base_mae, 1e-12)):.6f}',
              f'TRAIN_HOLDOUT_JOINT_GAIN_KW={holdout_gain * scale:.6f}',
+             f'TRAIN_HOLDOUT_GAIN_BEFORE_EVENT_SELECTION_KW={holdout_audit["joint_gain_before"] * scale:.6f}',
              f'TRAIN_HOLDOUT_POLICY_ACCEPTED={int(holdout_accepted)}',
              f'JOINT_REMOVED_EVENT_TREND_GROUPS={len(joint_audit["removed_groups"])}',
+             f'TRAIN_HOLDOUT_REMOVED_EVENT_FAMILIES={len(holdout_audit["removed_events"])}',
+             'TRAIN_HOLDOUT_REMOVED_EVENTS=' + ','.join(row['candidate_name'] for row in holdout_audit['removed_events']),
              f'ACTIVE_POLICY_CELLS={int((alpha > 0).sum())}', f'CHECKPOINT={target}']
     (output / 'summary.txt').write_text('\n'.join(lines) + '\n', encoding='utf-8')
     print('\n'.join(lines))

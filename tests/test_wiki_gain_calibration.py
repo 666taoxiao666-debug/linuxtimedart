@@ -9,7 +9,8 @@ import torch
 
 from utils.factorized_wiki import FactorUtilityGate
 from utils.wiki_gain_calibration import (calibration_blocks, fit_gain_policy,
-                                         joint_block_gains, refine_joint_policy,
+                                         joint_block_gains, prune_events_on_train_holdout,
+                                         refine_joint_policy,
                                          route_policy)
 
 
@@ -144,6 +145,19 @@ class GainCalibrationTests(unittest.TestCase):
         after = joint_block_gains(base, candidates, target, available, trend,
                                   blocks, adjusted, scores, blocks=[2])
         self.assertGreater(after[0], 0.)
+        pruned, pruned_scores, selection = prune_events_on_train_holdout(
+            base, candidates, target, available, trend, blocks, alpha, gain,
+            holdout_block=2)
+        self.assertEqual(pruned[0, 0, 0], 0.)
+        self.assertEqual(pruned_scores[0, 0, 0], 0.)
+        self.assertGreater(selection['joint_gain_after'], selection['joint_gain_before'])
+        self.assertEqual(selection['removed_events'][0]['candidate'], 0)
+        altered_fit_targets = target.copy()
+        altered_fit_targets[blocks != 2] = 999.
+        same, _, _ = prune_events_on_train_holdout(
+            base, candidates, altered_fit_targets, available, trend, blocks,
+            alpha, gain, holdout_block=2)
+        np.testing.assert_array_equal(pruned, same)
 
     def test_route_matches_hard_selection_and_abstention(self):
         base = np.array([[2., 2.], [2., 2.]])
