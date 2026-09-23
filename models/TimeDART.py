@@ -486,6 +486,7 @@ class Model(nn.Module):
                     self.utility_gate = FactorUtilityGate(
                         args.d_model, args.pred_len, PHYSICAL_FEATURE_DIM, self.num_modes,
                         args.utility_gate_temperature, args.utility_min_gain,
+                        num_candidates=self.scene_wiki_router.num_factors + 1,
                     )
 
     def _factorized_forecast(self, base_hidden, state, physical, stdevs, means, last):
@@ -529,6 +530,9 @@ class Model(nn.Module):
             torch.cat([rules, (rules.clamp(0, 1) * weights).sum(-1, keepdim=True)], -1),
         )
         corrections = corrections * (scale[..., None] if self.use_norm else 1.)
+        if bool(self.utility_gate.policy_enabled):
+            alpha = self.utility_gate.policy_alpha[state['trend_probs'].argmax(-1)]
+            corrections = corrections * alpha[:, :, None, :]
         prediction, soft, hard, action = factorized_route(
             base, corrections, scores, availability, self.utility_gate.min_gain,
             self.utility_gate.temperature, self.utility_gate.training,

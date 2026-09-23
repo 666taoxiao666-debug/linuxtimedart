@@ -1,5 +1,7 @@
 import tempfile
 import copy
+import os
+from types import SimpleNamespace
 import json
 import unittest
 from pathlib import Path
@@ -260,6 +262,31 @@ class HierarchicalUtilityTests(unittest.TestCase):
                 self.assertLess(args.utility_calibration_audit["adapter_target_end"], args.utility_calibration_audit["gate_target_start"])
                 if factorized:
                     self.assertTrue(manifest['args']['utility_factorized'])
+                    from scripts.calibrate_factorized_wiki import calibrate, restore_experiment
+                    for dataset in datasets.values():
+                        dataset.scaler = SimpleNamespace(mean_=np.zeros(8), scale_=np.ones(8))
+                    requested = []
+                    def tracked_data(flag):
+                        requested.append(flag)
+                        return datasets[flag], DataLoader(datasets[flag], batch_size=8)
+                    policy_dir = Path(directory) / 'gain_policy'
+                    policy_dir.mkdir()
+                    with patch.dict(os.environ, {'SDWPF_LOG_DIR': str(policy_dir)}):
+                        policy_exp = restore_experiment(manifest['args'], policy_dir)
+                    policy_exp._get_data = tracked_data
+                    try:
+                        result = calibrate(policy_exp, manifest, folder / 'checkpoint_last.pth',
+                                           policy_dir, blocks=2, min_windows=1)
+                    finally:
+                        policy_exp.writer.close()
+                    self.assertEqual(requested, ['train', 'val'])
+                    self.assertEqual(set(result), {'calibrated', 'trend', 'previous_neural_last'})
+                    self.assertTrue((policy_dir / 'summary.txt').is_file())
+                    policy = PromptGuidedModel(args).eval()
+                    policy.load_state_dict(torch.load(policy_dir / 'checkpoint.pth', weights_only=True))
+                    self.assertTrue(policy.utility_gate.policy_enabled)
+                    with torch.no_grad():
+                        torch.testing.assert_close(policy(history), policy_exp.model(history))
 
 
 if __name__ == "__main__":

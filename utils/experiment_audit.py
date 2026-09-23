@@ -325,6 +325,7 @@ def model_runtime_summary(model, args=None) -> dict:
             "candidate_pool": "all_physically_supported_events_plus_topk_composition" if getattr(core, "utility_factorized", False) else "strongest_event_and_composition",
             "semantic_adaptation": "trainable_projection_and_query_frozen_anchors" if getattr(core, "utility_factorized", False) else "legacy_router",
             "semantic_threshold_used": not bool(getattr(core, "utility_factorized", False)),
+            "empirical_policy_enabled": bool(getattr(utility_gate, "policy_enabled", False)),
             "num_trend_modes": _jsonable(
                 getattr(utility_gate, "num_trend_modes", None)
             ),

@@ -57,12 +57,15 @@ class FactorizedEvidenceAdapter(nn.Module):
 
 class FactorUtilityGate(nn.Module):
     def __init__(self, d_model, pred_len, physical_dim, num_modes=3,
-                 temperature=.05, min_gain=.001):
+                 temperature=.05, min_gain=.001, num_candidates=5):
         super().__init__()
         self.temperature, self.min_gain = float(temperature), float(min_gain)
         self.pred_len = pred_len
         self.candidate_conditioned, self.physical_dim = True, physical_dim
         self.num_trend_modes, self.intervention_floor = num_modes, 1.
+        self.register_buffer('policy_alpha', torch.zeros(num_modes, pred_len, num_candidates))
+        self.register_buffer('policy_gain', torch.zeros(num_modes, pred_len, num_candidates))
+        self.register_buffer('policy_enabled', torch.tensor(False))
         self.estimator = nn.Sequential(
             nn.LayerNorm(3 * d_model + physical_dim + num_modes + pred_len + 2),
             nn.Linear(3 * d_model + physical_dim + num_modes + pred_len + 2, d_model),
@@ -70,8 +73,33 @@ class FactorUtilityGate(nn.Module):
         nn.init.zeros_(self.estimator[-1].weight)
         nn.init.zeros_(self.estimator[-1].bias)
 
+    def _load_from_state_dict(self, state_dict, prefix, *args, **kwargs):
+        # Older neural-gate checkpoints have none of these buffers. A partially
+        # missing new policy is NOT accepted as an old checkpoint.
+        names = ('policy_alpha', 'policy_gain', 'policy_enabled')
+        if not any(prefix + name in state_dict for name in names):
+            for name in names:
+                state_dict[prefix + name] = torch.zeros_like(getattr(self, name))
+        super()._load_from_state_dict(state_dict, prefix, *args, **kwargs)
+
+    @torch.no_grad()
+    def install_policy(self, alpha, gain):
+        alpha = torch.as_tensor(alpha, dtype=self.policy_alpha.dtype, device=self.policy_alpha.device)
+        gain = torch.as_tensor(gain, dtype=self.policy_gain.dtype, device=self.policy_gain.device)
+        if alpha.shape != self.policy_alpha.shape or gain.shape != self.policy_gain.shape:
+            raise ValueError('Empirical policy shape mismatch')
+        if not torch.isfinite(alpha).all() or not torch.isfinite(gain).all() or (alpha < 0).any() or (alpha > 1).any():
+            raise ValueError('Policy must be finite with alpha in [0,1]')
+        self.policy_alpha.copy_(alpha)
+        self.policy_gain.copy_(gain)
+        self.policy_enabled.fill_(True)
+
     def forward(self, hidden, trend, physical, descriptors, corrections, support, rules):
         # Each event AND the composition receives a utility for every horizon.
+        if bool(self.policy_enabled):
+            if self.training:
+                raise RuntimeError('Calibrated table policy is inference-only; disable before neural training')
+            return self.policy_gain[trend.argmax(-1)]
         count = descriptors.size(1)
         common = torch.cat([hidden.mean(1), hidden[:, -1], trend, physical], -1).detach()
         state = torch.cat([common[:, None].expand(-1, count, -1), descriptors.detach(),
