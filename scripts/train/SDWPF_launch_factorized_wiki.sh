@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+set -euo pipefail
+cd "$(dirname "${BASH_SOURCE[0]}")/../.."
+# Independent physical-event experts; reuse matched pretrain + trend checkpoints.
+export UTILITY_FACTORIZED=1
+export UTILITY_ADAPTER_MODE=calibrated_evidence
+export UTILITY_CALIBRATION_FRACTION="${UTILITY_CALIBRATION_FRACTION:-0.2}"
+export UTILITY_EVENT_MAX_SCALE="${UTILITY_EVENT_MAX_SCALE:-0.2}"
+export UTILITY_COMPOSITION_MAX_SCALE="${UTILITY_COMPOSITION_MAX_SCALE:-0.05}"
+export UTILITY_ADAPTER_WARMUP_EPOCHS="${UTILITY_ADAPTER_WARMUP_EPOCHS:-3}"
+export TRAIN_EPOCHS="${TRAIN_EPOCHS:-10}" PATIENCE="${PATIENCE:-7}"
+export UTILITY_LEARNING_RATE="${UTILITY_LEARNING_RATE:-0.0001}"
+export UTILITY_DECISION_LOSS_WEIGHT="${UTILITY_DECISION_LOSS_WEIGHT:-0}"
+export UTILITY_GATE_TEMPERATURE="${UTILITY_GATE_TEMPERATURE:-0.05}"
+export UTILITY_MIN_GAIN="${UTILITY_MIN_GAIN:-0.001}"
+exec bash scripts/train/SDWPF_launch_hierarchical_wiki.sh "$@"

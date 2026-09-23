@@ -24,6 +24,7 @@ from layers.TimeDART_EncDec import (
 from layers.Embed import Patch, PatchEmbedding, PositionalEncoding, TokenEmbedding_TimeDART
 from utils.regime_labels import compute_regime_pseudo_labels_from_series
 from utils.utility_wiki import EvidenceResidualAdapter
+from utils.factorized_wiki import FactorizedEvidenceAdapter, FactorUtilityGate, factorized_route
 from utils.utility_calibration import (
     PHYSICAL_FEATURE_DIM, physical_history_features, utility_action_probabilities,
 )
@@ -123,6 +124,7 @@ class Model(nn.Module):
         self.prompt_router = getattr(args, "prompt_router", "trend")
         self.utility_wiki = bool(getattr(args, "utility_wiki", False))
         self.utility_adapter_mode = getattr(args, "utility_adapter_mode", "legacy")
+        self.utility_factorized = bool(getattr(args, "utility_factorized", False))
         self.features = getattr(args, "features", "M")
         self.enc_in = int(getattr(args, "enc_in", 1))
         self.feature_columns = list(getattr(args, "feature_columns", None) or [])
@@ -475,6 +477,83 @@ class Model(nn.Module):
                         self.num_modes, getattr(args, "utility_composition_max_scale", 0.25),
                         physical_dim=physical_dim,
                     )
+                if self.utility_factorized:
+                    self.utility_event_adapter = FactorizedEvidenceAdapter(
+                        args.d_model, args.pred_len, self.scene_wiki_router.num_factors,
+                        self.scene_wiki_router.semantic_keys.size(1), PHYSICAL_FEATURE_DIM,
+                        self.num_modes, args.utility_event_max_scale,
+                    )
+                    self.utility_gate = FactorUtilityGate(
+                        args.d_model, args.pred_len, PHYSICAL_FEATURE_DIM, self.num_modes,
+                        args.utility_gate_temperature, args.utility_min_gain,
+                    )
+
+    def _factorized_forecast(self, base_hidden, state, physical, stdevs, means, last):
+        """Independent evidence-supported events compete by horizon utility."""
+        base = self.head(base_hidden)
+        power_slice = slice(-1, None) if self.mix_channels else slice(None)
+        scale = stdevs[:, :, power_slice] if self.use_norm else 1.
+        if self.residual_forecast:
+            base = base * scale
+            base = last[:, :, power_slice] + torch.sigmoid(self.residual_gate_logit) * base
+        elif self.use_norm:
+            base = base * scale + means[:, :, power_slice]
+        rules = state['rule_logits'].detach()
+        support = (1. - torch.exp(-self.scene_wiki_router.rule_weight * rules.clamp(0, 1)))
+        support = support * self.scene_wiki_router.factor_reliability[None]
+        events, descriptors = self.utility_event_adapter(
+            base_hidden, state['trend_probs'], rules, support, physical,
+            self.scene_wiki_router.semantic_keys,
+        )
+        # All supported events may compete individually. The finer candidate
+        # combines only the configured top-k physical supports, not future error.
+        top = support.topk(self.scene_wiki_router.top_k, dim=-1).indices
+        composition_support = torch.zeros_like(support).scatter(1, top, support.gather(1, top))
+        weights = composition_support / composition_support.sum(-1, keepdim=True).clamp_min(1e-8)
+        descriptor = (descriptors.detach() * weights[..., None]).sum(1)
+        composition_hidden = base_hidden.detach() + descriptor[:, None, None]
+        delta = self.utility_composition_adapter(
+            composition_hidden, base_hidden.detach(), state['trend_probs'].detach(),
+            composition_support, rules, physical=physical,
+        )
+        composition = (events.detach() * weights[:, None, None]).sum(-1) + delta
+        composition_available = (composition_support > 0).sum(-1) >= 2
+        composition = composition * composition_available[:, None, None]
+        corrections = torch.cat([events, composition[..., None]], -1)
+        availability = torch.cat([support > 0, composition_available[:, None]], -1)
+        all_descriptors = torch.cat([descriptors, descriptor[:, None]], 1)
+        scores = self.utility_gate(
+            state['target_hidden'].detach(), state['trend_probs'].detach(), physical,
+            all_descriptors, corrections,
+            torch.cat([support, composition_support.mean(-1, keepdim=True)], -1),
+            torch.cat([rules, (rules.clamp(0, 1) * weights).sum(-1, keepdim=True)], -1),
+        )
+        corrections = corrections * (scale[..., None] if self.use_norm else 1.)
+        prediction, soft, hard, action = factorized_route(
+            base, corrections, scores, availability, self.utility_gate.min_gain,
+            self.utility_gate.temperature, self.utility_gate.training,
+        )
+        # Retain legacy coarse diagnostic names without discarding the full bank.
+        event_scores, event_index = scores[..., :-1].masked_fill(~availability[:, None, :-1], -1e4).max(-1)
+        event_correction = corrections[..., :-1].gather(
+            -1, event_index[:, :, None, None].expand(-1, -1, base.size(2), 1)).squeeze(-1)
+        granularity = torch.where(action == scores.size(-1), 2, (action > 0).long())
+        self._last_utility_aux = {
+            'adapter_mode': self.utility_adapter_mode,
+            'base_prediction': base, 'soft_prediction': soft, 'hard_prediction': hard,
+            'trend_probs': state['trend_probs'], 'activations': support.detach(),
+            'granularity': granularity, 'strength': (action > 0).to(base.dtype),
+            'availability': torch.stack([availability[:, :-1].any(-1), composition_available], -1),
+            'utilities': torch.stack([event_scores, scores[..., -1]], -1),
+            'event_prediction': base.detach() + event_correction,
+            'composition_prediction': base.detach() + corrections[..., -1],
+            'event_correction': event_correction, 'composition_correction': corrections[..., -1],
+            'factor_predictions': base.detach()[..., None] + corrections,
+            'factor_availability': availability, 'factor_utilities': scores, 'factor_action': action,
+        }
+        self._last_wiki_factor_activations = support.detach()
+        self._last_wiki_intervention = (action > 0).to(base.dtype).amax(-1)
+        return prediction
 
     def _build_prompt(
         self,
@@ -980,6 +1059,17 @@ class Model(nn.Module):
             def add_sample_prompt(sample_prompt):
                 repeated = sample_prompt.repeat_interleave(num_features, dim=0)
                 return x + repeated.unsqueeze(1)
+
+            if self.utility_factorized:
+                base_hidden = add_sample_prompt(state['trend_prompt']).reshape(
+                    batch_size, num_features, -1, self.d_model)
+                if self.channel_mixer is not None:
+                    base_hidden = self.channel_mixer(base_hidden, context=context)
+                return self._factorized_forecast(
+                    base_hidden, state, physical_features,
+                    stdevs if self.use_norm else None, means if self.use_norm else None,
+                    last_observation,
+                )
 
             branch_encoded = torch.cat(
                 [

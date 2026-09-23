@@ -456,6 +456,7 @@ def build_parser():
     parser.add_argument("--utility_ranking_loss_weight", type=float, default=0.1)
     parser.add_argument("--utility_ranking_margin", type=float, default=0.01)
     parser.add_argument("--utility_adapter_mode", choices=["legacy", "hierarchical_evidence", "calibrated_evidence"], default="legacy")
+    parser.add_argument("--utility_factorized", action="store_true", help="Independent event experts and trainable semantic adaptation; calibrated mode only")
     parser.add_argument("--utility_calibration_fraction", type=float, default=0.2)
     parser.add_argument("--utility_event_max_scale", type=float, default=0.5)
     parser.add_argument("--utility_composition_max_scale", type=float, default=0.25)
@@ -765,6 +766,12 @@ def configure_args(args):
             raise ValueError("hierarchical_evidence requires --utility_wiki")
         if args.utility_intervention_floor != 1.0:
             raise ValueError("hierarchical_evidence requires --utility_intervention_floor 1 to align gain supervision and execution")
+    if args.utility_factorized and (not args.utility_wiki or args.utility_adapter_mode != "calibrated_evidence"):
+        raise ValueError("utility_factorized requires utility_wiki and calibrated_evidence")
+    if args.utility_factorized and (args.features != "MS" or not args.mix_channels):
+        raise ValueError("utility_factorized currently requires MS and mix_channels")
+    if args.utility_factorized and args.wiki_diagnostic:
+        raise ValueError("Legacy prompt-removal diagnostics do not apply to factorized experts; use WikiFactor validation diagnostics")
     if args.utility_adapter_mode == "calibrated_evidence":
         if args.freq != "10min":
             raise ValueError("calibrated_evidence physical windows require freq=10min")
@@ -1035,6 +1042,7 @@ def load_finetuned_model(exp, checkpoint_path):
             "prompt_router",
             "utility_wiki",
             "utility_adapter_mode",
+            "utility_factorized",
             "utility_event_max_scale",
             "utility_composition_max_scale",
             "utility_gate_temperature",

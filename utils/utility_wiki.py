@@ -1,5 +1,6 @@
 import torch
 from torch import nn
+from utils.factorized_wiki import factorized_loss
 
 
 class EvidenceResidualAdapter(nn.Module):
@@ -80,6 +81,8 @@ def utility_supervision_loss(aux, target, eps=0.05):
     masked, so labels cannot teach the model to bypass the evidence filter.
     """
 
+    if 'factor_predictions' in aux:
+        return factorized_loss(aux, target, 'supervision')
     required = {
         "utilities",
         "availability",
@@ -132,6 +135,8 @@ def utility_decision_loss(
     gate already hard-masks them to abstention.
     """
 
+    if 'factor_predictions' in aux:
+        return factorized_loss(aux, target, 'decision', min_gain=min_gain, temperature=temperature)
     required = {
         "utilities",
         "availability",
@@ -294,6 +299,8 @@ def utility_candidate_specialization_loss(aux, target, margin=0.01):
     Unavailable branches never receive supervision.
     """
 
+    if 'factor_predictions' in aux:
+        return factorized_loss(aux, target, 'candidate', margin=margin)
     required = {
         "availability",
         "base_prediction",

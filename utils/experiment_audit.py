@@ -300,6 +300,7 @@ def model_runtime_summary(model, args=None) -> dict:
         "prompt_router",
         "utility_wiki",
         "utility_adapter_mode",
+        "utility_factorized",
     ):
         result[name] = _jsonable(getattr(core, name, None))
     utility_gate = getattr(core, "utility_gate", None)
@@ -321,6 +322,9 @@ def model_runtime_summary(model, args=None) -> dict:
             "temperature": _jsonable(getattr(utility_gate, "temperature", None)),
             "min_gain": _jsonable(getattr(utility_gate, "min_gain", None)),
             "conditioning": "history_plus_event_evidence_plus_trend_probabilities",
+            "candidate_pool": "all_physically_supported_events_plus_topk_composition" if getattr(core, "utility_factorized", False) else "strongest_event_and_composition",
+            "semantic_adaptation": "trainable_projection_and_query_frozen_anchors" if getattr(core, "utility_factorized", False) else "legacy_router",
+            "semantic_threshold_used": not bool(getattr(core, "utility_factorized", False)),
             "num_trend_modes": _jsonable(
                 getattr(utility_gate, "num_trend_modes", None)
             ),

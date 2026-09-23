@@ -102,6 +102,9 @@ PLOT_ARGS+=(--scene_wiki_prompt_gate_init "${SCENE_WIKI_PROMPT_GATE_INIT}")
 PLOT_ARGS+=(--scene_wiki_activation_threshold "${SCENE_WIKI_ACTIVATION_THRESHOLD}")
 PLOT_ARGS+=(--scene_wiki_confidence_power "${SCENE_WIKI_CONFIDENCE_POWER}")
 if [[ "${UTILITY_WIKI}" == "1" ]]; then
+    if [[ "${UTILITY_FACTORIZED:-0}" == "1" ]]; then
+        PLOT_ARGS+=(--utility_factorized)
+    fi
     PLOT_ARGS+=(
         --utility_wiki
         --utility_adapter_mode "${UTILITY_ADAPTER_MODE}"

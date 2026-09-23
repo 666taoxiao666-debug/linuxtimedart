@@ -93,6 +93,8 @@ def experiment_setting(args, run_index):
             f"_adapter{args.utility_adapter_mode}"
             f"_ecap{args.utility_event_max_scale}_ccap{args.utility_composition_max_scale}"
         )
+    if getattr(args, "utility_factorized", False):
+        base += "_factorized1"
     run_id = getattr(args, "run_id", "") or ""
     if str(run_id).strip():
         return bounded_component(f"{base}_id{safe_component(run_id)}")

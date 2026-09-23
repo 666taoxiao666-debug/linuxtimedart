@@ -1,4 +1,5 @@
 import tempfile
+import copy
 import json
 import unittest
 from pathlib import Path
@@ -122,7 +123,10 @@ class HierarchicalUtilityTests(unittest.TestCase):
     def test_full_model_calibrated_forward_backward_and_reload(self):
         self._exercise_full_model("calibrated_evidence")
 
-    def _exercise_full_model(self, adapter_mode):
+    def test_full_model_factorized_forward_backward_and_reload(self):
+        self._exercise_full_model("calibrated_evidence", factorized=True)
+
+    def _exercise_full_model(self, adapter_mode, factorized=False):
         from run import build_parser, configure_args
         from models.TimeDART import PromptGuidedModel
         from utils.wind_regime_wiki import load_wind_regime_wiki_spec
@@ -151,6 +155,7 @@ class HierarchicalUtilityTests(unittest.TestCase):
                 "--input_len", "24", "--pred_len", "3", "--patch_len", "6", "--stride", "6",
                 "--d_model", "16", "--d_ff", "32", "--n_heads", "4",
                 "--e_layers", "1", "--d_layers", "1", "--no-use_gpu",
+                *(["--utility_factorized"] if factorized else []),
             ]))
             args.device = torch.device("cpu")
             model = PromptGuidedModel(args)
@@ -162,6 +167,21 @@ class HierarchicalUtilityTests(unittest.TestCase):
             history = torch.zeros(3, 24, 8)
             history[..., 0] = torch.tensor([5., 12.] * 12)
             history[..., -1] = torch.linspace(700, 1100, 24)
+            if factorized:
+                # Verify the real overlay path from a plain trend checkpoint,
+                # not merely consistency within the new model itself.
+                from utils.tools import overlay_forecast_weights
+                trend_args = copy.copy(args)
+                trend_args.utility_wiki = trend_args.utility_factorized = False
+                trend_args.prompt_router = 'trend'
+                trend_model = PromptGuidedModel(trend_args).eval()
+                trend_model.load_state_dict({k: v for k, v in model.state_dict().items()
+                                             if not k.startswith(('utility_', 'scene_wiki_router.'))}, strict=False)
+                trend_checkpoint = Path(directory) / 'trend.pth'
+                torch.save(trend_model.state_dict(), trend_checkpoint)
+                overlay_forecast_weights(trend_checkpoint, model)
+                with torch.no_grad():
+                    torch.testing.assert_close(model(history), trend_model(history))
             first = model(history)
             self.assertEqual(first.shape, (3, 3, 1))
             self.assertTrue(torch.equal(first, model._last_utility_aux["base_prediction"]))
@@ -178,7 +198,16 @@ class HierarchicalUtilityTests(unittest.TestCase):
             out = model(history)
             aux = model._last_utility_aux
             self.assertTrue(torch.equal(base, aux["base_prediction"]))
-            self.assertTrue(torch.equal(aux["event_prediction"], aux["composition_prediction"]))
+            if not factorized:
+                self.assertTrue(torch.equal(aux["event_prediction"], aux["composition_prediction"]))
+            else:
+                self.assertEqual(aux['factor_predictions'].shape, (3, 3, 1, 5))
+                self.assertFalse(model.scene_wiki_router.semantic_keys.requires_grad)
+                optimizer.zero_grad()
+                semantic_fit, _, _ = utility_candidate_specialization_loss(aux, base + 25)
+                semantic_fit.backward()
+                self.assertGreater(model.utility_event_adapter.semantic_projection.weight.grad.abs().sum().item(), 0)
+                self.assertTrue(all(p.grad is None for p in model.encoder.parameters()))
             self.assertFalse(torch.equal(aux["event_prediction"], base))
             if adapter_mode == "calibrated_evidence":
                 model.utility_event_adapter.requires_grad_(False)
@@ -229,6 +258,8 @@ class HierarchicalUtilityTests(unittest.TestCase):
                 manifest = json.loads((folder / "run_manifest.json").read_text(encoding="utf-8"))
                 self.assertEqual(manifest["extra"]["epochs_completed"], 3)
                 self.assertLess(args.utility_calibration_audit["adapter_target_end"], args.utility_calibration_audit["gate_target_start"])
+                if factorized:
+                    self.assertTrue(manifest['args']['utility_factorized'])
 
 
 if __name__ == "__main__":

@@ -536,6 +536,10 @@ class Exp_TimeDART(Exp_Basic):
             print("[UTILITY] CalibratedEvidence: train_routing=soft eval_routing=hard "
                   "gain=absolute_error_reduction_in_train_scaler_units physical_features=45 "
                   "adapter_and_gate_targets=chronologically_disjoint candidate_sample_weight=natural")
+            if getattr(self.args, "utility_factorized", False):
+                print("[UTILITY] FactorizedWiki: candidates=each_supported_event+composition "
+                      "semantic_adapter=trainable anchors=frozen physical_veto=hard "
+                      "legacy_semantic_threshold=not_used selection=per_horizon_utility")
         return phase
 
     def pretrain(self):
@@ -1726,6 +1730,11 @@ class Exp_TimeDART(Exp_Basic):
                         )
                         direct_norm = sum(float(g.detach().square().sum()) for g in direct_grads if g is not None) ** 0.5
                         print(f"[AUDIT] FORECAST_GATE_GRAD_NORM={direct_norm:.9g} source=calibration_train_batch")
+                    if getattr(self.args, "utility_factorized", False) and utility_phase == "adapter_warmup" and i == 1:
+                        semantic_parameters = list(core_model.utility_event_adapter.semantic_projection.parameters()) + list(core_model.utility_event_adapter.query.parameters())
+                        semantic_grads = torch.autograd.grad(utility_candidate_loss, semantic_parameters, retain_graph=True, allow_unused=True)
+                        semantic_norm = sum(float(g.detach().square().sum()) for g in semantic_grads if g is not None) ** .5
+                        print(f"[AUDIT] WIKI_SEMANTIC_ADAPTER_GRAD_NORM={semantic_norm:.9g} source=adapter_train_batch")
                     if utility_phase == "adapter_warmup":
                         # First make both physically available candidates useful.
                         # The trend base and utility gate are frozen, so no moving
@@ -1960,6 +1969,20 @@ class Exp_TimeDART(Exp_Basic):
                     " WikiSelected(gain/harm/count): "
                     + ",".join(selected_gain_parts)
                 )
+            if getattr(self.args, "utility_factorized", False):
+                for factor_name in (*core_model.scene_wiki_scene_ids, 'composition'):
+                    prefix = f"factor_{factor_name}_"
+                    if prefix + 'available' in diagnostics:
+                        def show_factor_metric(key, pattern):
+                            value = diagnostics[prefix + key]
+                            return format(value, pattern) if np.isfinite(value) else 'n/a'
+                        epoch_summary += (
+                            f" WikiFactor[{factor_name}](available/candidate_gain/selected_gain/harm/n): "
+                            f"{diagnostics[prefix + 'available']:.3f}/"
+                            f"{show_factor_metric('candidate_gain', '+.2f')}%/"
+                            f"{show_factor_metric('selected_gain', '+.2f')}%/"
+                            f"{show_factor_metric('harm', '.1f')}%/"
+                            f"{int(diagnostics[prefix + 'count'])}")
             if "val_available_mae_kw" in diagnostics:
                 epoch_summary += (
                     " Available MAE(kW): "
@@ -2200,6 +2223,7 @@ class Exp_TimeDART(Exp_Basic):
         utility_event_prediction_batches = []
         utility_composition_prediction_batches = []
         utility_soft_prediction_batches = []
+        factor_prediction_batches, factor_availability_batches, factor_action_batches = [], [], []
         vali_data = getattr(vali_loader, "dataset", None)
         core_model = (
             self.model.module
@@ -2240,6 +2264,10 @@ class Exp_TimeDART(Exp_Basic):
 
                     if getattr(core_model, "utility_wiki", False):
                         utility_aux = core_model._last_utility_aux
+                        if 'factor_predictions' in utility_aux:
+                            factor_prediction_batches.append(utility_aux['factor_predictions'].detach().float().cpu().numpy())
+                            factor_availability_batches.append(utility_aux['factor_availability'].detach().cpu().numpy())
+                            factor_action_batches.append(utility_aux['factor_action'].detach().cpu().numpy())
                         if core_model.utility_adapter_mode == "calibrated_evidence":
                             utility_soft_prediction_batches.append(utility_aux["soft_prediction"].detach().float().cpu().numpy())
                         utility_granularity_batches.append(
@@ -2615,6 +2643,29 @@ class Exp_TimeDART(Exp_Basic):
                 # bound; it never chooses a prediction, checkpoint or gradient.
                 diagnostics["utility_soft_mae_kw"] = float(np.abs(soft_original - true_original).mean())
                 diagnostics["utility_oracle_mae_kw"] = float(oracle_error.mean())
+            if factor_prediction_batches:
+                factor_predictions = np.concatenate(factor_prediction_batches)
+                factor_available = np.concatenate(factor_availability_batches)
+                factor_action = np.concatenate(factor_action_batches)
+                if can_inverse_target:
+                    factor_predictions = factor_predictions * target_scale + target_mean
+                if rated_power > 0:
+                    factor_predictions = np.clip(factor_predictions, 0, rated_power)
+                base_error = np.abs(utility_base_original - true_original)
+                oracle_error = base_error.copy()
+                for k, factor_name in enumerate((*core_model.scene_wiki_scene_ids, 'composition')):
+                    prefix = f"factor_{factor_name}_"
+                    available = factor_available[:, k]
+                    error = np.abs(factor_predictions[..., k] - true_original)
+                    oracle_error = np.minimum(oracle_error, np.where(available[:, None, None], error, np.inf))
+                    selected = factor_action == k + 1
+                    selected_error, selected_base = error.mean(-1)[selected], base_error.mean(-1)[selected]
+                    diagnostics[prefix + 'available'] = float(available.mean())
+                    diagnostics[prefix + 'candidate_gain'] = float(100 * (1 - error[available].mean() / max(base_error[available].mean(), 1e-12))) if available.any() else float('nan')
+                    diagnostics[prefix + 'selected_gain'] = float(100 * (1 - selected_error.mean() / max(selected_base.mean(), 1e-12))) if selected.any() else float('nan')
+                    diagnostics[prefix + 'harm'] = float(100 * (selected_error > selected_base).mean()) if selected.any() else float('nan')
+                    diagnostics[prefix + 'count'] = int(selected.sum())
+                diagnostics['utility_oracle_mae_kw'] = float(oracle_error.mean())
             trend_indices = trend_probabilities.argmax(axis=-1)
             # Follow the classifier's pseudo-label IDs: 0=stable, 1=up, 2=down.
             # Keep the established short diagnostic keys without relabeling IDs.

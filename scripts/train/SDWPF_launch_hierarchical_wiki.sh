@@ -10,6 +10,9 @@ LAUNCH_TASK=hierarchical_wiki
 if [[ "$UTILITY_ADAPTER_MODE" == calibrated_evidence ]]; then
     LAUNCH_TASK=calibrated_wiki
 fi
+if [[ "${UTILITY_FACTORIZED:-0}" == 1 ]]; then
+    LAUNCH_TASK=factorized_wiki
+fi
 POINTER="outputs/logs/SDWPF/${LAUNCH_TASK}_latest.txt"
 case "${1:-}" in
     --status)
@@ -68,7 +71,7 @@ for directory in "$SOURCE_CV_DIR" "$TREND_CV_DIR"; do
     [[ -f "$directory/cv.env" ]] || { echo "Missing cv.env: $directory" >&2; exit 2; }
 done
 parameters="h${PRED_LEN}_f${FOLDS// /-}_s${SEEDS// /-}_lr${UTILITY_LEARNING_RATE}_warm${UTILITY_ADAPTER_WARMUP_EPOCHS}_ep${TRAIN_EPOCHS}_pat${PATIENCE}_ecap${UTILITY_EVENT_MAX_SCALE}_ccap${UTILITY_COMPOSITION_MAX_SCALE}_ulw${UTILITY_LOSS_WEIGHT}_dlw${UTILITY_DECISION_LOSS_WEIGHT}_clw${UTILITY_CANDIDATE_LOSS_WEIGHT}_rlw${UTILITY_RANKING_LOSS_WEIGHT}_margin${UTILITY_RANKING_MARGIN}_temp${UTILITY_GATE_TEMPERATURE}_eps${UTILITY_TARGET_EPS}_gain${UTILITY_MIN_GAIN}"
-parameters="${parameters}_calfrac${UTILITY_CALIBRATION_FRACTION}"
+parameters="${parameters}_calfrac${UTILITY_CALIBRATION_FRACTION}_factor${UTILITY_FACTORIZED:-0}"
 sdwpf_log_init "$LAUNCH_TASK" "$parameters" "cv.log" "$CV_ID"
 printf '%s\n' "$SDWPF_LOG_DIR" > "$POINTER"
 if [[ "${1:-}" == "--foreground" ]]; then
@@ -82,5 +85,5 @@ else
     printf '%s\n' "$job_pid" > "$SDWPF_LOG_DIR/launcher.pid"
     echo "PID=$job_pid"
     echo "tail -f '$SDWPF_LOG_DIR/launch.log'"
-    echo "Check results: UTILITY_ADAPTER_MODE=$UTILITY_ADAPTER_MODE bash scripts/train/SDWPF_launch_hierarchical_wiki.sh --status"
+    echo "Check results: UTILITY_FACTORIZED=${UTILITY_FACTORIZED:-0} UTILITY_ADAPTER_MODE=$UTILITY_ADAPTER_MODE bash scripts/train/SDWPF_launch_hierarchical_wiki.sh --status"
 fi
