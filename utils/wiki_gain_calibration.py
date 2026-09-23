@@ -75,3 +75,97 @@ def fit_gain_policy(base, candidates, target, available, trend, block_ids, *,
                                   alpha=alpha, score=score, mean_gain=None if fallback else mean_gain,
                                   positive_blocks=None if fallback else positive_blocks, pooled_fallback=fallback))
     return tables[:num_modes, ..., 0], tables[:num_modes, ..., 1], audit
+
+
+def route_policy(base, candidates, target, available, trend, alpha, gain,
+                 *, min_gain=.001, clip_bounds=None):
+    """Replay the hard, physically masked inference route on train windows."""
+    base = np.asarray(base, dtype=np.float64)
+    candidates = np.asarray(candidates, dtype=np.float64)
+    target = np.asarray(target, dtype=np.float64)
+    available = np.asarray(available, dtype=bool)
+    trend = np.asarray(trend, dtype=np.int64)
+    alpha = np.asarray(alpha, dtype=np.float64)
+    gain = np.asarray(gain, dtype=np.float64)
+    if (base.ndim != 2 or target.shape != base.shape or
+            candidates.shape[:2] != base.shape or
+            available.shape != (base.shape[0], candidates.shape[-1]) or
+            trend.shape != (base.shape[0],) or alpha.shape != gain.shape or
+            alpha.shape[1:] != candidates.shape[1:] or
+            ((trend < 0) | (trend >= alpha.shape[0])).any()):
+        raise ValueError('Joint route shape or trend mismatch')
+    scores = np.where(available[:, None, :], gain[trend], -np.inf)
+    selected = scores.argmax(-1)
+    best = np.take_along_axis(scores, selected[..., None], -1)[..., 0]
+    amplitude = np.take_along_axis(alpha[trend], selected[..., None], -1)[..., 0]
+    correction = np.take_along_axis(candidates - base[..., None], selected[..., None], -1)[..., 0]
+    prediction = base + np.where(best > min_gain, amplitude * correction, 0.)
+    if clip_bounds is not None:
+        prediction = np.clip(prediction, *clip_bounds)
+    return np.abs(prediction - target)
+
+
+def joint_block_gains(base, candidates, target, available, trend, block_ids,
+                      alpha, gain, *, blocks, min_gain=.001, clip_bounds=None):
+    """Realized MAE improvement per chronological block, including abstention."""
+    block_ids = np.asarray(block_ids)
+    base_error = np.abs((np.clip(base, *clip_bounds) if clip_bounds is not None else base) - target)
+    routed_error = route_policy(base, candidates, target, available, trend,
+                                alpha, gain, min_gain=min_gain, clip_bounds=clip_bounds)
+    return np.array([(base_error[block_ids == block] - routed_error[block_ids == block]).mean()
+                     for block in blocks], dtype=np.float64)
+
+
+def refine_joint_policy(base, candidates, target, available, trend, block_ids,
+                        alpha, gain, *, fit_blocks, penalty=.25, min_gain=.001,
+                        clip_bounds=None):
+    """Remove harmful competing actions and tune one global amplitude on fit blocks.
+
+    The chronological holdout block is excluded by fit_blocks. Selection uses
+    the deployed hard router, not independent candidate averages.
+    """
+    alpha, gain = np.array(alpha, copy=True), np.array(gain, copy=True)
+    chosen = np.isin(block_ids, fit_blocks)
+    if not chosen.any() or any(not np.any(block_ids == block) for block in fit_blocks):
+        raise ValueError('Empty joint-policy fitting time block')
+    blocks = np.asarray(fit_blocks)
+    def score(a, g):
+        values = joint_block_gains(base, candidates, target, available, trend,
+                                   block_ids, a, g, blocks=blocks,
+                                   min_gain=min_gain, clip_bounds=clip_bounds)
+        return float(values.mean() - penalty * values.std()), values
+    before, before_blocks = score(alpha, gain)
+    removed = []
+    # One event/trend group can have positive standalone gain but negative
+    # realized gain once a higher-scoring event wins on overlapping windows.
+    while True:
+        current, _ = score(alpha, gain)
+        best_delta, best_group = 1e-8, None
+        for mode in range(alpha.shape[0]):
+            for event in range(alpha.shape[-1]):
+                if not np.any(alpha[mode, :, event]):
+                    continue
+                trial_alpha, trial_gain = alpha.copy(), gain.copy()
+                trial_alpha[mode, :, event] = 0.
+                trial_gain[mode, :, event] = 0.
+                improvement = score(trial_alpha, trial_gain)[0] - current
+                if improvement > best_delta:
+                    best_delta, best_group = improvement, (mode, event)
+        if best_group is None:
+            break
+        mode, event = best_group
+        alpha[mode, :, event] = 0.
+        gain[mode, :, event] = 0.
+        removed.append({'trend': mode, 'candidate': event, 'joint_score_gain': best_delta})
+    # Correct for overall overshoot while retaining event-specific calibration.
+    best_alpha, best_multiplier, best_score = alpha.copy(), 1., score(alpha, gain)[0]
+    for multiplier in (.25, .5):
+        trial = alpha * multiplier
+        result = score(trial, gain)[0]
+        if result > best_score + 1e-8:
+            best_alpha, best_multiplier, best_score = trial, multiplier, result
+    after, after_blocks = score(best_alpha, gain)
+    return best_alpha, gain, {'fit_blocks': blocks.tolist(), 'score_before': before,
+                              'score_after': after, 'block_gains_before': before_blocks.tolist(),
+                              'block_gains_after': after_blocks.tolist(),
+                              'removed_groups': removed, 'global_amplitude_multiplier': best_multiplier}

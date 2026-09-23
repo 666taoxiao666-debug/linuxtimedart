@@ -35,8 +35,8 @@ export FOLD="${FOLD:-0}" SEED="${SEED:-2024}"
 export GAIN_BLOCKS="${GAIN_BLOCKS:-3}" GAIN_MIN_WINDOWS="${GAIN_MIN_WINDOWS:-32}" GAIN_PENALTY="${GAIN_PENALTY:-0.25}"
 [[ -f "$SOURCE_FACTOR_DIR/cv.env" && -f "$SOURCE_FACTOR_DIR/runs/f${FOLD}_s${SEED}/finetune.log" ]] || { echo "Missing source run: $SOURCE_FACTOR_DIR"; exit 2; }
 pred_len="$(sed -n 's/^PRED_LEN=//p' "$SOURCE_FACTOR_DIR/cv.env" | head -n 1)"
-parameters="h${pred_len}_f${FOLD}_s${SEED}_blocks${GAIN_BLOCKS}_min${GAIN_MIN_WINDOWS}_pen${GAIN_PENALTY}_scales0-025-05-1"
-sdwpf_log_init wiki_gain_calibration "$parameters" launch.log "gain_$(date +%Y%m%d_%H%M%S)_$$"
+parameters="h${pred_len}_f${FOLD}_s${SEED}_blocks${GAIN_BLOCKS}_min${GAIN_MIN_WINDOWS}_pen${GAIN_PENALTY}_joint_hout"
+sdwpf_log_init wiki_gain_calibration "$parameters" launch.log "gain_joint_$(date +%Y%m%d_%H%M%S)_$$"
 {
     echo "SOURCE_FACTOR_DIR=$SOURCE_FACTOR_DIR"
     echo "FOLD=$FOLD"

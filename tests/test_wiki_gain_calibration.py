@@ -8,7 +8,9 @@ import numpy as np
 import torch
 
 from utils.factorized_wiki import FactorUtilityGate
-from utils.wiki_gain_calibration import calibration_blocks, fit_gain_policy
+from utils.wiki_gain_calibration import (calibration_blocks, fit_gain_policy,
+                                         joint_block_gains, refine_joint_policy,
+                                         route_policy)
 
 
 class GainCalibrationTests(unittest.TestCase):
@@ -113,6 +115,53 @@ class GainCalibrationTests(unittest.TestCase):
             (log_dir / 'finetune.log').write_text(f'[AUDIT] FINETUNE_CHECKPOINT={selected}\n', encoding='utf-8')
             with self.assertRaises(FileNotFoundError):
                 resolve_source(root, 0, 2024)
+
+    def test_joint_route_removes_event_harmful_only_after_competition(self):
+        n = 90
+        base, target = np.full((n, 1), 3.), np.zeros((n, 1))
+        candidates = np.stack([base.copy(), base.copy()], -1)
+        available = np.zeros((n, 2), bool)
+        available[:60, 0] = True
+        available[:30, 1] = True
+        available[60:, 1] = True
+        candidates[:30, 0, 0] = 0.
+        candidates[30:60, 0, 0] = 8.6
+        candidates[:30, 0, 1] = 1.8
+        candidates[60:, 0, 1] = 1.8
+        trend = np.zeros(n, int)
+        blocks = np.tile(np.repeat(np.arange(3), 10), 3)
+        alpha = np.ones((3, 1, 2))
+        gain = np.array([[[.2, 1.2]]] * 3)
+        before = joint_block_gains(base, candidates, target, available, trend,
+                                   blocks, alpha, gain, blocks=[0, 1])
+        self.assertTrue(np.all(before < 0))
+        adjusted, scores, audit = refine_joint_policy(
+            base, candidates, target, available, trend, blocks, alpha, gain,
+            fit_blocks=[0, 1])
+        self.assertEqual(adjusted[0, 0, 0], 0.)
+        self.assertEqual(scores[0, 0, 0], 0.)
+        self.assertTrue(audit['removed_groups'])
+        after = joint_block_gains(base, candidates, target, available, trend,
+                                  blocks, adjusted, scores, blocks=[2])
+        self.assertGreater(after[0], 0.)
+
+    def test_route_matches_hard_selection_and_abstention(self):
+        base = np.array([[2., 2.], [2., 2.]])
+        target = np.zeros_like(base)
+        candidates = np.stack([np.zeros_like(base), np.ones_like(base)], -1)
+        available = np.array([[True, True], [False, True]])
+        trend = np.zeros(2, int)
+        alpha = np.zeros((3, 2, 2))
+        alpha[0] = 1.
+        gain = np.zeros_like(alpha)
+        gain[0, :, 0] = 1.
+        gain[0, :, 1] = .5
+        errors = route_policy(base, candidates, target, available, trend, alpha, gain)
+        np.testing.assert_array_equal(errors[0], 0.)
+        np.testing.assert_array_equal(errors[1], 1.)
+        available[:] = False
+        errors = route_policy(base, candidates, target, available, trend, alpha, gain)
+        np.testing.assert_array_equal(errors, 2.)
 
 
 if __name__ == '__main__':

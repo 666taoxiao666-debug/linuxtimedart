@@ -275,8 +275,16 @@ class HierarchicalUtilityTests(unittest.TestCase):
                         policy_exp = restore_experiment(manifest['args'], policy_dir)
                     policy_exp._get_data = tracked_data
                     try:
-                        result = calibrate(policy_exp, manifest, folder / 'checkpoint_last.pth',
-                                           policy_dir, blocks=2, min_windows=1)
+                        # The tiny four-window fixture has no room for three
+                        # purged chronological blocks; boundary behavior is
+                        # covered separately by calibration_blocks tests.
+                        fake_blocks = (np.array([0, 1, 2, 2]),
+                                       {'cuts': ['synthetic-1', 'synthetic-2'],
+                                        'purged_cross_block_windows': 0})
+                        with patch('scripts.calibrate_factorized_wiki.calibration_blocks',
+                                   return_value=fake_blocks):
+                            result = calibrate(policy_exp, manifest, folder / 'checkpoint_last.pth',
+                                               policy_dir, blocks=3, min_windows=1)
                     finally:
                         policy_exp.writer.close()
                     self.assertEqual(requested, ['train', 'val'])

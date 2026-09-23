@@ -15,7 +15,8 @@ from run import build_parser, configure_args, load_finetuned_model
 from exp.exp_timedart import Exp_TimeDART
 from utils.experiment_audit import checkpoint_info, data_file_info, write_run_manifest
 from utils.utility_calibration import split_utility_training
-from utils.wiki_gain_calibration import calibration_blocks, fit_gain_policy
+from utils.wiki_gain_calibration import (calibration_blocks, fit_gain_policy,
+                                         joint_block_gains, refine_joint_policy)
 
 
 def resolve_source(source, fold, seed):
@@ -82,6 +83,8 @@ def collect_calibration(exp, dataset):
 
 
 def calibrate(exp, source_manifest, checkpoint, output, blocks=3, min_windows=32, penalty=.25):
+    if blocks < 3:
+        raise ValueError('Joint route calibration requires at least two fit blocks and one train holdout block')
     load_finetuned_model(exp, str(checkpoint))
     exp.model.eval().requires_grad_(False)
     if bool(exp.model.utility_gate.policy_enabled):
@@ -103,12 +106,32 @@ def calibrate(exp, source_manifest, checkpoint, output, blocks=3, min_windows=32
     np.testing.assert_allclose(train_data.scaler.mean_, exp.model.scene_scaler_mean.cpu().numpy(), rtol=1e-5, atol=1e-5)
     np.testing.assert_allclose(train_data.scaler.scale_, exp.model.scene_scaler_scale.cpu().numpy(), rtol=1e-5, atol=1e-5)
     ids, block_audit = calibration_blocks(calibration_data, blocks)
+    block_audit['windows_per_block'] = [int((ids == i).sum()) for i in range(blocks)]
+    if block_audit['windows_per_block'][-1] == 0:
+        raise ValueError('Final training holdout block has no complete forecast windows')
     arrays = collect_calibration(exp, calibration_data)
     mean, scale = float(train_data.scaler.mean_[-1]), float(train_data.scaler.scale_[-1])
     bounds = ((-mean / scale), (exp.args.rated_power - mean) / scale) if exp.args.rated_power > 0 else None
-    alpha, gain, rows = fit_gain_policy(**arrays, block_ids=ids, source_split='train',
-                                      min_windows=min_windows, penalty=penalty,
-                                      min_gain=exp.args.utility_min_gain, clip_bounds=bounds)
+    fit_blocks = list(range(blocks - 1))
+    fit_ids = np.where(ids == blocks - 1, -1, ids)
+    alpha, gain, rows = fit_gain_policy(**arrays, block_ids=fit_ids, source_split='train',
+                                        min_windows=min_windows, penalty=penalty,
+                                        min_gain=exp.args.utility_min_gain, clip_bounds=bounds)
+    alpha, gain, joint_audit = refine_joint_policy(
+        **arrays, block_ids=ids, alpha=alpha, gain=gain, fit_blocks=fit_blocks,
+        penalty=penalty, min_gain=exp.args.utility_min_gain, clip_bounds=bounds)
+    holdout_gain = float(joint_block_gains(
+        **arrays, block_ids=ids, alpha=alpha, gain=gain, blocks=[blocks - 1],
+        min_gain=exp.args.utility_min_gain, clip_bounds=bounds)[0])
+    # This is a distinct, later portion of original TRAIN. Its labels may
+    # accept or reject the whole frozen policy, but are never used to refit it.
+    holdout_accepted = np.isfinite(holdout_gain) and holdout_gain > 0.
+    if not holdout_accepted:
+        alpha[:] = 0.
+        gain[:] = 0.
+    joint_audit.update({'holdout_block': blocks - 1, 'holdout_gain_before_decision': holdout_gain,
+                        'holdout_accepted': bool(holdout_accepted),
+                        'fit_uses_holdout_labels': False})
     names = [*exp.model.scene_wiki_scene_ids, 'composition']
     for row in rows:
         row['candidate_name'] = names[row['candidate']]
@@ -116,7 +139,8 @@ def calibrate(exp, source_manifest, checkpoint, output, blocks=3, min_windows=32
     audit = {'source_split': 'train', 'fit_uses_validation': False, 'source_checkpoint': checkpoint_info(checkpoint),
              'split': split_audit, 'blocks': block_audit, 'min_windows_per_block': min_windows,
              'block_dispersion_penalty': penalty, 'amplitude_grid': [0., .25, .5, 1.],
-             'gain_units': 'train_target_std', 'candidate_names': names, 'cells': rows}
+             'gain_units': 'train_target_std', 'candidate_names': names, 'cells': rows,
+             'joint_route': joint_audit}
     (output / 'gain_calibration.json').write_text(json.dumps(audit, ensure_ascii=False, indent=2), encoding='utf-8')
     exp.model.utility_gate.install_policy(alpha, gain)
     target = output / 'checkpoint.pth'
@@ -147,6 +171,9 @@ def calibrate(exp, source_manifest, checkpoint, output, blocks=3, min_windows=32
              f'CALIBRATED_MAE_KW={new_mae:.6f}', f'CALIBRATED_RMSE_KW={calibrated["original_rmse"]:.6f}',
              f'GAIN_VS_TREND_KW={base_mae - new_mae:.6f}',
              f'GAIN_VS_TREND_PCT={100 * (1 - new_mae / max(base_mae, 1e-12)):.6f}',
+             f'TRAIN_HOLDOUT_JOINT_GAIN_KW={holdout_gain * scale:.6f}',
+             f'TRAIN_HOLDOUT_POLICY_ACCEPTED={int(holdout_accepted)}',
+             f'JOINT_REMOVED_EVENT_TREND_GROUPS={len(joint_audit["removed_groups"])}',
              f'ACTIVE_POLICY_CELLS={int((alpha > 0).sum())}', f'CHECKPOINT={target}']
     (output / 'summary.txt').write_text('\n'.join(lines) + '\n', encoding='utf-8')
     print('\n'.join(lines))
