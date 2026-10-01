@@ -390,6 +390,68 @@ class CompositionalWikiTests(unittest.TestCase):
                     strict=False,
                 )
 
+    def test_reliability_contract_accepts_float32_round_trip_only(self):
+        class TinyRouter(torch.nn.Module):
+            def __init__(self):
+                super().__init__()
+                self.activation_threshold = 0.55
+                self.confidence_power = 1.0
+                self.top_k = 2
+                self.temperature = 0.2
+                self.rule_weight = 2.0
+                self.register_buffer(
+                    "factor_reliability",
+                    torch.tensor([0.13737469911575317, 0.0, 0.2756483256816864]),
+                )
+
+        class TinyModel(torch.nn.Module):
+            def __init__(self):
+                super().__init__()
+                self.prompt_router = "compositional_wiki"
+                self.scene_wiki_config_sha256 = "config-hash"
+                self.scene_wiki_bundle_sha256 = "bundle-hash"
+                self.scene_wiki_scene_ids = ("gust", "idle", "rated")
+                self.scene_wiki_rule_kwargs = {}
+                self.scene_wiki_router = TinyRouter()
+                self.weight = torch.nn.Parameter(torch.ones(1))
+
+        # Checkpoint metadata keeps the original Python floats; the router
+        # buffer above stores their float32 representations.
+        source_reliability = [0.13737470305759023, 0.0, 0.2756483336169099]
+        model = TinyModel()
+        checkpoint = {
+            "prompt_router": model.prompt_router,
+            "scene_wiki_config_sha256": model.scene_wiki_config_sha256,
+            "scene_wiki_bundle_sha256": model.scene_wiki_bundle_sha256,
+            "scene_wiki_scene_ids": list(model.scene_wiki_scene_ids),
+            "scene_wiki_activation_threshold": 0.55,
+            "scene_wiki_confidence_power": 1.0,
+            "scene_wiki_top_k": 2,
+            "scene_wiki_temperature": 0.2,
+            "scene_wiki_rule_weight": 2.0,
+            "scene_wiki_rule_kwargs": {},
+            "scene_wiki_factor_reliability": source_reliability,
+            "model_state_dict": model.state_dict(),
+        }
+        self.assertNotEqual(
+            source_reliability, model.scene_wiki_router.factor_reliability.tolist()
+        )
+        with tempfile.TemporaryDirectory() as temporary:
+            path = Path(temporary) / "pretrain.pth"
+            torch.save(checkpoint, path)
+            transferred = transfer_weights(path, TinyModel(), strict=False)
+            self.assertEqual(
+                transferred.scene_wiki_router.factor_reliability.tolist(),
+                model.scene_wiki_router.factor_reliability.tolist(),
+            )
+
+            checkpoint["scene_wiki_factor_reliability"] = [
+                source_reliability[0] + 0.001, *source_reliability[1:]
+            ]
+            torch.save(checkpoint, path)
+            with self.assertRaisesRegex(RuntimeError, "contract mismatch"):
+                transfer_weights(path, TinyModel(), strict=False)
+
     @unittest.skipUnless(
         importlib.util.find_spec("reformer_pytorch"),
         "full model dependencies are not installed",

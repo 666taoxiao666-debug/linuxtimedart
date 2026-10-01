@@ -184,6 +184,27 @@ def compare_tensors(tensor1, tensor2):
 
     return result.type_as(torch.LongTensor())
 
+
+def _wiki_contract_values_match(key, checkpoint_value, target_value):
+    """Compare stored Wiki reliability in its actual float32 runtime dtype.
+
+    The checkpoint records config JSON/Python floats, whereas the router keeps
+    the same values in a float32 buffer. Exact Python-float equality would
+    reject a valid checkpoint solely because of that conversion.
+    """
+    if key != "scene_wiki_factor_reliability":
+        return checkpoint_value == target_value
+    if not isinstance(checkpoint_value, (list, tuple)) or not isinstance(
+        target_value, (list, tuple)
+    ):
+        return False
+    try:
+        source = torch.as_tensor(checkpoint_value, dtype=torch.float32)
+        target = torch.as_tensor(target_value, dtype=torch.float32)
+    except (TypeError, ValueError, RuntimeError):
+        return False
+    return torch.equal(source, target)
+
 def transfer_weights(
     weights_path,
     model,
@@ -269,7 +290,7 @@ def transfer_weights(
             mismatched_contract = [
                 f"{key}: checkpoint={checkpoint[key]!r}, target={target!r}"
                 for key, target in contract.items()
-                if checkpoint[key] != target
+                if not _wiki_contract_values_match(key, checkpoint[key], target)
             ]
             if mismatched_contract:
                 raise RuntimeError(
