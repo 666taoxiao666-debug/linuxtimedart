@@ -50,6 +50,8 @@ are the per-step utility mean and uncertainty from the same train-only OOF
 predictions. The evolved JSON and embedding bundle then store one reliability
 weight per `(event, forecast step)`; a mismatched bundle or model `pred_len`
 is rejected before training. Repeated evolution must keep the same horizon.
+The self-supervised pretraining horizon may differ; the check applies when
+factorized supervised forecasting actually consumes the per-step weights.
 
 Utility is dimensionless and positive when the candidate helps, for example:
 

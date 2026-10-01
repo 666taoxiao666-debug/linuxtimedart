@@ -321,7 +321,8 @@ class Model(nn.Module):
                         horizon_reliability = torch.ones(
                             len(bundle["scene_ids"]), args.pred_len
                         )
-                    elif horizon_reliability.shape[1] != args.pred_len:
+                    elif (self.task_name == "finetune" and self.utility_factorized
+                          and horizon_reliability.shape[1] != args.pred_len):
                         raise ValueError(
                             "Evolved Wiki pred_len must match the forecast horizon: "
                             f"{horizon_reliability.shape[1]} != {args.pred_len}"

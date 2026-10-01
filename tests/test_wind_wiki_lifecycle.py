@@ -1,4 +1,5 @@
 import copy
+import importlib.util
 import json
 import tempfile
 import unittest
@@ -208,6 +209,55 @@ class WindWikiLifecycleTests(unittest.TestCase):
         later["as_of_step"] = 1100
         carried, _ = evolve_event_wiki(evolved, later, forget_half_life_steps=100)
         self.assertEqual(carried["scenes"][0]["lifecycle"]["horizon_deployment_weight"], [0.5, 0.0])
+
+    @unittest.skipUnless(importlib.util.find_spec("reformer_pytorch"), "full model dependencies missing")
+    def test_pretrain_horizon_can_differ_from_factorized_forecast_horizon(self):
+        from models.TimeDART import PromptGuidedModel
+        from run import build_parser, configure_args
+
+        evidence = _evidence([_candidate("gust-horizon", "gust_or_turbulent")])
+        evidence["pred_len"] = 3
+        for row in evidence["candidates"][0]["turbine_evidence"]:
+            row["horizon_mean_utility"] = [0.08, 0.08, 0.08]
+            row["horizon_std_utility"] = [0.001, 0.001, 0.001]
+        evolved, _ = evolve_event_wiki(_base_spec(), evidence)
+        with tempfile.TemporaryDirectory() as temporary:
+            config = Path(temporary) / "wiki.json"
+            config.write_text(json.dumps(evolved), encoding="utf-8")
+            spec = load_wind_regime_wiki_spec(config)
+            bundle = Path(temporary) / "wiki.npz"
+            np.savez_compressed(
+                bundle,
+                embeddings=np.zeros((len(spec["scene_ids"]), 16), dtype=np.float32),
+                scene_ids=np.asarray(spec["scene_ids"]),
+                encoder_name=np.asarray("unit-test"),
+                config_sha256=np.asarray(spec["sha256"]),
+                factor_reliability=np.asarray(spec["factor_reliability"], dtype=np.float32),
+                factor_horizon_reliability=np.asarray(
+                    spec["factor_horizon_reliability"], dtype=np.float32
+                ),
+            )
+            common = [
+                "--model_id", "SDWPF", "--model", "PromptTimeDART", "--data", "SDWPF",
+                "--prompt_router", "compositional_wiki", "--scene_wiki_config", str(config),
+                "--scene_wiki_embeddings", str(bundle), "--input_len", "24",
+                "--patch_len", "6", "--stride", "6", "--d_model", "16",
+                "--d_ff", "32", "--n_heads", "4", "--e_layers", "1",
+                "--d_layers", "1", "--no-use_gpu",
+            ]
+            pretrain = configure_args(build_parser().parse_args(
+                ["--task_name", "pretrain", "--pred_len", "6", *common]
+            ))
+            pretrain.device = torch.device("cpu")
+            PromptGuidedModel(pretrain)
+            factorized = [
+                "--task_name", "finetune", "--is_training", "0", "--utility_wiki",
+                "--utility_factorized", "--utility_adapter_mode", "calibrated_evidence",
+                "--utility_intervention_floor", "1",
+                "--pred_len", "6", *common,
+            ]
+            with self.assertRaisesRegex(ValueError, "pred_len differs"):
+                configure_args(build_parser().parse_args(factorized))
 
 
 if __name__ == "__main__":

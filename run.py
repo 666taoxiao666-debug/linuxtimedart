@@ -926,9 +926,10 @@ def configure_args(args):
                 expected_horizon_reliability = np.asarray(
                     expected_horizon_reliability, dtype=np.float32
                 )
-                if expected_horizon_reliability.shape[1] != args.pred_len:
+                if (args.task_name == "finetune" and args.utility_factorized
+                        and expected_horizon_reliability.shape[1] != args.pred_len):
                     raise ValueError(
-                        "Evolved Wiki pred_len differs from this training run; "
+                        "Evolved Wiki pred_len differs from the factorized forecast; "
                         "use horizon-matched lifecycle evidence."
                     )
                 if actual_horizon_reliability is None or not np.allclose(
