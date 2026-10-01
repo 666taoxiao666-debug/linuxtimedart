@@ -6,6 +6,16 @@ windows are never presented as independent statistical replications.
 import numpy as np
 
 
+def _horizon_availability(available, n, horizon, count):
+    """Normalize legacy window masks and evolved horizon masks to [N,H,K]."""
+    available = np.asarray(available, dtype=bool)
+    if available.shape == (n, count):
+        return np.broadcast_to(available[:, None, :], (n, horizon, count))
+    if available.shape == (n, horizon, count):
+        return available
+    raise ValueError('Policy availability must be [N,K] or [N,H,K]')
+
+
 def calibration_blocks(dataset, blocks=3):
     if getattr(dataset, 'flag', None) != 'train':
         raise ValueError('Policy calibration accepts only original training data')
@@ -28,12 +38,12 @@ def fit_gain_policy(base, candidates, target, available, trend, block_ids, *,
     if source_split != 'train':
         raise ValueError('Validation/test labels cannot fit the gain policy')
     base, candidates, target = (np.asarray(x, dtype=np.float64) for x in (base, candidates, target))
-    available = np.asarray(available, dtype=bool)
     trend, block_ids = np.asarray(trend), np.asarray(block_ids)
     if base.ndim != 2 or candidates.shape[:2] != base.shape or target.shape != base.shape:
         raise ValueError('Expected base/target [N,H] and candidates [N,H,K]')
     n, horizon, count = candidates.shape
-    if available.shape != (n, count) or trend.shape != (n,) or block_ids.shape != (n,):
+    available = _horizon_availability(available, n, horizon, count)
+    if trend.shape != (n,) or block_ids.shape != (n,):
         raise ValueError('Policy metadata shape mismatch')
     if not all(np.isfinite(x).all() for x in (base, candidates, target)):
         raise ValueError('Nonfinite calibration predictions/targets')
@@ -50,12 +60,12 @@ def fit_gain_policy(base, candidates, target, available, trend, block_ids, *,
     # Row num_modes is a pooled fallback for rare trend/event combinations.
     for group in [num_modes, *range(num_modes)]:
         for k in range(count):
-            mask = available[:, k] & (block_ids >= 0)
-            if group != num_modes:
-                mask &= trend == group
-            masks = [mask & (block_ids == block) for block in blocks]
-            enough = all(int(m.sum()) >= min_windows for m in masks)
             for h in range(horizon):
+                mask = available[:, h, k] & (block_ids >= 0)
+                if group != num_modes:
+                    mask &= trend == group
+                masks = [mask & (block_ids == block) for block in blocks]
+                enough = all(int(m.sum()) >= min_windows for m in masks)
                 alpha, score, mean_gain, positive_blocks = 0., 0., 0., 0
                 fallback = not enough and group != num_modes
                 if fallback:
@@ -83,18 +93,19 @@ def route_policy(base, candidates, target, available, trend, alpha, gain,
     base = np.asarray(base, dtype=np.float64)
     candidates = np.asarray(candidates, dtype=np.float64)
     target = np.asarray(target, dtype=np.float64)
-    available = np.asarray(available, dtype=bool)
     trend = np.asarray(trend, dtype=np.int64)
     alpha = np.asarray(alpha, dtype=np.float64)
     gain = np.asarray(gain, dtype=np.float64)
     if (base.ndim != 2 or target.shape != base.shape or
             candidates.shape[:2] != base.shape or
-            available.shape != (base.shape[0], candidates.shape[-1]) or
             trend.shape != (base.shape[0],) or alpha.shape != gain.shape or
             alpha.shape[1:] != candidates.shape[1:] or
             ((trend < 0) | (trend >= alpha.shape[0])).any()):
         raise ValueError('Joint route shape or trend mismatch')
-    scores = np.where(available[:, None, :], gain[trend], -np.inf)
+    available = _horizon_availability(
+        available, base.shape[0], base.shape[1], candidates.shape[-1]
+    )
+    scores = np.where(available, gain[trend], -np.inf)
     selected = scores.argmax(-1)
     best = np.take_along_axis(scores, selected[..., None], -1)[..., 0]
     amplitude = np.take_along_axis(alpha[trend], selected[..., None], -1)[..., 0]

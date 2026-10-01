@@ -62,7 +62,8 @@ def main():
     args = build_parser().parse_args()
     base = load_wind_regime_wiki_spec(args.base_config)
     # Derived loader fields are not source content and must not be written back.
-    for key in ("scene_ids", "factor_rules", "factor_reliability", "sha256"):
+    for key in ("scene_ids", "factor_rules", "factor_reliability",
+                "factor_horizon_reliability", "sha256"):
         base.pop(key, None)
     evidence = load_json(args.evidence)
     evolved, audit = evolve_event_wiki(
@@ -89,6 +90,8 @@ def main():
     audit["output_config_sha256"] = validated["sha256"]
     audit["factor_ids"] = validated["scene_ids"]
     audit["deployment_weights"] = validated["factor_reliability"]
+    if "factor_horizon_reliability" in validated:
+        audit["horizon_deployment_weights"] = validated["factor_horizon_reliability"]
     _atomic_json(audit_output, audit)
     print(
         "[WIKI-LIFECYCLE] source=train_oof "

@@ -44,7 +44,8 @@ def _unique_ints(values, name: str) -> list[int]:
     return result
 
 
-def _candidate_statistics(candidate, *, as_of_step: int, parameters: dict) -> dict:
+def _candidate_statistics(candidate, *, as_of_step: int, parameters: dict,
+                          pred_len: int | None = None) -> dict:
     candidate_id = str(candidate.get("id", "")).strip()
     factor_id = str(candidate.get("factor_id", "")).strip()
     prompt = str(candidate.get("prompt", "")).strip()
@@ -83,18 +84,30 @@ def _candidate_statistics(candidate, *, as_of_step: int, parameters: dict) -> di
         std_utility = _finite_float(row["std_utility"], "std_utility")
         if std_utility < 0:
             raise ValueError("std_utility cannot be negative")
-        within_lcb = mean_utility - parameters["z_value"] * std_utility / math.sqrt(
-            n_windows
-        )
-        turbine_rows.append(
-            {
+        if pred_len is not None:
+            horizon_mean = np.asarray(row.get("horizon_mean_utility"), dtype=np.float64)
+            horizon_std = np.asarray(row.get("horizon_std_utility"), dtype=np.float64)
+            if horizon_mean.shape != (pred_len,) or horizon_std.shape != (pred_len,):
+                raise ValueError(
+                    f"Candidate {candidate_id!r} needs {pred_len} horizon utilities "
+                    "and standard deviations for every source turbine"
+                )
+            if not np.isfinite(horizon_mean).all() or not np.isfinite(horizon_std).all():
+                raise ValueError("Horizon utilities must be finite")
+            if (horizon_std < 0).any():
+                raise ValueError("Horizon utility standard deviations cannot be negative")
+        turbine_row = {
                 "turbine_id": turbine_id,
                 "n_windows": n_windows,
                 "mean_utility": mean_utility,
                 "std_utility": std_utility,
-                "within_turbine_lcb": within_lcb,
-            }
-        )
+        }
+        if pred_len is not None:
+            turbine_row.update({
+                "horizon_mean_utility": horizon_mean.tolist(),
+                "horizon_std_utility": horizon_std.tolist(),
+            })
+        turbine_rows.append(turbine_row)
 
     means = np.asarray([row["mean_utility"] for row in turbine_rows], dtype=np.float64)
     mean_utility = float(means.mean())
@@ -102,9 +115,10 @@ def _candidate_statistics(candidate, *, as_of_step: int, parameters: dict) -> di
     transfer_lcb = (
         mean_utility - parameters["z_value"] * between_std / math.sqrt(len(means))
     )
-    positive_fraction = float(
-        np.mean([row["within_turbine_lcb"] > 0.0 for row in turbine_rows])
-    )
+    # Overlapping forecast windows are not independent replications. Count
+    # turbine-level signs here; uncertainty for deployment is computed across
+    # turbine means below, with each turbine contributing once.
+    positive_fraction = float((means > 0.0).mean())
     total_windows = int(sum(row["n_windows"] for row in turbine_rows))
     support_score = min(1.0, total_windows / parameters["min_total_windows"])
     utility_score = float(
@@ -117,15 +131,54 @@ def _candidate_statistics(candidate, *, as_of_step: int, parameters: dict) -> di
     )
     deployment_weight = float(transfer_score * support_score * forgetting_factor)
 
+    horizon_statistics = {}
+    if pred_len is not None:
+        horizon_means = np.asarray(
+            [row["horizon_mean_utility"] for row in turbine_rows], dtype=np.float64
+        )
+        horizon_average = horizon_means.mean(axis=0)
+        horizon_between_std = (
+            horizon_means.std(axis=0, ddof=1)
+            if len(turbine_rows) > 1 else np.zeros(pred_len, dtype=np.float64)
+        )
+        horizon_lcb = horizon_average - (
+            parameters["z_value"] * horizon_between_std / math.sqrt(len(turbine_rows))
+        )
+        horizon_positive_fraction = (horizon_means > 0).mean(axis=0)
+        horizon_valid = (
+            (horizon_positive_fraction >= parameters["min_positive_turbine_fraction"])
+            & (horizon_lcb > parameters["min_transfer_lcb"])
+        )
+        horizon_weight = (
+            horizon_positive_fraction
+            * np.clip(horizon_lcb / parameters["target_utility"], 0.0, 1.0)
+            * support_score * forgetting_factor
+        )
+        horizon_weight = np.where(
+            horizon_valid & (horizon_weight >= parameters["retire_weight"]),
+            horizon_weight, 0.0,
+        )
+        # In horizon-aware mode an event survives if it helps at least one
+        # forecast step. A negative macro mean must not erase a short-lived ramp.
+        deployment_weight = float(horizon_weight.max())
+        horizon_statistics = {
+            "horizon_cross_turbine_lcb": horizon_lcb.tolist(),
+            "horizon_positive_turbine_fraction": horizon_positive_fraction.tolist(),
+            "horizon_deployment_weight": horizon_weight.tolist(),
+        }
+
     reasons = []
     if len(turbine_rows) < parameters["min_source_turbines"]:
         reasons.append("insufficient_source_turbines")
-    if positive_fraction < parameters["min_positive_turbine_fraction"]:
-        reasons.append("unstable_across_turbines")
-    if transfer_lcb <= parameters["min_transfer_lcb"]:
-        reasons.append("non_positive_cross_turbine_lcb")
-    if deployment_weight < parameters["retire_weight"]:
-        reasons.append("forgotten_or_low_utility")
+    if pred_len is None:
+        if positive_fraction < parameters["min_positive_turbine_fraction"]:
+            reasons.append("unstable_across_turbines")
+        if transfer_lcb <= parameters["min_transfer_lcb"]:
+            reasons.append("non_positive_cross_turbine_lcb")
+        if deployment_weight < parameters["retire_weight"]:
+            reasons.append("forgotten_or_low_utility")
+    elif deployment_weight == 0.0:
+        reasons.append("no_stable_profitable_horizon")
 
     return {
         "id": candidate_id,
@@ -149,6 +202,7 @@ def _candidate_statistics(candidate, *, as_of_step: int, parameters: dict) -> di
         "age_steps": age_steps,
         "forgetting_factor": forgetting_factor,
         "deployment_weight": deployment_weight,
+        **horizon_statistics,
         "accepted": not reasons,
         "decision_reasons": reasons or ["accepted_train_oof_cross_turbine_evidence"],
     }
@@ -188,6 +242,19 @@ def evolve_event_wiki(
 
     configured_step = evidence_spec.get("as_of_step")
     as_of_step = int(configured_step if as_of_step is None else as_of_step)
+    previous_lifecycle = base_spec.get("knowledge_lifecycle") or {}
+    if as_of_step < int(previous_lifecycle.get("as_of_step", 0)):
+        raise ValueError("Wiki lifecycle cannot move backward in time")
+    pred_len = evidence_spec.get("pred_len")
+    if pred_len is None and previous_lifecycle.get("pred_len") is not None:
+        raise ValueError("Horizon-aware Wiki requires pred_len in every update")
+    if pred_len is not None:
+        pred_len = int(pred_len)
+        if pred_len < 1:
+            raise ValueError("pred_len must be positive")
+        previous_pred_len = previous_lifecycle.get("pred_len")
+        if previous_pred_len is not None and int(previous_pred_len) != pred_len:
+            raise ValueError("Cannot reuse lifecycle evidence across forecast horizons")
     if as_of_step < 0:
         raise ValueError("as_of_step must be non-negative")
     if min_source_turbines < 2:
@@ -237,7 +304,8 @@ def evolve_event_wiki(
     candidate_ids = set()
     for raw_candidate in evidence_spec.get("candidates", []):
         candidate = _candidate_statistics(
-            raw_candidate, as_of_step=as_of_step, parameters=parameters
+            raw_candidate, as_of_step=as_of_step, parameters=parameters,
+            pred_len=pred_len,
         )
         if candidate["id"] in candidate_ids:
             raise ValueError(f"Duplicate candidate id: {candidate['id']}")
@@ -347,6 +415,13 @@ def evolve_event_wiki(
             "cross_turbine_lcb": float(max(item["cross_turbine_lcb"] for item in group)),
             "forgetting_factor": float(max(item["forgetting_factor"] for item in group)),
         }
+        if pred_len is not None:
+            # A merge retains a horizon only when at least one candidate has
+            # positive train-OOF cross-turbine evidence at that same horizon.
+            scene["lifecycle"]["horizon_deployment_weight"] = np.max(
+                np.asarray([item["horizon_deployment_weight"] for item in group]),
+                axis=0,
+            ).tolist()
         evolved_by_id[canonical_id] = scene
         active_ids.add(canonical_id)
         group_audit.append(
@@ -382,6 +457,8 @@ def evolve_event_wiki(
                 "cross_turbine_lcb": None,
                 "forgetting_factor": 1.0,
             }
+            if pred_len is not None:
+                scene["lifecycle"]["horizon_deployment_weight"] = [1.0] * pred_len
             active_ids.add(factor_id)
             continue
         if not rule_was_assessed and prior:
@@ -400,6 +477,15 @@ def evolve_event_wiki(
                     )
                     * incremental_decay,
                 }
+                if pred_len is not None:
+                    prior_horizon = prior.get("horizon_deployment_weight")
+                    if prior_horizon is None:
+                        prior_horizon = [float(prior.get("deployment_weight", 1.0))] * pred_len
+                    if len(prior_horizon) != pred_len:
+                        raise ValueError("Carried Wiki horizon reliability shape mismatch")
+                    scene["lifecycle"]["horizon_deployment_weight"] = [
+                        float(weight) * incremental_decay for weight in prior_horizon
+                    ]
                 active_ids.add(factor_id)
                 continue
         scene["lifecycle"] = {
@@ -411,6 +497,8 @@ def evolve_event_wiki(
             "cross_turbine_lcb": None,
             "forgetting_factor": 0.0,
         }
+        if pred_len is not None:
+            scene["lifecycle"]["horizon_deployment_weight"] = [0.0] * pred_len
 
     new_ids = sorted(set(evolved_by_id).difference(base_order))
     output_scenes = [evolved_by_id[factor_id] for factor_id in [*base_order, *new_ids]]
@@ -423,6 +511,7 @@ def evolve_event_wiki(
         "mutation_policy": "offline_train_only_frozen_for_validation_and_test",
         "source_split": TRAIN_ONLY_SOURCE,
         "as_of_step": as_of_step,
+        **({"pred_len": pred_len} if pred_len is not None else {}),
         "source_turbines": source_turbines,
         "held_out_turbines": held_out_turbines,
         "transfer_scope": (
@@ -442,6 +531,7 @@ def evolve_event_wiki(
         "method": evolved["knowledge_lifecycle"]["method"],
         "source_split": TRAIN_ONLY_SOURCE,
         "as_of_step": as_of_step,
+        **({"pred_len": pred_len} if pred_len is not None else {}),
         "base_config_sha256": _sha256_json(base_spec),
         "evidence_sha256": evolved["knowledge_lifecycle"]["evidence_sha256"],
         "source_turbines": source_turbines,

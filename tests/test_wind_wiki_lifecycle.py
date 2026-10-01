@@ -10,6 +10,7 @@ import torch
 from layers.TimeDART_EncDec import CompositionalEventWikiRouter
 from utils.wind_regime_wiki import (
     compute_event_factor_rule_logits,
+    load_wind_regime_wiki_bundle,
     load_wind_regime_wiki_spec,
 )
 from utils.wind_wiki_lifecycle import evolve_event_wiki
@@ -154,6 +155,59 @@ class WindWikiLifecycleTests(unittest.TestCase):
         )
         self.assertEqual(float(activations[0, 0]), 0.0)
         self.assertEqual(float(activations[0, 1]), 0.0)
+
+    def test_horizon_utility_survives_only_stable_profitable_steps(self):
+        evidence = _evidence([_candidate("gust-horizon", "gust_or_turbulent")])
+        evidence["pred_len"] = 3
+        for row in evidence["candidates"][0]["turbine_evidence"]:
+            row["horizon_mean_utility"] = [0.08, -0.02, 0.06]
+            row["horizon_std_utility"] = [0.001, 0.001, 0.001]
+        evolved, audit = evolve_event_wiki(_base_spec(), evidence)
+        lifecycle = evolved["scenes"][0]["lifecycle"]
+        self.assertEqual(lifecycle["horizon_deployment_weight"], [1.0, 0.0, 1.0])
+        self.assertEqual(audit["pred_len"], 3)
+        with tempfile.TemporaryDirectory() as temporary:
+            path = Path(temporary) / "wiki.json"
+            path.write_text(json.dumps(evolved), encoding="utf-8")
+            loaded = load_wind_regime_wiki_spec(path)
+            bundle_path = Path(temporary) / "wiki.npz"
+            np.savez_compressed(
+                bundle_path,
+                embeddings=np.zeros((len(loaded["scene_ids"]), 8), dtype=np.float32),
+                scene_ids=np.asarray(loaded["scene_ids"]),
+                encoder_name=np.asarray("unit-test"),
+                config_sha256=np.asarray(loaded["sha256"]),
+                factor_reliability=np.asarray(loaded["factor_reliability"], dtype=np.float32),
+                factor_horizon_reliability=np.asarray(
+                    loaded["factor_horizon_reliability"], dtype=np.float32
+                ),
+            )
+            bundle = load_wind_regime_wiki_bundle(
+                bundle_path, expected_scene_ids=loaded["scene_ids"]
+            )
+            self.assertEqual(bundle["factor_horizon_reliability"].shape, (4, 3))
+        self.assertEqual(loaded["factor_horizon_reliability"][0], [1.0, 0.0, 1.0])
+        self.assertEqual(loaded["factor_horizon_reliability"][1], [1.0, 1.0, 1.0])
+
+        invalid = copy.deepcopy(evidence)
+        invalid["candidates"][0]["turbine_evidence"][0]["horizon_mean_utility"] = [0.08, 0.06]
+        with self.assertRaisesRegex(ValueError, "horizon utilities"):
+            evolve_event_wiki(_base_spec(), invalid)
+
+    def test_horizon_only_gain_can_survive_negative_macro_and_decay(self):
+        evidence = _evidence([_candidate("ramp", "gust_or_turbulent", step=1000)])
+        evidence["pred_len"] = 2
+        for row in evidence["candidates"][0]["turbine_evidence"]:
+            row["mean_utility"] = -0.01
+            row["horizon_mean_utility"] = [0.08, -0.10]
+            row["horizon_std_utility"] = [0.001, 0.001]
+        evolved, _ = evolve_event_wiki(_base_spec(), evidence)
+        self.assertEqual(evolved["scenes"][0]["lifecycle"]["horizon_deployment_weight"], [1.0, 0.0])
+        later = _evidence([])
+        later["pred_len"] = 2
+        later["as_of_step"] = 1100
+        carried, _ = evolve_event_wiki(evolved, later, forget_half_life_steps=100)
+        self.assertEqual(carried["scenes"][0]["lifecycle"]["horizon_deployment_weight"], [0.5, 0.0])
 
 
 if __name__ == "__main__":

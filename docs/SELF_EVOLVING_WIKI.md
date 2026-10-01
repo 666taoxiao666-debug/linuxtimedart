@@ -16,7 +16,16 @@ leakage-safe.
   a missing candidate record cannot silently erase the base Wiki.
 - **Cross-turbine transfer:** every turbine is treated as one transfer unit.
   Reliability uses a lower confidence bound across turbine-level mean utility,
-  not a pooled window average that lets one large turbine dominate.
+  not a pooled window average that lets one large turbine dominate. Overlapping
+  forecast windows are not counted as independent confidence-bound samples.
+- **Horizon-aware survival:** with `pred_len` evidence, merge, decay, transfer
+  screening, and retirement operate on each forecast step. A short-lived ramp
+  may survive on the steps where it helps even if its whole-horizon mean is
+  negative; an unsupported step is assigned exactly zero reliability.
+- **Selective residual:** the factorized event experts receive observable
+  SCADA-rule support and a frozen horizon reliability mask. Their bounded
+  residuals are routed by predicted step-wise utility; the abstention action
+  exactly returns the original trend prediction.
 - **Safe growth:** a new Wiki factor must provide a rule in a constrained JSON
   DSL. The DSL supports observable historical statistics only; it cannot run
   arbitrary LLM-generated code.
@@ -34,6 +43,14 @@ The input JSON must set `source_split` to `train_oof`. Each candidate contains:
   `mean_utility`, and `std_utility`;
 - every evidence row must also be `source_split=train_oof`.
 
+For horizon-aware deployment also set top-level `pred_len` equal to the model
+forecast horizon, and give every turbine row `horizon_mean_utility` and
+`horizon_std_utility`, each a list of exactly `pred_len` finite values. These
+are the per-step utility mean and uncertainty from the same train-only OOF
+predictions. The evolved JSON and embedding bundle then store one reliability
+weight per `(event, forecast step)`; a mismatched bundle or model `pred_len`
+is rejected before training. Repeated evolution must keep the same horizon.
+
 Utility is dimensionless and positive when the candidate helps, for example:
 
 `mean_utility = mean(1 - candidate_window_MAE / reference_window_MAE)`
@@ -41,6 +58,11 @@ Utility is dimensionless and positive when the candidate helps, for example:
 The candidate and reference predictions must be produced out of fold inside the
 training interval. Do not calculate this value on the experiment validation
 fold or the final test interval.
+
+The lifecycle checks the declared split, turbine IDs, shapes, and statistics,
+but cannot independently prove that an externally supplied evidence JSON was
+actually generated out of fold. Preserve the OOF prediction manifest, source
+checkpoint hashes, turbine split, and train-only timestamps with the evidence.
 
 `configs/wind_event_wiki_evidence.example.json` is a schema starter only and is
 marked `example_only`; the lifecycle command intentionally refuses to train
@@ -60,6 +82,7 @@ First generate real train-OOF candidate evidence. Then run:
 ```bash
 conda activate timedart
 EVIDENCE=/path/to/train_oof_wiki_candidates.json \
+PRED_LEN=12 \
 bash scripts/train/SDWPF_evolved_wiki_cv.sh
 ```
 
@@ -74,3 +97,8 @@ The code implements the mechanism and its evidence guards. It does not itself
 prove accuracy or novelty. A paper claim still requires an ablation against the
 static compositional Wiki, merge-only, merge+forgetting, and full
 merge+forgetting+cross-turbine transfer, plus genuinely held-out turbine tests.
+Add a `horizon-aware lifecycle off/on` ablation with identical data, checkpoints,
+and seeds, and report per-step MAE, event intervention rate, harmful-intervention
+rate, and aggregate MAE. The current transfer rule tests stability across
+source turbines; it is not a target-turbine-specific adaptation model, and the
+repository does not automatically produce full-model OOF lifecycle evidence.

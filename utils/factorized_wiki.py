@@ -109,12 +109,18 @@ class FactorUtilityGate(nn.Module):
 
 
 def factorized_route(base, corrections, scores, availability, min_gain, temperature, soft):
-    masked = scores.masked_fill(~availability[:, None], float('-inf'))
+    if availability.ndim == 2:
+        available = availability[:, None, :].expand_as(scores)
+    elif availability.shape == scores.shape:
+        available = availability
+    else:
+        raise ValueError('Factor availability must be per-window or per-horizon')
+    masked = scores.masked_fill(~available, float('-inf'))
     best, index = masked.max(-1)
     intervene = best > min_gain
     selected = corrections.gather(-1, index[:, :, None, None].expand(-1, -1, base.size(2), 1)).squeeze(-1)
     hard_prediction = base + selected * intervene[..., None]
-    probability = utility_action_probabilities(scores, availability, min_gain, temperature)
+    probability = utility_action_probabilities(scores, available, min_gain, temperature)
     soft_prediction = base + (corrections * probability[:, :, None, 1:]).sum(-1)
     action = torch.where(intervene, index + 1, torch.zeros_like(index))
     return (soft_prediction if soft else hard_prediction), soft_prediction, hard_prediction, action
@@ -125,7 +131,13 @@ def factorized_loss(aux, target, kind, margin=0., min_gain=0., temperature=.05,
     if harm_weight < 0.:
         raise ValueError('harm_weight must be nonnegative')
     predictions = aux['factor_predictions']
-    available = aux['factor_availability'][:, None].expand(-1, target.size(1), -1)
+    factor_available = aux['factor_availability']
+    if factor_available.ndim == 2:
+        available = factor_available[:, None].expand(-1, target.size(1), -1)
+    elif factor_available.shape == (target.size(0), target.size(1), predictions.size(-1)):
+        available = factor_available
+    else:
+        raise ValueError('Factor availability must match candidate horizons')
     base_error = (aux['base_prediction'].detach() - target).abs().mean(2)
     errors = (predictions - target[..., None]).abs().mean(2)
     zero = predictions.sum() * 0. + aux['factor_utilities'].sum() * 0.
@@ -147,7 +159,7 @@ def factorized_loss(aux, target, kind, margin=0., min_gain=0., temperature=.05,
         loss = F.smooth_l1_loss(aux['factor_utilities'][available], gain[available]) if available.any() else zero
         return loss, gain
     # Cost-sensitive expected regret only; do not balance action-class counts.
-    probability = utility_action_probabilities(aux['factor_utilities'], aux['factor_availability'], min_gain, temperature)
+    probability = utility_action_probabilities(aux['factor_utilities'], available, min_gain, temperature)
     costs = torch.cat([base_error[..., None], errors.detach()], -1)
     mask = torch.cat([torch.ones_like(available[..., :1]), available], -1)
     best = costs.masked_fill(~mask, float('inf')).min(-1).values

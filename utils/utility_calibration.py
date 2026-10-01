@@ -83,7 +83,12 @@ def utility_action_probabilities(utilities, availability, min_gain, temperature)
     """Differentiable abstain/event/composition weights; absent evidence is zero."""
     if temperature <= 0:
         raise ValueError("Utility temperature must be positive")
-    available = availability[:, None, :].expand_as(utilities)
+    if availability.ndim == 2:
+        available = availability[:, None, :].expand_as(utilities)
+    elif availability.shape == utilities.shape:
+        available = availability
+    else:
+        raise ValueError("Availability must have shape [batch, candidates] or [batch, horizon, candidates]")
     logits = torch.cat([
         torch.full_like(utilities[..., :1], float(min_gain)),
         utilities.masked_fill(~available, float("-inf")),

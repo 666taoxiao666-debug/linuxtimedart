@@ -200,6 +200,12 @@ def load_wind_regime_wiki_spec(path) -> dict:
         raise ValueError("rule_defaults must be a JSON object")
     factor_rules = []
     factor_reliability = []
+    lifecycle_pred_len = (spec.get("knowledge_lifecycle") or {}).get("pred_len")
+    if lifecycle_pred_len is not None:
+        lifecycle_pred_len = int(lifecycle_pred_len)
+        if lifecycle_pred_len < 1 or entry_type != "event_factor":
+            raise ValueError("Horizon-aware lifecycle requires event factors and positive pred_len")
+    factor_horizon_reliability = []
     if entry_type == "event_factor":
         for scene in scenes:
             validate_event_factor_rule(
@@ -217,9 +223,27 @@ def load_wind_regime_wiki_spec(path) -> dict:
                     f"Event factor {scene.get('id')!r} deployment_weight must be in [0, 1]"
                 )
             factor_reliability.append(reliability)
+            if lifecycle_pred_len is not None:
+                horizon_weight = np.asarray(
+                    (lifecycle or {}).get("horizon_deployment_weight"), dtype=np.float32
+                )
+                if horizon_weight.shape != (lifecycle_pred_len,):
+                    raise ValueError(
+                        f"Event factor {scene.get('id')!r} needs "
+                        f"{lifecycle_pred_len} horizon deployment weights"
+                    )
+                if not np.isfinite(horizon_weight).all() or (
+                    (horizon_weight < 0.0) | (horizon_weight > 1.0)
+                ).any():
+                    raise ValueError("Horizon deployment weights must be finite and in [0, 1]")
+                if (horizon_weight > reliability + 1e-6).any():
+                    raise ValueError("Horizon reliability cannot exceed factor reliability")
+                factor_horizon_reliability.append(horizon_weight.tolist())
     spec["scene_ids"] = list(scene_ids)
     spec["factor_rules"] = factor_rules
     spec["factor_reliability"] = factor_reliability
+    if lifecycle_pred_len is not None:
+        spec["factor_horizon_reliability"] = factor_horizon_reliability
     spec["sha256"] = sha256_file(source)
     return spec
 
@@ -245,6 +269,10 @@ def load_wind_regime_wiki_bundle(path, expected_scene_ids=None) -> dict:
             if "factor_reliability" in bundle.files
             else np.ones(len(scene_ids), dtype=np.float32)
         )
+        factor_horizon_reliability = (
+            np.asarray(bundle["factor_horizon_reliability"], dtype=np.float32)
+            if "factor_horizon_reliability" in bundle.files else None
+        )
     if embeddings.ndim != 2 or embeddings.shape[0] != len(scene_ids):
         raise ValueError(
             "Wiki embeddings must have shape [num_scenes, hidden_size], got "
@@ -261,6 +289,15 @@ def load_wind_regime_wiki_bundle(path, expected_scene_ids=None) -> dict:
         (factor_reliability < 0.0) | (factor_reliability > 1.0)
     ).any():
         raise ValueError("Wiki factor_reliability must be finite and in [0, 1]")
+    if factor_horizon_reliability is not None:
+        if factor_horizon_reliability.ndim != 2 or factor_horizon_reliability.shape[0] != len(scene_ids):
+            raise ValueError("Wiki horizon reliability must have shape [num_scenes, pred_len]")
+        if not np.isfinite(factor_horizon_reliability).all() or (
+            (factor_horizon_reliability < 0.0) | (factor_horizon_reliability > 1.0)
+        ).any():
+            raise ValueError("Wiki horizon reliability must be finite and in [0, 1]")
+        if (factor_horizon_reliability > factor_reliability[:, None] + 1e-6).any():
+            raise ValueError("Wiki horizon reliability exceeds factor reliability")
     if expected_scene_ids is not None and tuple(expected_scene_ids) != scene_ids:
         raise ValueError(
             "Wiki embedding scene order does not match the JSON config: "
@@ -272,6 +309,7 @@ def load_wind_regime_wiki_bundle(path, expected_scene_ids=None) -> dict:
         "encoder_name": encoder_name,
         "config_sha256": config_sha256,
         "factor_reliability": factor_reliability,
+        "factor_horizon_reliability": factor_horizon_reliability,
         "sha256": sha256_file(source),
     }
 

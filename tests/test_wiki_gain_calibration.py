@@ -52,6 +52,21 @@ class GainCalibrationTests(unittest.TestCase):
         alpha, _, _ = fit_gain_policy(**data)
         self.assertTrue(np.all(alpha == 0))
 
+    def test_horizon_availability_blocks_retired_knowledge(self):
+        data = self.fixture()
+        n = data['base'].shape[0]
+        data['available'] = np.ones((n, 2, 2), dtype=bool)
+        data['available'][:, 1, 0] = False
+        alpha, gain, _ = fit_gain_policy(**data)
+        np.testing.assert_array_equal(alpha[:, 0, 0], .5)
+        np.testing.assert_array_equal(alpha[:, 1, 0], 0.)
+        errors, actions = route_policy(
+            data['base'], data['candidates'], data['target'],
+            data['available'], data['trend'], alpha, gain, return_actions=True,
+        )
+        self.assertTrue(np.all(actions[:, 1] == 0))
+        self.assertTrue(np.all(errors[:, 0] == 0.))
+
     def test_one_good_time_block_cannot_override_two_harmful_blocks(self):
         data = self.fixture()
         data['candidates'][data['block_ids'] != 0, :, 0] = -.1

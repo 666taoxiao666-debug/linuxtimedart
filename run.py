@@ -875,6 +875,9 @@ def configure_args(args):
         args.scene_wiki_factor_reliability = [
             float(value) for value in spec.get("factor_reliability", [])
         ]
+        args.scene_wiki_factor_horizon_reliability = spec.get(
+            "factor_horizon_reliability"
+        )
         if args.prompt_router == "scene_wiki":
             args.num_modes = args.scene_wiki_num_modes
             args.regime_label_method = "scene_wiki"
@@ -915,6 +918,30 @@ def configure_args(args):
             ):
                 raise ValueError(
                     "Wiki embedding reliability differs from the JSON lifecycle. "
+                    "Rebuild the embedding bundle."
+                )
+            expected_horizon_reliability = spec.get("factor_horizon_reliability")
+            actual_horizon_reliability = bundle["factor_horizon_reliability"]
+            if expected_horizon_reliability is not None:
+                expected_horizon_reliability = np.asarray(
+                    expected_horizon_reliability, dtype=np.float32
+                )
+                if expected_horizon_reliability.shape[1] != args.pred_len:
+                    raise ValueError(
+                        "Evolved Wiki pred_len differs from this training run; "
+                        "use horizon-matched lifecycle evidence."
+                    )
+                if actual_horizon_reliability is None or not np.allclose(
+                    actual_horizon_reliability, expected_horizon_reliability,
+                    rtol=0.0, atol=1e-7,
+                ):
+                    raise ValueError(
+                        "Wiki horizon reliability differs from the JSON lifecycle. "
+                        "Rebuild the embedding bundle."
+                    )
+            elif actual_horizon_reliability is not None:
+                raise ValueError(
+                    "Wiki bundle has horizon reliability but the config does not. "
                     "Rebuild the embedding bundle."
                 )
             if args.num_modes != 3:
@@ -1066,6 +1093,7 @@ def load_finetuned_model(exp, checkpoint_path):
             "scene_wiki_confidence_power",
             "scene_wiki_factor_rules",
             "scene_wiki_factor_reliability",
+            "scene_wiki_factor_horizon_reliability",
             "lambda_scene_ce",
             "lambda_event_bce",
             "scene_wiki_num_modes",

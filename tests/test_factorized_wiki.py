@@ -49,6 +49,20 @@ class FactorizedWikiTests(unittest.TestCase):
         self.assertTrue(torch.equal(soft, base))
         self.assertTrue(torch.all(action == 0))
 
+    def test_horizon_lifecycle_veto_is_exact(self):
+        base = torch.full((1, 3, 1), 10.)
+        corrections = torch.ones(1, 3, 1, 1)
+        scores = torch.full((1, 3, 1), 1., requires_grad=True)
+        available = torch.tensor([[[True], [False], [True]]])
+        hard, soft, _, actions = factorized_route(
+            base, corrections, scores, available, 0., .05, False
+        )
+        torch.testing.assert_close(hard[0, :, 0], torch.tensor([11., 10., 11.]))
+        self.assertEqual(actions.tolist(), [[1, 0, 1]])
+        self.assertEqual(float(soft[0, 1, 0]), 10.)
+        soft.sum().backward()
+        self.assertEqual(float(scores.grad[0, 1, 0]), 0.)
+
     def test_each_expert_supervised_masked_and_base_detached(self):
         base = torch.zeros(2, 3, 1, requires_grad=True)
         correction = torch.zeros(2, 3, 1, 3, requires_grad=True)

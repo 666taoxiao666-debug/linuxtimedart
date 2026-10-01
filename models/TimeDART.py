@@ -316,6 +316,23 @@ class Model(nn.Module):
                         confidence_power=args.scene_wiki_confidence_power,
                         **router_kwargs,
                     )
+                    horizon_reliability = bundle["factor_horizon_reliability"]
+                    if horizon_reliability is None:
+                        horizon_reliability = torch.ones(
+                            len(bundle["scene_ids"]), args.pred_len
+                        )
+                    elif horizon_reliability.shape[1] != args.pred_len:
+                        raise ValueError(
+                            "Evolved Wiki pred_len must match the forecast horizon: "
+                            f"{horizon_reliability.shape[1]} != {args.pred_len}"
+                        )
+                    # Frozen Wiki metadata comes from the config/bundle hash,
+                    # not from learned checkpoint parameters.
+                    self.register_buffer(
+                        "factor_horizon_reliability",
+                        torch.as_tensor(horizon_reliability, dtype=torch.float32),
+                        persistent=False,
+                    )
                 else:
                     self.scene_wiki_router = SceneWikiPromptRouter(
                         bundle["embeddings"],
@@ -519,9 +536,27 @@ class Model(nn.Module):
         )
         composition = (events.detach() * weights[:, None, None]).sum(-1) + delta
         composition_available = (composition_support > 0).sum(-1) >= 2
-        composition = composition * composition_available[:, None, None]
+        horizon_reliability = self.factor_horizon_reliability.T.to(events.dtype)
+        event_horizon_available = (
+            (support[:, None, :] > 0) & (horizon_reliability[None, :, :] > 0)
+        )
+        events = events * horizon_reliability[None, :, None, :]
+        composition_horizon_available = (
+            ((composition_support[:, None, :] > 0)
+             & (horizon_reliability[None, :, :] > 0)).sum(-1) >= 2
+        )
+        composition_horizon_weight = (
+            (composition_support[:, None, :] * horizon_reliability[None, :, :]).sum(-1)
+            / composition_support.sum(-1)[:, None].clamp_min(1e-8)
+        )
+        composition = (
+            composition * composition_horizon_weight[:, :, None]
+            * composition_horizon_available[:, :, None]
+        )
         corrections = torch.cat([events, composition[..., None]], -1)
-        availability = torch.cat([support > 0, composition_available[:, None]], -1)
+        availability = torch.cat(
+            [event_horizon_available, composition_horizon_available[..., None]], -1
+        )
         all_descriptors = torch.cat([descriptors, descriptor[:, None]], 1)
         scores = self.utility_gate(
             state['target_hidden'].detach(), state['trend_probs'].detach(), physical,
@@ -538,7 +573,7 @@ class Model(nn.Module):
             self.utility_gate.temperature, self.utility_gate.training,
         )
         # Retain legacy coarse diagnostic names without discarding the full bank.
-        event_scores, event_index = scores[..., :-1].masked_fill(~availability[:, None, :-1], -1e4).max(-1)
+        event_scores, event_index = scores[..., :-1].masked_fill(~availability[..., :-1], -1e4).max(-1)
         event_correction = corrections[..., :-1].gather(
             -1, event_index[:, :, None, None].expand(-1, -1, base.size(2), 1)).squeeze(-1)
         granularity = torch.where(action == scores.size(-1), 2, (action > 0).long())
@@ -547,7 +582,7 @@ class Model(nn.Module):
             'base_prediction': base, 'soft_prediction': soft, 'hard_prediction': hard,
             'trend_probs': state['trend_probs'], 'activations': support.detach(),
             'granularity': granularity, 'strength': (action > 0).to(base.dtype),
-            'availability': torch.stack([availability[:, :-1].any(-1), composition_available], -1),
+            'availability': torch.stack([(support > 0).any(-1), composition_available], -1),
             'utilities': torch.stack([event_scores, scores[..., -1]], -1),
             'event_prediction': base.detach() + event_correction,
             'composition_prediction': base.detach() + corrections[..., -1],

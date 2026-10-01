@@ -64,17 +64,21 @@ def main():
     output = Path(args.output)
     output.parent.mkdir(parents=True, exist_ok=True)
     temporary = output.with_name(output.name + f".tmp-{os.getpid()}.npz")
-    np.savez_compressed(
-        temporary,
-        embeddings=embeddings,
-        scene_ids=np.asarray(spec["scene_ids"]),
-        encoder_name=np.asarray(str(args.llm_path)),
-        config_sha256=np.asarray(spec["sha256"]),
-        factor_reliability=np.asarray(
+    bundle = {
+        "embeddings": embeddings,
+        "scene_ids": np.asarray(spec["scene_ids"]),
+        "encoder_name": np.asarray(str(args.llm_path)),
+        "config_sha256": np.asarray(spec["sha256"]),
+        "factor_reliability": np.asarray(
             spec.get("factor_reliability") or np.ones(len(spec["scene_ids"])),
             dtype=np.float32,
         ),
-    )
+    }
+    if "factor_horizon_reliability" in spec:
+        bundle["factor_horizon_reliability"] = np.asarray(
+            spec["factor_horizon_reliability"], dtype=np.float32
+        )
+    np.savez_compressed(temporary, **bundle)
     os.replace(temporary, output)
     print(
         "[WIKI] Built frozen semantic anchors: "

@@ -2648,6 +2648,11 @@ class Exp_TimeDART(Exp_Basic):
                 factor_predictions = np.concatenate(factor_prediction_batches)
                 factor_available = np.concatenate(factor_availability_batches)
                 factor_action = np.concatenate(factor_action_batches)
+                if factor_available.ndim == 2:
+                    factor_available = np.broadcast_to(
+                        factor_available[:, None, :],
+                        (factor_available.shape[0], factor_predictions.shape[1], factor_available.shape[1]),
+                    )
                 if can_inverse_target:
                     factor_predictions = factor_predictions * target_scale + target_mean
                 if rated_power > 0:
@@ -2656,9 +2661,9 @@ class Exp_TimeDART(Exp_Basic):
                 oracle_error = base_error.copy()
                 for k, factor_name in enumerate((*core_model.scene_wiki_scene_ids, 'composition')):
                     prefix = f"factor_{factor_name}_"
-                    available = factor_available[:, k]
+                    available = factor_available[:, :, k]
                     error = np.abs(factor_predictions[..., k] - true_original)
-                    oracle_error = np.minimum(oracle_error, np.where(available[:, None, None], error, np.inf))
+                    oracle_error = np.minimum(oracle_error, np.where(available[..., None], error, np.inf))
                     selected = factor_action == k + 1
                     selected_error, selected_base = error.mean(-1)[selected], base_error.mean(-1)[selected]
                     diagnostics[prefix + 'available'] = float(available.mean())
