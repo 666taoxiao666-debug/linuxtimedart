@@ -3,7 +3,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from scripts.summarize_hierarchical_wiki import compare
+from scripts.summarize_hierarchical_wiki import compare, fold_summary
 
 
 class PairedSummaryTests(unittest.TestCase):
@@ -41,6 +41,21 @@ class PairedSummaryTests(unittest.TestCase):
             self.write(trend, [{**row, "seed": 2025}])
             with self.assertRaisesRegex(ValueError, "No matching"):
                 compare(wiki, trend)
+
+    def test_fold_summary_exposes_epoch_zero_and_trained_regression(self):
+        rows = [
+            dict(fold=0, seed=2025, best_epoch=0, trend_mae_kw=134., wiki_mae_kw=134.,
+                 gain_kw=0., trained_epochs_reported=7, trained_best_mae_kw=135.),
+            dict(fold=0, seed=2026, best_epoch=0, trend_mae_kw=133., wiki_mae_kw=133.,
+                 gain_kw=0., trained_epochs_reported=7, trained_best_mae_kw=134.),
+            dict(fold=1, seed=2026, best_epoch=5, trend_mae_kw=128., wiki_mae_kw=127.6,
+                 gain_kw=.4, trained_epochs_reported=7, trained_best_mae_kw=127.6),
+        ]
+        lines = fold_summary(rows)
+        self.assertIn('FOLD_0_WIKI_GAIN_VS_TREND_KW=0.000000', lines)
+        self.assertIn('FOLD_0_EPOCH_ZERO_SELECTED=2', lines)
+        self.assertIn('FOLD_0_TRAINED_BEST_GAIN_VS_TREND_KW=-1.000000', lines)
+        self.assertIn('FOLD_1_RUNS_BEATING_TREND=1', lines)
 
 
 if __name__ == "__main__":

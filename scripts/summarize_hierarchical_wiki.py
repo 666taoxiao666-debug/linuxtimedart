@@ -64,6 +64,24 @@ def attach_training_progress(rows, wiki_dir):
     return rows
 
 
+def fold_summary(rows):
+    """Report paired effects by fold, including masked training regressions."""
+    lines = []
+    for fold in sorted({row['fold'] for row in rows}):
+        group = [row for row in rows if row['fold'] == fold]
+        prefix = f'FOLD_{fold}'
+        lines.extend([
+            f'{prefix}_PAIRED_RUNS={len(group)}',
+            f'{prefix}_WIKI_GAIN_VS_TREND_KW={sum(row["gain_kw"] for row in group) / len(group):.6f}',
+            f'{prefix}_RUNS_BEATING_TREND={sum(row["gain_kw"] > 0.002 for row in group)}',
+            f'{prefix}_EPOCH_ZERO_SELECTED={sum(row["best_epoch"] == 0 for row in group)}',
+        ])
+        if all(row.get('trained_epochs_reported') for row in group):
+            trained_gain = sum(row['trend_mae_kw'] - row['trained_best_mae_kw'] for row in group) / len(group)
+            lines.append(f'{prefix}_TRAINED_BEST_GAIN_VS_TREND_KW={trained_gain:.6f}')
+    return lines
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--wiki-dir", required=True, type=Path)
@@ -85,6 +103,7 @@ def main():
         f"EPOCH_ZERO_SELECTED={sum(r['best_epoch'] == 0 for r in rows)}\n"
         "EVALUATION_SPLIT=val\n"
     )
+    summary += '\n'.join(fold_summary(rows)) + '\n'
     reported = [r for r in rows if r["trained_epochs_reported"]]
     summary += f"TRAINED_PROGRESS_RUNS={len(reported)}\n"
     if len(reported) == len(rows):
