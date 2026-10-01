@@ -1713,6 +1713,7 @@ class Exp_TimeDART(Exp_Basic):
                             eps=self.args.utility_target_eps,
                             min_gain=self.args.utility_min_gain,
                             temperature=self.args.utility_gate_temperature,
+                            harm_weight=getattr(self.args, 'utility_harm_loss_weight', 0.),
                         )
                         (
                             utility_candidate_loss,

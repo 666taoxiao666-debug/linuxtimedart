@@ -120,7 +120,10 @@ def factorized_route(base, corrections, scores, availability, min_gain, temperat
     return (soft_prediction if soft else hard_prediction), soft_prediction, hard_prediction, action
 
 
-def factorized_loss(aux, target, kind, margin=0., min_gain=0., temperature=.05):
+def factorized_loss(aux, target, kind, margin=0., min_gain=0., temperature=.05,
+                    harm_weight=0.):
+    if harm_weight < 0.:
+        raise ValueError('harm_weight must be nonnegative')
     predictions = aux['factor_predictions']
     available = aux['factor_availability'][:, None].expand(-1, target.size(1), -1)
     base_error = (aux['base_prediction'].detach() - target).abs().mean(2)
@@ -150,4 +153,14 @@ def factorized_loss(aux, target, kind, margin=0., min_gain=0., temperature=.05):
     best = costs.masked_fill(~mask, float('inf')).min(-1).values
     regret = (probability * (costs - best[..., None])).sum(-1)
     has_evidence = available.any(-1)
-    return (regret[has_evidence].mean() if has_evidence.any() else zero), {}
+    decision = regret[has_evidence].mean() if has_evidence.any() else zero
+    if harm_weight:
+        # A false-positive event has a real forecast cost even when the soft
+        # router spreads most probability over abstention. Train-only labels
+        # identify harmful event/horizon pairs; physical availability remains
+        # mandatory and no validation label enters this objective.
+        harmful_excess = (errors.detach() - base_error[..., None]).clamp_min(0.)
+        unsafe_score = F.softplus((aux['factor_utilities'] - min_gain) / temperature)
+        harm = (unsafe_score * harmful_excess)[available].mean() if available.any() else zero
+        decision = decision + harm_weight * harm
+    return decision, {}

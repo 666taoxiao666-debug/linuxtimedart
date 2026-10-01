@@ -85,6 +85,29 @@ class FactorizedWikiTests(unittest.TestCase):
         self.assertEqual(rank.item(), 0)
         loss.backward()
 
+    def test_harm_penalty_targets_available_harmful_event_scores(self):
+        scores = torch.zeros(1, 1, 2, requires_grad=True)
+        base = torch.tensor([[[10.]]])
+        aux = {'factor_predictions': torch.tensor([[[[20., 0.]]]]),
+               'base_prediction': base, 'factor_utilities': scores,
+               'factor_availability': torch.tensor([[True, False]])}
+        plain, _ = utility_decision_loss(aux, torch.zeros_like(base),
+                                         min_gain=.001, temperature=.05)
+        guarded, _ = utility_decision_loss(aux, torch.zeros_like(base),
+                                           min_gain=.001, temperature=.05,
+                                           harm_weight=.5)
+        self.assertGreater(guarded.item(), plain.item())
+        (guarded - plain).backward()
+        self.assertGreater(scores.grad[0, 0, 0].item(), 0.)
+        self.assertEqual(scores.grad[0, 0, 1].item(), 0.)
+        aux['factor_predictions'] = torch.tensor([[[[9., 0.]]]])
+        safe, _ = utility_decision_loss(aux, torch.zeros_like(base),
+                                        min_gain=.001, temperature=.05,
+                                        harm_weight=.5)
+        safe_plain, _ = utility_decision_loss(aux, torch.zeros_like(base),
+                                              min_gain=.001, temperature=.05)
+        torch.testing.assert_close(safe, safe_plain)
+
 
 if __name__ == '__main__':
     unittest.main()

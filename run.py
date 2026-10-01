@@ -1,5 +1,6 @@
 import argparse
 import json
+import math
 import os
 import random
 
@@ -452,6 +453,8 @@ def build_parser():
     )
     parser.add_argument("--utility_loss_weight", type=float, default=0.1)
     parser.add_argument("--utility_decision_loss_weight", type=float, default=0.2)
+    parser.add_argument("--utility_harm_loss_weight", type=float, default=0.0,
+                        help="factorized Wiki only: penalize train-label-confirmed harmful event scores")
     parser.add_argument("--utility_candidate_loss_weight", type=float, default=0.1)
     parser.add_argument("--utility_ranking_loss_weight", type=float, default=0.1)
     parser.add_argument("--utility_ranking_margin", type=float, default=0.01)
@@ -781,6 +784,10 @@ def configure_args(args):
             raise ValueError("calibrated_evidence training requires a frozen overlay and at least one adapter epoch")
     if args.utility_decision_loss_weight < 0.0:
         raise ValueError("utility_decision_loss_weight cannot be negative")
+    if args.utility_harm_loss_weight < 0.0 or not math.isfinite(args.utility_harm_loss_weight):
+        raise ValueError("utility_harm_loss_weight must be finite and nonnegative")
+    if args.utility_harm_loss_weight and not args.utility_factorized:
+        raise ValueError("utility_harm_loss_weight requires --utility_factorized")
     if args.utility_candidate_loss_weight < 0.0:
         raise ValueError("utility_candidate_loss_weight cannot be negative")
     if args.utility_ranking_loss_weight < 0.0:

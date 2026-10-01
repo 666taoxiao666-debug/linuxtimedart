@@ -125,18 +125,22 @@ def utility_decision_loss(
     eps=0.05,
     min_gain=0.0,
     temperature=0.25,
+    harm_weight=0.0,
 ):
     """Directly supervise abstain/event/composition decisions on train batches.
 
     The utility regressor learns the magnitude of candidate gains, while this
-    balanced classification term teaches the exact decision made at inference:
+    decision term teaches the exact decision made at inference:
     abstain unless the best physically available candidate beats ``min_gain``.
     Windows without any physical evidence are excluded because the inference
     gate already hard-masks them to abstention.
+    For factorized experts, an optional harm penalty discourages high utility
+    scores on train-label-confirmed harmful event/horizon pairs.
     """
 
     if 'factor_predictions' in aux:
-        return factorized_loss(aux, target, 'decision', min_gain=min_gain, temperature=temperature)
+        return factorized_loss(aux, target, 'decision', min_gain=min_gain,
+                               temperature=temperature, harm_weight=harm_weight)
     required = {
         "utilities",
         "availability",
