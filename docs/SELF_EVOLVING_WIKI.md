@@ -43,6 +43,11 @@ The input JSON must set `source_split` to `train_oof`. Each candidate contains:
   `mean_utility`, and `std_utility`;
 - every evidence row must also be `source_split=train_oof`.
 
+When launching a fold run, set top-level `sdwpf_fold` to that fold's integer
+index; the launcher checks it against `FOLDS`. This declaration and the
+`train_oof` flag are audit guards, not a substitute for preserving the actual
+training cutoff and OOF prediction provenance.
+
 For horizon-aware deployment also set top-level `pred_len` equal to the model
 forecast horizon, and give every turbine row `horizon_mean_utility` and
 `horizon_std_utility`, each a list of exactly `pred_len` finite values. These
@@ -84,14 +89,32 @@ First generate real train-OOF candidate evidence. Then run:
 ```bash
 conda activate timedart
 EVIDENCE=/path/to/train_oof_wiki_candidates.json \
+TREND_CV_DIR=/path/to/matched_trend_cv \
+FOLDS=0 SEEDS=2024 \
 PRED_LEN=12 \
+WIKI_LLM_PATH=outputs/model_cache/Qwen2.5-0.5B \
 bash scripts/train/SDWPF_evolved_wiki_cv.sh
 ```
 
-The script creates a dated/versioned Wiki directory, writes
-`lifecycle_audit.json`, builds frozen LLM embeddings, and launches the existing
-3-fold x 3-seed validation protocol. Final test evaluation remains a separate
-one-time command.
+The script creates a versioned Wiki directory and `lifecycle_audit.json`,
+builds frozen LLM embeddings, then runs matched Wiki pretraining/static-Wiki
+reference followed by factorized selective-residual fine-tuning. Both stages
+use the same fold/seed grid; the safe default is one fold and one seed.
+Run the command separately for folds 0, 1, and 2 with each fold's own
+train-OOF evidence before assembling a 3-fold result. The script refuses a
+single evidence JSON reused across multiple fold cutoffs.
+`TREND_CV_DIR` must contain the paired trend checkpoint and metrics
+for every requested fold/seed; the script refuses to guess this directory.
+`source_cv_dir.txt` and `factorized_cv_dir.txt` in the versioned Wiki directory
+point to the dated log directories. The factorized directory contains
+`wiki_vs_trend.txt` and `wiki_vs_trend.csv`. Final test evaluation remains a
+separate one-time command.
+
+To inspect the current run without finding the directory manually:
+
+```bash
+bash scripts/train/SDWPF_evolved_wiki_cv.sh --status
+```
 
 ## Claim boundary
 

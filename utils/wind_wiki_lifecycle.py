@@ -245,6 +245,14 @@ def evolve_event_wiki(
     previous_lifecycle = base_spec.get("knowledge_lifecycle") or {}
     if as_of_step < int(previous_lifecycle.get("as_of_step", 0)):
         raise ValueError("Wiki lifecycle cannot move backward in time")
+    evidence_fold = evidence_spec.get("sdwpf_fold")
+    previous_fold = previous_lifecycle.get("sdwpf_fold")
+    if evidence_fold is None and previous_fold is not None:
+        raise ValueError("A fold-specific Wiki update requires sdwpf_fold")
+    if evidence_fold is not None:
+        evidence_fold = int(evidence_fold)
+        if evidence_fold < 0 or (previous_fold is not None and int(previous_fold) != evidence_fold):
+            raise ValueError("Wiki lifecycle evidence cannot cross SDWPF folds")
     pred_len = evidence_spec.get("pred_len")
     if pred_len is None and previous_lifecycle.get("pred_len") is not None:
         raise ValueError("Horizon-aware Wiki requires pred_len in every update")
@@ -511,6 +519,7 @@ def evolve_event_wiki(
         "mutation_policy": "offline_train_only_frozen_for_validation_and_test",
         "source_split": TRAIN_ONLY_SOURCE,
         "as_of_step": as_of_step,
+        **({"sdwpf_fold": evidence_fold} if evidence_fold is not None else {}),
         **({"pred_len": pred_len} if pred_len is not None else {}),
         "source_turbines": source_turbines,
         "held_out_turbines": held_out_turbines,
@@ -531,6 +540,7 @@ def evolve_event_wiki(
         "method": evolved["knowledge_lifecycle"]["method"],
         "source_split": TRAIN_ONLY_SOURCE,
         "as_of_step": as_of_step,
+        **({"sdwpf_fold": evidence_fold} if evidence_fold is not None else {}),
         **({"pred_len": pred_len} if pred_len is not None else {}),
         "base_config_sha256": _sha256_json(base_spec),
         "evidence_sha256": evolved["knowledge_lifecycle"]["evidence_sha256"],

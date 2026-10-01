@@ -80,6 +80,17 @@ class WindWikiLifecycleTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "held-out turbines"):
             evolve_event_wiki(_base_spec(), _evidence([leaked]))
 
+    def test_fold_specific_lifecycle_cannot_be_reused_across_folds(self):
+        evidence = _evidence([])
+        evidence["sdwpf_fold"] = 0
+        evolved, audit = evolve_event_wiki(_base_spec(), evidence)
+        self.assertEqual(audit["sdwpf_fold"], 0)
+        later = _evidence([])
+        later["sdwpf_fold"] = 1
+        later["as_of_step"] = 1100
+        with self.assertRaisesRegex(ValueError, "cannot cross SDWPF folds"):
+            evolve_event_wiki(evolved, later)
+
     def test_merge_forget_and_cross_turbine_weight_are_deterministic(self):
         fresh_a = _candidate(
             "gust-a", "gust_or_turbulent", prompt="Respond conservatively to gust onset."

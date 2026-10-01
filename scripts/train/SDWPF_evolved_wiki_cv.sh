@@ -1,11 +1,52 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Offline lifecycle stage followed by the existing leakage-safe 3-fold x 3-seed
-# protocol.  EVIDENCE must contain train_oof statistics; validation/test evidence
-# is rejected by evolve_wind_event_wiki.py.
+# Offline lifecycle followed by fold-matched source and factorized CV stages.
+# Each fold needs its own train_oof evidence because rolling train cutoffs differ.
+# Validation/test evidence is rejected by evolve_wind_event_wiki.py.
+POINTER="outputs/wiki/evolved/latest.txt"
+if [[ "${1:-}" == "--status" ]]; then
+    [[ -f "${POINTER}" ]] || { echo "No evolved Wiki CV has been launched."; exit 2; }
+    WIKI_DIR="$(< "${POINTER}")"
+    echo "WIKI_DIR=${WIKI_DIR}"
+    for stage in source_cv factorized_cv; do
+        pointer_file="${WIKI_DIR}/${stage}_dir.txt"
+        if [[ -f "${pointer_file}" ]]; then
+            stage_dir="$(< "${pointer_file}")"
+            echo "${stage^^}_DIR=${stage_dir}"
+            [[ ! -f "${stage_dir}/status.env" ]] || cat "${stage_dir}/status.env"
+            [[ ! -f "${stage_dir}/cv_metrics_summary.txt" ]] || cat "${stage_dir}/cv_metrics_summary.txt"
+            [[ ! -f "${stage_dir}/wiki_vs_trend.txt" ]] || cat "${stage_dir}/wiki_vs_trend.txt"
+        else
+            echo "${stage}: pending"
+        fi
+    done
+    exit 0
+fi
+if [[ -n "${1:-}" ]]; then
+    echo "Usage: bash $0 [--status]" >&2
+    exit 2
+fi
 if [[ -z "${EVIDENCE:-}" ]]; then
     echo "EVIDENCE must point to a train_oof Wiki candidate JSON file." >&2
+    exit 2
+fi
+if [[ -z "${TREND_CV_DIR:-}" || ! -f "${TREND_CV_DIR}/cv.env" ]]; then
+    echo "TREND_CV_DIR must point to the matched trend CV directory." >&2
+    exit 2
+fi
+
+PRED_LEN="${PRED_LEN:-12}"
+FOLDS="${FOLDS:-0}"
+SEEDS="${SEEDS:-2024}"
+read -r -a REQUESTED_FOLDS <<< "${FOLDS}"
+if [[ "${#REQUESTED_FOLDS[@]}" -ne 1 ]]; then
+    echo "One evidence JSON must not be silently reused across different fold train cutoffs. Run this script once per fold with matched train_oof evidence." >&2
+    exit 2
+fi
+EVIDENCE_FOLD="$(python -c 'import json,sys; print(json.load(open(sys.argv[1], encoding="utf-8")).get("sdwpf_fold", ""))' "${EVIDENCE}")"
+if [[ "${EVIDENCE_FOLD}" != "${REQUESTED_FOLDS[0]}" ]]; then
+    echo "Evidence sdwpf_fold=${EVIDENCE_FOLD:-missing} does not match FOLDS=${FOLDS}." >&2
     exit 2
 fi
 
@@ -18,6 +59,7 @@ WIKI_LLM_PATH="${WIKI_LLM_PATH:-Qwen/Qwen2.5-0.5B}"
 WIKI_BUILD_DEVICE="${WIKI_BUILD_DEVICE:-auto}"
 
 mkdir -p "${WIKI_DIR}"
+printf '%s\n' "${WIKI_DIR}" > "${POINTER}"
 
 python -u scripts/evolve_wind_event_wiki.py \
     --base_config "${BASE_WIKI_CONFIG:-configs/wind_event_factor_wiki.json}" \
@@ -41,8 +83,44 @@ python -u scripts/build_wind_regime_wiki.py \
     --device "${WIKI_BUILD_DEVICE}"
 
 echo "[EVOLVED-WIKI] Frozen lifecycle artifacts: ${WIKI_DIR}"
+echo "[EVOLVED-WIKI] Stage 1/2: matched pretraining and static Wiki reference"
 SCENE_WIKI_CONFIG="${WIKI_CONFIG}" \
 SCENE_WIKI_EMBEDDINGS="${WIKI_BUNDLE}" \
 WIKI_LLM_PATH="${WIKI_LLM_PATH}" \
 WIKI_BUILD_DEVICE="${WIKI_BUILD_DEVICE}" \
-bash scripts/train/SDWPF_paper_cv.sh
+PROMPT_ROUTER=compositional_wiki UTILITY_WIKI=0 UTILITY_FACTORIZED=0 \
+UTILITY_ADAPTER_MODE=legacy FREEZE_NON_UTILITY=0 \
+PRED_LEN="${PRED_LEN}" FOLDS="${FOLDS}" SEEDS="${SEEDS}" \
+bash scripts/train/SDWPF_paper_cv.sh 2>&1 | tee "${WIKI_DIR}/source_cv.launch.log"
+
+SOURCE_CV_DIR="$(sed -n 's/^\[LOG\] Directory: //p' "${WIKI_DIR}/source_cv.launch.log" | head -n 1)"
+if [[ -z "${SOURCE_CV_DIR}" || ! -f "${SOURCE_CV_DIR}/cv.env" ]]; then
+    echo "Could not resolve matched source CV directory." >&2
+    exit 3
+fi
+printf '%s\n' "${SOURCE_CV_DIR}" > "${WIKI_DIR}/source_cv_dir.txt"
+
+echo "[EVOLVED-WIKI] Stage 2/2: factorized selective residual fine-tuning"
+SCENE_WIKI_CONFIG="${WIKI_CONFIG}" \
+SCENE_WIKI_EMBEDDINGS="${WIKI_BUNDLE}" \
+SOURCE_CV_DIR="${SOURCE_CV_DIR}" TREND_CV_DIR="${TREND_CV_DIR}" \
+UTILITY_WIKI=1 UTILITY_FACTORIZED=1 \
+UTILITY_ADAPTER_MODE=calibrated_evidence FREEZE_NON_UTILITY=1 \
+UTILITY_ADAPTER_WARMUP_EPOCHS="${UTILITY_ADAPTER_WARMUP_EPOCHS:-3}" \
+UTILITY_INTERVENTION_FLOOR=1 \
+TRAIN_EPOCHS="${TRAIN_EPOCHS:-10}" PATIENCE="${PATIENCE:-7}" \
+UTILITY_LEARNING_RATE="${UTILITY_LEARNING_RATE:-0.0001}" \
+PRED_LEN="${PRED_LEN}" FOLDS="${FOLDS}" SEEDS="${SEEDS}" \
+bash scripts/train/SDWPF_utility_wiki_cv.sh 2>&1 | tee "${WIKI_DIR}/factorized_cv.launch.log"
+
+FACTORIZED_CV_DIR="$(sed -n 's/^\[LOG\] Directory: //p' "${WIKI_DIR}/factorized_cv.launch.log" | head -n 1)"
+if [[ -z "${FACTORIZED_CV_DIR}" || ! -f "${FACTORIZED_CV_DIR}/cv_metrics.csv" ]]; then
+    echo "Could not resolve factorized CV metrics directory." >&2
+    exit 3
+fi
+printf '%s\n' "${FACTORIZED_CV_DIR}" > "${WIKI_DIR}/factorized_cv_dir.txt"
+python scripts/summarize_hierarchical_wiki.py \
+    --wiki-dir "${FACTORIZED_CV_DIR}" --trend-dir "${TREND_CV_DIR}"
+echo "[EVOLVED-WIKI] Matched source CV: ${SOURCE_CV_DIR}"
+echo "[EVOLVED-WIKI] Factorized CV: ${FACTORIZED_CV_DIR}"
+echo "[EVOLVED-WIKI] Paired result: ${FACTORIZED_CV_DIR}/wiki_vs_trend.txt"
