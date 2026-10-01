@@ -11,6 +11,8 @@ source "$(dirname "${BASH_SOURCE[0]}")/../lib/sdwpf_wiki.sh"
 SEED="${SEED:-2024}"
 FOLD="${FOLD:-0}"
 SPLIT="${SPLIT:-rolling_holdout}"
+SDWPF_TRAIN_RATIO="${SDWPF_TRAIN_RATIO:-0.7}"
+SDWPF_VAL_RATIO="${SDWPF_VAL_RATIO:-0.1}"
 N_FOLDS="${N_FOLDS:-3}"
 PRED_LEN="${PRED_LEN:-12}"
 EVAL_STRIDE="${EVAL_STRIDE:-${PRED_LEN}}"
@@ -99,6 +101,8 @@ LOG_SUMMARY_FILE="$(sdwpf_log_sidecar summary.txt)"
     echo "FREEZE_NON_UTILITY=${FREEZE_NON_UTILITY}"
     echo "ALLOW_RANDOM=${ALLOW_RANDOM}"
     echo "SPLIT=${SPLIT}"
+    echo "SDWPF_TRAIN_RATIO=${SDWPF_TRAIN_RATIO}"
+    echo "SDWPF_VAL_RATIO=${SDWPF_VAL_RATIO}"
     echo "FOLD=${FOLD}"
     echo "N_FOLDS=${N_FOLDS}"
     echo "SEED=${SEED}"
@@ -236,6 +240,8 @@ COMMAND=(python -u run.py
     --sdwpf_train_stride 6 \
     --sdwpf_eval_stride "${EVAL_STRIDE}" \
     --sdwpf_split "${SPLIT}" \
+    --sdwpf_train_ratio "${SDWPF_TRAIN_RATIO}" \
+    --sdwpf_val_ratio "${SDWPF_VAL_RATIO}" \
     --sdwpf_fold "${FOLD}" \
     --sdwpf_n_folds "${N_FOLDS}" \
     --pretrain_run_id "${PRETRAIN_RUN_ID}" \

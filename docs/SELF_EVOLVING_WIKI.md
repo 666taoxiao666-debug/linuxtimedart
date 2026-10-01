@@ -84,17 +84,29 @@ either a numeric `threshold` or a `threshold_key` from `rule_defaults`.
 
 ## Run
 
-First generate real train-OOF candidate evidence. Then run:
+When `EVIDENCE` is omitted, the launcher now generates a real forward-OOF
+candidate file. For each outer fold it trains a separate inner model on the
+first 80% of that fold's original training time span, selects checkpoints on
+the next 10%, and scores event candidates only on the remaining 10%. The
+evidence targets end strictly before outer validation. The inner source fits
+its scaler on inner training data only. Use a completed, matching trend CV:
 
 ```bash
 conda activate timedart
-EVIDENCE=/path/to/train_oof_wiki_candidates.json \
 TREND_CV_DIR=/path/to/matched_trend_cv \
 FOLDS=0 SEEDS=2024 \
 PRED_LEN=12 \
 WIKI_LLM_PATH=outputs/model_cache/Qwen2.5-0.5B \
 bash scripts/train/SDWPF_evolved_wiki_cv.sh
 ```
+
+The producer can also run separately with `FOLD=0 SEED=2024
+TREND_CV_DIR=... bash scripts/train/SDWPF_build_wiki_oof_evidence.sh`.
+Its dated log directory contains `oof_plan.json`,
+`train_oof_wiki_candidates.json`, `oof.env`, and the inner training logs.
+Inspect it with `bash scripts/train/SDWPF_build_wiki_oof_evidence.sh --status`.
+Pass a verified existing file as `EVIDENCE` to skip repeated inner training;
+the fold and horizon are checked before use.
 
 The script creates a versioned Wiki directory and `lifecycle_audit.json`,
 builds frozen LLM embeddings, then runs matched Wiki pretraining/static-Wiki
@@ -125,5 +137,8 @@ merge+forgetting+cross-turbine transfer, plus genuinely held-out turbine tests.
 Add a `horizon-aware lifecycle off/on` ablation with identical data, checkpoints,
 and seeds, and report per-step MAE, event intervention rate, harmful-intervention
 rate, and aggregate MAE. The current transfer rule tests stability across
-source turbines; it is not a target-turbine-specific adaptation model, and the
-repository does not automatically produce full-model OOF lifecycle evidence.
+source turbines; it is not a target-turbine-specific adaptation model. The
+forward-OOF producer scores existing physical factors but does not invent new
+LLM cards or rules. A single chronological evidence interval per outer fold
+is not repeated inner cross-fitting; report it as forward OOF, not multi-fold
+cross-fitting.

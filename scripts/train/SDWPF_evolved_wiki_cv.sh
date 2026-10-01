@@ -27,10 +27,6 @@ if [[ -n "${1:-}" ]]; then
     echo "Usage: bash $0 [--status]" >&2
     exit 2
 fi
-if [[ -z "${EVIDENCE:-}" ]]; then
-    echo "EVIDENCE must point to a train_oof Wiki candidate JSON file." >&2
-    exit 2
-fi
 if [[ -z "${TREND_CV_DIR:-}" || ! -f "${TREND_CV_DIR}/cv.env" ]]; then
     echo "TREND_CV_DIR must point to the matched trend CV directory." >&2
     exit 2
@@ -39,14 +35,35 @@ fi
 PRED_LEN="${PRED_LEN:-12}"
 FOLDS="${FOLDS:-0}"
 SEEDS="${SEEDS:-2024}"
+WIKI_LLM_PATH="${WIKI_LLM_PATH:-outputs/model_cache/Qwen2.5-0.5B}"
 read -r -a REQUESTED_FOLDS <<< "${FOLDS}"
 if [[ "${#REQUESTED_FOLDS[@]}" -ne 1 ]]; then
     echo "One evidence JSON must not be silently reused across different fold train cutoffs. Run this script once per fold with matched train_oof evidence." >&2
     exit 2
 fi
+if [[ -z "${EVIDENCE:-}" ]]; then
+    read -r -a REQUESTED_SEEDS <<< "${SEEDS}"
+    [[ "${#REQUESTED_SEEDS[@]}" -gt 0 ]] || {
+        echo "SEEDS must contain at least one seed." >&2
+        exit 2
+    }
+    echo "[EVOLVED-WIKI] No EVIDENCE supplied; building real forward-OOF evidence for fold ${REQUESTED_FOLDS[0]}"
+    FOLD="${REQUESTED_FOLDS[0]}" SEED="${OOF_SEED:-${REQUESTED_SEEDS[0]}}" \
+    TREND_CV_DIR="${TREND_CV_DIR}" \
+    WIKI_LLM_PATH="${WIKI_LLM_PATH}" \
+    bash scripts/train/SDWPF_build_wiki_oof_evidence.sh
+    OOF_DIR="$(< outputs/logs/SDWPF/wiki_oof_latest.txt)"
+    EVIDENCE="${OOF_DIR}/train_oof_wiki_candidates.json"
+fi
+[[ -f "${EVIDENCE}" ]] || { echo "Missing OOF evidence: ${EVIDENCE}" >&2; exit 2; }
 EVIDENCE_FOLD="$(python -c 'import json,sys; print(json.load(open(sys.argv[1], encoding="utf-8")).get("sdwpf_fold", ""))' "${EVIDENCE}")"
 if [[ "${EVIDENCE_FOLD}" != "${REQUESTED_FOLDS[0]}" ]]; then
     echo "Evidence sdwpf_fold=${EVIDENCE_FOLD:-missing} does not match FOLDS=${FOLDS}." >&2
+    exit 2
+fi
+EVIDENCE_HORIZON="$(python -c 'import json,sys; print(json.load(open(sys.argv[1], encoding="utf-8")).get("pred_len", ""))' "${EVIDENCE}")"
+if [[ "${EVIDENCE_HORIZON}" != "${PRED_LEN}" ]]; then
+    echo "Evidence pred_len=${EVIDENCE_HORIZON:-missing} does not match PRED_LEN=${PRED_LEN}." >&2
     exit 2
 fi
 
@@ -55,7 +72,6 @@ WIKI_DIR="${WIKI_DIR:-outputs/wiki/evolved/${WIKI_VERSION}}"
 WIKI_CONFIG="${WIKI_CONFIG:-${WIKI_DIR}/wind_event_factor_wiki.json}"
 WIKI_BUNDLE="${WIKI_BUNDLE:-${WIKI_DIR}/wind_event_factor_wiki_qwen.npz}"
 WIKI_AUDIT="${WIKI_AUDIT:-${WIKI_DIR}/lifecycle_audit.json}"
-WIKI_LLM_PATH="${WIKI_LLM_PATH:-Qwen/Qwen2.5-0.5B}"
 WIKI_BUILD_DEVICE="${WIKI_BUILD_DEVICE:-auto}"
 
 mkdir -p "${WIKI_DIR}"

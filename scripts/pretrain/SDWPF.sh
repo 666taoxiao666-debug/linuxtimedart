@@ -8,6 +8,8 @@ SEED="${SEED:-2024}"
 FOLD="${FOLD:-0}"
 N_FOLDS="${N_FOLDS:-3}"
 SPLIT="${SPLIT:-rolling_holdout}"
+SDWPF_TRAIN_RATIO="${SDWPF_TRAIN_RATIO:-0.7}"
+SDWPF_VAL_RATIO="${SDWPF_VAL_RATIO:-0.1}"
 PRED_LEN="${PRED_LEN:-24}"
 TRAIN_STRIDE="${TRAIN_STRIDE:-6}"
 EVAL_STRIDE="${EVAL_STRIDE:-6}"
@@ -64,6 +66,8 @@ LOG_SUMMARY_FILE="$(sdwpf_log_sidecar summary.txt)"
     echo "RUN_ID=${RUN_ID}"
     echo "PRETRAIN_RUN_ID=${PRETRAIN_RUN_ID}"
     echo "SPLIT=${SPLIT}"
+    echo "SDWPF_TRAIN_RATIO=${SDWPF_TRAIN_RATIO}"
+    echo "SDWPF_VAL_RATIO=${SDWPF_VAL_RATIO}"
     echo "FOLD=${FOLD}"
     echo "N_FOLDS=${N_FOLDS}"
     echo "SEED=${SEED}"
@@ -120,6 +124,8 @@ COMMAND=(python -u run.py
     --sdwpf_train_stride "${TRAIN_STRIDE}" \
     --sdwpf_eval_stride "${EVAL_STRIDE}" \
     --sdwpf_split "${SPLIT}" \
+    --sdwpf_train_ratio "${SDWPF_TRAIN_RATIO}" \
+    --sdwpf_val_ratio "${SDWPF_VAL_RATIO}" \
     --sdwpf_fold "${FOLD}" \
     --sdwpf_n_folds "${N_FOLDS}" \
     --pretrain_run_id "${PRETRAIN_RUN_ID}" \
