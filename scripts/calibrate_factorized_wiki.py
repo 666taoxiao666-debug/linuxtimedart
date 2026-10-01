@@ -1,5 +1,6 @@
 """Reuse frozen trained experts; fit a train-only amplitude/utility table."""
 import argparse
+import copy
 import json
 import os
 from pathlib import Path
@@ -120,10 +121,30 @@ def calibrate(exp, source_manifest, checkpoint, output, blocks=3, min_windows=32
     alpha, gain, joint_audit = refine_joint_policy(
         **arrays, block_ids=ids, alpha=alpha, gain=gain, fit_blocks=fit_blocks,
         penalty=penalty, min_gain=exp.args.utility_min_gain, clip_bounds=bounds)
+    # Split the later TRAIN period again by global target time. A one-off
+    # sub-watt benefit must not delete an entire event family.
+    selection_mask = ids == blocks - 1
+    selection_starts = np.asarray(calibration_data.window_starts)[selection_mask]
+    selection_first = np.asarray(calibration_data.dates)[
+        selection_starts + calibration_data.seq_len]
+    selection_subblocks, selection_audit = None, {'available': False}
+    if len(np.unique(selection_first)) >= 3:
+        selection_data = copy.copy(calibration_data)
+        selection_data.window_starts = selection_starts.copy()
+        local_subblocks, selection_audit = calibration_blocks(selection_data, 3)
+        selection_subblocks = np.full(len(ids), -1, dtype=int)
+        selection_subblocks[selection_mask] = local_subblocks
+        selection_audit['available'] = True
+        selection_audit['windows_per_subblock'] = [int((local_subblocks == i).sum()) for i in range(3)]
+        if any(count < min_windows for count in selection_audit['windows_per_subblock']):
+            selection_subblocks = None
+            selection_audit['available'] = False
     alpha, gain, holdout_audit = prune_events_on_train_holdout(
         **arrays, block_ids=ids, alpha=alpha, gain=gain,
         holdout_block=blocks - 1, min_gain=exp.args.utility_min_gain,
-        clip_bounds=bounds)
+        clip_bounds=bounds, selection_subblocks=selection_subblocks,
+        require_stability=True)
+    holdout_audit['temporal_subblocks'] = selection_audit
     holdout_gain = holdout_audit['joint_gain_after']
     # This later original-TRAIN block now selects a sparse set of event
     # families. It is not claimed as an independent performance estimate.
@@ -185,6 +206,7 @@ def calibrate(exp, source_manifest, checkpoint, output, blocks=3, min_windows=32
              f'JOINT_REMOVED_EVENT_TREND_GROUPS={len(joint_audit["removed_groups"])}',
              f'TRAIN_HOLDOUT_REMOVED_EVENT_FAMILIES={len(holdout_audit["removed_events"])}',
              'TRAIN_HOLDOUT_REMOVED_EVENTS=' + ','.join(row['candidate_name'] for row in holdout_audit['removed_events']),
+             f'TRAIN_HOLDOUT_STABILITY_SUBBLOCKS={len(holdout_audit["stability_subblocks"])}',
              f'ACTIVE_POLICY_CELLS={int((alpha > 0).sum())}', f'CHECKPOINT={target}']
     (output / 'summary.txt').write_text('\n'.join(lines) + '\n', encoding='utf-8')
     print('\n'.join(lines))

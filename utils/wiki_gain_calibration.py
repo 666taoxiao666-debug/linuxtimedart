@@ -176,7 +176,8 @@ def refine_joint_policy(base, candidates, target, available, trend, block_ids,
 
 def prune_events_on_train_holdout(base, candidates, target, available, trend,
                                   block_ids, alpha, gain, *, holdout_block,
-                                  min_gain=.001, clip_bounds=None):
+                                  min_gain=.001, clip_bounds=None,
+                                  selection_subblocks=None, require_stability=False):
     """Select a small set of event families using only the later TRAIN block.
 
     This block is a model-selection set, not an untouched estimate of policy
@@ -186,6 +187,15 @@ def prune_events_on_train_holdout(base, candidates, target, available, trend,
     mask = np.asarray(block_ids) == holdout_block
     if not mask.any():
         raise ValueError('Empty training selection block')
+    if selection_subblocks is not None:
+        selection_subblocks = np.asarray(selection_subblocks)
+        if selection_subblocks.shape != mask.shape:
+            raise ValueError('Selection subblocks must match calibration windows')
+        groups = np.unique(selection_subblocks[mask & (selection_subblocks >= 0)])
+        if len(groups) < 2:
+            raise ValueError('Need at least two nonempty training selection subblocks')
+    else:
+        groups = np.array([], dtype=int)
     base, target = np.asarray(base), np.asarray(target)
     clipped_base = np.clip(base, *clip_bounds) if clip_bounds is not None else base
     def realized(a, g):
@@ -198,20 +208,35 @@ def prune_events_on_train_holdout(base, candidates, target, available, trend,
     # Prune by the change in FINAL routed MAE, including any substitute event
     # that wins once an event is removed. No validation label is read here.
     while True:
+        if require_stability and selection_subblocks is None:
+            break
         current, errors, actions = realized(alpha, gain)
-        best_improvement, best_event, best_trial = 1e-8, None, None
+        best_improvement, best_event, best_trial, best_blocks = 1e-8, None, None, None
         for event in range(alpha.shape[-1]):
             if not np.any(alpha[..., event]):
                 continue
             trial_alpha, trial_gain = alpha.copy(), gain.copy()
             trial_alpha[..., event] = 0.
             trial_gain[..., event] = 0.
-            trial_gain_value, _, _ = realized(trial_alpha, trial_gain)
+            trial_gain_value, trial_errors, _ = realized(trial_alpha, trial_gain)
             improvement = trial_gain_value - current
+            if selection_subblocks is not None:
+                block_improvements = np.array([
+                    (errors[submask] - trial_errors[submask]).mean()
+                    for block in groups
+                    for submask in [mask & (selection_subblocks == block)]
+                ])
+                # Pruning is a structural decision, so require its realized
+                # MAE benefit to recur in every chronological train period.
+                if not np.all(block_improvements > 0):
+                    continue
+            else:
+                block_improvements = None
             if improvement > best_improvement:
                 best_improvement = improvement
                 best_event = event
                 best_trial = trial_alpha, trial_gain
+                best_blocks = block_improvements
         if best_event is None:
             break
         selected = (actions[mask] == best_event + 1)
@@ -222,7 +247,8 @@ def prune_events_on_train_holdout(base, candidates, target, available, trend,
         removed.append({'candidate': best_event,
                         'selected_positions': int(selected.sum()),
                         'selected_gain_before_pruning': selected_gain,
-                        'joint_gain_improvement': best_improvement})
+                        'joint_gain_improvement': best_improvement,
+                        'subblock_improvements': best_blocks.tolist() if best_blocks is not None else None})
     after, final_errors, final_actions = realized(alpha, gain)
     base_error = np.abs(clipped_base - target)[mask]
     event_outcomes = []
@@ -234,5 +260,7 @@ def prune_events_on_train_holdout(base, candidates, target, available, trend,
     return alpha, gain, {'selection_block': int(holdout_block),
                          'joint_gain_before': before, 'joint_gain_after': after,
                          'removed_events': removed, 'retained_event_outcomes': event_outcomes,
+                         'stability_subblocks': groups.tolist(),
+                         'stability_required': bool(require_stability),
                          'uses_validation_labels': False,
                          'train_block_is_independent_evaluation': False}

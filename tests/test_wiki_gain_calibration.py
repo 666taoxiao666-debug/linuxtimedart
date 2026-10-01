@@ -158,6 +158,23 @@ class GainCalibrationTests(unittest.TestCase):
             base, candidates, altered_fit_targets, available, trend, blocks,
             alpha, gain, holdout_block=2)
         np.testing.assert_array_equal(pruned, same)
+        holdout_positions = np.flatnonzero(blocks == 2)
+        stable_subblocks = np.full(n, -1, int)
+        stable_subblocks[holdout_positions] = np.arange(len(holdout_positions)) % 3
+        stable, _, stable_audit = prune_events_on_train_holdout(
+            base, candidates, target, available, trend, blocks, alpha, gain,
+            holdout_block=2, selection_subblocks=stable_subblocks,
+            require_stability=True)
+        self.assertEqual(stable[0, 0, 0], 0.)
+        self.assertEqual(len(stable_audit['removed_events'][0]['subblock_improvements']), 3)
+        unstable_subblocks = np.full(n, -1, int)
+        unstable_subblocks[holdout_positions] = np.repeat(np.arange(3), 10)
+        unstable, _, unstable_audit = prune_events_on_train_holdout(
+            base, candidates, target, available, trend, blocks, alpha, gain,
+            holdout_block=2, selection_subblocks=unstable_subblocks,
+            require_stability=True)
+        self.assertEqual(unstable[0, 0, 0], 1.)
+        self.assertFalse(unstable_audit['removed_events'])
 
     def test_route_matches_hard_selection_and_abstention(self):
         base = np.array([[2., 2.], [2., 2.]])
