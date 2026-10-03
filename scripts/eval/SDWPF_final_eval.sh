@@ -96,6 +96,9 @@ fi
 if [[ "${RAMP_RESIDUAL}" == "1" ]]; then
     PLOT_ARGS+=(--ramp_residual --ramp_residual_max_scale "${RAMP_RESIDUAL_MAX_SCALE}" --ramp_gate_mode "${RAMP_GATE_MODE}")
 fi
+if [[ "${RAMP_COUNTERFACTUAL_DIAGNOSTIC:-0}" == "1" ]]; then
+    PLOT_ARGS+=(--ramp_counterfactual_diagnostic)
+fi
 if [[ "${WIKI_DIAGNOSTIC:-0}" == "1" ]]; then
     PLOT_ARGS+=(--wiki_diagnostic)
     if [[ "${WIKI_DIAGNOSTIC_SINGLE_EVENTS:-0}" == "1" ]]; then

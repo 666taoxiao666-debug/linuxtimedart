@@ -9,7 +9,8 @@ from utils.tools import (
     show_matrix,
 )
 from utils.augmentations import masked_data
-from utils.forecast_report import build_forecast_report, save_training_history
+from utils.forecast_report import build_forecast_report, inverse_transform_target, save_training_history
+from utils.ramp_counterfactual import summarize_ramp_counterfactual
 from utils.metrics import forecast_metrics
 from utils.forecast_losses import ForecastLoss
 from utils.run_tags import forecast_result_tag
@@ -2871,6 +2872,9 @@ class Exp_TimeDART(Exp_Basic):
         preds = []
         trues = []
         last_observations = []
+        ramp_diagnostic = bool(getattr(self.args, "ramp_counterfactual_diagnostic", False))
+        ramp_corrections = []
+        ramp_eligibility = []
 
         result_tag = forecast_result_tag(self.args)
 
@@ -2915,6 +2919,16 @@ class Exp_TimeDART(Exp_Basic):
                     pred_x = self.model(
                         batch_x
                     )
+                    if ramp_diagnostic:
+                        core_model = self.model.module if hasattr(self.model, "module") else self.model
+                        correction = core_model._ramp_correction(batch_x)
+                        names = {name: index for index, name in enumerate(core_model.feature_columns)}
+                        power_recent = batch_x[:, -6:, names["power"]]
+                        wind_recent = batch_x[:, -6:, names["Wspd"]]
+                        power_ramp = power_recent[:, -1] - power_recent.mean(dim=1)
+                        wind_ramp = wind_recent[:, -1] - wind_recent.mean(dim=1)
+                        ramp_eligibility.append((power_ramp * wind_ramp < 0).detach().cpu())
+                        ramp_corrections.append(correction.detach().cpu())
 
                     f_dim = (
                         -1
@@ -3022,6 +3036,37 @@ class Exp_TimeDART(Exp_Basic):
                 trace_start=self.args.forecast_plot_start,
                 model_name=self.args.model,
             )
+            counterfactual_summary = None
+            if ramp_diagnostic:
+                correction_scaled = torch.cat(ramp_corrections, dim=0).numpy()
+                eligible = torch.cat(ramp_eligibility, dim=0).numpy().astype(bool)
+                with_ramp = inverse_transform_target(test_data, preds)[..., 0]
+                without_ramp = inverse_transform_target(test_data, preds - correction_scaled)[..., 0]
+                truth_original = inverse_transform_target(test_data, trues)[..., 0]
+                if rated_power is not None:
+                    with_ramp = np.clip(with_ramp, 0.0, rated_power)
+                    without_ramp = np.clip(without_ramp, 0.0, rated_power)
+                    truth_original = np.clip(truth_original, 0.0, rated_power)
+                effective = np.any(np.abs(with_ramp - without_ramp) > 1e-9, axis=1)
+                counterfactual_summary = summarize_ramp_counterfactual(
+                    with_ramp, without_ramp, truth_original, eligible, effective,
+                )
+                counterfactual_summary.update({
+                    "evaluation_split": "val",
+                    "comparison": "same_fitted_checkpoint_with_vs_without_ramp_term",
+                    "selection_use": "diagnostic_only_not_for_hyperparameter_selection",
+                })
+                np.savez_compressed(
+                    os.path.join(folder_path, "ramp_counterfactual.npz"),
+                    prediction_with_ramp=with_ramp.astype(np.float32),
+                    prediction_without_ramp=without_ramp.astype(np.float32),
+                    truth=truth_original.astype(np.float32),
+                    eligible_window=eligible.astype(np.uint8),
+                    effective_window=effective.astype(np.uint8),
+                )
+                with open(os.path.join(folder_path, "ramp_counterfactual_report.json"), "w", encoding="utf-8") as handle:
+                    json.dump(counterfactual_summary, handle, indent=2)
+                print(f"[AUDIT] RAMP_COUNTERFACTUAL={json.dumps(counterfactual_summary, sort_keys=True)}")
 
             print(
                 f"{self.args.input_len}"
@@ -3099,6 +3144,7 @@ class Exp_TimeDART(Exp_Basic):
                 "prediction_shape": list(preds.shape),
                 "target_shape": list(trues.shape),
                 "metrics": values,
+                "ramp_counterfactual": counterfactual_summary if preds.shape[-1] == 1 else None,
             },
         )
 

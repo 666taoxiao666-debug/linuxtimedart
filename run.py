@@ -411,6 +411,11 @@ def build_parser():
         ),
     )
     parser.add_argument(
+        "--ramp_counterfactual_diagnostic",
+        action="store_true",
+        help="validation-only attribution of the fitted wind-discordant ramp term",
+    )
+    parser.add_argument(
         "--forecast_plot_points",
         type=int,
         default=150,
@@ -1166,6 +1171,14 @@ def load_finetuned_model(exp, checkpoint_path):
 
 def main():
     args = configure_args(build_parser().parse_args())
+    if args.ramp_counterfactual_diagnostic and not (
+        args.is_training == 0 and args.task_name == "finetune"
+        and args.downstream_task == "forecast" and args.data == "SDWPF"
+        and args.report_split == "val" and args.sdwpf_split == "rolling_holdout"
+        and args.prompt_router == "trend" and args.ramp_residual
+        and args.ramp_gate_mode == "wind_discordant" and args.residual_forecast
+    ):
+        raise ValueError("Ramp counterfactual diagnostic requires trend-only SDWPF validation evaluation with the wind-discordant ramp residual")
     if args.wiki_diagnostic and not (
         args.is_training == 0 and args.task_name == "finetune"
         and args.downstream_task == "forecast" and args.data == "SDWPF"
