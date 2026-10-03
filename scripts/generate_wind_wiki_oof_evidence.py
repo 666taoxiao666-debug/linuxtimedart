@@ -22,7 +22,8 @@ if str(ROOT) not in sys.path:
 import numpy as np
 
 from utils.wind_wiki_oof import (forward_oof_starts, inner_ratios,
-                                 summarize_event_evidence)
+                                 summarize_event_evidence,
+                                 summarize_temporal_event_evidence)
 
 
 def read_manifest(checkpoint: Path) -> dict:
@@ -83,7 +84,10 @@ def make_plan(trend_cv_dir: Path, fold: int, seed: int) -> dict:
     }
 
 
-def collect(plan: dict, checkpoint: Path, base_config: Path) -> dict:
+def collect(plan: dict, checkpoint: Path, base_config: Path,
+            temporal_report: Path | None = None) -> dict:
+    if temporal_report is not None and temporal_report.exists():
+        raise FileExistsError(temporal_report)
     import torch
     from torch.utils.data import DataLoader
 
@@ -183,6 +187,26 @@ def collect(plan: dict, checkpoint: Path, base_config: Path) -> dict:
         "selection_labels_end_before_oof": True,
         "validation_or_test_labels_used": False,
     }
+    if temporal_report is not None:
+        report = summarize_temporal_event_evidence(
+            arrays["base"], arrays["candidates"][:, :, :len(scenes)],
+            arrays["target"], arrays["available"][:, :, :len(scenes)],
+            arrays["turbines"],
+            np.asarray(train_data.dates)[starts + train_data.seq_len],
+            np.asarray(train_data.dates)[
+                starts + train_data.seq_len + train_data.pred_len - 1],
+            scenes, fold=fold, seed=seed,
+            as_of_step=evidence["as_of_step"],
+            evidence_start=selection_cutoff,
+            outer_train_cutoff=outer_cutoff,
+        )
+        report["provenance"] = evidence["provenance"]
+        temporal_report.parent.mkdir(parents=True, exist_ok=True)
+        temporal_report.write_text(
+            json.dumps(report, ensure_ascii=False, indent=2) + "\n",
+            encoding="utf-8",
+        )
+        print(f"[OOF] train-only temporal report={temporal_report.resolve()}")
     return evidence
 
 
@@ -199,12 +223,16 @@ def main():
     collecting.add_argument("--checkpoint", type=Path, required=True)
     collecting.add_argument("--base-config", type=Path, default=Path("configs/wind_event_factor_wiki.json"))
     collecting.add_argument("--output", type=Path, required=True)
+    collecting.add_argument("--temporal-report", type=Path, default=None)
     args = parser.parse_args()
     if args.command == "plan":
         result = make_plan(args.trend_cv_dir, args.fold, args.seed)
     else:
+        if args.temporal_report is not None and args.output.exists():
+            raise FileExistsError(args.output)
         result = collect(json.loads(args.plan.read_text(encoding="utf-8")),
-                         args.checkpoint, args.base_config)
+                         args.checkpoint, args.base_config,
+                         temporal_report=args.temporal_report)
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n",
                            encoding="utf-8")

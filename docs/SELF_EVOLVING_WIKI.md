@@ -116,6 +116,15 @@ Inspect it with `bash scripts/train/SDWPF_build_wiki_oof_evidence.sh --status`.
 Pass a verified existing file as `EVIDENCE` to skip repeated inner training;
 the fold and horizon are checked before use.
 
+To audit time drift without fitting another model, rerun only the `collect`
+subcommand with the same `oof_plan.json`, inner `OOF_CHECKPOINT`, and base Wiki
+config, adding `--temporal-report /new/path/train_oof_temporal.json` and a
+separate, new `--output` path. It partitions unseen training OOF targets at
+the median target-start timestamp, drops forecasts crossing that boundary,
+and reports paired event utility separately in the earlier and later blocks.
+The report is diagnostic-only: it is not automatically consumed by the
+lifecycle or fitted using outer validation/test labels.
+
 The script creates a versioned Wiki directory and `lifecycle_audit.json`,
 builds frozen LLM embeddings, then runs matched Wiki pretraining/static-Wiki
 reference followed by factorized selective-residual fine-tuning. Both stages

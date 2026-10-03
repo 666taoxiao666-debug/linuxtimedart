@@ -147,3 +147,64 @@ def summarize_event_evidence(base, candidates, target, available, turbines,
         "held_out_turbines": [],
         "candidates": evidence,
     }
+
+
+def summarize_temporal_event_evidence(
+    base, candidates, target, available, turbines, first_target, last_target,
+    scenes, *, fold: int, seed: int, as_of_step: int, evidence_start,
+    outer_train_cutoff,
+) -> dict:
+    """Compare early and late *train-OOF* event utility without refitting.
+
+    The cutpoint is the median unique target-start timestamp, not a target-
+    dependent choice. Windows whose forecast spans the cutpoint are excluded
+    from both blocks so that the two reported target intervals are disjoint.
+    """
+    first_target = np.asarray(first_target, dtype="datetime64[ns]")
+    last_target = np.asarray(last_target, dtype="datetime64[ns]")
+    count = len(np.asarray(base))
+    if first_target.shape != (count,) or last_target.shape != (count,):
+        raise ValueError("Temporal target timestamps must match OOF windows")
+    if (np.isnat(first_target).any() or np.isnat(last_target).any()
+            or (last_target < first_target).any()):
+        raise ValueError("Temporal target timestamps must be finite and ordered")
+    start = np.datetime64(evidence_start, "ns")
+    end = np.datetime64(outer_train_cutoff, "ns")
+    if not start < end or (first_target < start).any() or (last_target >= end).any():
+        raise ValueError("Temporal report must stay strictly inside train OOF")
+    unique_starts = np.unique(first_target)
+    if len(unique_starts) < 2:
+        raise ValueError("Temporal report needs at least two target timestamps")
+    cutpoint = unique_starts[len(unique_starts) // 2]
+    masks = (("early", last_target < cutpoint),
+             ("late", first_target >= cutpoint))
+    blocks = []
+    for name, mask in masks:
+        if not mask.any():
+            raise ValueError(f"Temporal {name} block has no complete OOF windows")
+        block = summarize_event_evidence(
+            np.asarray(base)[mask], np.asarray(candidates)[mask],
+            np.asarray(target)[mask], np.asarray(available)[mask],
+            np.asarray(turbines)[mask], scenes,
+            fold=fold, seed=seed, as_of_step=as_of_step,
+        )
+        blocks.append({
+            "name": name,
+            "window_count": int(mask.sum()),
+            "target_start": str(first_target[mask].min()),
+            "target_end": str(last_target[mask].max()),
+            "event_evidence": block,
+        })
+    return {
+        "schema_version": 1,
+        "diagnostic_only": True,
+        "source_split": "train_oof",
+        "split_rule": "median_unique_target_start_drop_crossing_windows",
+        "sdwpf_fold": int(fold),
+        "seed": int(seed),
+        "pred_len": int(np.asarray(base).shape[1]),
+        "cutpoint": str(cutpoint),
+        "dropped_crossing_windows": int(count - sum(x[1].sum() for x in masks)),
+        "outer_train_cutoff": str(end),
+        "blocks": blocks,
+    }
