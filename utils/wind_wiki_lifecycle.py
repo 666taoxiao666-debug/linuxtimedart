@@ -132,6 +132,7 @@ def _candidate_statistics(candidate, *, as_of_step: int, parameters: dict,
     deployment_weight = float(transfer_score * support_score * forgetting_factor)
 
     horizon_statistics = {}
+    macro_guard_failed = False
     if pred_len is not None:
         horizon_means = np.asarray(
             [row["horizon_mean_utility"] for row in turbine_rows], dtype=np.float64
@@ -161,6 +162,17 @@ def _candidate_statistics(candidate, *, as_of_step: int, parameters: dict,
         # In horizon-aware mode an event survives if it helps at least one
         # forecast step. A negative macro mean must not erase a short-lived ramp.
         deployment_weight = float(horizon_weight.max())
+        if parameters["macro_transfer_guard"]:
+            # Optional event-level risk budget: a few profitable horizons do
+            # not justify deploying a rule that fails across source turbines
+            # on the complete OOF forecast. This uses train-OOF evidence only.
+            macro_guard_failed = (
+                positive_fraction < parameters["min_positive_turbine_fraction"]
+                or transfer_lcb <= parameters["min_transfer_lcb"]
+            )
+            if macro_guard_failed:
+                horizon_weight = np.zeros_like(horizon_weight)
+                deployment_weight = 0.0
         horizon_statistics = {
             "horizon_cross_turbine_lcb": horizon_lcb.tolist(),
             "horizon_positive_turbine_fraction": horizon_positive_fraction.tolist(),
@@ -177,6 +189,8 @@ def _candidate_statistics(candidate, *, as_of_step: int, parameters: dict,
             reasons.append("non_positive_cross_turbine_lcb")
         if deployment_weight < parameters["retire_weight"]:
             reasons.append("forgotten_or_low_utility")
+    elif macro_guard_failed:
+        reasons.append("negative_or_unstable_macro_transfer")
     elif deployment_weight == 0.0:
         reasons.append("no_stable_profitable_horizon")
 
@@ -222,6 +236,7 @@ def evolve_event_wiki(
     forget_half_life_steps: int = 100_000,
     retire_weight: float = 0.10,
     max_merged_insights: int = 3,
+    macro_transfer_guard: bool = False,
 ) -> tuple[dict, dict]:
     """Return an evolved Wiki and a complete deterministic decision audit.
 
@@ -300,6 +315,7 @@ def evolve_event_wiki(
         "forget_half_life_steps": int(forget_half_life_steps),
         "retire_weight": float(retire_weight),
         "max_merged_insights": int(max_merged_insights),
+        "macro_transfer_guard": bool(macro_transfer_guard),
     }
 
     base_by_id = {str(scene["id"]): copy.deepcopy(scene) for scene in base_scenes}

@@ -221,6 +221,39 @@ class WindWikiLifecycleTests(unittest.TestCase):
         carried, _ = evolve_event_wiki(evolved, later, forget_half_life_steps=100)
         self.assertEqual(carried["scenes"][0]["lifecycle"]["horizon_deployment_weight"], [0.5, 0.0])
 
+    def test_optional_macro_transfer_guard_vetoes_unstable_event(self):
+        evidence = _evidence([_candidate("saturation", "rated_saturation")])
+        evidence["pred_len"] = 2
+        for index, row in enumerate(evidence["candidates"][0]["turbine_evidence"]):
+            row["mean_utility"] = [-0.02, -0.01, 0.005][index]
+            row["horizon_mean_utility"] = [0.08, -0.10]
+            row["horizon_std_utility"] = [0.001, 0.001]
+        evolved, audit = evolve_event_wiki(
+            _base_spec(), evidence, macro_transfer_guard=True,
+        )
+        lifecycle = evolved["scenes"][2]["lifecycle"]
+        self.assertEqual(lifecycle["status"], "retired")
+        self.assertEqual(lifecycle["horizon_deployment_weight"], [0.0, 0.0])
+        self.assertIn(
+            "negative_or_unstable_macro_transfer",
+            audit["candidate_decisions"][0]["decision_reasons"],
+        )
+        self.assertTrue(audit["parameters"]["macro_transfer_guard"])
+
+    def test_macro_transfer_guard_keeps_consistent_event_horizons(self):
+        evidence = _evidence([_candidate("idle", "low_wind_idle")])
+        evidence["pred_len"] = 2
+        for row in evidence["candidates"][0]["turbine_evidence"]:
+            row["horizon_mean_utility"] = [0.08, -0.10]
+            row["horizon_std_utility"] = [0.001, 0.001]
+        evolved, _ = evolve_event_wiki(
+            _base_spec(), evidence, macro_transfer_guard=True,
+        )
+        self.assertEqual(
+            evolved["scenes"][3]["lifecycle"]["horizon_deployment_weight"],
+            [1.0, 0.0],
+        )
+
     @unittest.skipUnless(importlib.util.find_spec("reformer_pytorch"), "full model dependencies missing")
     def test_pretrain_horizon_can_differ_from_factorized_forecast_horizon(self):
         from models.TimeDART import PromptGuidedModel

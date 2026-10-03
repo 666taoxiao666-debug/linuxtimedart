@@ -71,6 +71,14 @@ but cannot independently prove that an externally supplied evidence JSON was
 actually generated out of fold. Preserve the OOF prediction manifest, source
 checkpoint hashes, turbine split, and train-only timestamps with the evidence.
 
+Exploratory event-level safety ablation: set `WIKI_MACRO_TRANSFER_GUARD=1`
+when launching `SDWPF_evolved_wiki_cv.sh`. A rule is then withheld even if a
+few horizons appear profitable unless its complete-forecast train-OOF gain has
+both a positive cross-turbine lower bound and the configured positive-turbine
+fraction. This is a training-evidence gate, not a validation-tuned threshold;
+the default remains off to preserve horizon-only events. Report both variants
+and the changed active-factor lists before interpreting validation MAE.
+
 `configs/wind_event_wiki_evidence.example.json` is a schema starter only and is
 marked `example_only`; the lifecycle command intentionally refuses to train
 from it.

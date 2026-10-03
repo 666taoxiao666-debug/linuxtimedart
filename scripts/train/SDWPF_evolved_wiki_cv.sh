@@ -77,6 +77,11 @@ WIKI_BUILD_DEVICE="${WIKI_BUILD_DEVICE:-auto}"
 mkdir -p "${WIKI_DIR}"
 printf '%s\n' "${WIKI_DIR}" > "${POINTER}"
 
+MACRO_GUARD_ARGS=()
+if [[ "${WIKI_MACRO_TRANSFER_GUARD:-0}" == "1" ]]; then
+    MACRO_GUARD_ARGS+=(--macro_transfer_guard)
+fi
+
 python -u scripts/evolve_wind_event_wiki.py \
     --base_config "${BASE_WIKI_CONFIG:-configs/wind_event_factor_wiki.json}" \
     --evidence "${EVIDENCE}" \
@@ -90,7 +95,8 @@ python -u scripts/evolve_wind_event_wiki.py \
     --z_value "${UTILITY_Z_VALUE:-1.645}" \
     --forget_half_life_steps "${FORGET_HALF_LIFE_STEPS:-100000}" \
     --retire_weight "${RETIRE_WEIGHT:-0.10}" \
-    --max_merged_insights "${MAX_MERGED_INSIGHTS:-3}"
+    --max_merged_insights "${MAX_MERGED_INSIGHTS:-3}" \
+    "${MACRO_GUARD_ARGS[@]}"
 
 python -u scripts/build_wind_regime_wiki.py \
     --config "${WIKI_CONFIG}" \

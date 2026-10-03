@@ -46,6 +46,7 @@ def build_parser():
     parser.add_argument("--forget_half_life_steps", type=int, default=100_000)
     parser.add_argument("--retire_weight", type=float, default=0.10)
     parser.add_argument("--max_merged_insights", type=int, default=3)
+    parser.add_argument("--macro_transfer_guard", action="store_true")
     return parser
 
 
@@ -79,6 +80,7 @@ def main():
         forget_half_life_steps=args.forget_half_life_steps,
         retire_weight=args.retire_weight,
         max_merged_insights=args.max_merged_insights,
+        macro_transfer_guard=args.macro_transfer_guard,
     )
     output = Path(args.output_config)
     audit_output = Path(args.audit_output)
