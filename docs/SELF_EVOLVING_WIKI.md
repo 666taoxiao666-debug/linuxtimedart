@@ -79,6 +79,17 @@ fraction. This is a training-evidence gate, not a validation-tuned threshold;
 the default remains off to preserve horizon-only events. Report both variants
 and the changed active-factor lists before interpreting validation MAE.
 
+Exploratory temporal transfer guard: set `WIKI_TEMPORAL_STABILITY_GUARD=1`
+and `TEMPORAL_EVIDENCE` to the matching fold's `train_oof_temporal_diagnostic_*.json`.
+The guard requires each event to meet the existing source-turbine count, window
+support, positive-turbine fraction, and cross-turbine lower-bound criteria in
+*both* non-overlapping chronological OOF blocks. A failed block retires the
+event; neither validation nor test labels can enter this decision. The report
+must match the original OOF evidence's fold, horizon, checkpoint hash, data
+hash, outer train cutoff, and window count. This one-cutpoint check is a
+training-only stability filter, not proof of future transportability; evaluate
+the frozen Wiki against the matching pure-trend model on validation afterward.
+
 `configs/wind_event_wiki_evidence.example.json` is a schema starter only and is
 marked `example_only`; the lifecycle command intentionally refuses to train
 from it.

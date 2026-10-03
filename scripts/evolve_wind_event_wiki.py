@@ -28,6 +28,7 @@ def build_parser():
         "--base_config", default="configs/wind_event_factor_wiki.json"
     )
     parser.add_argument("--evidence", required=True)
+    parser.add_argument("--temporal_evidence", default=None)
     parser.add_argument(
         "--output_config", default="outputs/wiki/evolved/wind_event_factor_wiki.json"
     )
@@ -47,6 +48,7 @@ def build_parser():
     parser.add_argument("--retire_weight", type=float, default=0.10)
     parser.add_argument("--max_merged_insights", type=int, default=3)
     parser.add_argument("--macro_transfer_guard", action="store_true")
+    parser.add_argument("--temporal_stability_guard", action="store_true")
     return parser
 
 
@@ -67,9 +69,13 @@ def main():
                 "factor_horizon_reliability", "sha256"):
         base.pop(key, None)
     evidence = load_json(args.evidence)
+    temporal_evidence = (load_json(args.temporal_evidence)
+                         if args.temporal_evidence else None)
     evolved, audit = evolve_event_wiki(
         base,
         evidence,
+        temporal_evidence_spec=temporal_evidence,
+        temporal_stability_guard=args.temporal_stability_guard,
         as_of_step=args.as_of_step,
         min_source_turbines=args.min_source_turbines,
         min_total_windows=args.min_total_windows,

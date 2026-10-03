@@ -81,6 +81,14 @@ MACRO_GUARD_ARGS=()
 if [[ "${WIKI_MACRO_TRANSFER_GUARD:-0}" == "1" ]]; then
     MACRO_GUARD_ARGS+=(--macro_transfer_guard)
 fi
+TEMPORAL_GUARD_ARGS=()
+if [[ "${WIKI_TEMPORAL_STABILITY_GUARD:-0}" == "1" ]]; then
+    [[ -f "${TEMPORAL_EVIDENCE:-}" ]] || {
+        echo "TEMPORAL_EVIDENCE must point to a train-OOF temporal report." >&2
+        exit 2
+    }
+    TEMPORAL_GUARD_ARGS+=(--temporal_stability_guard --temporal_evidence "${TEMPORAL_EVIDENCE}")
+fi
 
 python -u scripts/evolve_wind_event_wiki.py \
     --base_config "${BASE_WIKI_CONFIG:-configs/wind_event_factor_wiki.json}" \
@@ -96,7 +104,8 @@ python -u scripts/evolve_wind_event_wiki.py \
     --forget_half_life_steps "${FORGET_HALF_LIFE_STEPS:-100000}" \
     --retire_weight "${RETIRE_WEIGHT:-0.10}" \
     --max_merged_insights "${MAX_MERGED_INSIGHTS:-3}" \
-    "${MACRO_GUARD_ARGS[@]}"
+    "${MACRO_GUARD_ARGS[@]}" \
+    "${TEMPORAL_GUARD_ARGS[@]}"
 
 python -u scripts/build_wind_regime_wiki.py \
     --config "${WIKI_CONFIG}" \

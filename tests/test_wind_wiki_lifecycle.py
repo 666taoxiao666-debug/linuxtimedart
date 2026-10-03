@@ -1,5 +1,5 @@
-import copy
 import importlib.util
+import copy
 import json
 import tempfile
 import unittest
@@ -60,7 +60,75 @@ def _candidate(identifier, factor_id, *, prompt="validated insight", rule=None, 
     return candidate
 
 
+def _temporal_pair(*, late_utility=0.08):
+    candidate = _candidate("gust", "gust_or_turbulent")
+    evidence = _evidence([candidate])
+    evidence.update(sdwpf_fold=0, pred_len=2)
+    evidence["provenance"] = {
+        "model_checkpoint_sha256": "test-checkpoint",
+        "data_sha256": "test-data",
+        "outer_train_cutoff": "2023-06-03T00:00:00",
+        "oof_windows": 1200,
+        "validation_or_test_labels_used": False,
+    }
+    for row in candidate["turbine_evidence"]:
+        row["horizon_mean_utility"] = [0.08, 0.08]
+        row["horizon_std_utility"] = [0.01, 0.01]
+    blocks = []
+    for name, first, last, utility in (
+        ("early", "2023-06-01T00:00:00", "2023-06-01T23:50:00", 0.08),
+        ("late", "2023-06-02T00:00:00", "2023-06-02T23:50:00", late_utility),
+    ):
+        inner = _evidence([_candidate("gust", "gust_or_turbulent")])
+        inner.update(sdwpf_fold=0, pred_len=2)
+        for row in inner["candidates"][0]["turbine_evidence"]:
+            row["mean_utility"] = utility
+        blocks.append({
+            "name": name, "window_count": 600,
+            "target_start": first, "target_end": last,
+            "event_evidence": inner,
+        })
+    report = {
+        "source_split": "train_oof", "diagnostic_only": True,
+        "sdwpf_fold": 0, "pred_len": 2, "dropped_crossing_windows": 0,
+        "provenance": copy.deepcopy(evidence["provenance"]), "blocks": blocks,
+    }
+    return evidence, report
+
+
 class WindWikiLifecycleTests(unittest.TestCase):
+    def test_temporal_guard_requires_both_train_oof_blocks_to_transfer(self):
+        evidence, report = _temporal_pair(late_utility=-0.02)
+        evolved, audit = evolve_event_wiki(
+            _base_spec(), evidence, temporal_evidence_spec=report,
+            temporal_stability_guard=True,
+        )
+        self.assertEqual(evolved["scenes"][0]["lifecycle"]["status"], "retired")
+        self.assertIn("unstable_across_train_oof_time_blocks",
+                      audit["candidate_decisions"][0]["decision_reasons"])
+        self.assertFalse(audit["candidate_decisions"][0]["temporal_stability"]["blocks"][1]["stable"])
+        report["blocks"][1]["event_evidence"]["candidates"][0]["turbine_evidence"][0]["mean_utility"] = 0.08
+        for row in report["blocks"][1]["event_evidence"]["candidates"][0]["turbine_evidence"]:
+            row["mean_utility"] = 0.08
+        evolved, audit = evolve_event_wiki(
+            _base_spec(), evidence, temporal_evidence_spec=report,
+            temporal_stability_guard=True,
+        )
+        self.assertEqual(evolved["scenes"][0]["lifecycle"]["status"], "active")
+        self.assertTrue(audit["candidate_decisions"][0]["temporal_stability"]["stable"])
+
+    def test_temporal_guard_rejects_wrong_provenance_or_split(self):
+        evidence, report = _temporal_pair()
+        report["provenance"]["model_checkpoint_sha256"] = "different"
+        with self.assertRaisesRegex(ValueError, "provenance mismatch"):
+            evolve_event_wiki(_base_spec(), evidence, temporal_evidence_spec=report,
+                              temporal_stability_guard=True)
+        report["provenance"]["model_checkpoint_sha256"] = "test-checkpoint"
+        report["blocks"][1]["event_evidence"]["source_split"] = "val"
+        with self.assertRaisesRegex(ValueError, "train_oof"):
+            evolve_event_wiki(_base_spec(), evidence, temporal_evidence_spec=report,
+                              temporal_stability_guard=True)
+
     def test_unassessed_seed_knowledge_is_not_silently_deleted(self):
         evolved, audit = evolve_event_wiki(_base_spec(), _evidence([]))
         weights = [

@@ -22,6 +22,89 @@ from utils.wind_regime_wiki import validate_event_factor_rule
 TRAIN_ONLY_SOURCE = "train_oof"
 
 
+def _temporal_transfer_decisions(evidence_spec: dict, report: dict,
+                                 parameters: dict) -> dict[str, dict]:
+    """Require an event's cross-turbine utility to persist in both OOF blocks."""
+    if (report.get("source_split") != TRAIN_ONLY_SOURCE
+            or report.get("diagnostic_only") is not True):
+        raise ValueError("Temporal transfer requires train_oof diagnostic evidence")
+    if (int(report.get("sdwpf_fold", -1)) != int(evidence_spec.get("sdwpf_fold", -2))
+            or int(report.get("pred_len", -1)) != int(evidence_spec.get("pred_len", -2))):
+        raise ValueError("Temporal report fold or forecast horizon does not match evidence")
+    provenance = evidence_spec.get("provenance") or {}
+    report_provenance = report.get("provenance") or {}
+    for key in ("model_checkpoint_sha256", "data_sha256", "outer_train_cutoff", "oof_windows"):
+        if not provenance.get(key) or provenance[key] != report_provenance.get(key):
+            raise ValueError(f"Temporal report provenance mismatch: {key}")
+    if (provenance.get("validation_or_test_labels_used") is not False
+            or report_provenance.get("validation_or_test_labels_used") is not False):
+        raise ValueError("Temporal transfer cannot use validation or test labels")
+    blocks = report.get("blocks")
+    if not isinstance(blocks, list) or [row.get("name") for row in blocks] != ["early", "late"]:
+        raise ValueError("Temporal report requires ordered early and late blocks")
+    cutoff = np.datetime64(provenance["outer_train_cutoff"], "ns")
+    early_end = np.datetime64(blocks[0]["target_end"], "ns")
+    late_start = np.datetime64(blocks[1]["target_start"], "ns")
+    late_end = np.datetime64(blocks[1]["target_end"], "ns")
+    if (np.isnat(cutoff) or np.isnat(early_end) or np.isnat(late_start)
+            or np.isnat(late_end) or not early_end < late_start <= late_end < cutoff):
+        raise ValueError("Temporal OOF blocks overlap or cross outer training cutoff")
+    if (sum(int(row.get("window_count", 0)) for row in blocks)
+            + int(report.get("dropped_crossing_windows", -1))
+            != int(provenance["oof_windows"])):
+        raise ValueError("Temporal OOF window counts do not match the full evidence")
+
+    source_turbines = set(_unique_ints(evidence_spec["source_turbines"], "source_turbines"))
+    by_block = []
+    for block in blocks:
+        inner = block.get("event_evidence") or {}
+        if (inner.get("source_split") != TRAIN_ONLY_SOURCE
+                or int(inner.get("sdwpf_fold", -1)) != int(report["sdwpf_fold"])
+                or int(inner.get("pred_len", -1)) != int(report["pred_len"])):
+            raise ValueError("Temporal block is not matching train_oof evidence")
+        candidates = {}
+        for candidate in inner.get("candidates", []):
+            factor_id = str(candidate.get("factor_id", ""))
+            if not factor_id or factor_id in candidates:
+                raise ValueError("Temporal block has missing or duplicate factor IDs")
+            rows = candidate.get("turbine_evidence", [])
+            turbines = [int(row["turbine_id"]) for row in rows]
+            if len(turbines) != len(set(turbines)) or not set(turbines) <= source_turbines:
+                raise ValueError("Temporal block contains duplicate or undeclared turbines")
+            if any(row.get("source_split") != TRAIN_ONLY_SOURCE
+                   or int(row.get("n_windows", 0)) < 2 for row in rows):
+                raise ValueError("Temporal block has invalid turbine evidence")
+            means = np.asarray([row["mean_utility"] for row in rows], dtype=np.float64)
+            if not np.isfinite(means).all():
+                raise ValueError("Temporal block utility must be finite")
+            window_count = sum(int(row["n_windows"]) for row in rows)
+            if window_count > int(block["window_count"]):
+                raise ValueError("Temporal event support exceeds block windows")
+            positive_fraction = float((means > 0).mean()) if len(means) else 0.0
+            mean = float(means.mean()) if len(means) else 0.0
+            between_std = float(means.std(ddof=1)) if len(means) > 1 else 0.0
+            lcb = mean - parameters["z_value"] * between_std / math.sqrt(len(means)) if len(means) else 0.0
+            stable = (len(means) >= parameters["min_source_turbines"]
+                      and window_count >= parameters["min_total_windows"]
+                      and positive_fraction >= parameters["min_positive_turbine_fraction"]
+                      and lcb > parameters["min_transfer_lcb"])
+            candidates[factor_id] = {
+                "name": block["name"], "source_turbine_count": len(means),
+                "total_windows": window_count, "mean_utility": mean,
+                "cross_turbine_lcb": lcb,
+                "positive_turbine_fraction": positive_fraction,
+                "stable": bool(stable),
+            }
+        by_block.append(candidates)
+    return {
+        factor_id: {
+            "stable": all(block.get(factor_id, {}).get("stable", False) for block in by_block),
+            "blocks": [block.get(factor_id) for block in by_block],
+        }
+        for factor_id in {candidate["factor_id"] for candidate in evidence_spec.get("candidates", [])}
+    }
+
+
 def _canonical_json(value) -> str:
     return json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
 
@@ -226,6 +309,8 @@ def evolve_event_wiki(
     base_spec: dict,
     evidence_spec: dict,
     *,
+    temporal_evidence_spec: dict | None = None,
+    temporal_stability_guard: bool = False,
     as_of_step: int | None = None,
     min_source_turbines: int = 3,
     min_total_windows: int = 300,
@@ -294,6 +379,8 @@ def evolve_event_wiki(
             raise ValueError(f"{name} must be in [0, 1]")
     if max_merged_insights < 1:
         raise ValueError("max_merged_insights must be positive")
+    if temporal_stability_guard and temporal_evidence_spec is None:
+        raise ValueError("Temporal stability guard requires train_oof temporal evidence")
 
     source_turbines = _unique_ints(evidence_spec.get("source_turbines", []), "source_turbines")
     held_out_turbines = _unique_ints(
@@ -316,7 +403,12 @@ def evolve_event_wiki(
         "retire_weight": float(retire_weight),
         "max_merged_insights": int(max_merged_insights),
         "macro_transfer_guard": bool(macro_transfer_guard),
+        "temporal_stability_guard": bool(temporal_stability_guard),
     }
+    temporal_decisions = (
+        _temporal_transfer_decisions(evidence_spec, temporal_evidence_spec, parameters)
+        if temporal_stability_guard else {}
+    )
 
     base_by_id = {str(scene["id"]): copy.deepcopy(scene) for scene in base_scenes}
     base_order = [str(scene["id"]) for scene in base_scenes]
@@ -367,6 +459,12 @@ def evolve_event_wiki(
         ):
             candidate["accepted"] = False
             candidate["decision_reasons"] = ["conflicts_with_canonical_physical_rule"]
+        if temporal_stability_guard:
+            temporal = temporal_decisions.get(candidate["factor_id"])
+            candidate["temporal_stability"] = temporal
+            if temporal is None or not temporal["stable"]:
+                candidate["accepted"] = False
+                candidate["decision_reasons"].append("unstable_across_train_oof_time_blocks")
         decisions.append(candidate)
 
     accepted = [candidate for candidate in decisions if candidate["accepted"]]
@@ -545,6 +643,8 @@ def evolve_event_wiki(
             else "stability_across_source_turbines"
         ),
         "evidence_sha256": _sha256_json(evidence_spec),
+        **({"temporal_evidence_sha256": _sha256_json(temporal_evidence_spec)}
+           if temporal_stability_guard else {}),
         "parameters": parameters,
         "seed_knowledge_policy": "retain_until_train_oof_assessed",
     }
@@ -560,6 +660,8 @@ def evolve_event_wiki(
         **({"pred_len": pred_len} if pred_len is not None else {}),
         "base_config_sha256": _sha256_json(base_spec),
         "evidence_sha256": evolved["knowledge_lifecycle"]["evidence_sha256"],
+        **({"temporal_evidence_sha256": evolved["knowledge_lifecycle"]["temporal_evidence_sha256"]}
+           if temporal_stability_guard else {}),
         "source_turbines": source_turbines,
         "held_out_turbines": held_out_turbines,
         "transfer_scope": evolved["knowledge_lifecycle"]["transfer_scope"],
