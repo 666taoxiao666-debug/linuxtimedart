@@ -216,6 +216,27 @@ class ChannelMixerTests(unittest.TestCase):
         cap = args.ramp_residual_max_scale * x[:, :, -1].std(dim=1, unbiased=False).clamp_min(0.05)
         self.assertTrue((correction[..., 0] <= cap[:, None]).all())
 
+    def test_discordant_ramp_gate_uses_history_only_and_abstains_on_agreement(self):
+        parser = build_parser()
+        args = configure_args(parser.parse_args([
+            "--task_name", "finetune", "--model_id", "SDWPF", "--model", "TimeDART",
+            "--data", "SDWPF", "--allow_random_init", "--no-use_gpu",
+            "--d_model", "32", "--n_heads", "4", "--e_layers", "1", "--d_ff", "64",
+            "--pred_len", "12", "--residual_forecast", "--zero_init_residual_head",
+            "--ramp_residual", "--ramp_gate_mode", "wind_discordant",
+        ]))
+        args.device = torch.device("cpu")
+        model = Model(args).eval()
+        x = torch.zeros(2, args.input_len, args.enc_in)
+        x[:, -6:, -1] = torch.arange(6, dtype=torch.float32)
+        x[0, -6:, 0] = torch.arange(6, dtype=torch.float32)
+        x[1, -6:, 0] = torch.arange(5, -1, -1, dtype=torch.float32)
+        with torch.no_grad():
+            model.ramp_coeff[:, 0] = 1.0
+            correction = model._ramp_correction(x)
+        self.assertTrue(torch.equal(correction[0], torch.zeros_like(correction[0])))
+        self.assertTrue((correction[1] > 0).all())
+
     def test_constant_wind_level_changes_power(self):
         """Absolute Wspd must survive instance norm, not only within-window shape."""
         parser = build_parser()

@@ -259,6 +259,12 @@ def build_parser():
         help="maximum ramp correction as a fraction of historical power standard deviation",
     )
     parser.add_argument(
+        "--ramp_gate_mode",
+        choices=("all", "wind_discordant"),
+        default="all",
+        help="apply ramp correction on all windows or only power/wind-discordant histories",
+    )
+    parser.add_argument(
         "--ramp_learning_rate",
         type=float,
         default=0.0,
@@ -1098,6 +1104,7 @@ def load_finetuned_model(exp, checkpoint_path):
             "residual_forecast",
             "ramp_residual",
             "ramp_residual_max_scale",
+            "ramp_gate_mode",
             "disable_regime_prompt",
             "regime_label_method",
             "regime_calibration_quantile",

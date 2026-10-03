@@ -21,6 +21,7 @@ RATED_POWER="${RATED_POWER:-1500}"
 ROBUST_PITCH="${ROBUST_PITCH:-0}"
 RAMP_RESIDUAL="${RAMP_RESIDUAL:-0}"
 RAMP_RESIDUAL_MAX_SCALE="${RAMP_RESIDUAL_MAX_SCALE:-0.5}"
+RAMP_GATE_MODE="${RAMP_GATE_MODE:-all}"
 GPU="${GPU:-0}"
 RUN_ID="${RUN_ID:-final_h${PRED_LEN}_${SPLIT}_f${FOLD}_s${SEED}}"
 REPORT_OUTPUT_DIR="${REPORT_OUTPUT_DIR:-}"
@@ -93,7 +94,7 @@ if [[ "${ROBUST_PITCH}" == "1" ]]; then
     PLOT_ARGS+=(--sdwpf_robust_pitch)
 fi
 if [[ "${RAMP_RESIDUAL}" == "1" ]]; then
-    PLOT_ARGS+=(--ramp_residual --ramp_residual_max_scale "${RAMP_RESIDUAL_MAX_SCALE}")
+    PLOT_ARGS+=(--ramp_residual --ramp_residual_max_scale "${RAMP_RESIDUAL_MAX_SCALE}" --ramp_gate_mode "${RAMP_GATE_MODE}")
 fi
 if [[ "${WIKI_DIAGNOSTIC:-0}" == "1" ]]; then
     PLOT_ARGS+=(--wiki_diagnostic)

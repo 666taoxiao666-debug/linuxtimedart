@@ -93,6 +93,9 @@ class Model(nn.Module):
         )
         self.ramp_residual = bool(getattr(args, "ramp_residual", False)) and self.task_name == "finetune"
         self.ramp_residual_max_scale = float(getattr(args, "ramp_residual_max_scale", 0.5))
+        self.ramp_gate_mode = str(getattr(args, "ramp_gate_mode", "all"))
+        if self.ramp_gate_mode not in {"all", "wind_discordant"}:
+            raise ValueError("ramp_gate_mode must be all or wind_discordant")
         if not 0.0 < self.ramp_residual_max_scale <= 1.0:
             raise ValueError("ramp_residual_max_scale must be in (0, 1]")
         # Two history-only signals (recent power and wind ramps), one bounded
@@ -1041,10 +1044,17 @@ class Model(nn.Module):
             wind_recent = wind[:, -min(6, wind.size(1)):]
             wind_ramp = wind_recent[:, -1] - wind_recent.mean(dim=1)
         else:
+            if self.ramp_gate_mode == "wind_discordant":
+                raise ValueError("wind_discordant ramp gate requires Wspd")
             wind_ramp = torch.zeros_like(power_ramp)
         signals = torch.stack((power_ramp, wind_ramp), dim=-1).detach()
         cap = self.ramp_residual_max_scale * power.std(dim=1, unbiased=False).clamp_min(0.05)
-        return cap[:, None, None] * torch.tanh(signals @ self.ramp_coeff.T)[..., None]
+        correction = cap[:, None, None] * torch.tanh(signals @ self.ramp_coeff.T)[..., None]
+        if self.ramp_gate_mode == "wind_discordant":
+            # Both signals use only the observed final hour.  Agreement is
+            # evidence for a real wind-driven ramp; avoid overriding it.
+            correction = correction * (power_ramp * wind_ramp < 0).to(correction.dtype)[:, None, None]
+        return correction
 
     def forecast(self, x):
         batch_size, _, num_features = (
