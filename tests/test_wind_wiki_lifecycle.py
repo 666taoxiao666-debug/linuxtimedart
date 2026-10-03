@@ -106,6 +106,8 @@ class WindWikiLifecycleTests(unittest.TestCase):
         self.assertEqual(evolved["scenes"][0]["lifecycle"]["status"], "retired")
         self.assertIn("unstable_across_train_oof_time_blocks",
                       audit["candidate_decisions"][0]["decision_reasons"])
+        self.assertNotIn("accepted_train_oof_cross_turbine_evidence",
+                         audit["candidate_decisions"][0]["decision_reasons"])
         self.assertFalse(audit["candidate_decisions"][0]["temporal_stability"]["blocks"][1]["stable"])
         report["blocks"][1]["event_evidence"]["candidates"][0]["turbine_evidence"][0]["mean_utility"] = 0.08
         for row in report["blocks"][1]["event_evidence"]["candidates"][0]["turbine_evidence"]:

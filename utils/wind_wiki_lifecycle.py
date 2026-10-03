@@ -464,6 +464,10 @@ def evolve_event_wiki(
             candidate["temporal_stability"] = temporal
             if temporal is None or not temporal["stable"]:
                 candidate["accepted"] = False
+                candidate["decision_reasons"] = [
+                    reason for reason in candidate["decision_reasons"]
+                    if reason != "accepted_train_oof_cross_turbine_evidence"
+                ]
                 candidate["decision_reasons"].append("unstable_across_train_oof_time_blocks")
         decisions.append(candidate)
 
