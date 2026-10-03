@@ -279,6 +279,39 @@ class CausalFillTests(unittest.TestCase):
 
 
 class OptimizerGroupTests(unittest.TestCase):
+    def test_ramp_parameter_gets_its_own_learning_rate(self):
+        class TinyRampModel(torch.nn.Module):
+            def __init__(self):
+                super().__init__()
+                self.backbone = torch.nn.Linear(2, 2)
+                self.head = torch.nn.Linear(2, 1)
+                self.ramp_coeff = torch.nn.Parameter(torch.zeros(12, 2))
+
+        experiment = object.__new__(Exp_TimeDART)
+        experiment.model = TinyRampModel()
+        experiment.args = SimpleNamespace(
+            task_name="finetune",
+            downstream_task="forecast",
+            learning_rate=1e-6,
+            new_module_learning_rate=5e-6,
+            ramp_learning_rate=5e-5,
+            ramp_residual=True,
+            weight_decay=1e-4,
+        )
+        optimizer = Exp_TimeDART._select_optimizer(experiment)
+        self.assertEqual(
+            [group["group_name"] for group in optimizer.param_groups],
+            ["transferred_backbone", "new_forecast_modules", "ramp_residual"],
+        )
+        self.assertEqual(
+            [group["target_lr"] for group in optimizer.param_groups],
+            [1e-6, 5e-6, 5e-5],
+        )
+        self.assertEqual(len(optimizer.param_groups[2]["params"]), 1)
+        self.assertIs(optimizer.param_groups[2]["params"][0], experiment.model.ramp_coeff)
+        grouped = [id(p) for group in optimizer.param_groups for p in group["params"]]
+        self.assertCountEqual(grouped, [id(p) for p in experiment.model.parameters()])
+
     def test_new_forecast_modules_receive_the_configured_higher_lr(self):
         class TinyForecastModel(torch.nn.Module):
             def __init__(self):

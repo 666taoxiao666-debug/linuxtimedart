@@ -319,6 +319,12 @@ class Exp_TimeDART(Exp_Basic):
     def _select_optimizer(self):
         base_lr = float(self.args.learning_rate)
         new_module_lr = float(getattr(self.args, "new_module_learning_rate", 0.0))
+        ramp_lr = float(getattr(self.args, "ramp_learning_rate", 0.0))
+        if ramp_lr < 0:
+            raise ValueError("ramp_learning_rate must be nonnegative")
+        use_ramp_group = ramp_lr > 0
+        if use_ramp_group and not bool(getattr(self.args, "ramp_residual", False)):
+            raise ValueError("ramp_learning_rate requires ramp_residual")
         utility_lr = float(getattr(self.args, "utility_learning_rate", new_module_lr))
         use_utility_group = bool(getattr(self.args, "utility_wiki", False))
         utility_tokens = (
@@ -327,6 +333,8 @@ class Exp_TimeDART(Exp_Basic):
             "utility_composition_adapter.",
         )
         if bool(getattr(self.args, "freeze_non_utility", False)):
+            if use_ramp_group:
+                raise ValueError("ramp_learning_rate cannot be used when non-utility modules are frozen")
             if not use_utility_group:
                 raise RuntimeError("freeze_non_utility requires utility_wiki")
             utility_parameters = []
@@ -365,6 +373,7 @@ class Exp_TimeDART(Exp_Basic):
             and self.args.downstream_task == "forecast"
             and (
                 (new_module_lr > 0 and not np.isclose(new_module_lr, base_lr))
+                or use_ramp_group
                 or (use_utility_group and not np.isclose(utility_lr, base_lr))
             )
         )
@@ -385,10 +394,10 @@ class Exp_TimeDART(Exp_Basic):
             "head.",
             "channel_mixer.",
             "residual_gate_logit",
-            "ramp_coeff",
         )
         transferred = []
         newly_initialized = []
+        ramp_parameters = []
         utility_parameters = []
         for name, parameter in self.model.named_parameters():
             if not parameter.requires_grad:
@@ -398,6 +407,10 @@ class Exp_TimeDART(Exp_Basic):
                 token in clean_name for token in utility_tokens
             ):
                 destination = utility_parameters
+            elif clean_name == "ramp_coeff" and use_ramp_group:
+                destination = ramp_parameters
+            elif clean_name == "ramp_coeff":
+                destination = newly_initialized
             elif any(token in clean_name for token in new_tokens):
                 destination = newly_initialized
             else:
@@ -408,6 +421,8 @@ class Exp_TimeDART(Exp_Basic):
                 "Differential fine-tuning LR requested, but optimizer parameter "
                 "groups could not be separated"
             )
+        if use_ramp_group and not ramp_parameters:
+            raise RuntimeError("ramp_learning_rate requested but no ramp_coeff parameter was found")
         parameter_groups = [
                 {
                     "params": transferred,
@@ -435,6 +450,15 @@ class Exp_TimeDART(Exp_Basic):
                     "group_name": "utility_modules",
                 }
             )
+        if ramp_parameters:
+            parameter_groups.append(
+                {
+                    "params": ramp_parameters,
+                    "lr": ramp_lr,
+                    "target_lr": ramp_lr,
+                    "group_name": "ramp_residual",
+                }
+            )
         model_optim = optim.AdamW(
             parameter_groups,
             weight_decay=self.args.weight_decay,
@@ -446,6 +470,10 @@ class Exp_TimeDART(Exp_Basic):
         if utility_parameters:
             group_summary.append(
                 f"utility={sum(p.numel() for p in utility_parameters):,} params @ {utility_lr:g}"
+            )
+        if ramp_parameters:
+            group_summary.append(
+                f"ramp={sum(p.numel() for p in ramp_parameters):,} params @ {ramp_lr:g}"
             )
         print("Optimizer groups: " + "; ".join(group_summary))
         return model_optim

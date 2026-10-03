@@ -258,6 +258,12 @@ def build_parser():
         default=0.5,
         help="maximum ramp correction as a fraction of historical power standard deviation",
     )
+    parser.add_argument(
+        "--ramp_learning_rate",
+        type=float,
+        default=0.0,
+        help="optional ramp-only learning rate; 0 shares the new-module learning rate",
+    )
 
     # Model
     parser.add_argument("--top_k", type=int, default=5)
