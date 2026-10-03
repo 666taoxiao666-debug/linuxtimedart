@@ -191,6 +191,31 @@ class ChannelMixerTests(unittest.TestCase):
         persistence = x[:, -1:, -1:].expand(-1, args.pred_len, -1)
         self.assertTrue(torch.equal(prediction, persistence))
 
+    def test_ramp_residual_is_zero_initially_and_bounded_after_training(self):
+        parser = build_parser()
+        args = configure_args(parser.parse_args([
+            "--task_name", "finetune", "--model_id", "SDWPF", "--model", "TimeDART",
+            "--data", "SDWPF", "--allow_random_init", "--no-use_gpu",
+            "--d_model", "32", "--n_heads", "4", "--e_layers", "1", "--d_ff", "64",
+            "--pred_len", "12", "--residual_forecast", "--zero_init_residual_head",
+            "--ramp_residual",
+        ]))
+        args.device = torch.device("cpu")
+        args.dropout = 0.0
+        args.head_dropout = 0.0
+        model = Model(args).eval()
+        x = torch.zeros(2, args.input_len, args.enc_in)
+        x[:, -6:, -1] = torch.arange(6, dtype=torch.float32)
+        x[:, -6:, 0] = torch.arange(6, dtype=torch.float32)
+        with torch.no_grad():
+            self.assertTrue(torch.equal(model(x), x[:, -1:, -1:].expand(-1, 12, -1)))
+            model.ramp_coeff[:, 0] = 1.0
+            correction = model._ramp_correction(x)
+        self.assertEqual(tuple(correction.shape), (2, 12, 1))
+        self.assertTrue((correction > 0).all())
+        cap = args.ramp_residual_max_scale * x[:, :, -1].std(dim=1, unbiased=False).clamp_min(0.05)
+        self.assertTrue((correction[..., 0] <= cap[:, None]).all())
+
     def test_constant_wind_level_changes_power(self):
         """Absolute Wspd must survive instance norm, not only within-window shape."""
         parser = build_parser()
@@ -625,6 +650,27 @@ class DatasetAlignmentTests(unittest.TestCase):
         scale = data.scaler.scale_[index]
         power = data.data_x[:, index] * scale + mean
         self.assertGreaterEqual(power.min(), -1e-4)
+
+    def test_robust_pitch_repairs_disagreeing_blade_without_changing_power(self):
+        _tiny_sdwpf_csv(self.csv, n_times=80, n_turbines=1)
+        frame = pd.read_csv(self.csv)
+        frame.loc[20, "Pab1"] = 40.0
+        frame.to_csv(self.csv, index=False)
+        Dataset_SDWPF._cache.clear()
+        standard = self._make("train", robust_pitch=False)
+        robust = self._make("train", robust_pitch=True)
+        target_date = pd.Timestamp(frame.loc[20, "date"]).to_datetime64()
+        row = int(np.flatnonzero(robust.dates == target_date)[0])
+        pitch_index = robust.feature_columns.index("Pab_mean")
+        power_index = robust.feature_columns.index("power")
+        original_pitch = standard.data_x[row, pitch_index] * standard.scaler.scale_[pitch_index] + standard.scaler.mean_[pitch_index]
+        repaired_pitch = robust.data_x[row, pitch_index] * robust.scaler.scale_[pitch_index] + robust.scaler.mean_[pitch_index]
+        standard_power = standard.data_x[row, power_index] * standard.scaler.scale_[power_index] + standard.scaler.mean_[power_index]
+        robust_power = robust.data_x[row, power_index] * robust.scaler.scale_[power_index] + robust.scaler.mean_[power_index]
+        self.assertAlmostEqual(original_pitch, 14.0, places=4)
+        self.assertAlmostEqual(repaired_pitch, 1.0, places=4)
+        self.assertAlmostEqual(standard_power, robust_power, places=4)
+        self.assertEqual(robust.audit_stats["pitch_median_repair_rows"], 1)
 
     def test_long_invalid_run_creates_a_hard_window_boundary(self):
         _tiny_sdwpf_csv(self.csv, n_times=80, n_turbines=1)

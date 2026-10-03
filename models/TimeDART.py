@@ -91,6 +91,15 @@ class Model(nn.Module):
             if self.residual_forecast
             else None
         )
+        self.ramp_residual = bool(getattr(args, "ramp_residual", False)) and self.task_name == "finetune"
+        self.ramp_residual_max_scale = float(getattr(args, "ramp_residual_max_scale", 0.5))
+        if not 0.0 < self.ramp_residual_max_scale <= 1.0:
+            raise ValueError("ramp_residual_max_scale must be in (0, 1]")
+        # Two history-only signals (recent power and wind ramps), one bounded
+        # coefficient per forecast step.  Zero init preserves the old forecast.
+        self.ramp_coeff = (
+            nn.Parameter(torch.zeros(self.pred_len, 2)) if self.ramp_residual else None
+        )
         self.zero_init_residual_head = getattr(
             args,
             "zero_init_residual_head",
@@ -507,7 +516,7 @@ class Model(nn.Module):
                         num_candidates=self.scene_wiki_router.num_factors + 1,
                     )
 
-    def _factorized_forecast(self, base_hidden, state, physical, stdevs, means, last):
+    def _factorized_forecast(self, base_hidden, state, physical, stdevs, means, last, history):
         """Independent evidence-supported events compete by horizon utility."""
         base = self.head(base_hidden)
         power_slice = slice(-1, None) if self.mix_channels else slice(None)
@@ -517,6 +526,8 @@ class Model(nn.Module):
             base = last[:, :, power_slice] + torch.sigmoid(self.residual_gate_logit) * base
         elif self.use_norm:
             base = base * scale + means[:, :, power_slice]
+        if self.ramp_residual:
+            base = base + self._ramp_correction(history)
         rules = state['rule_logits'].detach()
         support = (1. - torch.exp(-self.scene_wiki_router.rule_weight * rules.clamp(0, 1)))
         support = support * self.scene_wiki_router.factor_reliability[None]
@@ -1015,6 +1026,26 @@ class Model(nn.Module):
             return None
         return torch.stack(pieces, dim=-1)
 
+    def _ramp_correction(self, history):
+        """Bounded target-scale correction from the observed final hour only."""
+        if self.ramp_coeff is None:
+            raise RuntimeError("Ramp residual is disabled")
+        names = {name: index for index, name in enumerate(self.feature_columns)}
+        if "power" not in names:
+            raise ValueError("Ramp residual requires a named power channel")
+        power = history[:, :, names["power"]]
+        recent = power[:, -min(6, power.size(1)):]
+        power_ramp = recent[:, -1] - recent.mean(dim=1)
+        if "Wspd" in names:
+            wind = history[:, :, names["Wspd"]]
+            wind_recent = wind[:, -min(6, wind.size(1)):]
+            wind_ramp = wind_recent[:, -1] - wind_recent.mean(dim=1)
+        else:
+            wind_ramp = torch.zeros_like(power_ramp)
+        signals = torch.stack((power_ramp, wind_ramp), dim=-1).detach()
+        cap = self.ramp_residual_max_scale * power.std(dim=1, unbiased=False).clamp_min(0.05)
+        return cap[:, None, None] * torch.tanh(signals @ self.ramp_coeff.T)[..., None]
+
     def forecast(self, x):
         batch_size, _, num_features = (
             x.size()
@@ -1108,7 +1139,7 @@ class Model(nn.Module):
                 return self._factorized_forecast(
                     base_hidden, state, physical_features,
                     stdevs if self.use_norm else None, means if self.use_norm else None,
-                    last_observation,
+                    last_observation, label_source,
                 )
 
             branch_encoded = torch.cat(
@@ -1191,6 +1222,8 @@ class Model(nn.Module):
 
         if self.utility_wiki:
             base_x = restore_scale(base_x)
+            if self.ramp_residual:
+                base_x = base_x + self._ramp_correction(label_source)
             candidate_features = None
             if self.utility_adapter_mode in ("hierarchical_evidence", "calibrated_evidence"):
                 candidate_features = torch.stack([
@@ -1255,10 +1288,16 @@ class Model(nn.Module):
             # the wind/context path from the first optimisation step.
             residual_gate = torch.sigmoid(self.residual_gate_logit)
             x = last_observation[:, :, power_slice] + residual_gate * x
+            if self.ramp_residual:
+                x = x + self._ramp_correction(label_source)
 
         elif self.use_norm:
             x = x * stdevs[:, :, power_slice]
             x = x + means[:, :, power_slice]
+            if self.ramp_residual:
+                x = x + self._ramp_correction(label_source)
+        elif self.ramp_residual:
+            x = x + self._ramp_correction(label_source)
 
         return x
 

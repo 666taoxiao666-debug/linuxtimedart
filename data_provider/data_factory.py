@@ -163,6 +163,7 @@ def data_provider(args, flag):
                 clip_power=args.sdwpf_clip_power,
                 circular_wind=args.sdwpf_circular_wind,
                 collapse_pitch=args.sdwpf_collapse_pitch,
+                robust_pitch=args.sdwpf_robust_pitch,
                 keep_curtailment=args.sdwpf_keep_curtailment,
                 causal_fill=args.sdwpf_causal_fill,
                 split=args.sdwpf_split,

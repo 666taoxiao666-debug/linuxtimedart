@@ -47,6 +47,7 @@ REGIME_CALIBRATION_QUANTILE="${REGIME_CALIBRATION_QUANTILE:-0.3333333333}"
 REGIME_CALIBRATION_SAMPLES="${REGIME_CALIBRATION_SAMPLES:-50000}"
 REGIME_MIN_CLASS_FRACTION="${REGIME_MIN_CLASS_FRACTION:-0.05}"
 RATED_POWER="${RATED_POWER:-1500}"
+ROBUST_PITCH="${ROBUST_PITCH:-0}"
 GPU="${GPU:-0}"
 PRETRAIN_RUN_ID="${PRETRAIN_RUN_ID:-pretrain_${SPLIT}_f${FOLD}_s${SEED}_$(date +%Y%m%d_%H%M%S)}"
 RUN_ID="${RUN_ID:-${PRETRAIN_RUN_ID}}"
@@ -55,7 +56,7 @@ export CUBLAS_WORKSPACE_CONFIG="${CUBLAS_WORKSPACE_CONFIG:-:4096:8}"
 
 sdwpf_wiki_prepare
 
-LOG_PARAMETERS="h${PRED_LEN}_${SPLIT}_f${FOLD}of${N_FOLDS}_s${SEED}_lr${LEARNING_RATE}_lce${LAMBDA_CE}_lebce${LAMBDA_EVENT_BCE}_${PROMPT_ROUTER}_reg${REGIME_LABEL_METHOD}_rq${REGIME_CALIBRATION_QUANTILE}_ep${TRAIN_EPOCHS}_pat${PATIENCE}"
+LOG_PARAMETERS="h${PRED_LEN}_${SPLIT}_f${FOLD}of${N_FOLDS}_s${SEED}_lr${LEARNING_RATE}_lce${LAMBDA_CE}_lebce${LAMBDA_EVENT_BCE}_${PROMPT_ROUTER}_reg${REGIME_LABEL_METHOD}_rq${REGIME_CALIBRATION_QUANTILE}_ep${TRAIN_EPOCHS}_pat${PATIENCE}_rpt${ROBUST_PITCH}"
 sdwpf_log_init "pretrain" "${LOG_PARAMETERS}" "pretrain.log" "${RUN_ID}"
 sdwpf_log_install_exit_trap
 LOG_ENV_FILE="$(sdwpf_log_sidecar env)"
@@ -95,6 +96,7 @@ LOG_SUMMARY_FILE="$(sdwpf_log_sidecar summary.txt)"
     echo "REGIME_MIN_CLASS_FRACTION=${REGIME_MIN_CLASS_FRACTION}"
     echo "PATIENCE=${PATIENCE}"
     echo "RATED_POWER=${RATED_POWER}"
+    echo "ROBUST_PITCH=${ROBUST_PITCH}"
     echo "STARTED_AT=$(date --iso-8601=seconds)"
 } > "${LOG_ENV_FILE}"
 
@@ -153,6 +155,10 @@ COMMAND=(python -u run.py
     --seed "${SEED}" \
     --run_id "${RUN_ID}" \
     --gpu "${GPU}")
+
+if [[ "${ROBUST_PITCH}" == "1" ]]; then
+    COMMAND+=(--sdwpf_robust_pitch)
+fi
 
 "${COMMAND[@]}" 2>&1 | tee "${SDWPF_LOG_FILE}"
 

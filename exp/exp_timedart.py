@@ -385,6 +385,7 @@ class Exp_TimeDART(Exp_Basic):
             "head.",
             "channel_mixer.",
             "residual_gate_logit",
+            "ramp_coeff",
         )
         transferred = []
         newly_initialized = []

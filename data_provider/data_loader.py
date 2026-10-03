@@ -7,6 +7,7 @@ import torch
 import pickle
 from torch.utils.data import Dataset
 from data_provider.sdwpf_features import sdwpf_feature_columns
+from data_provider.sdwpf_quality import aggregate_blade_pitch
 from data_provider.m4 import M4Dataset, M4Meta
 from utils.timefeatures import time_features
 from data_provider.uea import subsample, interpolate_missing, Normalizer
@@ -723,6 +724,7 @@ class Dataset_SDWPF(Dataset):
         clip_power=True,
         circular_wind=True,
         collapse_pitch=True,
+        robust_pitch=False,
         keep_curtailment=True,
         causal_fill=True,
         split="time_ratio",
@@ -776,6 +778,7 @@ class Dataset_SDWPF(Dataset):
             bool(clip_power),
             bool(circular_wind),
             bool(collapse_pitch),
+            bool(robust_pitch),
             bool(keep_curtailment),
             bool(causal_fill),
             split,
@@ -800,6 +803,7 @@ class Dataset_SDWPF(Dataset):
                 clip_power=clip_power,
                 circular_wind=circular_wind,
                 collapse_pitch=collapse_pitch,
+                robust_pitch=robust_pitch,
                 keep_curtailment=keep_curtailment,
                 causal_fill=causal_fill,
                 split=split,
@@ -849,6 +853,7 @@ class Dataset_SDWPF(Dataset):
         clip_power,
         circular_wind,
         collapse_pitch,
+        robust_pitch,
         keep_curtailment,
         causal_fill,
         split,
@@ -892,7 +897,10 @@ class Dataset_SDWPF(Dataset):
         wind = df["Wspd"] if "Wspd" in df else pd.Series(np.nan, index=df.index)
         power = df[target]
         pitch_cols = [c for c in ("Pab1", "Pab2", "Pab3") if c in df]
-        pitch_mean = df[pitch_cols].mean(axis=1) if pitch_cols else None
+        pitch_mean, pitch_disagreement = (
+            aggregate_blade_pitch(df, pitch_cols, robust=robust_pitch)
+            if pitch_cols else (None, pd.Series(False, index=df.index))
+        )
         available = np.ones(len(df), dtype=bool)
         if filter_abnormal:
             # Consumption / standby: keep the row, treat as zero later.
@@ -945,7 +953,7 @@ class Dataset_SDWPF(Dataset):
                 df[f"{prefix}_cos"] = np.cos(radians).astype(np.float32)
                 df = df.drop(columns=[angle_col])
         if collapse_pitch and pitch_cols:
-            df["Pab_mean"] = df[pitch_cols].mean(axis=1).astype(np.float32)
+            df["Pab_mean"] = pitch_mean.astype(np.float32)
             df = df.drop(columns=pitch_cols)
 
         feature_columns = sdwpf_feature_columns(
@@ -1070,6 +1078,9 @@ class Dataset_SDWPF(Dataset):
             "removed_unresolved_feature_rows": unresolved_rows,
             "abnormal_values_total": int(repaired_values),
             "abnormal_values_by_feature": invalid_counts,
+            "pitch_blade_disagreement_rows": int(pitch_disagreement.sum()),
+            "pitch_median_repair_rows": int(pitch_disagreement.sum()) if robust_pitch else 0,
+            "robust_pitch": bool(robust_pitch),
             "missing_by_feature_after_short_fill": missing_by_feature_after_fill,
             "available_rows": int(np.asarray(available, dtype=bool).sum()),
             "unavailable_or_curtailed_rows": int((~np.asarray(available, dtype=bool)).sum()),
@@ -1084,6 +1095,8 @@ class Dataset_SDWPF(Dataset):
             f"{len(df):,} rows, {len(segments):,} continuous segments, "
             f"{removed:,} unresolved/duplicate rows removed, "
             f"{repaired_values:,} abnormal sensor values marked, "
+            f"pitch_disagreement={int(pitch_disagreement.sum()):,}, "
+            f"pitch_median_repair={int(pitch_disagreement.sum()) if robust_pitch else 0:,}, "
             f"split={split} fold={fold}, "
             f"train_cutoff={pd.Timestamp(train_cutoff)}, "
             f"val_cutoff={pd.Timestamp(val_cutoff)}, "

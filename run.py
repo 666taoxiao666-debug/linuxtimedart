@@ -104,6 +104,12 @@ def build_parser():
         help="replace Pab1/Pab2/Pab3 with their mean",
     )
     parser.add_argument(
+        "--sdwpf_robust_pitch",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+        help="use blade-pitch median when same-timestamp blade spread exceeds 5 degrees",
+    )
+    parser.add_argument(
         "--sdwpf_keep_curtailment",
         action=argparse.BooleanOptionalAction,
         default=True,
@@ -239,6 +245,18 @@ def build_parser():
         type=float,
         default=-4.0,
         help="initial logit of the residual correction gate; -4 is near persistence",
+    )
+    parser.add_argument(
+        "--ramp_residual",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+        help="learn a bounded horizon-wise correction from recent observed power/wind ramps",
+    )
+    parser.add_argument(
+        "--ramp_residual_max_scale",
+        type=float,
+        default=0.5,
+        help="maximum ramp correction as a fraction of historical power standard deviation",
     )
 
     # Model
@@ -1069,8 +1087,11 @@ def load_finetuned_model(exp, checkpoint_path):
             "sdwpf_split",
             "sdwpf_fold",
             "sdwpf_n_folds",
+            "sdwpf_robust_pitch",
             "mix_channels",
             "residual_forecast",
+            "ramp_residual",
+            "ramp_residual_max_scale",
             "disable_regime_prompt",
             "regime_label_method",
             "regime_calibration_quantile",

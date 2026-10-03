@@ -67,6 +67,25 @@ SOURCE_ENV="${SOURCE_CV_DIR}/cv.env"
     exit 2
 }
 
+ROBUST_PITCH="${ROBUST_PITCH:-$(read_value "${SOURCE_ENV}" ROBUST_PITCH)}"
+RAMP_RESIDUAL="${RAMP_RESIDUAL:-$(read_value "${SOURCE_ENV}" RAMP_RESIDUAL)}"
+RAMP_RESIDUAL_MAX_SCALE="${RAMP_RESIDUAL_MAX_SCALE:-$(read_value "${SOURCE_ENV}" RAMP_RESIDUAL_MAX_SCALE)}"
+ROBUST_PITCH="${ROBUST_PITCH:-0}"
+RAMP_RESIDUAL="${RAMP_RESIDUAL:-0}"
+RAMP_RESIDUAL_MAX_SCALE="${RAMP_RESIDUAL_MAX_SCALE:-0.5}"
+export ROBUST_PITCH RAMP_RESIDUAL RAMP_RESIDUAL_MAX_SCALE
+for field in ROBUST_PITCH RAMP_RESIDUAL RAMP_RESIDUAL_MAX_SCALE; do
+    source_value="$(read_value "${SOURCE_ENV}" "${field}")"
+    if [[ -z "${source_value}" ]]; then
+        source_value=0
+        [[ "${field}" != "RAMP_RESIDUAL_MAX_SCALE" ]] || source_value=0.5
+    fi
+    if [[ "${!field}" != "${source_value}" ]]; then
+        echo "${field} must match SOURCE_CV_DIR (${source_value}), got ${!field}." >&2
+        exit 2
+    fi
+done
+
 export SCENE_WIKI_CONFIG="${SCENE_WIKI_CONFIG:-$(read_value "${SOURCE_ENV}" SCENE_WIKI_CONFIG)}"
 export SCENE_WIKI_EMBEDDINGS="${SCENE_WIKI_EMBEDDINGS:-$(read_value "${SOURCE_ENV}" SCENE_WIKI_EMBEDDINGS)}"
 export SCENE_WIKI_TOP_K="${SCENE_WIKI_TOP_K:-$(read_value "${SOURCE_ENV}" SCENE_WIKI_TOP_K)}"
@@ -97,6 +116,17 @@ if [[ "${FREEZE_NON_UTILITY}" == "1" ]]; then
         echo "TREND_CV_DIR must be a trend-router CV run." >&2
         exit 2
     }
+    for field in ROBUST_PITCH RAMP_RESIDUAL RAMP_RESIDUAL_MAX_SCALE; do
+        trend_value="$(read_value "${TREND_CV_DIR}/cv.env" "${field}")"
+        if [[ -z "${trend_value}" ]]; then
+            trend_value=0
+            [[ "${field}" != "RAMP_RESIDUAL_MAX_SCALE" ]] || trend_value=0.5
+        fi
+        if [[ "${!field}" != "${trend_value}" ]]; then
+            echo "${field} must match TREND_CV_DIR (${trend_value}), got ${!field}." >&2
+            exit 2
+        fi
+    done
 fi
 
 read -r -a CV_FOLDS <<< "${FOLDS}"
@@ -104,6 +134,7 @@ read -r -a CV_SEEDS <<< "${SEEDS}"
 CV_ID="${CV_ID:-utility_reuse_h${PRED_LEN}_rolling_holdout_${#CV_FOLDS[@]}fold_${#CV_SEEDS[@]}seed_$(date +%Y%m%d_%H%M%S)}"
 LOG_PARAMETERS="reuse_h${PRED_LEN}_folds${FOLDS// /-}_seeds${SEEDS// /-}_freeze${FREEZE_NON_UTILITY}_warm${UTILITY_ADAPTER_WARMUP_EPOCHS}_ep${TRAIN_EPOCHS}_pat${PATIENCE}_blr${LEARNING_RATE}_nlr${NEW_MODULE_LEARNING_RATE}_ulr${UTILITY_LEARNING_RATE}_ulw${UTILITY_LOSS_WEIGHT}_udlw${UTILITY_DECISION_LOSS_WEIGHT}_uhlw${UTILITY_HARM_LOSS_WEIGHT}_uclw${UTILITY_CANDIDATE_LOSS_WEIGHT}_urlw${UTILITY_RANKING_LOSS_WEIGHT}_ugt${UTILITY_GATE_TEMPERATURE}_umg${UTILITY_MIN_GAIN}_uif${UTILITY_INTERVENTION_FLOOR}"
 LOG_PARAMETERS="factor${UTILITY_FACTORIZED}_adapter${UTILITY_ADAPTER_MODE}_calfrac${UTILITY_CALIBRATION_FRACTION}_ecap${UTILITY_EVENT_MAX_SCALE}_ccap${UTILITY_COMPOSITION_MAX_SCALE}_${LOG_PARAMETERS}"
+LOG_PARAMETERS="rpt${ROBUST_PITCH}_ramp${RAMP_RESIDUAL}_rmax${RAMP_RESIDUAL_MAX_SCALE}_${LOG_PARAMETERS}"
 sdwpf_log_init "cv_utility" "${LOG_PARAMETERS}" "cv.log" "${CV_ID}"
 sdwpf_log_install_exit_trap
 CV_LOG_DIR="${SDWPF_LOG_DIR}"
@@ -123,6 +154,9 @@ sdwpf_log_capture
     echo "PATIENCE=${PATIENCE}"
     echo "LEARNING_RATE=${LEARNING_RATE}"
     echo "NEW_MODULE_LEARNING_RATE=${NEW_MODULE_LEARNING_RATE}"
+    echo "ROBUST_PITCH=${ROBUST_PITCH}"
+    echo "RAMP_RESIDUAL=${RAMP_RESIDUAL}"
+    echo "RAMP_RESIDUAL_MAX_SCALE=${RAMP_RESIDUAL_MAX_SCALE}"
     echo "PROMPT_ROUTER=compositional_wiki"
     echo "SCENE_WIKI_CONFIG=${SCENE_WIKI_CONFIG}"
     echo "SCENE_WIKI_EMBEDDINGS=${SCENE_WIKI_EMBEDDINGS}"
@@ -186,6 +220,8 @@ for fold in "${CV_FOLDS[@]}"; do
         FOLD="${fold}" N_FOLDS=3 SEED="${seed}" SPLIT=rolling_holdout \
         PRED_LEN="${PRED_LEN}" EVAL_STRIDE="${PRED_LEN}" PRETRAIN_RUN_ID="${pretrain_id}" \
         OVERLAY_CHECKPOINT="${overlay_checkpoint}" FREEZE_NON_UTILITY="${FREEZE_NON_UTILITY}" \
+        ROBUST_PITCH="${ROBUST_PITCH}" RAMP_RESIDUAL="${RAMP_RESIDUAL}" \
+        RAMP_RESIDUAL_MAX_SCALE="${RAMP_RESIDUAL_MAX_SCALE}" \
         RUN_ID="${CV_ID}_f${fold}_s${seed}_finetune" \
         SDWPF_LOG_DIR="${run_dir}" SDWPF_LOG_FILE="${run_dir}/finetune.log" \
         bash scripts/finetune/SDWPF_ablation_prompt.sh
