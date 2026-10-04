@@ -33,7 +33,8 @@ def _args():
 class StrongBaselineContractTests(unittest.TestCase):
     def test_patchtst_accepts_repository_finetune_forecast_contract(self):
         model = PatchTST(_args(), patch_len=8, stride=4)
-        output = model(torch.randn(2, 32, 3), None, None, None)
+        # Exp_TimeDART intentionally calls forecast models with batch_x only.
+        output = model(torch.randn(2, 32, 3))
         self.assertEqual(tuple(output.shape), (2, 4, 3))
 
     def test_dlinear_accepts_repository_finetune_forecast_contract(self):
