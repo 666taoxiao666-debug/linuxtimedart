@@ -40,14 +40,41 @@ PROTOCOL_SHA256="$(sed -n 's/^PROTOCOL_SHA256=//p' <<< "${PROTOCOL_AUDIT}")"
 export PROTOCOL_ID PROTOCOL_SHA256
 GPU="${GPU:-0}"
 
+RESUME_DIR="${FROZEN_BENCHMARK_RESUME_DIR:-}"
+if [[ -n "${RESUME_DIR}" ]]; then
+    [[ -d "${RESUME_DIR}" ]] || { echo "Resume directory does not exist: ${RESUME_DIR}" >&2; exit 2; }
+    [[ -f "${RESUME_DIR}/frozen_protocol.json" ]] || { echo "Resume directory has no frozen protocol snapshot" >&2; exit 2; }
+    resume_sha="$(sha256sum "${RESUME_DIR}/frozen_protocol.json" | awk '{print $1}')"
+    [[ "${resume_sha}" == "${PROTOCOL_SHA256}" ]] || {
+        echo "Resume protocol hash mismatch: expected=${PROTOCOL_SHA256} actual=${resume_sha}" >&2
+        exit 2
+    }
+    export SDWPF_LOG_DIR="${RESUME_DIR}"
+    export SDWPF_LOG_FILE="${RESUME_DIR}/matrix.log"
+fi
 sdwpf_log_init "frozen_benchmark" "h12_f0-1-2_s2024-2025-2026_patchtst-dlinear-classical_${PROTOCOL_SHA256:0:12}" "matrix.log" "${PROTOCOL_ID}"
+# A resumed directory was originally allocated by this launcher.  Mark it as
+# owned so the standard exit trap refreshes status.env instead of leaving the
+# prior FAILED state behind.
+if [[ -n "${RESUME_DIR}" ]]; then
+    _SDWPF_LOG_OWNS_DIR=1
+    {
+        echo "STATUS=RUNNING"
+        echo "STARTED_AT=$(date --iso-8601=seconds)"
+        echo "RESUMED=1"
+    } > "${SDWPF_LOG_DIR}/status.env"
+fi
 sdwpf_log_install_exit_trap
 ROOT="${SDWPF_LOG_DIR}"
 sdwpf_log_capture
 mkdir -p "$(dirname "${LATEST_POINTER}")"
 printf '%s\n' "${ROOT}" > "${LATEST_POINTER}"
-printf 'family\tmethod\tfold\tseed\tstatus\tresult_dir\n' > "${ROOT}/matrix.tsv"
-cp "${PROTOCOL_CONFIG}" "${ROOT}/frozen_protocol.json"
+if [[ ! -f "${ROOT}/matrix.tsv" ]]; then
+    printf 'family\tmethod\tfold\tseed\tstatus\tresult_dir\n' > "${ROOT}/matrix.tsv"
+fi
+if [[ ! -f "${ROOT}/frozen_protocol.json" ]]; then
+    cp "${PROTOCOL_CONFIG}" "${ROOT}/frozen_protocol.json"
+fi
 printf '%s\n' "${PROTOCOL_AUDIT}" > "${ROOT}/protocol_audit.env"
 printf '%s\n' "$$" > "${ROOT}/launcher.pid"
 

@@ -53,7 +53,10 @@ def build_parser():
     parser.add_argument(
         "--model",
         required=True,
-        choices=["TimeDART", "PromptTimeDART", "TimeDART_v2", "SimMTM"],
+        choices=[
+            "TimeDART", "PromptTimeDART", "TimeDART_v2", "SimMTM",
+            "PatchTST", "DLinear",
+        ],
     )
     parser.add_argument("--llm_path", default="Qwen/Qwen2.5-0.5B")
     parser.add_argument("--backbone", default="Qwen2.5-0.5B")
