@@ -1904,6 +1904,7 @@ class Exp_TimeDART(Exp_Basic):
             end_time = time.time()
 
             validation_unit = "kW" if self.args.data == "SDWPF" else "original"
+            metric_suffix = "kw" if self.args.data == "SDWPF" else "original"
             epoch_summary = (
                 f"Epoch: {epoch + 1}, Steps: {len(phase_loader)}, "
                 f"Time: {end_time - start_time:.2f}s | "
