@@ -67,6 +67,32 @@ if [[ "${EVIDENCE_HORIZON}" != "${PRED_LEN}" ]]; then
     exit 2
 fi
 
+UTILITY_INIT_CHECKPOINT=""
+UTILITY_INIT_CHECKPOINT_SHA256=""
+if [[ "${WIKI_UTILITY_WARM_START:-0}" == "1" ]]; then
+    read -r -a REQUESTED_SEEDS <<< "${SEEDS}"
+    [[ "${#REQUESTED_SEEDS[@]}" -eq 1 ]] || {
+        echo "WIKI_UTILITY_WARM_START requires exactly one seed because OOF provenance is seed specific." >&2
+        exit 2
+    }
+    UTILITY_INIT_CHECKPOINT="$(python -c 'import json,sys; print((json.load(open(sys.argv[1], encoding="utf-8")).get("provenance") or {}).get("model_checkpoint", ""))' "${EVIDENCE}")"
+    UTILITY_INIT_CHECKPOINT_SHA256="$(python -c 'import json,sys; print((json.load(open(sys.argv[1], encoding="utf-8")).get("provenance") or {}).get("model_checkpoint_sha256", ""))' "${EVIDENCE}")"
+    [[ -f "${UTILITY_INIT_CHECKPOINT}" ]] || {
+        echo "OOF provenance model checkpoint is missing: ${UTILITY_INIT_CHECKPOINT}" >&2
+        exit 2
+    }
+    [[ "${UTILITY_INIT_CHECKPOINT_SHA256}" =~ ^[0-9a-f]{64}$ ]] || {
+        echo "OOF provenance lacks a valid model_checkpoint_sha256." >&2
+        exit 2
+    }
+    ACTUAL_UTILITY_INIT_SHA256="$(sha256sum "${UTILITY_INIT_CHECKPOINT}" | awk '{print $1}')"
+    [[ "${ACTUAL_UTILITY_INIT_SHA256}" == "${UTILITY_INIT_CHECKPOINT_SHA256}" ]] || {
+        echo "OOF provenance checkpoint SHA-256 mismatch." >&2
+        exit 2
+    }
+    echo "[EVOLVED-WIKI] Audited utility warm-start: ${UTILITY_INIT_CHECKPOINT}"
+fi
+
 WIKI_VERSION="${WIKI_VERSION:-$(date +%Y%m%d_%H%M%S)}"
 WIKI_DIR="${WIKI_DIR:-outputs/wiki/evolved/${WIKI_VERSION}}"
 WIKI_CONFIG="${WIKI_CONFIG:-${WIKI_DIR}/wind_event_factor_wiki.json}"
@@ -135,6 +161,8 @@ echo "[EVOLVED-WIKI] Stage 2/2: factorized selective residual fine-tuning"
 SCENE_WIKI_CONFIG="${WIKI_CONFIG}" \
 SCENE_WIKI_EMBEDDINGS="${WIKI_BUNDLE}" \
 SOURCE_CV_DIR="${SOURCE_CV_DIR}" TREND_CV_DIR="${TREND_CV_DIR}" \
+UTILITY_INIT_CHECKPOINT="${UTILITY_INIT_CHECKPOINT}" \
+UTILITY_INIT_CHECKPOINT_SHA256="${UTILITY_INIT_CHECKPOINT_SHA256}" \
 UTILITY_WIKI=1 UTILITY_FACTORIZED=1 \
 UTILITY_ADAPTER_MODE=calibrated_evidence FREEZE_NON_UTILITY=1 \
 UTILITY_ADAPTER_WARMUP_EPOCHS="${UTILITY_ADAPTER_WARMUP_EPOCHS:-3}" \

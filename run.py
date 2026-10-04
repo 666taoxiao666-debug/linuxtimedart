@@ -197,6 +197,19 @@ def build_parser():
         ),
     )
     parser.add_argument(
+        "--utility_init_checkpoint",
+        default=None,
+        help=(
+            "optional train-OOF Utility-Wiki checkpoint; only utility gate and "
+            "residual-adapter tensors are loaded after the forecast overlay"
+        ),
+    )
+    parser.add_argument(
+        "--utility_init_checkpoint_sha256",
+        default=None,
+        help="SHA-256 recorded by the train-only OOF evidence for utility init",
+    )
+    parser.add_argument(
         "--freeze_non_utility",
         action="store_true",
         help="freeze the transferred forecast path and train only Utility-Wiki modules",
@@ -789,6 +802,44 @@ def configure_args(args):
         args.overlay_checkpoint = overlay
     else:
         args.overlay_checkpoint = None
+    utility_init = str(getattr(args, "utility_init_checkpoint", "") or "").strip()
+    utility_init_sha256 = str(
+        getattr(args, "utility_init_checkpoint_sha256", "") or ""
+    ).strip().lower()
+    if utility_init:
+        utility_init = os.path.abspath(os.path.expanduser(utility_init))
+        if not os.path.isfile(utility_init):
+            raise FileNotFoundError(
+                f"Utility initialization checkpoint not found: {utility_init}"
+            )
+        if len(utility_init_sha256) != 64 or any(
+            character not in "0123456789abcdef"
+            for character in utility_init_sha256
+        ):
+            raise ValueError(
+                "--utility_init_checkpoint requires a 64-character lowercase "
+                "--utility_init_checkpoint_sha256"
+            )
+        if not args.utility_wiki or not args.freeze_non_utility:
+            raise ValueError(
+                "--utility_init_checkpoint requires --utility_wiki and "
+                "--freeze_non_utility"
+            )
+        if not args.overlay_checkpoint:
+            raise ValueError(
+                "--utility_init_checkpoint requires --overlay_checkpoint so the "
+                "forecast path remains the fold-matched trend control"
+            )
+        args.utility_init_checkpoint = utility_init
+        args.utility_init_checkpoint_sha256 = utility_init_sha256
+    else:
+        if utility_init_sha256:
+            raise ValueError(
+                "--utility_init_checkpoint_sha256 cannot be used without "
+                "--utility_init_checkpoint"
+            )
+        args.utility_init_checkpoint = None
+        args.utility_init_checkpoint_sha256 = None
     if args.freeze_non_utility:
         if not args.utility_wiki:
             raise ValueError("--freeze_non_utility requires --utility_wiki")

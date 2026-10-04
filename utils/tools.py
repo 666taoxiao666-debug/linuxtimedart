@@ -4,6 +4,9 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import torch.nn as nn
 import torch.nn.functional as F
+import hashlib
+import json
+import os
 
 plt.switch_backend('agg')
 
@@ -461,6 +464,133 @@ def overlay_forecast_weights(weights_path, model, device="cpu"):
         allow_prompt_router_mismatch=True,
         audit_attribute="overlay_transfer_audit",
     )
+
+
+def overlay_utility_weights(
+    weights_path,
+    model,
+    device="cpu",
+    *,
+    expected_sha256,
+):
+    """Warm-start only the residual decision modules from audited train-OOF evidence.
+
+    The source checkpoint must have an adjacent run manifest proving that it is
+    a compositional-Wiki model with the same ordered event-factor vocabulary.
+    The caller must also provide the SHA-256 recorded by the train-only OOF
+    evidence.  No forecast/backbone/router tensor is eligible for loading.
+    """
+
+    weights_path = os.path.abspath(os.path.expanduser(str(weights_path)))
+    expected_sha256 = str(expected_sha256 or "").strip().lower()
+    if len(expected_sha256) != 64 or any(
+        character not in "0123456789abcdef" for character in expected_sha256
+    ):
+        raise ValueError("expected_sha256 must be a 64-character lowercase hex digest")
+
+    digest = hashlib.sha256()
+    with open(weights_path, "rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    actual_sha256 = digest.hexdigest()
+    if actual_sha256 != expected_sha256:
+        raise RuntimeError(
+            "Utility warm-start checkpoint SHA-256 does not match train-OOF "
+            f"provenance: expected={expected_sha256}, actual={actual_sha256}"
+        )
+
+    manifest_path = os.path.join(os.path.dirname(weights_path), "run_manifest.json")
+    if not os.path.isfile(manifest_path):
+        raise RuntimeError(
+            "Utility warm-start requires the source checkpoint's adjacent "
+            f"run_manifest.json: {manifest_path}"
+        )
+    with open(manifest_path, "r", encoding="utf-8") as handle:
+        manifest = json.load(handle)
+    source_args = manifest.get("args") or {}
+    if source_args.get("prompt_router") != "compositional_wiki":
+        raise RuntimeError(
+            "Utility warm-start source was not audited as compositional_wiki"
+        )
+    target_router = getattr(model, "prompt_router", None)
+    if target_router != "compositional_wiki":
+        raise RuntimeError(
+            "Utility warm-start target must use prompt_router='compositional_wiki'"
+        )
+    source_scene_ids = list(source_args.get("scene_wiki_scene_ids") or [])
+    target_scene_ids = list(getattr(model, "scene_wiki_scene_ids", ()) or ())
+    if not source_scene_ids or source_scene_ids != target_scene_ids:
+        raise RuntimeError(
+            "Utility warm-start event-factor order mismatch: "
+            f"source={source_scene_ids!r}, target={target_scene_ids!r}"
+        )
+    if not bool(source_args.get("utility_wiki")):
+        raise RuntimeError("Utility warm-start source manifest has utility_wiki disabled")
+
+    checkpoint = torch.load(weights_path, map_location=device)
+    if not isinstance(checkpoint, dict):
+        raise TypeError(f"Unsupported utility checkpoint format: {type(checkpoint)!r}")
+    source_state = checkpoint.get("model_state_dict", checkpoint)
+    source_state = {
+        (name[7:] if name.startswith("module.") else name): value
+        for name, value in source_state.items()
+        if torch.is_tensor(value)
+    }
+    allowed_prefixes = (
+        "utility_gate.",
+        "utility_event_adapter.",
+        "utility_composition_adapter.",
+    )
+    target_state = model.state_dict()
+    required_names = [
+        name for name in target_state if name.startswith(allowed_prefixes)
+    ]
+    if not required_names:
+        raise RuntimeError("Utility warm-start target has no utility state tensors")
+    missing = [name for name in required_names if name not in source_state]
+    if missing:
+        raise RuntimeError(
+            "Utility warm-start checkpoint is incomplete; missing: "
+            + ", ".join(missing[:20])
+        )
+    mismatched = [
+        name
+        for name in required_names
+        if tuple(source_state[name].shape) != tuple(target_state[name].shape)
+    ]
+    if mismatched:
+        details = ", ".join(
+            f"{name}: checkpoint{tuple(source_state[name].shape)} != "
+            f"model{tuple(target_state[name].shape)}"
+            for name in mismatched[:20]
+        )
+        raise RuntimeError(f"Utility warm-start parameter shape mismatch: {details}")
+
+    loaded = {name: source_state[name] for name in required_names}
+    target_state.update(loaded)
+    model.load_state_dict(target_state, strict=True)
+    parameter_names = dict(model.named_parameters())
+    audit = {
+        "source_checkpoint": weights_path,
+        "source_checkpoint_sha256": actual_sha256,
+        "source_manifest": manifest_path,
+        "source_scene_ids": source_scene_ids,
+        "loaded_state_tensors": len(loaded),
+        "loaded_parameter_elements": sum(
+            int(parameter_names[name].numel())
+            for name in loaded
+            if name in parameter_names
+        ),
+        "allowed_prefixes": list(allowed_prefixes),
+    }
+    setattr(model, "utility_initialization_audit", audit)
+    print(
+        "Warm-started audited Utility-Wiki modules: "
+        f"{audit['loaded_state_tensors']} state tensors / "
+        f"{audit['loaded_parameter_elements']:,} parameter elements from "
+        f"{weights_path} (sha256={actual_sha256[:12]})"
+    )
+    return model.to(device)
 
 def show_series(batch_x, batch_x_m, pred_batch_x, idx, time_points=336):
 

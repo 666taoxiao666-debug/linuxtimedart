@@ -427,6 +427,13 @@ def model_runtime_summary(model, args=None) -> dict:
     overlay_audit = getattr(core, "overlay_transfer_audit", None)
     if overlay_audit is not None:
         result["overlay_transfer"] = _jsonable(overlay_audit)
+    utility_initialization_audit = getattr(
+        core, "utility_initialization_audit", None
+    )
+    if utility_initialization_audit is not None:
+        result["utility_initialization"] = _jsonable(
+            utility_initialization_audit
+        )
     if getattr(core, "residual_gate_logit", None) is not None:
         result["residual_gate"] = float(
             torch.sigmoid(core.residual_gate_logit.detach()).cpu().item()

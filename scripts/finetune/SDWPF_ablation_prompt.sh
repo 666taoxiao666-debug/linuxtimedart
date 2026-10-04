@@ -18,6 +18,8 @@ PRED_LEN="${PRED_LEN:-12}"
 EVAL_STRIDE="${EVAL_STRIDE:-${PRED_LEN}}"
 PRETRAIN_RUN_ID="${PRETRAIN_RUN_ID:-}"
 OVERLAY_CHECKPOINT="${OVERLAY_CHECKPOINT:-}"
+UTILITY_INIT_CHECKPOINT="${UTILITY_INIT_CHECKPOINT:-}"
+UTILITY_INIT_CHECKPOINT_SHA256="${UTILITY_INIT_CHECKPOINT_SHA256:-}"
 FREEZE_NON_UTILITY="${FREEZE_NON_UTILITY:-0}"
 ALLOW_RANDOM="${ALLOW_RANDOM:-0}"
 TRAIN_EPOCHS="${TRAIN_EPOCHS:-5}"
@@ -104,6 +106,8 @@ LOG_SUMMARY_FILE="$(sdwpf_log_sidecar summary.txt)"
     echo "MODEL=${MODEL}"
     echo "PRETRAIN_RUN_ID=${PRETRAIN_RUN_ID}"
     echo "OVERLAY_CHECKPOINT=${OVERLAY_CHECKPOINT}"
+    echo "UTILITY_INIT_CHECKPOINT=${UTILITY_INIT_CHECKPOINT}"
+    echo "UTILITY_INIT_CHECKPOINT_SHA256=${UTILITY_INIT_CHECKPOINT_SHA256}"
     echo "FREEZE_NON_UTILITY=${FREEZE_NON_UTILITY}"
     echo "ALLOW_RANDOM=${ALLOW_RANDOM}"
     echo "SPLIT=${SPLIT}"
@@ -177,6 +181,23 @@ if [[ -n "${OVERLAY_CHECKPOINT}" ]]; then
         exit 2
     }
     EXTRA+=(--overlay_checkpoint "${OVERLAY_CHECKPOINT}")
+fi
+if [[ -n "${UTILITY_INIT_CHECKPOINT}" ]]; then
+    [[ -f "${UTILITY_INIT_CHECKPOINT}" ]] || {
+        echo "UTILITY_INIT_CHECKPOINT does not exist: ${UTILITY_INIT_CHECKPOINT}" >&2
+        exit 2
+    }
+    [[ "${UTILITY_INIT_CHECKPOINT_SHA256}" =~ ^[0-9a-f]{64}$ ]] || {
+        echo "UTILITY_INIT_CHECKPOINT_SHA256 must be a lowercase SHA-256 digest." >&2
+        exit 2
+    }
+    EXTRA+=(
+        --utility_init_checkpoint "${UTILITY_INIT_CHECKPOINT}"
+        --utility_init_checkpoint_sha256 "${UTILITY_INIT_CHECKPOINT_SHA256}"
+    )
+elif [[ -n "${UTILITY_INIT_CHECKPOINT_SHA256}" ]]; then
+    echo "UTILITY_INIT_CHECKPOINT_SHA256 requires UTILITY_INIT_CHECKPOINT." >&2
+    exit 2
 fi
 if [[ "${FREEZE_NON_UTILITY}" == "1" ]]; then
     EXTRA+=(--freeze_non_utility)

@@ -1,4 +1,6 @@
 import importlib.util
+import hashlib
+import json
 import tempfile
 import unittest
 from pathlib import Path
@@ -23,7 +25,7 @@ from utils.wind_regime_wiki import (
     summarize_event_factor_confusion,
     update_event_factor_confusion,
 )
-from utils.tools import transfer_weights
+from utils.tools import overlay_utility_weights, transfer_weights
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -388,6 +390,73 @@ class CompositionalWikiTests(unittest.TestCase):
                     TinyModel(),
                     exclude_head=False,
                     strict=False,
+                )
+
+    def test_utility_warm_start_is_hash_bound_and_loads_only_utility_modules(self):
+        class TinyUtilityModel(torch.nn.Module):
+            def __init__(self, scene_ids=("gust", "idle")):
+                super().__init__()
+                self.prompt_router = "compositional_wiki"
+                self.scene_wiki_scene_ids = tuple(scene_ids)
+                self.backbone = torch.nn.Linear(2, 2)
+                self.utility_gate = torch.nn.Linear(2, 2)
+                self.utility_event_adapter = torch.nn.Linear(2, 2)
+                self.utility_composition_adapter = torch.nn.Linear(2, 1)
+
+        with tempfile.TemporaryDirectory() as temporary:
+            source = TinyUtilityModel()
+            target = TinyUtilityModel()
+            with torch.no_grad():
+                source.backbone.weight.fill_(99.0)
+                source.backbone.bias.fill_(99.0)
+                for name, parameter in source.named_parameters():
+                    if name.startswith("utility_"):
+                        parameter.fill_(7.0)
+                target.backbone.weight.fill_(3.0)
+                target.backbone.bias.fill_(3.0)
+            checkpoint_path = Path(temporary) / "checkpoint_last.pth"
+            torch.save(source.state_dict(), checkpoint_path)
+            (Path(temporary) / "run_manifest.json").write_text(
+                json.dumps(
+                    {
+                        "args": {
+                            "prompt_router": "compositional_wiki",
+                            "scene_wiki_scene_ids": ["gust", "idle"],
+                            "utility_wiki": True,
+                        }
+                    }
+                ),
+                encoding="utf-8",
+            )
+            digest = hashlib.sha256(checkpoint_path.read_bytes()).hexdigest()
+            before_backbone = target.backbone.weight.detach().clone()
+            result = overlay_utility_weights(
+                checkpoint_path,
+                target,
+                expected_sha256=digest,
+            )
+            self.assertTrue(torch.equal(result.backbone.weight, before_backbone))
+            self.assertTrue(
+                torch.equal(
+                    result.utility_gate.weight,
+                    source.utility_gate.weight,
+                )
+            )
+            self.assertEqual(
+                result.utility_initialization_audit["source_checkpoint_sha256"],
+                digest,
+            )
+            with self.assertRaisesRegex(RuntimeError, "SHA-256"):
+                overlay_utility_weights(
+                    checkpoint_path,
+                    TinyUtilityModel(),
+                    expected_sha256="0" * 64,
+                )
+            with self.assertRaisesRegex(RuntimeError, "event-factor order mismatch"):
+                overlay_utility_weights(
+                    checkpoint_path,
+                    TinyUtilityModel(scene_ids=("idle", "gust")),
+                    expected_sha256=digest,
                 )
 
     def test_reliability_contract_accepts_float32_round_trip_only(self):

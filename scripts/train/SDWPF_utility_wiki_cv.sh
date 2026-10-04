@@ -42,6 +42,8 @@ if [[ -z "${UTILITY_ADAPTER_WARMUP_EPOCHS}" ]]; then
 fi
 export UTILITY_ADAPTER_WARMUP_EPOCHS
 TREND_CV_DIR="${TREND_CV_DIR:-}"
+UTILITY_INIT_CHECKPOINT="${UTILITY_INIT_CHECKPOINT:-}"
+UTILITY_INIT_CHECKPOINT_SHA256="${UTILITY_INIT_CHECKPOINT_SHA256:-}"
 
 if [[ -z "${SOURCE_CV_DIR:-}" ]]; then
     echo "[UTILITY-WIKI] SOURCE_CV_DIR is unset; running pretraining + fine-tuning."
@@ -135,6 +137,23 @@ fi
 
 read -r -a CV_FOLDS <<< "${FOLDS}"
 read -r -a CV_SEEDS <<< "${SEEDS}"
+if [[ -n "${UTILITY_INIT_CHECKPOINT}" ]]; then
+    [[ "${#CV_FOLDS[@]}" -eq 1 && "${#CV_SEEDS[@]}" -eq 1 ]] || {
+        echo "A train-OOF utility checkpoint is fold/seed specific; run exactly one fold and one seed." >&2
+        exit 2
+    }
+    [[ -f "${UTILITY_INIT_CHECKPOINT}" ]] || {
+        echo "Missing UTILITY_INIT_CHECKPOINT: ${UTILITY_INIT_CHECKPOINT}" >&2
+        exit 2
+    }
+    [[ "${UTILITY_INIT_CHECKPOINT_SHA256}" =~ ^[0-9a-f]{64}$ ]] || {
+        echo "UTILITY_INIT_CHECKPOINT_SHA256 must be a lowercase SHA-256 digest." >&2
+        exit 2
+    }
+elif [[ -n "${UTILITY_INIT_CHECKPOINT_SHA256}" ]]; then
+    echo "UTILITY_INIT_CHECKPOINT_SHA256 requires UTILITY_INIT_CHECKPOINT." >&2
+    exit 2
+fi
 CV_ID="${CV_ID:-utility_reuse_h${PRED_LEN}_rolling_holdout_${#CV_FOLDS[@]}fold_${#CV_SEEDS[@]}seed_$(date +%Y%m%d_%H%M%S)}"
 LOG_PARAMETERS="reuse_h${PRED_LEN}_folds${FOLDS// /-}_seeds${SEEDS// /-}_freeze${FREEZE_NON_UTILITY}_warm${UTILITY_ADAPTER_WARMUP_EPOCHS}_ep${TRAIN_EPOCHS}_pat${PATIENCE}_blr${LEARNING_RATE}_nlr${NEW_MODULE_LEARNING_RATE}_ulr${UTILITY_LEARNING_RATE}_ulw${UTILITY_LOSS_WEIGHT}_udlw${UTILITY_DECISION_LOSS_WEIGHT}_uhlw${UTILITY_HARM_LOSS_WEIGHT}_uclw${UTILITY_CANDIDATE_LOSS_WEIGHT}_urlw${UTILITY_RANKING_LOSS_WEIGHT}_ugt${UTILITY_GATE_TEMPERATURE}_umg${UTILITY_MIN_GAIN}_uif${UTILITY_INTERVENTION_FLOOR}"
 LOG_PARAMETERS="factor${UTILITY_FACTORIZED}_adapter${UTILITY_ADAPTER_MODE}_calfrac${UTILITY_CALIBRATION_FRACTION}_ecap${UTILITY_EVENT_MAX_SCALE}_ccap${UTILITY_COMPOSITION_MAX_SCALE}_${LOG_PARAMETERS}"
@@ -149,6 +168,8 @@ sdwpf_log_capture
     echo "CV_ID=${CV_ID}"
     echo "SOURCE_CV_DIR=${SOURCE_CV_DIR}"
     echo "TREND_CV_DIR=${TREND_CV_DIR}"
+    echo "UTILITY_INIT_CHECKPOINT=${UTILITY_INIT_CHECKPOINT}"
+    echo "UTILITY_INIT_CHECKPOINT_SHA256=${UTILITY_INIT_CHECKPOINT_SHA256}"
     echo "FREEZE_NON_UTILITY=${FREEZE_NON_UTILITY}"
     echo "PRED_LEN=${PRED_LEN}"
     echo "SPLIT=rolling_holdout"
@@ -225,6 +246,8 @@ for fold in "${CV_FOLDS[@]}"; do
         FOLD="${fold}" N_FOLDS=3 SEED="${seed}" SPLIT=rolling_holdout \
         PRED_LEN="${PRED_LEN}" EVAL_STRIDE="${PRED_LEN}" PRETRAIN_RUN_ID="${pretrain_id}" \
         OVERLAY_CHECKPOINT="${overlay_checkpoint}" FREEZE_NON_UTILITY="${FREEZE_NON_UTILITY}" \
+        UTILITY_INIT_CHECKPOINT="${UTILITY_INIT_CHECKPOINT}" \
+        UTILITY_INIT_CHECKPOINT_SHA256="${UTILITY_INIT_CHECKPOINT_SHA256}" \
         ROBUST_PITCH="${ROBUST_PITCH}" RAMP_RESIDUAL="${RAMP_RESIDUAL}" \
         RAMP_RESIDUAL_MAX_SCALE="${RAMP_RESIDUAL_MAX_SCALE}" \
         RAMP_GATE_MODE="${RAMP_GATE_MODE}" \

@@ -4,6 +4,7 @@ from utils.tools import (
     EarlyStopping,
     adjust_learning_rate,
     overlay_forecast_weights,
+    overlay_utility_weights,
     transfer_weights,
     show_series,
     show_matrix,
@@ -284,6 +285,18 @@ class Exp_TimeDART(Exp_Basic):
                 self.args.overlay_checkpoint,
                 model,
                 device=self.device,
+            )
+
+        if getattr(self.args, "utility_init_checkpoint", None):
+            print(
+                "Warm-starting utility modules from audited train-OOF ckpt: "
+                f"{self.args.utility_init_checkpoint}"
+            )
+            model = overlay_utility_weights(
+                self.args.utility_init_checkpoint,
+                model,
+                device=self.device,
+                expected_sha256=self.args.utility_init_checkpoint_sha256,
             )
 
         if self.args.use_multi_gpu:
@@ -604,6 +617,9 @@ class Exp_TimeDART(Exp_Basic):
                 "pretrained_source": checkpoint_info(self.args.load_checkpoints),
                 "overlay_source": checkpoint_info(
                     getattr(self.args, "overlay_checkpoint", None)
+                ),
+                "utility_initialization": checkpoint_info(
+                    getattr(self.args, "utility_init_checkpoint", None)
                 ),
             },
             extra={"status": "started"},
@@ -1474,6 +1490,9 @@ class Exp_TimeDART(Exp_Basic):
                 "overlay_source": checkpoint_info(
                     getattr(self.args, "overlay_checkpoint", None)
                 ),
+                "utility_initialization": checkpoint_info(
+                    getattr(self.args, "utility_init_checkpoint", None)
+                ),
             },
             extra={"status": "started", "setting": setting},
         )
@@ -2203,6 +2222,9 @@ class Exp_TimeDART(Exp_Basic):
                 "pretrained_source": checkpoint_info(self.args.load_checkpoints),
                 "overlay_source": checkpoint_info(
                     getattr(self.args, "overlay_checkpoint", None)
+                ),
+                "utility_initialization": checkpoint_info(
+                    getattr(self.args, "utility_init_checkpoint", None)
                 ),
                 "best_finetuned": checkpoint_info(best_model_path),
             },
