@@ -2,7 +2,36 @@ import torch
 from torch import nn
 from layers.Transformer_EncDec import Encoder, EncoderLayer
 from layers.SelfAttention_Family import FullAttention, AttentionLayer
-from layers.Embed import PatchEmbedding
+from layers.Embed import PositionalEmbedding
+
+
+class PatchTSTEmbedding(nn.Module):
+    """PatchTST's channel-independent patch embedding.
+
+    This repository's shared ``layers.Embed.PatchEmbedding`` is the compact
+    two-argument layer used by TimeDART after patches have already been
+    created.  PatchTST needs to create the overlapping patches itself, so it
+    deliberately owns this small adapter instead of depending on that
+    incompatible class.
+    """
+
+    def __init__(self, d_model, patch_len, stride, padding, dropout):
+        super().__init__()
+        self.patch_len = int(patch_len)
+        self.stride = int(stride)
+        self.padding_patch_layer = nn.ReplicationPad1d((0, int(padding)))
+        self.value_embedding = nn.Linear(self.patch_len, d_model, bias=False)
+        self.position_embedding = PositionalEmbedding(d_model)
+        self.dropout = nn.Dropout(dropout)
+
+    def forward(self, x):
+        # x: [batch, variables, input_length]
+        n_vars = x.shape[1]
+        x = self.padding_patch_layer(x)
+        x = x.unfold(dimension=-1, size=self.patch_len, step=self.stride)
+        x = x.reshape(x.shape[0] * n_vars, x.shape[2], self.patch_len)
+        x = self.value_embedding(x) + self.position_embedding(x)
+        return self.dropout(x), n_vars
 
 class Transpose(nn.Module):
     def __init__(self, *dims, contiguous=False): 
@@ -48,7 +77,7 @@ class Model(nn.Module):
         padding = stride
 
         # patching and embedding
-        self.patch_embedding = PatchEmbedding(
+        self.patch_embedding = PatchTSTEmbedding(
             configs.d_model, patch_len, stride, padding, configs.dropout)
 
         # Encoder
