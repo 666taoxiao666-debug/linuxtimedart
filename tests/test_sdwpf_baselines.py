@@ -6,6 +6,7 @@ import numpy as np
 from run import authorize_forecast_report_split
 from utils.sdwpf_baselines import (
     _history_stats,
+    _lag_features,
     _window_truth,
     authorize_eval_split,
     power_curve_forecast,
@@ -93,6 +94,7 @@ class BaselineLeakageTests(unittest.TestCase):
     def test_predictions_do_not_change_when_future_scada_changes(self):
         dataset = _BaselineDataset()
         history_features = _history_stats(dataset).copy()
+        lag_features = _lag_features(dataset).copy()
         curve_prediction = power_curve_forecast(dataset, _Curve()).copy()
         tree_prediction = tree_forecast(dataset, _Tree()).copy()
         seasonal_prediction = seasonal_persistence_forecast(dataset, seasonal_lag=4).copy()
@@ -101,6 +103,7 @@ class BaselineLeakageTests(unittest.TestCase):
         dataset.wspd[dataset.seq_len :] = 999999.0
 
         np.testing.assert_array_equal(_history_stats(dataset), history_features)
+        np.testing.assert_array_equal(_lag_features(dataset), lag_features)
         np.testing.assert_array_equal(
             power_curve_forecast(dataset, _Curve()), curve_prediction
         )

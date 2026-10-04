@@ -33,13 +33,16 @@ class Model(nn.Module):
     Paper link: https://arxiv.org/pdf/2211.14730.pdf
     """
 
-    def __init__(self, configs, patch_len=16, stride=8):
+    def __init__(self, configs, patch_len=None, stride=None):
         """
         patch_len: int, patch len for patch_embedding
         stride: int, stride for patch_embedding
         """
         super().__init__()
+        patch_len = int(configs.patch_len if patch_len is None else patch_len)
+        stride = int(configs.stride if stride is None else stride)
         self.task_name = configs.task_name
+        self.downstream_task = getattr(configs, "downstream_task", None)
         self.seq_len = configs.seq_len
         self.pred_len = configs.pred_len
         padding = stride
@@ -67,7 +70,7 @@ class Model(nn.Module):
         # Prediction Head
         self.head_nf = configs.d_model * \
                        int((configs.seq_len - patch_len) / stride + 2)
-        if self.task_name == 'long_term_forecast' or self.task_name == 'short_term_forecast':
+        if self._is_forecast_task():
             self.head = FlattenHead(configs.enc_in, self.head_nf, configs.pred_len,
                                     head_dropout=configs.dropout)
         elif self.task_name == 'imputation' or self.task_name == 'anomaly_detection':
@@ -78,6 +81,19 @@ class Model(nn.Module):
             self.dropout = nn.Dropout(configs.dropout)
             self.projection = nn.Linear(
                 self.head_nf * configs.enc_in, configs.num_class)
+
+    def _is_forecast_task(self):
+        """Accept this repository's finetune/forecast task contract.
+
+        Upstream PatchTST names forecasting through ``task_name``.  TimeDART's
+        runner instead uses ``task_name=finetune`` plus
+        ``downstream_task=forecast``.  Treating both spellings identically is
+        required for a fair same-loader baseline rather than a special data
+        path.
+        """
+        return self.task_name in {'long_term_forecast', 'short_term_forecast'} or (
+            self.task_name == 'finetune' and self.downstream_task == 'forecast'
+        )
 
     def forecast(self, x_enc, x_mark_enc, x_dec, x_mark_dec):
         # Normalization from Non-stationary Transformer
@@ -211,7 +227,7 @@ class Model(nn.Module):
         return output
 
     def forward(self, x_enc, x_mark_enc, x_dec, x_mark_dec, mask=None):
-        if self.task_name == 'long_term_forecast' or self.task_name == 'short_term_forecast':
+        if self._is_forecast_task():
             dec_out = self.forecast(x_enc, x_mark_enc, x_dec, x_mark_dec)
             return dec_out[:, -self.pred_len:, :]  # [B, L, D]
         if self.task_name == 'imputation':

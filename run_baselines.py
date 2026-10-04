@@ -16,9 +16,11 @@ from utils.sdwpf_baselines import (
     authorize_eval_split,
     evaluate_methods,
     fit_power_curve,
+    fit_ridge_baseline,
     fit_tree_baseline,
     persistence_forecast,
     power_curve_forecast,
+    ridge_forecast,
     seasonal_persistence_forecast,
     tree_forecast,
 )
@@ -39,6 +41,8 @@ def main():
         default=500000,
         help="maximum balanced window-horizon rows used by the HGB baseline",
     )
+    parser.add_argument("--baseline_ridge_alpha", type=float, default=1.0)
+    parser.add_argument("--baseline_ridge_max_windows", type=int, default=200000)
     parser.add_argument(
         "--eval_split",
         choices=["val", "test"],
@@ -86,8 +90,14 @@ def main():
         f"eval_split={args.eval_split} pred_len={args.pred_len} "
         f"eval_stride={args.sdwpf_eval_stride}"
     )
-    print("Fitting power curve and tree on the training split only...")
+    print("Fitting power curve, lag-Ridge and tree on the training split only...")
     curve = fit_power_curve(train_set)
+    ridge = fit_ridge_baseline(
+        train_set,
+        alpha=args.baseline_ridge_alpha,
+        max_windows=args.baseline_ridge_max_windows,
+        random_state=args.seed,
+    )
     tree = fit_tree_baseline(
         train_set,
         max_samples=args.baseline_max_samples,
@@ -104,6 +114,7 @@ def main():
     methods = {
         "daily_persistence": seasonal_persistence_forecast(eval_set),
         "power_curve": power_curve_forecast(eval_set, curve),
+        "lag_ridge": ridge_forecast(eval_set, ridge),
         "tree": tree_forecast(eval_set, tree),
     }
     if args.rated_power > 0:

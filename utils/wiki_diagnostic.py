@@ -56,6 +56,42 @@ def group_metrics(on, off, truth, mask, name):
             "win_fraction": float((aw < bw).mean())}
 
 
+def summarize_intervention_policy(on, off, truth, supported, active):
+    """Report policy coverage, abstention, selected benefit and selected harm."""
+    on = np.asarray(on, dtype=np.float64)
+    off = np.asarray(off, dtype=np.float64)
+    truth = np.asarray(truth, dtype=np.float64)
+    supported = np.asarray(supported, dtype=bool)
+    active = np.asarray(active, dtype=bool)
+    if on.ndim != 2 or on.shape != off.shape or on.shape != truth.shape:
+        raise ValueError("Predictions and truth must share [window, horizon] shape")
+    if supported.ndim != 2 or active.shape != supported.shape or len(active) != len(on):
+        raise ValueError("Supported and active masks must share [window, factor] shape")
+    candidate_window = supported.any(axis=1)
+    intervention_window = active.any(axis=1)
+    window_gain = np.abs(off - truth).mean(axis=1) - np.abs(on - truth).mean(axis=1)
+    selected = window_gain[intervention_window]
+    return {
+        "windows": int(len(on)),
+        "candidate_coverage_pct": float(100.0 * candidate_window.mean()),
+        "intervention_coverage_pct": float(100.0 * intervention_window.mean()),
+        "abstention_pct": float(100.0 * (~intervention_window).mean()),
+        "overall_mae_on_kw": float(np.abs(on - truth).mean()),
+        "overall_mae_off_kw": float(np.abs(off - truth).mean()),
+        "overall_gain_kw": float(window_gain.mean()),
+        "selected_windows": int(intervention_window.sum()),
+        "selected_gain_kw": float(selected.mean()) if selected.size else None,
+        "selected_harm_window_pct": (
+            float(100.0 * np.mean(selected < 0.0)) if selected.size else None
+        ),
+        "false_intervention_on_no_evidence_pct": (
+            float(100.0 * intervention_window[~candidate_window].mean())
+            if (~candidate_window).any()
+            else None
+        ),
+    }
+
+
 def without_event_forward(model, router, x, index):
     """Delete one additive contribution, keeping top-k and normalization fixed.
 
@@ -184,13 +220,20 @@ def run_wiki_diagnostic(exp):
                                masks["all"], f"horizon_{h+1}")
                   for h in range(args.pred_len)]).to_csv(output / "horizon_metrics.csv", index=False)
     null_count = int(null.sum())
+    intervention_summary = summarize_intervention_policy(
+        on, off, truth, supported, active
+    )
+    pd.DataFrame([intervention_summary]).to_csv(
+        output / "intervention_summary.csv", index=False
+    )
     summary = {"evaluation_split": "val", "fold": args.sdwpf_fold, "seed": args.seed,
                "windows": len(null), "gain_definition": "MAE(off)-MAE(on); positive favors Wiki",
                "scale": "kW, inverse transformed, no reporting clip",
                "null_windows": null_count,
                "actual_false_intervention_on_null": float(active[null].any(1).mean()) if null_count else None,
                "null_max_prediction_delta_kw": float(np.max(np.abs(on[null]-off[null]))) if null_count else None,
-               "all": rows[0], "factor_ids": factors,
+               "all": rows[0], "intervention_policy": intervention_summary,
+               "factor_ids": factors,
                "note": "Fixed-checkpoint intervention, not a retrained ablation; groups overlap",
                "single_event_intervention": bool(event_keys),
                "single_event_definition": "Remove one additive prompt contribution; keep original top-k and composition denominator; positive gain favors retaining event",

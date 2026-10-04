@@ -11,6 +11,8 @@ PRED_LEN="${PRED_LEN:-12}"
 EVAL_STRIDE="${EVAL_STRIDE:-${PRED_LEN}}"
 EVAL_SPLIT="${EVAL_SPLIT:-val}"
 BASELINE_MAX_SAMPLES="${BASELINE_MAX_SAMPLES:-500000}"
+BASELINE_RIDGE_ALPHA="${BASELINE_RIDGE_ALPHA:-1.0}"
+BASELINE_RIDGE_MAX_WINDOWS="${BASELINE_RIDGE_MAX_WINDOWS:-200000}"
 RATED_POWER="${RATED_POWER:-1500}"
 GPU="${GPU:-0}"
 RUN_ID="${RUN_ID:-baselines_h${PRED_LEN}_${EVAL_SPLIT}_${SPLIT}_f${FOLD}_s${SEED}_$(date +%Y%m%d_%H%M%S)}"
@@ -35,6 +37,7 @@ sdwpf_log_init "baseline" "${LOG_PARAMETERS}" "baseline.log" "${RUN_ID}"
 sdwpf_log_install_exit_trap
 LOG_ENV_FILE="$(sdwpf_log_sidecar env)"
 LOG_SUMMARY_FILE="$(sdwpf_log_sidecar summary.txt)"
+BASELINE_OUTPUT_DIR="${BASELINE_OUTPUT_DIR:-${SDWPF_LOG_DIR}/artifacts}"
 
 {
     echo "RUN_ID=${RUN_ID}"
@@ -46,7 +49,10 @@ LOG_SUMMARY_FILE="$(sdwpf_log_sidecar summary.txt)"
     echo "N_FOLDS=${N_FOLDS}"
     echo "SEED=${SEED}"
     echo "BASELINE_MAX_SAMPLES=${BASELINE_MAX_SAMPLES}"
+    echo "BASELINE_RIDGE_ALPHA=${BASELINE_RIDGE_ALPHA}"
+    echo "BASELINE_RIDGE_MAX_WINDOWS=${BASELINE_RIDGE_MAX_WINDOWS}"
     echo "RATED_POWER=${RATED_POWER}"
+    echo "BASELINE_OUTPUT_DIR=${BASELINE_OUTPUT_DIR}"
     echo "STARTED_AT=$(date --iso-8601=seconds)"
 } > "${LOG_ENV_FILE}"
 
@@ -77,15 +83,19 @@ python -u run_baselines.py \
     --sdwpf_n_folds "${N_FOLDS}" \
     --eval_split "${EVAL_SPLIT}" \
     --baseline_max_samples "${BASELINE_MAX_SAMPLES}" \
+    --baseline_ridge_alpha "${BASELINE_RIDGE_ALPHA}" \
+    --baseline_ridge_max_windows "${BASELINE_RIDGE_MAX_WINDOWS}" \
+    --baseline_output_dir "${BASELINE_OUTPUT_DIR}" \
     --rated_power "${RATED_POWER}" \
     --mix_channels \
     --seed "${SEED}" \
     --run_id "${RUN_ID}" \
-    --gpu "${GPU}" 2>&1 | tee "${SDWPF_LOG_FILE}"
+    --gpu "${GPU}" \
+    --no-use_gpu 2>&1 | tee "${SDWPF_LOG_FILE}"
 
 echo "COMPLETED_AT=$(date --iso-8601=seconds)" >> "${LOG_ENV_FILE}"
 {
-    grep -E '^Evaluation split:|^Forecast horizon:|^persistence |^daily_persistence |^power_curve |^tree |^Output:' \
+    grep -E '^Evaluation split:|^Forecast horizon:|^persistence |^daily_persistence |^power_curve |^lag_ridge |^tree |^Output:' \
         "${SDWPF_LOG_FILE}" || true
 } > "${LOG_SUMMARY_FILE}"
 echo "[BASELINE] Log: ${SDWPF_LOG_FILE}"

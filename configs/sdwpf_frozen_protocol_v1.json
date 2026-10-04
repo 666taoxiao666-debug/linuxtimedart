@@ -1,0 +1,87 @@
+{
+  "protocol_id": "sdwpf_h12_rolling_holdout_frozen_v1",
+  "status": "frozen_validation_protocol",
+  "selection_disclosure": "The Wiki candidate was chosen after exploratory validation. No sealed test result may be reported until this protocol finishes.",
+  "data": {
+    "dataset": "SDWPF",
+    "path": "datasets/sdwpf_fixed.csv",
+    "features": "MS",
+    "target": "power",
+    "frequency": "10min",
+    "input_len": 336,
+    "pred_len": 12,
+    "train_stride": 6,
+    "eval_stride": 12,
+    "split": "rolling_holdout",
+    "folds": [0, 1, 2],
+    "seeds": [2024, 2025, 2026],
+    "rated_power_kw": 1500
+  },
+  "classical_baselines": {
+    "methods": ["persistence", "daily_persistence", "power_curve", "lag_ridge", "hist_gradient_boosting"],
+    "lag_ridge_alpha": 1.0,
+    "lag_ridge_max_windows": 200000,
+    "tree_max_rows": 500000
+  },
+  "deep_baselines": {
+    "PatchTST": {
+      "d_model": 128,
+      "d_ff": 512,
+      "n_heads": 8,
+      "e_layers": 2,
+      "patch_len": 12,
+      "stride": 12,
+      "learning_rate": 0.0001,
+      "train_epochs": 20,
+      "patience": 5,
+      "loss": "MSE"
+    },
+    "DLinear": {
+      "moving_avg": 25,
+      "individual": 0,
+      "learning_rate": 0.001,
+      "train_epochs": 20,
+      "patience": 5,
+      "loss": "MSE"
+    }
+  },
+  "frozen_internal_references": {
+    "trend_cv_dir": "outputs/logs/SDWPF/20260914/001_cv_trend_h12_rolling_holdout_folds0-1-2_seeds2024-2025-202_h36d88ba5e218",
+    "wiki_cv_dir": "outputs/logs/SDWPF/20261001/004_event_gain_wiki_h12_f0-1-2_s2024-2025-2026_lr0.0001_warm3_hb07db3e66720",
+    "wiki_name": "factorized_event_gain_wiki",
+    "wiki_threshold_policy": "frozen_no_validation_retuning",
+    "scene_wiki_top_k": 2,
+    "scene_wiki_temperature": 0.2,
+    "scene_wiki_rule_weight": 2.0,
+    "scene_wiki_activation_threshold": 0.55,
+    "utility_adapter_mode": "calibrated_evidence",
+    "utility_factorized": 1,
+    "utility_calibration_fraction": 0.2,
+    "utility_event_max_scale": 0.2,
+    "utility_composition_max_scale": 0.05,
+    "utility_loss_weight": 0.2,
+    "utility_decision_loss_weight": 0.7,
+    "utility_harm_loss_weight": 0.5,
+    "utility_candidate_loss_weight": 1.0,
+    "utility_ranking_loss_weight": 0.3,
+    "utility_ranking_margin": 0.0,
+    "utility_gate_temperature": 0.05,
+    "utility_min_gain": 0.003,
+    "utility_intervention_floor": 1.0
+  },
+  "paired_inference": {
+    "loss": "window_mae_kw",
+    "time_block_length_issue_times": 12,
+    "bootstrap_replicates": 5000,
+    "bootstrap_seed": 2024,
+    "dm_variance": "newey_west",
+    "dm_lag": 11
+  },
+  "locked_rules": [
+    "Do not change folds, seeds, Wiki thresholds, losses or learning rates after viewing validation results.",
+    "Do not use validation or test labels to fit Wiki knowledge or clean data.",
+    "Do not open the sealed test split during this protocol.",
+    "Continue only missing predetermined runs; never restart completed combinations.",
+    "Any later model change creates a new protocol id and must be reported separately."
+  ]
+}

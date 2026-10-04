@@ -1152,6 +1152,8 @@ def load_finetuned_model(exp, checkpoint_path):
             "e_layers",
             "patch_len",
             "stride",
+            "moving_avg",
+            "individual",
             "sdwpf_split",
             "sdwpf_fold",
             "sdwpf_n_folds",
@@ -1256,6 +1258,8 @@ def main():
     exp_map = {
         "TimeDART": Exp_TimeDART,
         "PromptTimeDART": Exp_TimeDART,
+        "PatchTST": Exp_TimeDART,
+        "DLinear": Exp_TimeDART,
         "TimeDART_v2": Exp_TimeDART_v2,
         "SimMTM": Exp_SimMTM,
     }

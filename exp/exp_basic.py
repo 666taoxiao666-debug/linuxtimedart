@@ -1,6 +1,6 @@
 import os
 import torch
-from models import TimeDART, SimMTM, PatchTST, TimeDART_v2, PromptTimeDART
+from models import TimeDART, SimMTM, PatchTST, TimeDART_v2, PromptTimeDART, DLinear
 
 
 class Exp_Basic(object):
@@ -11,6 +11,7 @@ class Exp_Basic(object):
             'PromptTimeDART': PromptTimeDART,
             'SimMTM': SimMTM,
             'PatchTST': PatchTST,
+            'DLinear': DLinear,
             'TimeDART_v2': TimeDART_v2
         }
         self.device = self._acquire_device()

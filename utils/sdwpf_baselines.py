@@ -11,6 +11,7 @@ from collections import OrderedDict
 import numpy as np
 from sklearn.ensemble import HistGradientBoostingRegressor
 from sklearn.isotonic import IsotonicRegression
+from sklearn.linear_model import Ridge
 
 from utils.forecast_report import inverse_transform_target
 from utils.metrics import forecast_metrics
@@ -54,9 +55,10 @@ def _window_truth(dataset, window_ids=None):
     return inverse_transform_target(dataset, scaled)
 
 
-def _history_stats(dataset):
-    index = _target_index(dataset)
+def _history_stats(dataset, window_ids=None):
     starts = np.asarray(dataset.window_starts, dtype=np.int64)
+    if window_ids is not None:
+        starts = starts[np.asarray(window_ids, dtype=np.int64)]
     seq = int(dataset.seq_len)
     hist = starts[:, None] + np.arange(seq)
     power = original_target_series(dataset)[hist]
@@ -77,6 +79,57 @@ def _history_stats(dataset):
             hour,
         ]
     )
+
+
+def _lag_features(dataset, recent_steps=36, window_ids=None):
+    """Compact history-only lag features for a fixed, reproducible Ridge.
+
+    Raw recent power/wind lags preserve ramps while multiscale summaries cover
+    1 h, 2 h, 6 h, 24 h and the complete input context.  No target-time SCADA
+    is accessed.
+    """
+    starts = np.asarray(dataset.window_starts, dtype=np.int64)
+    if window_ids is not None:
+        starts = starts[np.asarray(window_ids, dtype=np.int64)]
+    seq = int(dataset.seq_len)
+    recent = min(int(recent_steps), seq)
+    offsets = np.arange(seq - recent, seq, dtype=np.int64)
+    rows = starts[:, None] + offsets[None, :]
+    power_series = original_target_series(dataset)
+    wind_series = np.asarray(dataset.wspd, dtype=np.float64)
+    pieces = [power_series[rows], wind_series[rows]]
+    for width in (6, 12, 36, 144, seq):
+        width = min(width, seq)
+        history_rows = starts[:, None] + np.arange(seq - width, seq, dtype=np.int64)[None, :]
+        for series in (power_series, wind_series):
+            values = series[history_rows]
+            pieces.extend([values.mean(axis=1, keepdims=True), values.std(axis=1, keepdims=True)])
+    hour = (
+        np.asarray(dataset.data_stamp, dtype=np.float64)[starts + seq - 1, 3]
+        if dataset.data_stamp.shape[1] > 3
+        else np.zeros(len(starts))
+    )
+    angle = 2.0 * np.pi * hour / 24.0
+    pieces.extend([np.sin(angle)[:, None], np.cos(angle)[:, None]])
+    return np.nan_to_num(np.column_stack(pieces), nan=0.0, posinf=0.0, neginf=0.0)
+
+
+def fit_ridge_baseline(train_dataset, alpha=1.0, max_windows=200000, random_state=2024):
+    n_windows = len(train_dataset.window_starts)
+    count = min(n_windows, int(max_windows))
+    rng = np.random.default_rng(random_state)
+    ids = np.sort(rng.choice(n_windows, size=count, replace=False))
+    features = _lag_features(train_dataset, window_ids=ids)
+    truth = _window_truth(train_dataset, window_ids=ids)
+    model = Ridge(alpha=float(alpha))
+    model.fit(features, truth)
+    model.sdwpf_windows_sampled_ = int(count)
+    model.sdwpf_alpha_ = float(alpha)
+    return model
+
+
+def ridge_forecast(dataset, model):
+    return np.asarray(model.predict(_lag_features(dataset)), dtype=np.float64)
 
 
 def persistence_forecast(dataset):
@@ -126,16 +179,16 @@ def power_curve_forecast(dataset, curve):
 
 def fit_tree_baseline(train_dataset, max_samples=500000, random_state=2024):
     """Balanced direct HGB over every lead, using history-only statistics."""
-    features = _history_stats(train_dataset)
-    n_windows = len(features)
+    n_windows = len(train_dataset.window_starts)
     horizon = int(train_dataset.pred_len)
     rng = np.random.default_rng(random_state)
     window_count = min(n_windows, max(1, int(max_samples) // horizon))
     window_ids = rng.choice(n_windows, size=window_count, replace=False)
+    features = _history_stats(train_dataset, window_ids=window_ids)
     truth = _window_truth(train_dataset, window_ids=window_ids)
     rows = np.column_stack(
         [
-            np.repeat(features[window_ids], horizon, axis=0),
+            np.repeat(features, horizon, axis=0),
             np.tile(np.arange(horizon, dtype=np.float64), window_count),
         ]
     )
