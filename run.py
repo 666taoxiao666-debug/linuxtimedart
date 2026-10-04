@@ -1110,9 +1110,11 @@ def authorize_forecast_report_split(args, environ=None):
     if split == "val" and getattr(args, "model", None) not in {
         "TimeDART",
         "PromptTimeDART",
+        "PatchTST",
+        "DLinear",
     }:
         raise ValueError(
-            "--report_split val is implemented only for TimeDART/PromptTimeDART"
+            "--report_split val is implemented only for supported forecast models"
         )
     environment = os.environ if environ is None else environ
     if (

@@ -26,6 +26,14 @@ sdwpf_log_init "strong_baseline" "${LOG_PARAMETERS}" "train.log" "${RUN_ID}"
 sdwpf_log_install_exit_trap
 LOG_DIR="${SDWPF_LOG_DIR}"
 ENV_FILE="${LOG_DIR}/baseline.env"
+CHECKPOINT=""
+if [[ -f "${LOG_DIR}/train.log" ]]; then
+    CHECKPOINT="$(grep -F '[AUDIT] FINETUNE_CHECKPOINT=' "${LOG_DIR}/train.log" \
+        | tail -n 1 | sed 's/^.*FINETUNE_CHECKPOINT=//' || true)"
+    if [[ -n "${CHECKPOINT}" && ! -f "${CHECKPOINT}" ]]; then
+        CHECKPOINT=""
+    fi
+fi
 
 {
     echo "TASK=strong_baseline"
@@ -44,6 +52,10 @@ ENV_FILE="${LOG_DIR}/baseline.env"
     echo "LEARNING_RATE=${LEARNING_RATE}"
     echo "LOSS=${LOSS}"
     echo "SEALED_TEST_ACCESSED=0"
+    if [[ -n "${CHECKPOINT}" ]]; then
+        echo "REUSED_TRAINING_CHECKPOINT=1"
+        echo "FINETUNE_CHECKPOINT=${CHECKPOINT}"
+    fi
     echo "STARTED_AT=$(date --iso-8601=seconds)"
 } > "${ENV_FILE}"
 
@@ -67,8 +79,12 @@ COMMON=(
     --lradj step --seed "${SEED}" --run_id "${RUN_ID}" --gpu "${GPU}"
 )
 
-python -u run.py "${COMMON[@]}" 2>&1 | tee "${LOG_DIR}/train.log"
-CHECKPOINT="$(grep -F '[AUDIT] FINETUNE_CHECKPOINT=' "${LOG_DIR}/train.log" | tail -n 1 | sed 's/^.*FINETUNE_CHECKPOINT=//' || true)"
+if [[ -z "${CHECKPOINT}" ]]; then
+    python -u run.py "${COMMON[@]}" 2>&1 | tee "${LOG_DIR}/train.log"
+    CHECKPOINT="$(grep -F '[AUDIT] FINETUNE_CHECKPOINT=' "${LOG_DIR}/train.log" | tail -n 1 | sed 's/^.*FINETUNE_CHECKPOINT=//' || true)"
+else
+    echo "[BASELINE] Reusing completed training checkpoint for report-only resume: ${CHECKPOINT}"
+fi
 if [[ -z "${CHECKPOINT}" || ! -f "${CHECKPOINT}" ]]; then
     echo "Training finished without a valid selected checkpoint" >&2
     exit 3

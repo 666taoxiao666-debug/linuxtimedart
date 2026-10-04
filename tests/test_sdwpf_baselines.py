@@ -76,6 +76,16 @@ class BaselineLeakageTests(unittest.TestCase):
         )
         self.assertEqual(authorize_forecast_report_split(args, {}), "val")
 
+    def test_strong_baseline_validation_reports_do_not_open_test(self):
+        for model in ("PatchTST", "DLinear"):
+            args = SimpleNamespace(
+                data="SDWPF",
+                report_split="val",
+                downstream_task="forecast",
+                model=model,
+            )
+            self.assertEqual(authorize_forecast_report_split(args, {}), "val")
+
     def test_forecast_test_report_requires_explicit_confirmation(self):
         args = SimpleNamespace(data="SDWPF", report_split="test")
         with self.assertRaises(PermissionError):
