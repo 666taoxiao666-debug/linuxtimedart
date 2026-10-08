@@ -57,9 +57,11 @@ class FactorizedEvidenceAdapter(nn.Module):
 
 class FactorUtilityGate(nn.Module):
     def __init__(self, d_model, pred_len, physical_dim, num_modes=3,
-                 temperature=.05, min_gain=.001, num_candidates=5):
+                 temperature=.05, min_gain=.001, num_candidates=5,
+                 harm_veto=False, harm_threshold=.5):
         super().__init__()
         self.temperature, self.min_gain = float(temperature), float(min_gain)
+        self.harm_veto, self.harm_threshold = bool(harm_veto), float(harm_threshold)
         self.pred_len = pred_len
         self.candidate_conditioned, self.physical_dim = True, physical_dim
         self.num_trend_modes, self.intervention_floor = num_modes, 1.
@@ -72,6 +74,20 @@ class FactorUtilityGate(nn.Module):
             nn.GELU(), nn.Linear(d_model, pred_len))
         nn.init.zeros_(self.estimator[-1].weight)
         nn.init.zeros_(self.estimator[-1].bias)
+        # Optional and deliberately separate from the expected-gain head.  A
+        # candidate can have positive mean gain while still being too risky;
+        # modelling P(candidate error > base error) makes that distinction
+        # explicit.  The head exists only in v2 checkpoints, so old checkpoints
+        # retain their exact state-dict contract when the feature is disabled.
+        self.harm_estimator = None
+        if self.harm_veto:
+            self.harm_estimator = nn.Sequential(
+                nn.LayerNorm(3 * d_model + physical_dim + num_modes + pred_len + 2),
+                nn.Linear(3 * d_model + physical_dim + num_modes + pred_len + 2, d_model),
+                nn.GELU(), nn.Linear(d_model, pred_len))
+            nn.init.zeros_(self.harm_estimator[-1].weight)
+            nn.init.zeros_(self.harm_estimator[-1].bias)
+        self._last_harm_logits = None
 
     def _load_from_state_dict(self, state_dict, prefix, *args, **kwargs):
         # Older neural-gate checkpoints have none of these buffers. A partially
@@ -99,12 +115,17 @@ class FactorUtilityGate(nn.Module):
         if bool(self.policy_enabled):
             if self.training:
                 raise RuntimeError('Calibrated table policy is inference-only; disable before neural training')
+            self._last_harm_logits = None
             return self.policy_gain[trend.argmax(-1)]
         count = descriptors.size(1)
         common = torch.cat([hidden.mean(1), hidden[:, -1], trend, physical], -1).detach()
         state = torch.cat([common[:, None].expand(-1, count, -1), descriptors.detach(),
                            corrections.detach().mean(2).transpose(1, 2),
                            support[..., None], rules.clamp(0, 1)[..., None]], -1)
+        if self.harm_estimator is not None:
+            self._last_harm_logits = self.harm_estimator(state).transpose(1, 2)
+        else:
+            self._last_harm_logits = None
         return self.estimator(state).transpose(1, 2)
 
 
@@ -126,10 +147,21 @@ def factorized_route(base, corrections, scores, availability, min_gain, temperat
     return (soft_prediction if soft else hard_prediction), soft_prediction, hard_prediction, action
 
 
+def harm_veto_availability(availability, harm_logits, threshold=.5):
+    """Veto risky candidates without ever creating physical availability."""
+    if harm_logits is None or harm_logits.shape != availability.shape:
+        raise ValueError('Harm logits must match factor availability')
+    if not 0. < float(threshold) < 1.:
+        raise ValueError('Harm threshold must lie in (0,1)')
+    return availability.bool() & (harm_logits.sigmoid() < float(threshold))
+
+
 def factorized_loss(aux, target, kind, margin=0., min_gain=0., temperature=.05,
-                    harm_weight=0.):
+                    harm_weight=0., harm_classifier_weight=0.):
     if harm_weight < 0.:
         raise ValueError('harm_weight must be nonnegative')
+    if harm_classifier_weight < 0.:
+        raise ValueError('harm_classifier_weight must be nonnegative')
     predictions = aux['factor_predictions']
     factor_available = aux['factor_availability']
     if factor_available.ndim == 2:
@@ -175,4 +207,18 @@ def factorized_loss(aux, target, kind, margin=0., min_gain=0., temperature=.05,
         unsafe_score = F.softplus((aux['factor_utilities'] - min_gain) / temperature)
         harm = (unsafe_score * harmful_excess)[available].mean() if available.any() else zero
         decision = decision + harm_weight * harm
+    if harm_classifier_weight:
+        logits = aux.get('factor_harm_logits')
+        if logits is None:
+            raise ValueError('harm_classifier_weight requires factor_harm_logits')
+        if logits.shape != errors.shape:
+            raise ValueError('Factor harm logits must match candidate error horizons')
+        # Train-only labels.  The target is detached from both the residual
+        # expert and the trend base, so this term trains only the risk head.
+        harmful = (errors.detach() > base_error[..., None]).to(logits.dtype)
+        harm_classifier = (
+            F.binary_cross_entropy_with_logits(logits[available], harmful[available])
+            if available.any() else zero
+        )
+        decision = decision + harm_classifier_weight * harm_classifier
     return decision, {}

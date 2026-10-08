@@ -583,6 +583,12 @@ class Exp_TimeDART(Exp_Basic):
                 print("[UTILITY] FactorizedWiki: candidates=each_supported_event+composition "
                       "semantic_adapter=trainable anchors=frozen physical_veto=hard "
                       "legacy_semantic_threshold=not_used selection=per_horizon_utility")
+                if getattr(self.args, "utility_harm_veto", False):
+                    print(
+                        "[UTILITY] HarmVeto: train_target=candidate_error_gt_base_error "
+                        f"eval_threshold={self.args.utility_harm_threshold:g} "
+                        "scope=physically_available_event_horizon"
+                    )
         return phase
 
     def pretrain(self):
@@ -1763,6 +1769,9 @@ class Exp_TimeDART(Exp_Basic):
                             min_gain=self.args.utility_min_gain,
                             temperature=self.args.utility_gate_temperature,
                             harm_weight=getattr(self.args, 'utility_harm_loss_weight', 0.),
+                            harm_classifier_weight=getattr(
+                                self.args, 'utility_harm_classifier_weight', 0.
+                            ),
                         )
                         (
                             utility_candidate_loss,

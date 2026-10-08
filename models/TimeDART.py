@@ -24,7 +24,12 @@ from layers.TimeDART_EncDec import (
 from layers.Embed import Patch, PatchEmbedding, PositionalEncoding, TokenEmbedding_TimeDART
 from utils.regime_labels import compute_regime_pseudo_labels_from_series
 from utils.utility_wiki import EvidenceResidualAdapter
-from utils.factorized_wiki import FactorizedEvidenceAdapter, FactorUtilityGate, factorized_route
+from utils.factorized_wiki import (
+    FactorizedEvidenceAdapter,
+    FactorUtilityGate,
+    factorized_route,
+    harm_veto_availability,
+)
 from utils.utility_calibration import (
     PHYSICAL_FEATURE_DIM, physical_history_features, utility_action_probabilities,
 )
@@ -137,6 +142,10 @@ class Model(nn.Module):
         self.utility_wiki = bool(getattr(args, "utility_wiki", False))
         self.utility_adapter_mode = getattr(args, "utility_adapter_mode", "legacy")
         self.utility_factorized = bool(getattr(args, "utility_factorized", False))
+        self.utility_harm_veto = bool(getattr(args, "utility_harm_veto", False))
+        self.utility_harm_threshold = float(
+            getattr(args, "utility_harm_threshold", 0.5)
+        )
         self.features = getattr(args, "features", "M")
         self.enc_in = int(getattr(args, "enc_in", 1))
         self.feature_columns = list(getattr(args, "feature_columns", None) or [])
@@ -517,6 +526,8 @@ class Model(nn.Module):
                         args.d_model, args.pred_len, PHYSICAL_FEATURE_DIM, self.num_modes,
                         args.utility_gate_temperature, args.utility_min_gain,
                         num_candidates=self.scene_wiki_router.num_factors + 1,
+                        harm_veto=self.utility_harm_veto,
+                        harm_threshold=self.utility_harm_threshold,
                     )
 
     def _factorized_forecast(self, base_hidden, state, physical, stdevs, means, last, history):
@@ -569,7 +580,7 @@ class Model(nn.Module):
             * composition_horizon_available[:, :, None]
         )
         corrections = torch.cat([events, composition[..., None]], -1)
-        availability = torch.cat(
+        physical_availability = torch.cat(
             [event_horizon_available, composition_horizon_available[..., None]], -1
         )
         all_descriptors = torch.cat([descriptors, descriptor[:, None]], 1)
@@ -579,16 +590,37 @@ class Model(nn.Module):
             torch.cat([support, composition_support.mean(-1, keepdim=True)], -1),
             torch.cat([rules, (rules.clamp(0, 1) * weights).sum(-1, keepdim=True)], -1),
         )
+        harm_logits = self.utility_gate._last_harm_logits
+        harm_probability = (
+            harm_logits.sigmoid() if harm_logits is not None else None
+        )
+        # The classifier is learned on the chronological calibration-train
+        # partition.  Hard vetoing is evaluation-only so the risk head receives
+        # labels for every physically available candidate during training.
+        route_availability = physical_availability
+        utility_training = (
+            self.utility_gate.training
+            or self.utility_event_adapter.training
+            or self.utility_composition_adapter.training
+        )
+        if self.utility_harm_veto and not utility_training:
+            if harm_probability is None:
+                raise RuntimeError('Harm veto is enabled but the risk head is unavailable')
+            route_availability = harm_veto_availability(
+                physical_availability, harm_logits, self.utility_harm_threshold
+            )
         corrections = corrections * (scale[..., None] if self.use_norm else 1.)
         if bool(self.utility_gate.policy_enabled):
             alpha = self.utility_gate.policy_alpha[state['trend_probs'].argmax(-1)]
             corrections = corrections * alpha[:, :, None, :]
         prediction, soft, hard, action = factorized_route(
-            base, corrections, scores, availability, self.utility_gate.min_gain,
+            base, corrections, scores, route_availability, self.utility_gate.min_gain,
             self.utility_gate.temperature, self.utility_gate.training,
         )
         # Retain legacy coarse diagnostic names without discarding the full bank.
-        event_scores, event_index = scores[..., :-1].masked_fill(~availability[..., :-1], -1e4).max(-1)
+        event_scores, event_index = scores[..., :-1].masked_fill(
+            ~route_availability[..., :-1], -1e4
+        ).max(-1)
         event_correction = corrections[..., :-1].gather(
             -1, event_index[:, :, None, None].expand(-1, -1, base.size(2), 1)).squeeze(-1)
         granularity = torch.where(action == scores.size(-1), 2, (action > 0).long())
@@ -603,8 +635,16 @@ class Model(nn.Module):
             'composition_prediction': base.detach() + corrections[..., -1],
             'event_correction': event_correction, 'composition_correction': corrections[..., -1],
             'factor_predictions': base.detach()[..., None] + corrections,
-            'factor_availability': availability, 'factor_utilities': scores, 'factor_action': action,
+            'factor_availability': route_availability,
+            'factor_physical_availability': physical_availability,
+            'factor_utilities': scores, 'factor_action': action,
         }
+        if harm_logits is not None:
+            self._last_utility_aux.update({
+                'factor_harm_logits': harm_logits,
+                'factor_harm_probability': harm_probability,
+                'harm_threshold': self.utility_harm_threshold,
+            })
         self._last_wiki_factor_activations = support.detach()
         self._last_wiki_intervention = (action > 0).to(base.dtype).amax(-1)
         return prediction

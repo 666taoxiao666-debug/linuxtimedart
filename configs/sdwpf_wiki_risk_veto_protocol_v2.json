@@ -1,0 +1,58 @@
+{
+  "protocol_id": "sdwpf_h12_wiki_harm_veto_v2",
+  "status": "exploratory_validation_protocol",
+  "parent_protocol": "sdwpf_h12_rolling_holdout_frozen_v1",
+  "hypothesis": "A separately supervised per-event, per-horizon harm-risk head can reduce harmful Wiki interventions while retaining positive expected-gain interventions.",
+  "development_scope": {
+    "dataset": "SDWPF",
+    "split": "rolling_holdout",
+    "fold": 1,
+    "seed": 2024,
+    "input_len": 336,
+    "pred_len": 12,
+    "train_stride": 6,
+    "eval_stride": 12,
+    "sealed_test_access": false
+  },
+  "frozen_parent_settings": {
+    "trend_cv_dir": "outputs/logs/SDWPF/20260914/001_cv_trend_h12_rolling_holdout_folds0-1-2_seeds2024-2025-202_h36d88ba5e218",
+    "source_cv_dir": "outputs/logs/SDWPF/20260913/002_cv_h12_rolling_holdout_folds0-1-2_seeds2024-2025-2026_blr0_hffcfe2bf396b",
+    "utility_adapter_mode": "calibrated_evidence",
+    "utility_factorized": 1,
+    "utility_calibration_fraction": 0.2,
+    "utility_event_max_scale": 0.2,
+    "utility_composition_max_scale": 0.05,
+    "utility_learning_rate": 0.0001,
+    "utility_loss_weight": 0.2,
+    "utility_decision_loss_weight": 0.7,
+    "utility_harm_loss_weight": 0.5,
+    "utility_candidate_loss_weight": 1.0,
+    "utility_ranking_loss_weight": 0.3,
+    "utility_ranking_margin": 0.0,
+    "utility_gate_temperature": 0.05,
+    "utility_min_gain": 0.003,
+    "utility_intervention_floor": 1.0,
+    "utility_adapter_warmup_epochs": 3,
+    "train_epochs": 10,
+    "patience": 7
+  },
+  "single_change": {
+    "utility_harm_veto": 1,
+    "utility_harm_threshold": 0.5,
+    "utility_harm_classifier_weight": 1.0,
+    "harm_label": "candidate_absolute_error_greater_than_trend_base_absolute_error",
+    "fit_partition": "chronological_calibration_train_only",
+    "inference_rule": "physical_evidence AND predicted_harm_probability_below_0.5 AND expected_gain_above_existing_threshold"
+  },
+  "decision_rule": {
+    "pilot_success": "validation MAE below the paired trend model and lower intervention harm than frozen v1 without a provenance or leakage failure",
+    "pilot_failure": "no MAE improvement or a methodological/provenance failure; do not tune the 0.5 threshold on this validation result",
+    "expansion": "only after pilot success, freeze the exact configuration and run the remaining predeclared fold/seed combinations"
+  },
+  "locked_rules": [
+    "Do not change the parent Wiki, residual experts, folds, trend checkpoint or gain threshold in this pilot.",
+    "Do not use validation or test labels to fit the harm head, choose its threshold or clean data.",
+    "Do not access the sealed test split.",
+    "Do not present this exploratory fold as final statistical evidence."
+  ]
+}

@@ -156,6 +156,33 @@ To inspect the current run without finding the directory manually:
 bash scripts/train/SDWPF_evolved_wiki_cv.sh --status
 ```
 
+## Train-only harm-risk veto (protocol v2)
+
+The frozen v1 benchmark showed that a positive mean Wiki gain can coexist with
+many harmful intervention windows.  Protocol
+`configs/sdwpf_wiki_risk_veto_protocol_v2.json` therefore adds one independent
+decision signal without changing the physical rules, residual experts, trend
+checkpoint, expected-gain threshold, data split, or seed.  For every physically
+available event and forecast step, a second head learns
+`P(candidate absolute error > trend absolute error)` from the chronological
+calibration-train partition.  At validation inference a candidate remains
+eligible only when its physical evidence is present, expected gain passes the
+existing threshold, and predicted harm probability is below the fixed 0.5
+decision boundary.  No validation or test label enters this risk target.
+
+Run the predeclared exploratory pilot with:
+
+```bash
+bash scripts/train/SDWPF_launch_risk_veto_wiki.sh
+bash scripts/train/SDWPF_launch_risk_veto_wiki.sh --status
+```
+
+The factorized diagnostic reports physical candidate coverage, post-veto
+coverage, veto rate, intervention rate, selected gain, harmful-intervention
+rate, and exact abstention.  The pilot is a model-development result, not final
+evidence; if it succeeds, freeze the configuration before expanding the
+fold/seed grid.
+
 ## Claim boundary
 
 The code implements the mechanism and its evidence guards. It does not itself

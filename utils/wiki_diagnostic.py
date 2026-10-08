@@ -170,8 +170,11 @@ def _run_factorized_wiki_diagnostic(exp, dataset, loader, output):
     """Evaluate the trained factor bank without legacy prompt deletion."""
     args, model = exp.args, exp.model
     parts = {key: [] for key in (
-        "on", "off", "truth", "availability", "action", "factor_predictions"
+        "on", "off", "truth", "availability", "physical_availability",
+        "action", "factor_predictions"
     )}
+    if getattr(args, "utility_harm_veto", False):
+        parts["harm_probability"] = []
     model.eval()
     with torch.no_grad():
         for i, (x, y, _, _) in enumerate(loader):
@@ -198,6 +201,16 @@ def _run_factorized_wiki_diagnostic(exp, dataset, loader, output):
             parts["availability"].append(
                 aux["factor_availability"].detach().cpu().numpy()
             )
+            parts["physical_availability"].append(
+                aux.get("factor_physical_availability", aux["factor_availability"])
+                .detach().cpu().numpy()
+            )
+            if "harm_probability" in parts:
+                if "factor_harm_probability" not in aux:
+                    raise RuntimeError("Harm-veto checkpoint did not expose risk probabilities")
+                parts["harm_probability"].append(
+                    aux["factor_harm_probability"].detach().float().cpu().numpy()
+                )
             parts["action"].append(aux["factor_action"].detach().cpu().numpy())
             parts["factor_predictions"].append(
                 aux["factor_predictions"][:, -args.pred_len:, -1]
@@ -226,9 +239,26 @@ def _run_factorized_wiki_diagnostic(exp, dataset, loader, output):
 
     on, off, truth = (arrays[key] for key in ("on", "off", "truth"))
     availability, action = arrays["availability"].astype(bool), arrays["action"].astype(int)
+    physical_availability = arrays["physical_availability"].astype(bool)
     summary = summarize_factorized_intervention_policy(
         on, off, truth, availability, action
     )
+    physical_points = physical_availability.any(-1)
+    routed_points = availability.any(-1)
+    physical_windows = physical_points.any(-1)
+    routed_windows = routed_points.any(-1)
+    summary.update({
+        "physical_candidate_coverage_pct": float(100.0 * physical_windows.mean()),
+        "physical_candidate_point_coverage_pct": float(100.0 * physical_points.mean()),
+        "harm_veto_window_pct_of_physical": (
+            float(100.0 * (physical_windows & ~routed_windows).sum() / physical_windows.sum())
+            if physical_windows.any() else None
+        ),
+        "harm_veto_point_pct_of_physical": (
+            float(100.0 * (physical_points & ~routed_points).sum() / physical_points.sum())
+            if physical_points.any() else None
+        ),
+    })
     pd.DataFrame([summary]).to_csv(output / "intervention_summary.csv", index=False)
 
     metadata = _window_metadata(dataset, len(on))
@@ -238,6 +268,7 @@ def _run_factorized_wiki_diagnostic(exp, dataset, loader, output):
     metadata["mae_off_kw"] = np.abs(off - truth).mean(axis=1)
     metadata["mae_gain_kw"] = metadata.mae_off_kw - metadata.mae_on_kw
     metadata["candidate_available"] = availability.any(axis=(1, 2)).astype(int)
+    metadata["physical_candidate_available"] = physical_availability.any(axis=(1, 2)).astype(int)
     metadata["intervention_active"] = (action > 0).any(axis=1).astype(int)
 
     factor_ids = [*model.scene_wiki_scene_ids, "composition"]
@@ -247,6 +278,7 @@ def _run_factorized_wiki_diagnostic(exp, dataset, loader, output):
     base_point_error = np.abs(off - truth)
     for index, factor in enumerate(factor_ids):
         available = availability[..., index]
+        physical_available = physical_availability[..., index]
         selected = action == index + 1
         candidate_error = np.abs(arrays["factor_predictions"][..., index] - truth)
         selected_gain = (base_point_error - candidate_error)[selected]
@@ -254,8 +286,14 @@ def _run_factorized_wiki_diagnostic(exp, dataset, loader, output):
         factor_rows.append({
             "factor": factor,
             "available_points": int(available.sum()),
+            "physical_available_points": int(physical_available.sum()),
             "selected_points": int(selected.sum()),
             "availability_pct": float(100.0 * available.mean()),
+            "physical_availability_pct": float(100.0 * physical_available.mean()),
+            "harm_veto_pct_of_physical": (
+                float(100.0 * (physical_available & ~available).sum() / physical_available.sum())
+                if physical_available.any() else None
+            ),
             "intervention_pct": float(100.0 * selected.mean()),
             "candidate_gain_kw": (
                 float(candidate_gain.mean()) if candidate_gain.size else None
@@ -269,6 +307,7 @@ def _run_factorized_wiki_diagnostic(exp, dataset, loader, output):
             ),
         })
         metadata[f"{factor}_available_steps"] = available.sum(axis=1)
+        metadata[f"{factor}_physical_available_steps"] = physical_available.sum(axis=1)
         metadata[f"{factor}_selected_steps"] = selected.sum(axis=1)
     metadata.to_csv(output / "window_metrics.csv", index=False)
     pd.DataFrame(factor_rows).to_csv(output / "factor_metrics.csv", index=False)

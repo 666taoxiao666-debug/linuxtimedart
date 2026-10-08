@@ -58,6 +58,8 @@ UTILITY_COMPOSITION_MAX_SCALE="${UTILITY_COMPOSITION_MAX_SCALE:-0.25}"
 UTILITY_GATE_TEMPERATURE="${UTILITY_GATE_TEMPERATURE:-0.25}"
 UTILITY_MIN_GAIN="${UTILITY_MIN_GAIN:-0.02}"
 UTILITY_INTERVENTION_FLOOR="${UTILITY_INTERVENTION_FLOOR:-0.5}"
+UTILITY_HARM_VETO="${UTILITY_HARM_VETO:-0}"
+UTILITY_HARM_THRESHOLD="${UTILITY_HARM_THRESHOLD:-0.5}"
 WIKI_LLM_PATH="${WIKI_LLM_PATH:-Qwen/Qwen2.5-0.5B}"
 WIKI_BUILD_DEVICE="${WIKI_BUILD_DEVICE:-auto}"
 REGIME_CALIBRATION_QUANTILE="${REGIME_CALIBRATION_QUANTILE:-0.3333333333}"
@@ -118,6 +120,9 @@ if [[ "${UTILITY_WIKI}" == "1" ]]; then
     if [[ "${UTILITY_FACTORIZED:-0}" == "1" ]]; then
         PLOT_ARGS+=(--utility_factorized)
     fi
+    if [[ "${UTILITY_HARM_VETO}" == "1" ]]; then
+        PLOT_ARGS+=(--utility_harm_veto)
+    fi
     PLOT_ARGS+=(
         --utility_wiki
         --utility_adapter_mode "${UTILITY_ADAPTER_MODE}"
@@ -126,6 +131,7 @@ if [[ "${UTILITY_WIKI}" == "1" ]]; then
         --utility_gate_temperature "${UTILITY_GATE_TEMPERATURE}"
         --utility_min_gain "${UTILITY_MIN_GAIN}"
         --utility_intervention_floor "${UTILITY_INTERVENTION_FLOOR}"
+        --utility_harm_threshold "${UTILITY_HARM_THRESHOLD}"
     )
 fi
 PLOT_ARGS+=(--regime_label_method "${REGIME_LABEL_METHOD}")

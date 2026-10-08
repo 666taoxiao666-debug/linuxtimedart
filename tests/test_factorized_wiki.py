@@ -2,7 +2,11 @@ import unittest
 
 import torch
 
-from utils.factorized_wiki import FactorizedEvidenceAdapter, factorized_route
+from utils.factorized_wiki import (
+    FactorizedEvidenceAdapter,
+    factorized_route,
+    harm_veto_availability,
+)
 from utils.utility_wiki import utility_candidate_specialization_loss, utility_supervision_loss, utility_decision_loss
 
 
@@ -121,6 +125,46 @@ class FactorizedWikiTests(unittest.TestCase):
         safe_plain, _ = utility_decision_loss(aux, torch.zeros_like(base),
                                               min_gain=.001, temperature=.05)
         torch.testing.assert_close(safe, safe_plain)
+
+    def test_harm_classifier_is_train_only_masked_supervision(self):
+        scores = torch.zeros(1, 2, 2, requires_grad=True)
+        harm_logits = torch.zeros(1, 2, 2, requires_grad=True)
+        base = torch.tensor([[[10.], [10.]]])
+        aux = {
+            'factor_predictions': torch.tensor(
+                [[[[12., 8.]], [[9., 20.]]]]
+            ),
+            'base_prediction': base,
+            'factor_utilities': scores,
+            'factor_harm_logits': harm_logits,
+            'factor_availability': torch.tensor(
+                [[[True, True], [True, False]]]
+            ),
+        }
+        plain, _ = utility_decision_loss(
+            aux, torch.zeros_like(base), min_gain=.001, temperature=.05
+        )
+        guarded, _ = utility_decision_loss(
+            aux, torch.zeros_like(base), min_gain=.001, temperature=.05,
+            harm_classifier_weight=1.,
+        )
+        self.assertGreater(guarded.item(), plain.item())
+        (guarded - plain).backward()
+        # The first candidate is harmful, the next two available candidates
+        # are safe, and the unavailable harmful candidate receives no label.
+        self.assertLess(harm_logits.grad[0, 0, 0].item(), 0.)
+        self.assertGreater(harm_logits.grad[0, 0, 1].item(), 0.)
+        self.assertGreater(harm_logits.grad[0, 1, 0].item(), 0.)
+        self.assertEqual(harm_logits.grad[0, 1, 1].item(), 0.)
+
+    def test_harm_veto_is_fixed_and_cannot_create_evidence(self):
+        physical = torch.tensor([[[True, True, False], [True, False, True]]])
+        logits = torch.tensor([[[-2., 2., -2.], [0., -2., -0.1]]])
+        routed = harm_veto_availability(physical, logits, threshold=.5)
+        self.assertEqual(
+            routed.tolist(), [[[True, False, False], [False, False, True]]]
+        )
+        self.assertTrue(torch.all(~routed | physical))
 
 
 if __name__ == '__main__':

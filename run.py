@@ -506,6 +506,17 @@ def build_parser():
     parser.add_argument("--utility_decision_loss_weight", type=float, default=0.2)
     parser.add_argument("--utility_harm_loss_weight", type=float, default=0.0,
                         help="factorized Wiki only: penalize train-label-confirmed harmful event scores")
+    parser.add_argument(
+        "--utility_harm_veto", action="store_true",
+        help=(
+            "factorized Wiki only: learn a separate train-only harm-risk head and "
+            "veto risky event/horizon interventions at evaluation"
+        ),
+    )
+    parser.add_argument("--utility_harm_threshold", type=float, default=0.5,
+                        help="fixed evaluation cutoff for predicted intervention harm probability")
+    parser.add_argument("--utility_harm_classifier_weight", type=float, default=0.0,
+                        help="weight of train-only harmful-vs-safe BCE for the factorized risk head")
     parser.add_argument("--utility_candidate_loss_weight", type=float, default=0.1)
     parser.add_argument("--utility_ranking_loss_weight", type=float, default=0.1)
     parser.add_argument("--utility_ranking_margin", type=float, default=0.01)
@@ -879,6 +890,18 @@ def configure_args(args):
         raise ValueError("utility_harm_loss_weight must be finite and nonnegative")
     if args.utility_harm_loss_weight and not args.utility_factorized:
         raise ValueError("utility_harm_loss_weight requires --utility_factorized")
+    if (not math.isfinite(args.utility_harm_threshold)
+            or not 0.0 < args.utility_harm_threshold < 1.0):
+        raise ValueError("utility_harm_threshold must be finite and lie in (0, 1)")
+    if (args.utility_harm_classifier_weight < 0.0
+            or not math.isfinite(args.utility_harm_classifier_weight)):
+        raise ValueError("utility_harm_classifier_weight must be finite and nonnegative")
+    if args.utility_harm_veto and not args.utility_factorized:
+        raise ValueError("utility_harm_veto requires --utility_factorized")
+    if args.utility_harm_classifier_weight and not args.utility_harm_veto:
+        raise ValueError("utility_harm_classifier_weight requires --utility_harm_veto")
+    if args.is_training and args.utility_harm_veto and not args.utility_harm_classifier_weight:
+        raise ValueError("utility_harm_veto training requires utility_harm_classifier_weight > 0")
     if args.utility_candidate_loss_weight < 0.0:
         raise ValueError("utility_candidate_loss_weight cannot be negative")
     if args.utility_ranking_loss_weight < 0.0:
@@ -1177,6 +1200,8 @@ def load_finetuned_model(exp, checkpoint_path):
             "utility_wiki",
             "utility_adapter_mode",
             "utility_factorized",
+            "utility_harm_veto",
+            "utility_harm_threshold",
             "utility_event_max_scale",
             "utility_composition_max_scale",
             "utility_gate_temperature",

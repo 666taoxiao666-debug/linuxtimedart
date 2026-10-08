@@ -128,7 +128,14 @@ class HierarchicalUtilityTests(unittest.TestCase):
     def test_full_model_factorized_forward_backward_and_reload(self):
         self._exercise_full_model("calibrated_evidence", factorized=True)
 
-    def _exercise_full_model(self, adapter_mode, factorized=False):
+    def test_full_model_factorized_harm_veto_forward_and_reload(self):
+        self._exercise_full_model(
+            "calibrated_evidence", factorized=True, harm_veto=True,
+            run_training=False,
+        )
+
+    def _exercise_full_model(self, adapter_mode, factorized=False,
+                             harm_veto=False, run_training=True):
         from run import build_parser, configure_args
         from models.TimeDART import PromptGuidedModel
         from utils.wind_regime_wiki import load_wind_regime_wiki_spec
@@ -158,6 +165,10 @@ class HierarchicalUtilityTests(unittest.TestCase):
                 "--d_model", "16", "--d_ff", "32", "--n_heads", "4",
                 "--e_layers", "1", "--d_layers", "1", "--no-use_gpu",
                 *(["--utility_factorized"] if factorized else []),
+                *(
+                    ["--utility_harm_veto", "--utility_harm_classifier_weight", "1"]
+                    if harm_veto else []
+                ),
             ]))
             args.device = torch.device("cpu")
             model = PromptGuidedModel(args)
@@ -229,6 +240,13 @@ class HierarchicalUtilityTests(unittest.TestCase):
             restored = PromptGuidedModel(args).eval()
             restored.load_state_dict(torch.load(saved, weights_only=True))
             self.assertTrue(torch.equal(model(history), restored(history)))
+            if harm_veto:
+                self.assertIn('factor_harm_probability', restored._last_utility_aux)
+                self.assertTrue(torch.all(
+                    restored._last_utility_aux['factor_harm_probability'] == .5
+                ))
+            if not run_training:
+                return
             if adapter_mode == "calibrated_evidence":
                 # Exercise the real epoch-zero, two-stage train/valid loop,
                 # unequal loader lengths, scheduler, and all checkpoint saves.
