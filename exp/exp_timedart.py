@@ -1772,6 +1772,9 @@ class Exp_TimeDART(Exp_Basic):
                             harm_classifier_weight=getattr(
                                 self.args, 'utility_harm_classifier_weight', 0.
                             ),
+                            downside_loss_weight=getattr(
+                                self.args, 'utility_downside_loss_weight', 0.
+                            ),
                         )
                         (
                             utility_candidate_loss,

@@ -58,10 +58,13 @@ class FactorizedEvidenceAdapter(nn.Module):
 class FactorUtilityGate(nn.Module):
     def __init__(self, d_model, pred_len, physical_dim, num_modes=3,
                  temperature=.05, min_gain=.001, num_candidates=5,
-                 harm_veto=False, harm_threshold=.5):
+                 harm_veto=False, harm_threshold=.5,
+                 downside_guard=False, downside_weight=1.):
         super().__init__()
         self.temperature, self.min_gain = float(temperature), float(min_gain)
         self.harm_veto, self.harm_threshold = bool(harm_veto), float(harm_threshold)
+        self.downside_guard = bool(downside_guard)
+        self.downside_weight = float(downside_weight)
         self.pred_len = pred_len
         self.candidate_conditioned, self.physical_dim = True, physical_dim
         self.num_trend_modes, self.intervention_floor = num_modes, 1.
@@ -87,7 +90,23 @@ class FactorUtilityGate(nn.Module):
                 nn.GELU(), nn.Linear(d_model, pred_len))
             nn.init.zeros_(self.harm_estimator[-1].weight)
             nn.init.zeros_(self.harm_estimator[-1].bias)
+        # v3 predicts the *magnitude* of positive excess error rather than a
+        # harmful/safe bit.  The same history-only state is used, but the
+        # nonnegative estimate is subtracted continuously from expected gain.
+        self.downside_estimator = None
+        if self.downside_guard:
+            self.downside_estimator = nn.Sequential(
+                nn.LayerNorm(3 * d_model + physical_dim + num_modes + pred_len + 2),
+                nn.Linear(3 * d_model + physical_dim + num_modes + pred_len + 2, d_model),
+                nn.GELU(), nn.Linear(d_model, pred_len))
+            nn.init.zeros_(self.downside_estimator[-1].weight)
+            initial = max(self.min_gain, 1e-4)
+            nn.init.constant_(
+                self.downside_estimator[-1].bias,
+                torch.log(torch.expm1(torch.tensor(initial))).item(),
+            )
         self._last_harm_logits = None
+        self._last_downside_raw = None
 
     def _load_from_state_dict(self, state_dict, prefix, *args, **kwargs):
         # Older neural-gate checkpoints have none of these buffers. A partially
@@ -116,6 +135,7 @@ class FactorUtilityGate(nn.Module):
             if self.training:
                 raise RuntimeError('Calibrated table policy is inference-only; disable before neural training')
             self._last_harm_logits = None
+            self._last_downside_raw = None
             return self.policy_gain[trend.argmax(-1)]
         count = descriptors.size(1)
         common = torch.cat([hidden.mean(1), hidden[:, -1], trend, physical], -1).detach()
@@ -126,6 +146,10 @@ class FactorUtilityGate(nn.Module):
             self._last_harm_logits = self.harm_estimator(state).transpose(1, 2)
         else:
             self._last_harm_logits = None
+        if self.downside_estimator is not None:
+            self._last_downside_raw = self.downside_estimator(state).transpose(1, 2)
+        else:
+            self._last_downside_raw = None
         return self.estimator(state).transpose(1, 2)
 
 
@@ -157,11 +181,14 @@ def harm_veto_availability(availability, harm_logits, threshold=.5):
 
 
 def factorized_loss(aux, target, kind, margin=0., min_gain=0., temperature=.05,
-                    harm_weight=0., harm_classifier_weight=0.):
+                    harm_weight=0., harm_classifier_weight=0.,
+                    downside_loss_weight=0.):
     if harm_weight < 0.:
         raise ValueError('harm_weight must be nonnegative')
     if harm_classifier_weight < 0.:
         raise ValueError('harm_classifier_weight must be nonnegative')
+    if downside_loss_weight < 0.:
+        raise ValueError('downside_loss_weight must be nonnegative')
     predictions = aux['factor_predictions']
     factor_available = aux['factor_availability']
     if factor_available.ndim == 2:
@@ -191,7 +218,8 @@ def factorized_loss(aux, target, kind, margin=0., min_gain=0., temperature=.05,
         loss = F.smooth_l1_loss(aux['factor_utilities'][available], gain[available]) if available.any() else zero
         return loss, gain
     # Cost-sensitive expected regret only; do not balance action-class counts.
-    probability = utility_action_probabilities(aux['factor_utilities'], available, min_gain, temperature)
+    route_scores = aux.get('factor_route_scores', aux['factor_utilities'])
+    probability = utility_action_probabilities(route_scores, available, min_gain, temperature)
     costs = torch.cat([base_error[..., None], errors.detach()], -1)
     mask = torch.cat([torch.ones_like(available[..., :1]), available], -1)
     best = costs.masked_fill(~mask, float('inf')).min(-1).values
@@ -221,4 +249,16 @@ def factorized_loss(aux, target, kind, margin=0., min_gain=0., temperature=.05,
             if available.any() else zero
         )
         decision = decision + harm_classifier_weight * harm_classifier
+    if downside_loss_weight:
+        predicted = aux.get('factor_downside')
+        if predicted is None or predicted.shape != errors.shape:
+            raise ValueError('downside_loss_weight requires factor_downside')
+        # Severity target in fixed training-scaler units.  It is zero for a
+        # profitable candidate and equals its excess absolute error otherwise.
+        downside = (errors.detach() - base_error[..., None]).clamp_min(0.)
+        downside_loss = (
+            F.smooth_l1_loss(predicted[available], downside[available])
+            if available.any() else zero
+        )
+        decision = decision + downside_loss_weight * downside_loss
     return decision, {}

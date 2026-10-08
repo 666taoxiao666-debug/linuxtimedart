@@ -1,0 +1,70 @@
+{
+  "protocol_id": "sdwpf_h12_wiki_expected_downside_v3",
+  "status": "exploratory_validation_protocol",
+  "parent_protocol": "sdwpf_h12_rolling_holdout_frozen_v1",
+  "failed_predecessor": "sdwpf_h12_wiki_harm_veto_v2",
+  "training_evidence": {
+    "audit_scope": "chronological_calibration_gate_from_original_train_only",
+    "audit_directory": "outputs/logs/SDWPF/20261008/005_utility_risk_train_audit_h12_f0-1-2_s2024_thr0.5",
+    "fold_1_gain_eligible_roc_auc": 0.6034145473,
+    "fold_1_harm_recall_pct": 4.2402826855,
+    "fold_1_veto_value_kw_per_candidate": -0.2903342775,
+    "fold_2_gain_eligible_roc_auc": 0.6096740780,
+    "fold_2_harm_recall_pct": 8.6857948963,
+    "fold_2_veto_value_kw_per_candidate": -0.3198854655,
+    "outer_validation_or_test_labels_used": false
+  },
+  "hypothesis": "Predicting positive excess-error magnitude and subtracting it continuously from expected gain will preserve profitable interventions better than a binary 0.5 hard veto while discouraging high-severity failures.",
+  "development_scope": {
+    "dataset": "SDWPF",
+    "split": "rolling_holdout",
+    "fold": 1,
+    "seed": 2024,
+    "input_len": 336,
+    "pred_len": 12,
+    "train_stride": 6,
+    "eval_stride": 12,
+    "sealed_test_access": false
+  },
+  "frozen_parent_settings": {
+    "trend_cv_dir": "outputs/logs/SDWPF/20260914/001_cv_trend_h12_rolling_holdout_folds0-1-2_seeds2024-2025-202_h36d88ba5e218",
+    "source_cv_dir": "outputs/logs/SDWPF/20260913/002_cv_h12_rolling_holdout_folds0-1-2_seeds2024-2025-2026_blr0_hffcfe2bf396b",
+    "utility_adapter_mode": "calibrated_evidence",
+    "utility_factorized": 1,
+    "utility_calibration_fraction": 0.2,
+    "utility_event_max_scale": 0.2,
+    "utility_composition_max_scale": 0.05,
+    "utility_learning_rate": 0.0001,
+    "utility_loss_weight": 0.2,
+    "utility_decision_loss_weight": 0.7,
+    "utility_harm_loss_weight": 0.5,
+    "utility_candidate_loss_weight": 1.0,
+    "utility_ranking_loss_weight": 0.3,
+    "utility_ranking_margin": 0.0,
+    "utility_gate_temperature": 0.05,
+    "utility_min_gain": 0.003,
+    "utility_intervention_floor": 1.0,
+    "utility_adapter_warmup_epochs": 3,
+    "train_epochs": 10,
+    "patience": 7
+  },
+  "single_change": {
+    "utility_downside_guard": 1,
+    "utility_downside_weight": 1.0,
+    "utility_downside_loss_weight": 1.0,
+    "severity_target": "max(candidate_absolute_error_minus_trend_absolute_error, 0)",
+    "fit_partition": "chronological_calibration_train_only",
+    "inference_rule": "physical_evidence AND expected_gain_minus_expected_downside_above_existing_min_gain"
+  },
+  "decision_rule": {
+    "pilot_success": "validation MAE below paired trend and not worse than frozen v1 Wiki, with lower harmful-intervention rate under the same diagnostic",
+    "pilot_failure": "no MAE improvement over trend, worse MAE than frozen v1 without a material harm reduction, or any provenance failure",
+    "expansion": "only after pilot success, freeze the exact configuration and run the remaining predeclared fold/seed combinations"
+  },
+  "locked_rules": [
+    "Do not tune the unit downside weight or the existing gain threshold on outer validation results.",
+    "Do not change the parent Wiki, residual experts, folds, trend checkpoint or data cleaning in this pilot.",
+    "Do not use validation or test labels to fit the severity head or choose its decision rule.",
+    "Do not access the sealed test split or present this exploratory fold as final evidence."
+  ]
+}

@@ -146,6 +146,12 @@ class Model(nn.Module):
         self.utility_harm_threshold = float(
             getattr(args, "utility_harm_threshold", 0.5)
         )
+        self.utility_downside_guard = bool(
+            getattr(args, "utility_downside_guard", False)
+        )
+        self.utility_downside_weight = float(
+            getattr(args, "utility_downside_weight", 1.0)
+        )
         self.features = getattr(args, "features", "M")
         self.enc_in = int(getattr(args, "enc_in", 1))
         self.feature_columns = list(getattr(args, "feature_columns", None) or [])
@@ -528,6 +534,8 @@ class Model(nn.Module):
                         num_candidates=self.scene_wiki_router.num_factors + 1,
                         harm_veto=self.utility_harm_veto,
                         harm_threshold=self.utility_harm_threshold,
+                        downside_guard=self.utility_downside_guard,
+                        downside_weight=self.utility_downside_weight,
                     )
 
     def _factorized_forecast(self, base_hidden, state, physical, stdevs, means, last, history):
@@ -594,6 +602,18 @@ class Model(nn.Module):
         harm_probability = (
             harm_logits.sigmoid() if harm_logits is not None else None
         )
+        downside_raw = self.utility_gate._last_downside_raw
+        downside = (
+            torch.nn.functional.softplus(downside_raw)
+            if downside_raw is not None else None
+        )
+        route_scores = scores
+        if self.utility_downside_guard:
+            if downside is None:
+                raise RuntimeError(
+                    'Downside guard is enabled but the severity head is unavailable'
+                )
+            route_scores = scores - self.utility_downside_weight * downside
         # The classifier is learned on the chronological calibration-train
         # partition.  Hard vetoing is evaluation-only so the risk head receives
         # labels for every physically available candidate during training.
@@ -614,11 +634,11 @@ class Model(nn.Module):
             alpha = self.utility_gate.policy_alpha[state['trend_probs'].argmax(-1)]
             corrections = corrections * alpha[:, :, None, :]
         prediction, soft, hard, action = factorized_route(
-            base, corrections, scores, route_availability, self.utility_gate.min_gain,
+            base, corrections, route_scores, route_availability, self.utility_gate.min_gain,
             self.utility_gate.temperature, self.utility_gate.training,
         )
         # Retain legacy coarse diagnostic names without discarding the full bank.
-        event_scores, event_index = scores[..., :-1].masked_fill(
+        event_scores, event_index = route_scores[..., :-1].masked_fill(
             ~route_availability[..., :-1], -1e4
         ).max(-1)
         event_correction = corrections[..., :-1].gather(
@@ -637,13 +657,21 @@ class Model(nn.Module):
             'factor_predictions': base.detach()[..., None] + corrections,
             'factor_availability': route_availability,
             'factor_physical_availability': physical_availability,
-            'factor_utilities': scores, 'factor_action': action,
+            'factor_utilities': scores,
+            'factor_route_scores': route_scores,
+            'factor_action': action,
         }
         if harm_logits is not None:
             self._last_utility_aux.update({
                 'factor_harm_logits': harm_logits,
                 'factor_harm_probability': harm_probability,
                 'harm_threshold': self.utility_harm_threshold,
+            })
+        if downside is not None:
+            self._last_utility_aux.update({
+                'factor_downside_raw': downside_raw,
+                'factor_downside': downside,
+                'downside_weight': self.utility_downside_weight,
             })
         self._last_wiki_factor_activations = support.detach()
         self._last_wiki_intervention = (action > 0).to(base.dtype).amax(-1)

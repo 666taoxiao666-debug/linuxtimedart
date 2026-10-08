@@ -127,6 +127,7 @@ def utility_decision_loss(
     temperature=0.25,
     harm_weight=0.0,
     harm_classifier_weight=0.0,
+    downside_loss_weight=0.0,
 ):
     """Directly supervise abstain/event/composition decisions on train batches.
 
@@ -142,7 +143,8 @@ def utility_decision_loss(
     if 'factor_predictions' in aux:
         return factorized_loss(aux, target, 'decision', min_gain=min_gain,
                                temperature=temperature, harm_weight=harm_weight,
-                               harm_classifier_weight=harm_classifier_weight)
+                               harm_classifier_weight=harm_classifier_weight,
+                               downside_loss_weight=downside_loss_weight)
     required = {
         "utilities",
         "availability",

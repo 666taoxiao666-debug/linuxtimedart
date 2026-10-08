@@ -521,6 +521,21 @@ def build_parser():
                         help="fixed evaluation cutoff for predicted intervention harm probability")
     parser.add_argument("--utility_harm_classifier_weight", type=float, default=0.0,
                         help="weight of train-only harmful-vs-safe BCE for the factorized risk head")
+    parser.add_argument(
+        "--utility_downside_guard", action="store_true",
+        help=(
+            "factorized Wiki only: predict train-only positive harm magnitude and "
+            "subtract it from expected gain before intervention"
+        ),
+    )
+    parser.add_argument(
+        "--utility_downside_weight", type=float, default=1.0,
+        help="fixed multiplier on predicted positive harm magnitude at routing",
+    )
+    parser.add_argument(
+        "--utility_downside_loss_weight", type=float, default=0.0,
+        help="weight of train-only positive-harm magnitude regression",
+    )
     parser.add_argument("--utility_candidate_loss_weight", type=float, default=0.1)
     parser.add_argument("--utility_ranking_loss_weight", type=float, default=0.1)
     parser.add_argument("--utility_ranking_margin", type=float, default=0.01)
@@ -906,6 +921,23 @@ def configure_args(args):
         raise ValueError("utility_harm_classifier_weight requires --utility_harm_veto")
     if args.is_training and args.utility_harm_veto and not args.utility_harm_classifier_weight:
         raise ValueError("utility_harm_veto training requires utility_harm_classifier_weight > 0")
+    if args.utility_downside_guard and not args.utility_factorized:
+        raise ValueError("utility_downside_guard requires --utility_factorized")
+    if args.utility_downside_guard and args.utility_harm_veto:
+        raise ValueError("utility_downside_guard and utility_harm_veto are mutually exclusive")
+    if (not math.isfinite(args.utility_downside_weight)
+            or args.utility_downside_weight <= 0.0):
+        raise ValueError("utility_downside_weight must be finite and positive")
+    if (not math.isfinite(args.utility_downside_loss_weight)
+            or args.utility_downside_loss_weight < 0.0):
+        raise ValueError("utility_downside_loss_weight must be finite and nonnegative")
+    if args.utility_downside_loss_weight and not args.utility_downside_guard:
+        raise ValueError("utility_downside_loss_weight requires --utility_downside_guard")
+    if (args.is_training and args.utility_downside_guard
+            and not args.utility_downside_loss_weight):
+        raise ValueError(
+            "utility_downside_guard training requires utility_downside_loss_weight > 0"
+        )
     if args.utility_candidate_loss_weight < 0.0:
         raise ValueError("utility_candidate_loss_weight cannot be negative")
     if args.utility_ranking_loss_weight < 0.0:
@@ -1206,6 +1238,8 @@ def load_finetuned_model(exp, checkpoint_path):
             "utility_factorized",
             "utility_harm_veto",
             "utility_harm_threshold",
+            "utility_downside_guard",
+            "utility_downside_weight",
             "utility_event_max_scale",
             "utility_composition_max_scale",
             "utility_gate_temperature",

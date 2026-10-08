@@ -60,6 +60,8 @@ UTILITY_MIN_GAIN="${UTILITY_MIN_GAIN:-0.02}"
 UTILITY_INTERVENTION_FLOOR="${UTILITY_INTERVENTION_FLOOR:-0.5}"
 UTILITY_HARM_VETO="${UTILITY_HARM_VETO:-0}"
 UTILITY_HARM_THRESHOLD="${UTILITY_HARM_THRESHOLD:-0.5}"
+UTILITY_DOWNSIDE_GUARD="${UTILITY_DOWNSIDE_GUARD:-0}"
+UTILITY_DOWNSIDE_WEIGHT="${UTILITY_DOWNSIDE_WEIGHT:-1.0}"
 WIKI_LLM_PATH="${WIKI_LLM_PATH:-Qwen/Qwen2.5-0.5B}"
 WIKI_BUILD_DEVICE="${WIKI_BUILD_DEVICE:-auto}"
 REGIME_CALIBRATION_QUANTILE="${REGIME_CALIBRATION_QUANTILE:-0.3333333333}"
@@ -126,6 +128,9 @@ if [[ "${UTILITY_WIKI}" == "1" ]]; then
     if [[ "${UTILITY_HARM_VETO}" == "1" ]]; then
         PLOT_ARGS+=(--utility_harm_veto)
     fi
+    if [[ "${UTILITY_DOWNSIDE_GUARD}" == "1" ]]; then
+        PLOT_ARGS+=(--utility_downside_guard)
+    fi
     PLOT_ARGS+=(
         --utility_wiki
         --utility_adapter_mode "${UTILITY_ADAPTER_MODE}"
@@ -135,6 +140,7 @@ if [[ "${UTILITY_WIKI}" == "1" ]]; then
         --utility_min_gain "${UTILITY_MIN_GAIN}"
         --utility_intervention_floor "${UTILITY_INTERVENTION_FLOOR}"
         --utility_harm_threshold "${UTILITY_HARM_THRESHOLD}"
+        --utility_downside_weight "${UTILITY_DOWNSIDE_WEIGHT}"
     )
 fi
 PLOT_ARGS+=(--regime_label_method "${REGIME_LABEL_METHOD}")

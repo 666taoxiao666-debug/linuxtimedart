@@ -134,8 +134,15 @@ class HierarchicalUtilityTests(unittest.TestCase):
             run_training=False,
         )
 
+    def test_full_model_factorized_downside_guard_forward_and_reload(self):
+        self._exercise_full_model(
+            "calibrated_evidence", factorized=True, downside_guard=True,
+            run_training=False,
+        )
+
     def _exercise_full_model(self, adapter_mode, factorized=False,
-                             harm_veto=False, run_training=True):
+                             harm_veto=False, downside_guard=False,
+                             run_training=True):
         from run import build_parser, configure_args
         from models.TimeDART import PromptGuidedModel
         from utils.wind_regime_wiki import load_wind_regime_wiki_spec
@@ -168,6 +175,10 @@ class HierarchicalUtilityTests(unittest.TestCase):
                 *(
                     ["--utility_harm_veto", "--utility_harm_classifier_weight", "1"]
                     if harm_veto else []
+                ),
+                *(
+                    ["--utility_downside_guard", "--utility_downside_loss_weight", "1"]
+                    if downside_guard else []
                 ),
             ]))
             args.device = torch.device("cpu")
@@ -245,6 +256,15 @@ class HierarchicalUtilityTests(unittest.TestCase):
                 self.assertTrue(torch.all(
                     restored._last_utility_aux['factor_harm_probability'] == .5
                 ))
+            if downside_guard:
+                self.assertIn('factor_downside', restored._last_utility_aux)
+                torch.testing.assert_close(
+                    restored._last_utility_aux['factor_downside'],
+                    torch.full_like(
+                        restored._last_utility_aux['factor_downside'],
+                        args.utility_min_gain,
+                    ),
+                )
             if not run_training:
                 return
             if adapter_mode == "calibrated_evidence":
