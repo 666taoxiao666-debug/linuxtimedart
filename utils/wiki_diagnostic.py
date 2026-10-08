@@ -92,6 +92,234 @@ def summarize_intervention_policy(on, off, truth, supported, active):
     }
 
 
+def summarize_factorized_intervention_policy(on, off, truth, availability, action):
+    """Summarize per-horizon expert decisions against the exact trend fallback.
+
+    ``action == 0`` is abstention; ``action == k + 1`` selects candidate ``k``.
+    Coverage is reported at both window and forecast-point granularity so a
+    sparse correction at one horizon is not mistaken for intervention across
+    the whole forecast window.
+    """
+    on = np.asarray(on, dtype=np.float64)
+    off = np.asarray(off, dtype=np.float64)
+    truth = np.asarray(truth, dtype=np.float64)
+    availability = np.asarray(availability, dtype=bool)
+    action = np.asarray(action, dtype=np.int64)
+    if on.ndim != 2 or on.shape != off.shape or on.shape != truth.shape:
+        raise ValueError("Predictions and truth must share [window, horizon] shape")
+    if availability.ndim != 3 or availability.shape[:2] != on.shape:
+        raise ValueError("Availability must have shape [window, horizon, candidate]")
+    if action.shape != on.shape:
+        raise ValueError("Actions must have shape [window, horizon]")
+    if np.any(action < 0) or np.any(action > availability.shape[-1]):
+        raise ValueError("Action index exceeds the candidate bank")
+    chosen = action > 0
+    candidate = availability.any(axis=-1)
+    if np.any(chosen & ~candidate):
+        raise ValueError("An intervention was selected where no candidate was available")
+    selected_available = np.zeros_like(chosen)
+    if chosen.any():
+        rows, horizons = np.nonzero(chosen)
+        selected_available[rows, horizons] = availability[
+            rows, horizons, action[rows, horizons] - 1
+        ]
+    if not np.array_equal(selected_available, chosen):
+        raise ValueError("An unavailable factor was selected")
+
+    point_gain = np.abs(off - truth) - np.abs(on - truth)
+    window_gain = point_gain.mean(axis=1)
+    active_windows = chosen.any(axis=1)
+    candidate_windows = candidate.any(axis=1)
+    selected_point_gain = point_gain[chosen]
+    selected_window_gain = window_gain[active_windows]
+    return {
+        "windows": int(len(on)),
+        "forecast_points": int(on.size),
+        "candidate_coverage_pct": float(100.0 * candidate_windows.mean()),
+        "candidate_point_coverage_pct": float(100.0 * candidate.mean()),
+        "intervention_coverage_pct": float(100.0 * active_windows.mean()),
+        "intervention_point_coverage_pct": float(100.0 * chosen.mean()),
+        "abstention_pct": float(100.0 * (~active_windows).mean()),
+        "abstention_point_pct": float(100.0 * (~chosen).mean()),
+        "overall_mae_on_kw": float(np.abs(on - truth).mean()),
+        "overall_mae_off_kw": float(np.abs(off - truth).mean()),
+        "overall_gain_kw": float(point_gain.mean()),
+        "selected_windows": int(active_windows.sum()),
+        "selected_points": int(chosen.sum()),
+        "selected_gain_kw": (
+            float(selected_point_gain.mean()) if selected_point_gain.size else None
+        ),
+        "selected_window_gain_kw": (
+            float(selected_window_gain.mean()) if selected_window_gain.size else None
+        ),
+        "selected_harm_point_pct": (
+            float(100.0 * np.mean(selected_point_gain < 0.0))
+            if selected_point_gain.size else None
+        ),
+        "selected_harm_window_pct": (
+            float(100.0 * np.mean(selected_window_gain < 0.0))
+            if selected_window_gain.size else None
+        ),
+        "false_intervention_on_no_evidence_pct": (
+            float(100.0 * chosen[~candidate].mean()) if (~candidate).any() else None
+        ),
+    }
+
+
+def _run_factorized_wiki_diagnostic(exp, dataset, loader, output):
+    """Evaluate the trained factor bank without legacy prompt deletion."""
+    args, model = exp.args, exp.model
+    parts = {key: [] for key in (
+        "on", "off", "truth", "availability", "action", "factor_predictions"
+    )}
+    model.eval()
+    with torch.no_grad():
+        for i, (x, y, _, _) in enumerate(loader):
+            x = x.float().to(exp.device)
+            with exp._autocast():
+                prediction = model(x)
+            aux = getattr(model, "_last_utility_aux", None)
+            required = {
+                "base_prediction", "factor_predictions",
+                "factor_availability", "factor_action",
+            }
+            if not isinstance(aux, dict) or not required.issubset(aux):
+                raise RuntimeError("Factorized Wiki did not expose its audited candidate bank")
+            parts["on"].append(
+                prediction[:, -args.pred_len:, -1].detach().float().cpu().numpy()
+            )
+            parts["off"].append(
+                aux["base_prediction"][:, -args.pred_len:, -1]
+                .detach().float().cpu().numpy()
+            )
+            parts["truth"].append(
+                y[:, -args.pred_len:, -1].detach().float().cpu().numpy()
+            )
+            parts["availability"].append(
+                aux["factor_availability"].detach().cpu().numpy()
+            )
+            parts["action"].append(aux["factor_action"].detach().cpu().numpy())
+            parts["factor_predictions"].append(
+                aux["factor_predictions"][:, -args.pred_len:, -1]
+                .detach().float().cpu().numpy()
+            )
+            if i % 50 == 0:
+                print(f"[WIKI-DIAG] Factorized validation batch {i+1}/{len(loader)}", flush=True)
+
+    arrays = {key: np.concatenate(value) for key, value in parts.items()}
+    if len(arrays["on"]) != len(dataset):
+        raise ValueError("Window count does not match dataset")
+    for value in arrays.values():
+        if not np.isfinite(value).all():
+            raise ValueError("Non-finite values in factorized diagnostic outputs")
+    for key in ("on", "off", "truth"):
+        arrays[key] = inverse_transform_target(dataset, arrays[key])
+    for candidate in range(arrays["factor_predictions"].shape[-1]):
+        arrays["factor_predictions"][..., candidate] = inverse_transform_target(
+            dataset, arrays["factor_predictions"][..., candidate]
+        )
+    if not all(np.isfinite(arrays[key]).all() for key in (
+        "on", "off", "truth", "factor_predictions"
+    )):
+        raise ValueError("Non-finite inverse-transformed factorized predictions")
+    np.savez_compressed(output / "paired_predictions.npz", **arrays)
+
+    on, off, truth = (arrays[key] for key in ("on", "off", "truth"))
+    availability, action = arrays["availability"].astype(bool), arrays["action"].astype(int)
+    summary = summarize_factorized_intervention_policy(
+        on, off, truth, availability, action
+    )
+    pd.DataFrame([summary]).to_csv(output / "intervention_summary.csv", index=False)
+
+    metadata = _window_metadata(dataset, len(on))
+    if not {"TurbID", "forecast_start"}.issubset(metadata.columns):
+        raise ValueError("Turbine/time metadata is required for paired comparison")
+    metadata["mae_on_kw"] = np.abs(on - truth).mean(axis=1)
+    metadata["mae_off_kw"] = np.abs(off - truth).mean(axis=1)
+    metadata["mae_gain_kw"] = metadata.mae_off_kw - metadata.mae_on_kw
+    metadata["candidate_available"] = availability.any(axis=(1, 2)).astype(int)
+    metadata["intervention_active"] = (action > 0).any(axis=1).astype(int)
+
+    factor_ids = [*model.scene_wiki_scene_ids, "composition"]
+    if len(factor_ids) != availability.shape[-1]:
+        raise ValueError("Factor IDs do not match the audited candidate bank")
+    factor_rows = []
+    base_point_error = np.abs(off - truth)
+    for index, factor in enumerate(factor_ids):
+        available = availability[..., index]
+        selected = action == index + 1
+        candidate_error = np.abs(arrays["factor_predictions"][..., index] - truth)
+        selected_gain = (base_point_error - candidate_error)[selected]
+        candidate_gain = (base_point_error - candidate_error)[available]
+        factor_rows.append({
+            "factor": factor,
+            "available_points": int(available.sum()),
+            "selected_points": int(selected.sum()),
+            "availability_pct": float(100.0 * available.mean()),
+            "intervention_pct": float(100.0 * selected.mean()),
+            "candidate_gain_kw": (
+                float(candidate_gain.mean()) if candidate_gain.size else None
+            ),
+            "selected_gain_kw": (
+                float(selected_gain.mean()) if selected_gain.size else None
+            ),
+            "selected_harm_point_pct": (
+                float(100.0 * np.mean(selected_gain < 0.0))
+                if selected_gain.size else None
+            ),
+        })
+        metadata[f"{factor}_available_steps"] = available.sum(axis=1)
+        metadata[f"{factor}_selected_steps"] = selected.sum(axis=1)
+    metadata.to_csv(output / "window_metrics.csv", index=False)
+    pd.DataFrame(factor_rows).to_csv(output / "factor_metrics.csv", index=False)
+
+    masks = {
+        "all": np.ones(len(on), dtype=bool),
+        "candidate_available": availability.any(axis=(1, 2)),
+        "intervention_active": (action > 0).any(axis=1),
+        "abstained": ~(action > 0).any(axis=1),
+    }
+    pd.DataFrame([
+        group_metrics(on, off, truth, mask, name) for name, mask in masks.items()
+    ]).to_csv(output / "group_metrics.csv", index=False)
+    pd.DataFrame([
+        {
+            **group_metrics(
+                on[:, horizon:horizon + 1], off[:, horizon:horizon + 1],
+                truth[:, horizon:horizon + 1],
+                np.ones(len(on), dtype=bool), f"horizon_{horizon + 1}",
+            ),
+            "candidate_coverage_pct": float(100.0 * availability[:, horizon].any(-1).mean()),
+            "intervention_coverage_pct": float(100.0 * (action[:, horizon] > 0).mean()),
+        }
+        for horizon in range(args.pred_len)
+    ]).to_csv(output / "horizon_metrics.csv", index=False)
+
+    payload = {
+        "evaluation_split": "val",
+        "fold": args.sdwpf_fold,
+        "seed": args.seed,
+        "windows": len(on),
+        "gain_definition": "absolute error(base trend)-absolute error(selected Wiki); positive favors Wiki",
+        "scale": "kW, inverse transformed, no reporting clip",
+        "intervention_policy": summary,
+        "factor_ids": factor_ids,
+        "factors": factor_rows,
+        "note": "Fixed-checkpoint factorized decision audit; action 0 is exact abstention",
+        "checkpoint": checkpoint_info(args.loaded_finetune_checkpoint),
+        "wiki_config": checkpoint_info(args.scene_wiki_config),
+        "wiki_bundle": checkpoint_info(args.scene_wiki_embeddings),
+        "parameters": vars(args),
+    }
+    (output / "diagnostic_summary.json").write_text(
+        json.dumps(payload, indent=2, default=str), encoding="utf-8"
+    )
+    brief = {key: value for key, value in payload.items()
+             if key not in ("parameters", "checkpoint", "wiki_config", "wiki_bundle")}
+    print(json.dumps(brief, indent=2), flush=True)
+    print(f"[WIKI-DIAG] Results: {output.resolve()}", flush=True)
+
+
 def without_event_forward(model, router, x, index):
     """Delete one additive contribution, keeping top-k and normalization fixed.
 
@@ -134,6 +362,9 @@ def run_wiki_diagnostic(exp):
     output = Path(args.report_output_dir)
     output.mkdir(parents=True, exist_ok=True)
     model.eval()
+    if getattr(args, "utility_factorized", False):
+        _run_factorized_wiki_diagnostic(exp, dataset, loader, output)
+        return
     parts = {k: [] for k in ("on", "off", "truth", "rules", "prob", "activation")}
     factors = list(model.scene_wiki_scene_ids)
     event_keys = ([f"without_{j}" for j in range(len(factors))]

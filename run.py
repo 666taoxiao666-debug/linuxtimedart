@@ -862,8 +862,10 @@ def configure_args(args):
         raise ValueError("utility_factorized requires utility_wiki and calibrated_evidence")
     if args.utility_factorized and (args.features != "MS" or not args.mix_channels):
         raise ValueError("utility_factorized currently requires MS and mix_channels")
-    if args.utility_factorized and args.wiki_diagnostic:
-        raise ValueError("Legacy prompt-removal diagnostics do not apply to factorized experts; use WikiFactor validation diagnostics")
+    # Factorized experts have their own base-vs-selected diagnostic path in
+    # utils.wiki_diagnostic.  It does not remove semantic prompts: it compares
+    # the selected per-horizon residual with the exact trend fallback retained
+    # in ``_last_utility_aux['base_prediction']``.
     if args.utility_adapter_mode == "calibrated_evidence":
         if args.freq != "10min":
             raise ValueError("calibrated_evidence physical windows require freq=10min")

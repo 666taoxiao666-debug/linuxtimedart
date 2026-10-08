@@ -8,7 +8,10 @@ import torch
 from models.DLinear import Model as DLinear
 from models.PatchTST import Model as PatchTST
 from utils.paired_forecast_statistics import paired_forecast_statistics
-from utils.wiki_diagnostic import summarize_intervention_policy
+from utils.wiki_diagnostic import (
+    summarize_factorized_intervention_policy,
+    summarize_intervention_policy,
+)
 
 
 def _args():
@@ -74,6 +77,22 @@ class PairedInferenceTests(unittest.TestCase):
         self.assertEqual(report["intervention_coverage_pct"], 50.0)
         self.assertEqual(report["abstention_pct"], 50.0)
         self.assertEqual(report["selected_harm_window_pct"], 50.0)
+        self.assertAlmostEqual(report["selected_gain_kw"], 0.0)
+
+    def test_factorized_summary_uses_per_horizon_actions(self):
+        truth = np.zeros((2, 3))
+        off = np.ones((2, 3))
+        on = np.asarray([[0.0, 1.0, 1.0], [1.0, 2.0, 1.0]])
+        available = np.zeros((2, 3, 2), dtype=bool)
+        available[0, 0, 0] = True
+        available[1, 1, 1] = True
+        action = np.asarray([[1, 0, 0], [0, 2, 0]])
+        report = summarize_factorized_intervention_policy(
+            on, off, truth, available, action
+        )
+        self.assertEqual(report["intervention_coverage_pct"], 100.0)
+        self.assertAlmostEqual(report["intervention_point_coverage_pct"], 100.0 / 3.0)
+        self.assertEqual(report["selected_harm_point_pct"], 50.0)
         self.assertAlmostEqual(report["selected_gain_kw"], 0.0)
 
 
