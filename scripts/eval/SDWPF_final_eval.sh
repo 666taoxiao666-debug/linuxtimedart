@@ -107,6 +107,9 @@ if [[ "${WIKI_DIAGNOSTIC:-0}" == "1" ]]; then
         PLOT_ARGS+=(--wiki_diagnostic_single_events)
     fi
 fi
+if [[ "${UTILITY_RISK_AUDIT:-0}" == "1" ]]; then
+    PLOT_ARGS+=(--utility_risk_audit)
+fi
 PLOT_ARGS+=(--prompt_router "${PROMPT_ROUTER}")
 PLOT_ARGS+=(--scene_wiki_config "${SCENE_WIKI_CONFIG}")
 PLOT_ARGS+=(--scene_wiki_embeddings "${SCENE_WIKI_EMBEDDINGS}")

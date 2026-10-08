@@ -25,6 +25,10 @@ def build_parser():
                         help="Paired validation-only event residual intervention audit")
     parser.add_argument("--wiki_diagnostic_single_events", action="store_true",
                         help="Also remove each event contribution with other contributions fixed")
+    parser.add_argument(
+        "--utility_risk_audit", action="store_true",
+        help="Audit the fixed harm-risk head on the chronological train-only gate split",
+    )
 
     # Basic configuration
     parser.add_argument("--task_name", required=True, choices=["pretrain", "finetune"])
@@ -1256,6 +1260,18 @@ def load_finetuned_model(exp, checkpoint_path):
 
 def main():
     args = configure_args(build_parser().parse_args())
+    if args.utility_risk_audit and not (
+        args.is_training == 0 and args.task_name == "finetune"
+        and args.downstream_task == "forecast" and args.data == "SDWPF"
+        and args.report_split == "val" and args.sdwpf_split == "rolling_holdout"
+        and args.prompt_router == "compositional_wiki"
+        and args.utility_wiki and args.utility_factorized
+        and args.utility_harm_veto and args.report_output_dir
+    ):
+        raise ValueError(
+            "Utility risk audit requires a loaded factorized harm-veto checkpoint, "
+            "rolling_holdout metadata and an explicit output directory"
+        )
     if args.ramp_counterfactual_diagnostic and not (
         args.is_training == 0 and args.task_name == "finetune"
         and args.downstream_task == "forecast" and args.data == "SDWPF"
@@ -1317,6 +1333,10 @@ def main():
         )
         exp = exp_map[args.model](args)
         load_finetuned_model(exp, checkpoint)
+        if args.utility_risk_audit:
+            from utils.utility_risk_audit import run_utility_risk_audit
+            run_utility_risk_audit(exp)
+            return
         if args.wiki_diagnostic:
             from utils.wiki_diagnostic import run_wiki_diagnostic
             run_wiki_diagnostic(exp)
