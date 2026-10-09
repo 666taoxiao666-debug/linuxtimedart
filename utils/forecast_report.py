@@ -95,6 +95,7 @@ def _add_persistence_metrics(result, pred, true, persistence):
     persistence_metrics = forecast_metrics(persistence, true)
     result["persistence_mae"] = persistence_metrics["mae"]
     result["persistence_rmse"] = persistence_metrics["rmse"]
+    result["persistence_r2"] = persistence_metrics["r2"]
     result["mae_skill_vs_persistence_pct"] = 100.0 * (
         1.0 - result["mae"] / max(persistence_metrics["mae"], np.finfo(float).eps)
     )
@@ -353,7 +354,7 @@ def _plot_horizon(table, output_dir):
 
     steps = table["horizon_step"].to_numpy(dtype=float)
     horizon = int(steps.max())
-    fig, axes = plt.subplots(3, 1, figsize=(13, 12), sharex=True)
+    fig, axes = plt.subplots(4, 1, figsize=(13, 15), sharex=True)
 
     model_style = {
         "color": "tab:blue",
@@ -381,39 +382,60 @@ def _plot_horizon(table, output_dir):
     axes[1].set_title("RMSE by forecast step")
     axes[1].legend(ncol=2)
 
+    axes[2].plot(
+        steps,
+        table["r2"],
+        color="tab:purple",
+        linewidth=2.0,
+        label="Forecast model",
+    )
+    if "persistence_r2" in table:
+        axes[2].plot(
+            steps,
+            table["persistence_r2"],
+            color="tab:orange",
+            linewidth=1.9,
+            linestyle="--",
+            label="Persistence",
+        )
+    axes[2].set_ylabel("R²")
+    axes[2].set_title("R² by forecast step")
+    axes[2].axhline(0.0, color="black", linewidth=1.0)
+    axes[2].legend(ncol=2)
+
     if {
         "mae_skill_vs_persistence_pct",
         "rmse_skill_vs_persistence_pct",
     }.issubset(table.columns):
-        axes[2].plot(
+        axes[3].plot(
             steps,
             table["mae_skill_vs_persistence_pct"],
             color="tab:green",
             linewidth=2.0,
             label="MAE skill",
         )
-        axes[2].plot(
+        axes[3].plot(
             steps,
             table["rmse_skill_vs_persistence_pct"],
             color="tab:red",
             linewidth=2.0,
             label="RMSE skill",
         )
-        axes[2].set_ylabel("Skill vs persistence (%)")
-        axes[2].set_title("Positive values mean the model beats persistence")
-        axes[2].legend(ncol=2)
+        axes[3].set_ylabel("Skill vs persistence (%)")
+        axes[3].set_title("Positive values mean the model beats persistence")
+        axes[3].legend(ncol=2)
     else:
-        axes[2].plot(
-            steps,
-            table["r2"],
-            color="tab:green",
-            linewidth=2.0,
-            label="R2",
+        axes[3].text(
+            0.5,
+            0.5,
+            "Persistence baseline unavailable\nSkill cannot be computed",
+            ha="center",
+            va="center",
+            transform=axes[3].transAxes,
         )
-        axes[2].set_ylabel("R2")
-        axes[2].set_title("R2 by forecast step")
-        axes[2].legend()
-    axes[2].axhline(0.0, color="black", linewidth=1.0)
+        axes[3].set_ylabel("Skill")
+        axes[3].set_title("Baseline-relative skill unavailable")
+    axes[3].axhline(0.0, color="black", linewidth=1.0)
 
     for index, axis in enumerate(axes):
         _shade_lead_time_bands(axis, horizon, show_labels=index == 0)
@@ -427,8 +449,8 @@ def _plot_horizon(table, output_dir):
             horizon,
         )
     )
-    axes[2].set_xticks(major_ticks)
-    axes[2].set_xlabel("Forecast step (10 minutes per step)")
+    axes[3].set_xticks(major_ticks)
+    axes[3].set_xlabel("Forecast step (10 minutes per step)")
     fig.suptitle("PromptTimeDART vs Persistence across the forecast horizon")
     fig.tight_layout()
     fig.savefig(
@@ -457,7 +479,7 @@ def _plot_horizon_segments(table, output_dir):
 
     x = np.arange(len(table), dtype=float)
     width = 0.36
-    fig, axes = plt.subplots(3, 1, figsize=(11, 12), sharex=True)
+    fig, axes = plt.subplots(4, 1, figsize=(11, 15), sharex=True)
 
     def draw_error_bars(axis, metric, title):
         model = table[metric].to_numpy(dtype=float)
@@ -488,21 +510,50 @@ def _plot_horizon_segments(table, output_dir):
     draw_error_bars(axes[0], "mae", "MAE: model vs persistence")
     draw_error_bars(axes[1], "rmse", "RMSE: model vs persistence")
 
+    r2_bars = axes[2].bar(
+        x - width / 2,
+        table["r2"].to_numpy(dtype=float),
+        width,
+        label="Forecast model",
+        color="tab:purple",
+    )
+    axes[2].bar_label(r2_bars, fmt="%.3f", padding=3, fontsize=8)
+    if "persistence_r2" in table:
+        persistence_r2_bars = axes[2].bar(
+            x + width / 2,
+            table["persistence_r2"].to_numpy(dtype=float),
+            width,
+            label="Persistence",
+            color="tab:orange",
+        )
+        axes[2].bar_label(
+            persistence_r2_bars, fmt="%.3f", padding=3, fontsize=8
+        )
+    axes[2].set_ylabel("R²")
+    axes[2].set_title("R² by lead-time segment")
+    axes[2].axhline(0.0, color="black", linewidth=1)
+    axes[2].grid(axis="y", alpha=0.25)
+    axes[2].legend()
+
     if "rmse_skill_vs_persistence_pct" in table:
         skill = table["rmse_skill_vs_persistence_pct"].to_numpy(dtype=float)
         colors = np.where(skill >= 0.0, "tab:green", "tab:red")
-        skill_bars = axes[2].bar(x, skill, width=0.58, color=colors)
-        axes[2].bar_label(skill_bars, fmt="%+.1f%%", padding=3, fontsize=9)
-        axes[2].set_ylabel("RMSE skill vs persistence (%)")
-        axes[2].set_title("Positive values mean the model beats persistence")
+        skill_bars = axes[3].bar(x, skill, width=0.58, color=colors)
+        axes[3].bar_label(skill_bars, fmt="%+.1f%%", padding=3, fontsize=9)
+        axes[3].set_ylabel("RMSE skill vs persistence (%)")
+        axes[3].set_title("Positive values mean the model beats persistence")
     else:
-        r2_bars = axes[2].bar(x, table["r2"].to_numpy(dtype=float), width=0.58)
-        axes[2].bar_label(r2_bars, fmt="%.3f", padding=3, fontsize=9)
-        axes[2].set_ylabel("R2")
-        axes[2].set_title("R2 by lead-time segment")
-    axes[2].axhline(0.0, color="black", linewidth=1)
-    axes[2].grid(axis="y", alpha=0.25)
-    axes[2].set_xticks(x, labels)
+        axes[3].text(
+            0.5,
+            0.5,
+            "Skill unavailable without a persistence baseline",
+            ha="center",
+            va="center",
+            transform=axes[3].transAxes,
+        )
+    axes[3].axhline(0.0, color="black", linewidth=1)
+    axes[3].grid(axis="y", alpha=0.25)
+    axes[3].set_xticks(x, labels)
 
     fig.suptitle("Forecast performance by lead-time segment")
     fig.tight_layout()
@@ -818,6 +869,149 @@ def _plot_scatter(pred, true, output_dir, max_points=150000):
     plt.close(fig)
 
 
+def _plot_accuracy_overview(
+    pred,
+    true,
+    output_dir,
+    *,
+    persistence=None,
+    rated_power=None,
+    model_name="Forecast model",
+    max_points=150000,
+):
+    """Save one auditable overview of forecast fit and baseline-relative skill."""
+    model_metrics = forecast_metrics(pred, true, rated_power=rated_power)
+    persistence_metrics = (
+        forecast_metrics(persistence, true, rated_power=rated_power)
+        if persistence is not None
+        else None
+    )
+
+    flat_pred = np.asarray(pred, dtype=float).reshape(-1)
+    flat_true = np.asarray(true, dtype=float).reshape(-1)
+    finite = np.isfinite(flat_pred) & np.isfinite(flat_true)
+    flat_pred, flat_true = flat_pred[finite], flat_true[finite]
+    if len(flat_pred) > max_points:
+        rng = np.random.default_rng(2024)
+        selected = rng.choice(len(flat_pred), size=max_points, replace=False)
+        flat_pred, flat_true = flat_pred[selected], flat_true[selected]
+
+    fig, axes = plt.subplots(2, 2, figsize=(13, 10))
+    low = float(min(flat_pred.min(), flat_true.min()))
+    high = float(max(flat_pred.max(), flat_true.max()))
+    density = axes[0, 0].hexbin(
+        flat_true,
+        flat_pred,
+        gridsize=65,
+        bins="log",
+        mincnt=1,
+        cmap="viridis",
+    )
+    axes[0, 0].plot([low, high], [low, high], "r--", linewidth=1.4)
+    axes[0, 0].set_xlabel("True power (kW)")
+    axes[0, 0].set_ylabel("Predicted power (kW)")
+    axes[0, 0].set_title("Prediction–truth agreement")
+    fig.colorbar(density, ax=axes[0, 0], label="log10(count)")
+
+    metric_names = ["MAE", "RMSE"]
+    model_errors = [model_metrics["mae"], model_metrics["rmse"]]
+    x = np.arange(len(metric_names), dtype=float)
+    width = 0.36
+    model_bars = axes[0, 1].bar(
+        x - width / 2,
+        model_errors,
+        width,
+        label=model_name,
+        color="tab:blue",
+    )
+    axes[0, 1].bar_label(model_bars, fmt="%.2f", padding=3)
+    if persistence_metrics is not None:
+        baseline_errors = [
+            persistence_metrics["mae"],
+            persistence_metrics["rmse"],
+        ]
+        baseline_bars = axes[0, 1].bar(
+            x + width / 2,
+            baseline_errors,
+            width,
+            label="Persistence",
+            color="tab:orange",
+        )
+        axes[0, 1].bar_label(baseline_bars, fmt="%.2f", padding=3)
+    axes[0, 1].set_xticks(x, metric_names)
+    axes[0, 1].set_ylabel("Error (kW)")
+    axes[0, 1].set_title("Lower is better")
+    axes[0, 1].legend()
+    axes[0, 1].grid(axis="y", alpha=0.2)
+
+    r2_labels = [model_name]
+    r2_values = [model_metrics["r2"]]
+    r2_colors = ["tab:purple"]
+    if persistence_metrics is not None:
+        r2_labels.append("Persistence")
+        r2_values.append(persistence_metrics["r2"])
+        r2_colors.append("tab:orange")
+    r2_bars = axes[1, 0].bar(r2_labels, r2_values, color=r2_colors)
+    axes[1, 0].bar_label(r2_bars, fmt="%.3f", padding=3)
+    axes[1, 0].axhline(0.0, color="black", linewidth=1.0)
+    axes[1, 0].set_ylabel("R²")
+    axes[1, 0].set_title("Explained variance fit (higher is better)")
+    axes[1, 0].grid(axis="y", alpha=0.2)
+
+    if persistence_metrics is not None:
+        eps = np.finfo(float).eps
+        skill_values = [
+            100.0
+            * (
+                1.0
+                - model_metrics["mae"]
+                / max(persistence_metrics["mae"], eps)
+            ),
+            100.0
+            * (
+                1.0
+                - model_metrics["rmse"]
+                / max(persistence_metrics["rmse"], eps)
+            ),
+        ]
+        colors = ["tab:green" if value >= 0.0 else "tab:red" for value in skill_values]
+        skill_bars = axes[1, 1].bar(metric_names, skill_values, color=colors)
+        axes[1, 1].bar_label(skill_bars, fmt="%+.2f%%", padding=3)
+        axes[1, 1].axhline(0.0, color="black", linewidth=1.0)
+        axes[1, 1].set_ylabel("Skill vs persistence (%)")
+        axes[1, 1].set_title("Positive skill means improvement")
+    else:
+        axes[1, 1].axis("off")
+        axes[1, 1].text(
+            0.5,
+            0.5,
+            "Persistence baseline unavailable\nSkill cannot be computed",
+            ha="center",
+            va="center",
+            fontsize=12,
+            transform=axes[1, 1].transAxes,
+        )
+    axes[1, 1].grid(axis="y", alpha=0.2)
+
+    fig.suptitle(
+        f"Forecast accuracy overview — {model_name}\n"
+        f"MAE={model_metrics['mae']:.3f} kW | "
+        f"RMSE={model_metrics['rmse']:.3f} kW | "
+        f"R²={model_metrics['r2']:.4f}"
+    )
+    fig.tight_layout()
+    fig.savefig(
+        os.path.join(output_dir, "forecast_accuracy_overview.png"),
+        dpi=220,
+        bbox_inches="tight",
+    )
+    fig.savefig(
+        os.path.join(output_dir, "forecast_accuracy_overview.pdf"),
+        bbox_inches="tight",
+    )
+    plt.close(fig)
+
+
 def _plot_residuals(pred, true, output_dir, max_points=200000):
     residual = (pred - true).reshape(-1)
     if len(residual) > max_points:
@@ -909,6 +1103,66 @@ def save_training_history(records, output_dir, title="Training history"):
     fig.tight_layout()
     fig.savefig(os.path.join(output_dir, "training_curves.png"), dpi=180)
     plt.close(fig)
+
+    accuracy_columns = {
+        "val_mae_kw",
+        "val_rmse_kw",
+        "val_r2_original",
+        "val_mae_skill_original_pct",
+        "val_rmse_skill_original_pct",
+    }
+    if accuracy_columns.issubset(table.columns):
+        metric_fig, metric_axes = plt.subplots(
+            3, 1, figsize=(10, 11), sharex=True
+        )
+        metric_axes[0].plot(
+            table["epoch"], table["val_mae_kw"], marker="o", label="MAE"
+        )
+        metric_axes[0].plot(
+            table["epoch"], table["val_rmse_kw"], marker="o", label="RMSE"
+        )
+        metric_axes[0].set_ylabel("Error (kW)")
+        metric_axes[0].set_title("Validation MAE and RMSE")
+        metric_axes[0].legend()
+        metric_axes[1].plot(
+            table["epoch"],
+            table["val_r2_original"],
+            marker="o",
+            color="tab:purple",
+            label="R²",
+        )
+        metric_axes[1].axhline(0.0, color="black", linewidth=1.0)
+        metric_axes[1].set_ylabel("R²")
+        metric_axes[1].set_title("Validation R²")
+        metric_axes[1].legend()
+        metric_axes[2].plot(
+            table["epoch"],
+            table["val_mae_skill_original_pct"],
+            marker="o",
+            label="MAE skill",
+        )
+        metric_axes[2].plot(
+            table["epoch"],
+            table["val_rmse_skill_original_pct"],
+            marker="o",
+            label="RMSE skill",
+        )
+        metric_axes[2].axhline(0.0, color="black", linewidth=1.0)
+        metric_axes[2].set_ylabel("Skill vs persistence (%)")
+        metric_axes[2].set_xlabel("Epoch")
+        metric_axes[2].set_title("Validation skill")
+        metric_axes[2].legend()
+        for axis in metric_axes:
+            axis.grid(alpha=0.2)
+        metric_fig.suptitle("Validation forecast accuracy")
+        metric_fig.tight_layout()
+        metric_fig.savefig(
+            os.path.join(output_dir, "validation_accuracy.png"), dpi=180
+        )
+        metric_fig.savefig(
+            os.path.join(output_dir, "validation_accuracy.pdf")
+        )
+        plt.close(metric_fig)
 
 
 def build_forecast_report(
@@ -1061,6 +1315,14 @@ def build_forecast_report(
         model_name=model_name,
     )
     _plot_scatter(pred, true, output_dir)
+    _plot_accuracy_overview(
+        pred,
+        true,
+        output_dir,
+        persistence=persistence,
+        rated_power=rated_power,
+        model_name=model_name,
+    )
     _plot_residuals(pred, true, output_dir)
     _plot_per_turbine(turbine, output_dir)
     _plot_power_bins(power_bins, output_dir)

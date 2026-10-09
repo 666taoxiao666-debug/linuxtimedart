@@ -5,11 +5,32 @@ from pathlib import Path
 from scripts.summarize_sdwpf_cv import parse_summary, validate_matrix, write_reports
 
 
-def _epoch(epoch, mae, persistence, mae_skill, rmse_skill):
+def _epoch(
+    epoch,
+    mae,
+    persistence,
+    mae_skill,
+    rmse_skill,
+    *,
+    rmse=None,
+    r2=None,
+    persistence_rmse=None,
+    persistence_r2=None,
+):
+    model_details = ""
+    persistence_details = ""
+    if rmse is not None and r2 is not None:
+        model_details = f"Val RMSE(kW): {rmse} Val R2: {r2} "
+    if persistence_rmse is not None and persistence_r2 is not None:
+        persistence_details = (
+            f"Persist RMSE(kW): {persistence_rmse} "
+            f"Persist R2: {persistence_r2} "
+        )
     return (
         f"Epoch: {epoch}, Steps: 10, Time: 1.00s | Train Loss: 0.1 "
         f"Vali Loss: 0.2 Vali MSE: 0.3 Vali MAE: 0.4 "
-        f"Val MAE(kW): {mae} Persist MAE(kW): {persistence} "
+        f"Val MAE(kW): {mae} {model_details}"
+        f"Persist MAE(kW): {persistence} {persistence_details}"
         f"MAE Skill: {mae_skill:+.2f}% RMSE Skill: {rmse_skill:+.2f}% "
         f"Gate: 0.1 GradNorm: 0.2 LR(backbone/new): 1e-6/1e-5 "
         f"Select(original_mae): {mae}"
@@ -49,6 +70,37 @@ class SDWPFCVSummaryTests(unittest.TestCase):
             self.assertIn("ALL_BEST_CHECKPOINTS_BEAT_PERSISTENCE=0", report)
             self.assertIn("EPOCH_ZERO_SELECTED_RUNS=1", report)
             self.assertIn("BEST_EPOCH_COUNTS=0:1,1:1", report)
+
+    def test_new_metrics_are_written_to_csv_and_summary(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            source = root / "summary.txt"
+            source.write_text(
+                "===== CV fold=1 seed=2024 =====\n"
+                + _epoch(
+                    2,
+                    90.0,
+                    100.0,
+                    10.0,
+                    12.0,
+                    rmse=120.0,
+                    r2=0.75,
+                    persistence_rmse=140.0,
+                    persistence_r2=0.65,
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+            runs = parse_summary(source)
+            self.assertEqual(runs[0].rmse_kw, 120.0)
+            self.assertEqual(runs[0].r2, 0.75)
+            csv_path, summary_path = write_reports(runs, root)
+            csv_text = csv_path.read_text(encoding="utf-8")
+            summary = summary_path.read_text(encoding="utf-8")
+            self.assertIn("val_rmse_kw", csv_text)
+            self.assertIn("val_r2", csv_text)
+            self.assertIn("MACRO_VAL_RMSE_KW=120.000000", summary)
+            self.assertIn("MACRO_MEAN_VAL_R2=0.750000", summary)
 
     def test_incomplete_matrix_is_rejected(self):
         with tempfile.TemporaryDirectory() as temporary:

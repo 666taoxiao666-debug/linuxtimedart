@@ -27,6 +27,12 @@ def summarize(root):
                      "mae_on_kw": metrics["mae_on_kw"],
                      "mae_off_kw": metrics["mae_off_kw"],
                      "mae_gain_kw": metrics["mae_gain_kw"],
+                     "rmse_on_kw": metrics.get("rmse_on_kw"),
+                     "rmse_off_kw": metrics.get("rmse_off_kw"),
+                     "r2_on": metrics.get("r2_on"),
+                     "r2_off": metrics.get("r2_off"),
+                     "mae_skill_vs_off_pct": metrics.get("mae_skill_vs_off_pct"),
+                     "rmse_skill_vs_off_pct": metrics.get("rmse_skill_vs_off_pct"),
                      "null_false_intervention": data["actual_false_intervention_on_null"],
                      "null_max_delta_kw": data["null_max_prediction_delta_kw"]})
     lines = ["Paired Wiki diagnostic (validation; fixed checkpoint)",
@@ -35,10 +41,19 @@ def summarize(root):
              "Not a retrained trend-only ablation; not evidence for gate training.",
              f"Completed artifacts found: {len(rows)} (not a job-status check)"]
     for row in rows:
+        extra = ""
+        if row["rmse_on_kw"] is not None:
+            extra = (
+                f" rmse_on/off={row['rmse_on_kw']:.6f}/{row['rmse_off_kw']:.6f}"
+                f" r2_on/off={row['r2_on']:.6f}/{row['r2_off']:.6f}"
+                f" mae/rmse_skill={row['mae_skill_vs_off_pct']:+.3f}%/"
+                f"{row['rmse_skill_vs_off_pct']:+.3f}%"
+            )
         lines.append(f"fold={row['fold']} seed={row['seed']} windows={row['windows']} "
                      f"on={row['mae_on_kw']:.6f} off={row['mae_off_kw']:.6f} "
                      f"gain={row['mae_gain_kw']:+.6f} "
-                     f"null_intervention={row['null_false_intervention']}")
+                     f"null_intervention={row['null_false_intervention']}"
+                     f"{extra}")
     lines.append("Macro gain across available runs: "
                  f"{sum(r['mae_gain_kw'] for r in rows)/len(rows):+.6f} kW")
     lines.append("\nPer-run event/activation groups (overlap; do not sum groups):")

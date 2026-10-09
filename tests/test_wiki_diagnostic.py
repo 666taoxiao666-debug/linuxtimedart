@@ -79,8 +79,12 @@ class WikiDiagnosticTests(unittest.TestCase):
         truth = np.zeros((2, 2))
         result = group_metrics(on, off, truth, np.array([True, False]), "first")
         self.assertEqual(result["mae_gain_kw"], 1.)
+        self.assertEqual(result["mae_skill_vs_off_pct"], 50.0)
+        self.assertEqual(result["rmse_skill_vs_off_pct"], 50.0)
+        self.assertIn("r2_on", result)
         empty = group_metrics(on, off, truth, np.array([False, False]), "empty")
         self.assertIsNone(empty["mae_gain_kw"])
+        self.assertIsNone(empty["r2_on"])
 
     def test_delete_contribution_preserves_other_event_scale(self):
         class AdditiveRouter(torch.nn.Module):

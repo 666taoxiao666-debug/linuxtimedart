@@ -1551,8 +1551,14 @@ class Exp_TimeDART(Exp_Basic):
                 f"Vali MAE: {initial_validation['mae']:.7f} "
                 f"Val MAE({validation_unit}): "
                 f"{initial_validation['original_mae']:.3f} "
+                f"Val RMSE({validation_unit}): "
+                f"{initial_validation['original_rmse']:.3f} "
+                f"Val R2: {initial_validation['original_r2']:.6f} "
                 f"Persist MAE({validation_unit}): "
                 f"{initial_validation['original_persistence_mae']:.3f} "
+                f"Persist RMSE({validation_unit}): "
+                f"{initial_validation['original_persistence_rmse']:.3f} "
+                f"Persist R2: {initial_validation['original_persistence_r2']:.6f} "
                 f"MAE Skill: "
                 f"{initial_validation['original_mae_skill_vs_persistence_pct']:+.2f}% "
                 f"RMSE Skill: "
@@ -1598,11 +1604,15 @@ class Exp_TimeDART(Exp_Basic):
                     "val_loss": float(initial_validation["loss"]),
                     "val_mse": float(initial_validation["mse"]),
                     "val_mae": float(initial_validation["mae"]),
+                    "val_r2": float(initial_validation["r2"]),
                     "val_persistence_mse": float(
                         initial_validation["persistence_mse"]
                     ),
                     "val_persistence_mae": float(
                         initial_validation["persistence_mae"]
+                    ),
+                    "val_persistence_r2": float(
+                        initial_validation["persistence_r2"]
                     ),
                     "val_mae_skill_vs_persistence_pct": float(
                         initial_validation["mae_skill_vs_persistence_pct"]
@@ -1612,11 +1622,15 @@ class Exp_TimeDART(Exp_Basic):
                     ),
                     "val_mae_kw": float(initial_validation["original_mae"]),
                     "val_rmse_kw": float(initial_validation["original_rmse"]),
+                    "val_r2_original": float(initial_validation["original_r2"]),
                     "val_persistence_mae_kw": float(
                         initial_validation["original_persistence_mae"]
                     ),
                     "val_persistence_rmse_kw": float(
                         initial_validation["original_persistence_rmse"]
+                    ),
+                    "val_persistence_r2_original": float(
+                        initial_validation["original_persistence_r2"]
                     ),
                     "val_mae_skill_original_pct": float(
                         initial_validation[
@@ -1930,8 +1944,13 @@ class Exp_TimeDART(Exp_Basic):
                 f"Vali MSE: {validation['mse']:.7f} "
                 f"Vali MAE: {validation['mae']:.7f} "
                 f"Val MAE({validation_unit}): {validation['original_mae']:.3f} "
+                f"Val RMSE({validation_unit}): {validation['original_rmse']:.3f} "
+                f"Val R2: {validation['original_r2']:.6f} "
                 f"Persist MAE({validation_unit}): "
                 f"{validation['original_persistence_mae']:.3f} "
+                f"Persist RMSE({validation_unit}): "
+                f"{validation['original_persistence_rmse']:.3f} "
+                f"Persist R2: {validation['original_persistence_r2']:.6f} "
                 f"MAE Skill: {validation['original_mae_skill_vs_persistence_pct']:+.2f}% "
                 f"RMSE Skill: {validation['original_rmse_skill_vs_persistence_pct']:+.2f}% "
                 f"Gate: {validation['diagnostics'].get('residual_gate', 0.0):.5f} "
@@ -2098,8 +2117,10 @@ class Exp_TimeDART(Exp_Basic):
                     "val_mae": float(
                         validation["mae"]
                     ),
+                    "val_r2": float(validation["r2"]),
                     "val_persistence_mse": float(validation["persistence_mse"]),
                     "val_persistence_mae": float(validation["persistence_mae"]),
+                    "val_persistence_r2": float(validation["persistence_r2"]),
                     "val_mae_skill_vs_persistence_pct": float(
                         validation["mae_skill_vs_persistence_pct"]
                     ),
@@ -2108,11 +2129,15 @@ class Exp_TimeDART(Exp_Basic):
                     ),
                     "val_mae_kw": float(validation["original_mae"]),
                     "val_rmse_kw": float(validation["original_rmse"]),
+                    "val_r2_original": float(validation["original_r2"]),
                     "val_persistence_mae_kw": float(
                         validation["original_persistence_mae"]
                     ),
                     "val_persistence_rmse_kw": float(
                         validation["original_persistence_rmse"]
+                    ),
+                    "val_persistence_r2_original": float(
+                        validation["original_persistence_r2"]
                     ),
                     "val_mae_skill_original_pct": float(
                         validation["original_mae_skill_vs_persistence_pct"]
@@ -2541,6 +2566,10 @@ class Exp_TimeDART(Exp_Basic):
         original_persistence = forecast_metrics(
             persistence_original, true_original, rated_power=rated_power or None
         )
+        normalized_metrics = forecast_metrics(pred_scaled, true_scaled)
+        normalized_persistence = forecast_metrics(
+            persistence_scaled, true_scaled
+        )
         original_mae_skill = 100.0 * (
             1.0
             - original_metrics["mae"]
@@ -2559,11 +2588,15 @@ class Exp_TimeDART(Exp_Basic):
         )
         diagnostics[f"val_mae_{metric_suffix}"] = float(original_metrics["mae"])
         diagnostics[f"val_rmse_{metric_suffix}"] = float(original_metrics["rmse"])
+        diagnostics["val_r2_original"] = float(original_metrics["r2"])
         diagnostics[f"val_persistence_mae_{metric_suffix}"] = float(
             original_persistence["mae"]
         )
         diagnostics[f"val_persistence_rmse_{metric_suffix}"] = float(
             original_persistence["rmse"]
+        )
+        diagnostics["val_persistence_r2_original"] = float(
+            original_persistence["r2"]
         )
         diagnostics["val_mae_skill_original_pct"] = float(original_mae_skill)
         diagnostics["val_rmse_skill_original_pct"] = float(original_rmse_skill)
@@ -2608,12 +2641,23 @@ class Exp_TimeDART(Exp_Basic):
                 diagnostics[f"val_scene_{scene_id}_rmse_kw"] = float(
                     scene_metrics["rmse"]
                 )
+                diagnostics[f"val_scene_{scene_id}_r2"] = float(
+                    scene_metrics["r2"]
+                )
                 diagnostics[f"val_scene_{scene_id}_mae_skill_pct"] = float(
                     100.0
                     * (
                         1.0
                         - scene_metrics["mae"]
                         / max(scene_persistence["mae"], np.finfo(float).eps)
+                    )
+                )
+                diagnostics[f"val_scene_{scene_id}_rmse_skill_pct"] = float(
+                    100.0
+                    * (
+                        1.0
+                        - scene_metrics["rmse"]
+                        / max(scene_persistence["rmse"], np.finfo(float).eps)
                     )
                 )
         if wiki_activation_batches:
@@ -2840,12 +2884,21 @@ class Exp_TimeDART(Exp_Basic):
                 diagnostics["val_available_point_pct"] = float(100.0 * available.mean())
                 diagnostics["val_available_mae_kw"] = float(available_metrics["mae"])
                 diagnostics["val_available_rmse_kw"] = float(available_metrics["rmse"])
+                diagnostics["val_available_r2"] = float(available_metrics["r2"])
                 diagnostics["val_available_mae_skill_pct"] = float(
                     100.0
                     * (
                         1.0
                         - available_metrics["mae"]
                         / max(available_persistence["mae"], np.finfo(float).eps)
+                    )
+                )
+                diagnostics["val_available_rmse_skill_pct"] = float(
+                    100.0
+                    * (
+                        1.0
+                        - available_metrics["rmse"]
+                        / max(available_persistence["rmse"], np.finfo(float).eps)
                     )
                 )
         runtime = model_runtime_summary(self.model, self.args)
@@ -2881,16 +2934,20 @@ class Exp_TimeDART(Exp_Basic):
             "loss": vali_loss,
             "mse": model_mse,
             "mae": model_mae,
+            "r2": float(normalized_metrics["r2"]),
             "persistence_mse": persistence_mse,
             "persistence_mae": persistence_mae,
+            "persistence_r2": float(normalized_persistence["r2"]),
             "mae_skill_vs_persistence_pct": 100.0
             * (1.0 - model_mae / max(persistence_mae, eps)),
             "rmse_skill_vs_persistence_pct": 100.0
             * (1.0 - np.sqrt(model_mse) / max(np.sqrt(persistence_mse), eps)),
             "original_mae": float(original_metrics["mae"]),
             "original_rmse": float(original_metrics["rmse"]),
+            "original_r2": float(original_metrics["r2"]),
             "original_persistence_mae": float(original_persistence["mae"]),
             "original_persistence_rmse": float(original_persistence["rmse"]),
+            "original_persistence_r2": float(original_persistence["r2"]),
             "original_mae_skill_vs_persistence_pct": float(original_mae_skill),
             "original_rmse_skill_vs_persistence_pct": float(original_rmse_skill),
             "diagnostics": diagnostics,
@@ -3117,9 +3174,11 @@ class Exp_TimeDART(Exp_Basic):
                 print(
                     "  0-4 h  MAE="
                     f"{values['0_4h_mae']:.3f}  RMSE="
-                    f"{values['0_4h_rmse']:.3f}"
+                    f"{values['0_4h_rmse']:.3f}  R2="
+                    f"{values['0_4h_r2']:.4f}"
                     + (
                         f"  MAE_skill={values['0_4h_mae_skill_vs_persistence_pct']:+.2f}%"
+                        f"  RMSE_skill={values['0_4h_rmse_skill_vs_persistence_pct']:+.2f}%"
                         if "0_4h_mae_skill_vs_persistence_pct" in values
                         else ""
                     )
@@ -3128,7 +3187,8 @@ class Exp_TimeDART(Exp_Basic):
                 print(
                     "  4-16 h MAE="
                     f"{values['4_16h_mae']:.3f}  RMSE="
-                    f"{values['4_16h_rmse']:.3f}"
+                    f"{values['4_16h_rmse']:.3f}  R2="
+                    f"{values['4_16h_r2']:.4f}"
                     "  (no NWP; not a SOTA claim)"
                 )
 
@@ -3158,7 +3218,8 @@ class Exp_TimeDART(Exp_Basic):
                 f"->{self.args.pred_len} | "
                 f"normalized "
                 f"RMSE={values['rmse']:.6f}, "
-                f"MAE={values['mae']:.6f}"
+                f"MAE={values['mae']:.6f}, "
+                f"R2={values['r2']:.6f}"
             )
 
         checkpoint_path = getattr(

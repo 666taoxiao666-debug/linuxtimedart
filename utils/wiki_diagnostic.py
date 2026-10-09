@@ -9,6 +9,7 @@ from torch.utils.data import SequentialSampler
 
 from utils.forecast_report import inverse_transform_target, _window_metadata
 from utils.experiment_audit import checkpoint_info
+from utils.metrics import forecast_metrics
 
 
 def paired_forward(model, router, x):
@@ -46,13 +47,26 @@ def group_metrics(on, off, truth, mask, name):
     if not n:
         return {**row, "mae_on_kw": None, "mae_off_kw": None,
                 "mae_gain_kw": None, "rmse_on_kw": None,
-                "rmse_off_kw": None, "win_fraction": None}
+                "rmse_off_kw": None, "r2_on": None, "r2_off": None,
+                "mae_skill_vs_off_pct": None,
+                "rmse_skill_vs_off_pct": None, "win_fraction": None}
     a, b = on[mask] - truth[mask], off[mask] - truth[mask]
     aw, bw = np.abs(a).mean(axis=1), np.abs(b).mean(axis=1)
+    on_metrics = forecast_metrics(on[mask], truth[mask])
+    off_metrics = forecast_metrics(off[mask], truth[mask])
+    eps = np.finfo(float).eps
     return {**row, "mae_on_kw": float(aw.mean()),
             "mae_off_kw": float(bw.mean()), "mae_gain_kw": float((bw-aw).mean()),
             "rmse_on_kw": float(np.sqrt(np.mean(a*a))),
             "rmse_off_kw": float(np.sqrt(np.mean(b*b))),
+            "r2_on": float(on_metrics["r2"]),
+            "r2_off": float(off_metrics["r2"]),
+            "mae_skill_vs_off_pct": float(
+                100.0 * (1.0 - on_metrics["mae"] / max(off_metrics["mae"], eps))
+            ),
+            "rmse_skill_vs_off_pct": float(
+                100.0 * (1.0 - on_metrics["rmse"] / max(off_metrics["rmse"], eps))
+            ),
             "win_fraction": float((aw < bw).mean())}
 
 
@@ -71,6 +85,9 @@ def summarize_intervention_policy(on, off, truth, supported, active):
     intervention_window = active.any(axis=1)
     window_gain = np.abs(off - truth).mean(axis=1) - np.abs(on - truth).mean(axis=1)
     selected = window_gain[intervention_window]
+    on_metrics = forecast_metrics(on, truth)
+    off_metrics = forecast_metrics(off, truth)
+    eps = np.finfo(float).eps
     return {
         "windows": int(len(on)),
         "candidate_coverage_pct": float(100.0 * candidate_window.mean()),
@@ -78,6 +95,16 @@ def summarize_intervention_policy(on, off, truth, supported, active):
         "abstention_pct": float(100.0 * (~intervention_window).mean()),
         "overall_mae_on_kw": float(np.abs(on - truth).mean()),
         "overall_mae_off_kw": float(np.abs(off - truth).mean()),
+        "overall_rmse_on_kw": float(on_metrics["rmse"]),
+        "overall_rmse_off_kw": float(off_metrics["rmse"]),
+        "overall_r2_on": float(on_metrics["r2"]),
+        "overall_r2_off": float(off_metrics["r2"]),
+        "overall_mae_skill_vs_off_pct": float(
+            100.0 * (1.0 - on_metrics["mae"] / max(off_metrics["mae"], eps))
+        ),
+        "overall_rmse_skill_vs_off_pct": float(
+            100.0 * (1.0 - on_metrics["rmse"] / max(off_metrics["rmse"], eps))
+        ),
         "overall_gain_kw": float(window_gain.mean()),
         "selected_windows": int(intervention_window.sum()),
         "selected_gain_kw": float(selected.mean()) if selected.size else None,
@@ -132,6 +159,9 @@ def summarize_factorized_intervention_policy(on, off, truth, availability, actio
     candidate_windows = candidate.any(axis=1)
     selected_point_gain = point_gain[chosen]
     selected_window_gain = window_gain[active_windows]
+    on_metrics = forecast_metrics(on, truth)
+    off_metrics = forecast_metrics(off, truth)
+    eps = np.finfo(float).eps
     return {
         "windows": int(len(on)),
         "forecast_points": int(on.size),
@@ -143,6 +173,16 @@ def summarize_factorized_intervention_policy(on, off, truth, availability, actio
         "abstention_point_pct": float(100.0 * (~chosen).mean()),
         "overall_mae_on_kw": float(np.abs(on - truth).mean()),
         "overall_mae_off_kw": float(np.abs(off - truth).mean()),
+        "overall_rmse_on_kw": float(on_metrics["rmse"]),
+        "overall_rmse_off_kw": float(off_metrics["rmse"]),
+        "overall_r2_on": float(on_metrics["r2"]),
+        "overall_r2_off": float(off_metrics["r2"]),
+        "overall_mae_skill_vs_off_pct": float(
+            100.0 * (1.0 - on_metrics["mae"] / max(off_metrics["mae"], eps))
+        ),
+        "overall_rmse_skill_vs_off_pct": float(
+            100.0 * (1.0 - on_metrics["rmse"] / max(off_metrics["rmse"], eps))
+        ),
         "overall_gain_kw": float(point_gain.mean()),
         "selected_windows": int(active_windows.sum()),
         "selected_points": int(chosen.sum()),

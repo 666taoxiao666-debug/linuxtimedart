@@ -9,7 +9,11 @@ import torch
 
 from run import build_parser, configure_args
 from models.TimeDART import PromptGuidedModel
-from utils.forecast_report import _plot_continuous_forecast
+from utils.forecast_report import (
+    _plot_accuracy_overview,
+    _plot_continuous_forecast,
+    save_training_history,
+)
 from utils.regime_labels import (
     calibrate_regime_thresholds_from_dataset,
     compute_regime_pseudo_labels_from_series,
@@ -144,6 +148,42 @@ class RegimeCalibrationTests(unittest.TestCase):
 
 
 class ForecastTraceTests(unittest.TestCase):
+    def test_accuracy_overview_and_training_metric_plots_are_saved(self):
+        truth = np.linspace(0.0, 1500.0, 120).reshape(10, 12)
+        pred = truth + 15.0
+        persistence = truth - 25.0
+        records = [
+            {
+                "epoch": epoch,
+                "train_loss": 1.0 / (epoch + 1),
+                "val_loss": 1.1 / (epoch + 1),
+                "val_mse": 0.5 / (epoch + 1),
+                "val_mae": 0.4 / (epoch + 1),
+                "val_mae_kw": 100.0 - epoch,
+                "val_rmse_kw": 150.0 - epoch,
+                "val_r2_original": 0.5 + 0.01 * epoch,
+                "val_mae_skill_original_pct": 1.0 + epoch,
+                "val_rmse_skill_original_pct": 2.0 + epoch,
+                "learning_rate": 1e-4,
+            }
+            for epoch in range(3)
+        ]
+        with tempfile.TemporaryDirectory() as temporary:
+            _plot_accuracy_overview(
+                pred,
+                truth,
+                temporary,
+                persistence=persistence,
+                rated_power=1500.0,
+                model_name="UnitTest",
+            )
+            save_training_history(records, temporary)
+            output = Path(temporary)
+            self.assertTrue((output / "forecast_accuracy_overview.png").is_file())
+            self.assertTrue((output / "forecast_accuracy_overview.pdf").is_file())
+            self.assertTrue((output / "validation_accuracy.png").is_file())
+            self.assertTrue((output / "validation_accuracy.pdf").is_file())
+
     def test_trace_png_pdf_csv_and_selection_are_saved(self):
         windows = 13
         horizon = 12

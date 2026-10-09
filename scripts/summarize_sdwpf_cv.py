@@ -20,11 +20,19 @@ RUN_RE = re.compile(r"^===== CV fold=(?P<fold>\d+) seed=(?P<seed>\d+) =====$")
 EPOCH_RE = re.compile(
     r"^Epoch:\s*(?P<epoch>\d+),\s*Steps:\s*\d+.*?"
     r"Val MAE\(kW\):\s*(?P<mae>[-+0-9.eE]+)\s+"
+    r".*?"
     r"Persist MAE\(kW\):\s*(?P<persistence>[-+0-9.eE]+)\s+"
+    r".*?"
     r"MAE Skill:\s*(?P<mae_skill>[-+0-9.eE]+)%\s+"
     r"RMSE Skill:\s*(?P<rmse_skill>[-+0-9.eE]+)%.*?"
     r"Select\([^)]*\):\s*(?P<selection>[-+0-9.eE]+)"
 )
+VAL_RMSE_RE = re.compile(r"Val RMSE\(kW\):\s*(?P<value>[-+0-9.eE]+)")
+VAL_R2_RE = re.compile(r"Val R2:\s*(?P<value>[-+0-9.eE]+)")
+PERSISTENCE_RMSE_RE = re.compile(
+    r"Persist RMSE\(kW\):\s*(?P<value>[-+0-9.eE]+)"
+)
+PERSISTENCE_R2_RE = re.compile(r"Persist R2:\s*(?P<value>[-+0-9.eE]+)")
 
 
 @dataclass(frozen=True)
@@ -33,7 +41,11 @@ class CVRun:
     seed: int
     best_epoch: int
     mae_kw: float
+    rmse_kw: float | None
+    r2: float | None
     persistence_mae_kw: float
+    persistence_rmse_kw: float | None
+    persistence_r2: float | None
     mae_skill_pct: float
     rmse_skill_pct: float
     selection_value: float
@@ -42,9 +54,26 @@ class CVRun:
     def absolute_gain_kw(self) -> float:
         return self.persistence_mae_kw - self.mae_kw
 
+    @property
+    def absolute_rmse_gain_kw(self) -> float | None:
+        if self.rmse_kw is None or self.persistence_rmse_kw is None:
+            return None
+        return self.persistence_rmse_kw - self.rmse_kw
+
+    @property
+    def r2_gain(self) -> float | None:
+        if self.r2 is None or self.persistence_r2 is None:
+            return None
+        return self.r2 - self.persistence_r2
+
 
 def _values(text: str) -> list[int]:
     return [int(value) for value in re.split(r"[\s,]+", text.strip()) if value]
+
+
+def _optional_metric(pattern: re.Pattern[str], line: str) -> float | None:
+    match = pattern.search(line)
+    return float(match.group("value")) if match else None
 
 
 def parse_summary(path: Path) -> list[CVRun]:
@@ -73,7 +102,13 @@ def parse_summary(path: Path) -> list[CVRun]:
                     seed=current[1],
                     best_epoch=int(epoch.group("epoch")),
                     mae_kw=float(epoch.group("mae")),
+                    rmse_kw=_optional_metric(VAL_RMSE_RE, line),
+                    r2=_optional_metric(VAL_R2_RE, line),
                     persistence_mae_kw=float(epoch.group("persistence")),
+                    persistence_rmse_kw=_optional_metric(
+                        PERSISTENCE_RMSE_RE, line
+                    ),
+                    persistence_r2=_optional_metric(PERSISTENCE_R2_RE, line),
                     mae_skill_pct=float(epoch.group("mae_skill")),
                     rmse_skill_pct=float(epoch.group("rmse_skill")),
                     selection_value=float(epoch.group("selection")),
@@ -125,8 +160,14 @@ def write_reports(runs: list[CVRun], output_dir: Path) -> tuple[Path, Path]:
                 "seed",
                 "best_epoch",
                 "val_mae_kw",
+                "val_rmse_kw",
+                "val_r2",
                 "persistence_mae_kw",
+                "persistence_rmse_kw",
+                "persistence_r2",
                 "absolute_gain_kw",
+                "absolute_rmse_gain_kw",
+                "r2_gain",
                 "mae_skill_pct",
                 "rmse_skill_pct",
                 "selection_value",
@@ -139,8 +180,26 @@ def write_reports(runs: list[CVRun], output_dir: Path) -> tuple[Path, Path]:
                     run.seed,
                     run.best_epoch,
                     f"{run.mae_kw:.6f}",
+                    "" if run.rmse_kw is None else f"{run.rmse_kw:.6f}",
+                    "" if run.r2 is None else f"{run.r2:.6f}",
                     f"{run.persistence_mae_kw:.6f}",
+                    (
+                        ""
+                        if run.persistence_rmse_kw is None
+                        else f"{run.persistence_rmse_kw:.6f}"
+                    ),
+                    (
+                        ""
+                        if run.persistence_r2 is None
+                        else f"{run.persistence_r2:.6f}"
+                    ),
                     f"{run.absolute_gain_kw:.6f}",
+                    (
+                        ""
+                        if run.absolute_rmse_gain_kw is None
+                        else f"{run.absolute_rmse_gain_kw:.6f}"
+                    ),
+                    "" if run.r2_gain is None else f"{run.r2_gain:.6f}",
                     f"{run.mae_skill_pct:.6f}",
                     f"{run.rmse_skill_pct:.6f}",
                     f"{run.selection_value:.7f}",
@@ -170,6 +229,34 @@ def write_reports(runs: list[CVRun], output_dir: Path) -> tuple[Path, Path]:
         f"MEAN_REPORTED_MAE_SKILL_PCT={_mean(r.mae_skill_pct for r in runs):.6f}",
         f"MEAN_REPORTED_RMSE_SKILL_PCT={_mean(r.rmse_skill_pct for r in runs):.6f}",
     ]
+    if all(
+        run.rmse_kw is not None and run.persistence_rmse_kw is not None
+        for run in runs
+    ):
+        mean_rmse = _mean(run.rmse_kw for run in runs)
+        mean_persistence_rmse = _mean(run.persistence_rmse_kw for run in runs)
+        lines.extend(
+            [
+                f"MACRO_VAL_RMSE_KW={mean_rmse:.6f}",
+                f"MACRO_PERSISTENCE_RMSE_KW={mean_persistence_rmse:.6f}",
+                "MACRO_ABSOLUTE_RMSE_GAIN_KW="
+                f"{_mean(run.absolute_rmse_gain_kw for run in runs):.6f}",
+                "MACRO_RMSE_SKILL_RATIO_PCT="
+                f"{100.0 * (1.0 - mean_rmse / mean_persistence_rmse):.6f}",
+            ]
+        )
+    if all(
+        run.r2 is not None and run.persistence_r2 is not None
+        for run in runs
+    ):
+        lines.extend(
+            [
+                f"MACRO_MEAN_VAL_R2={_mean(run.r2 for run in runs):.6f}",
+                "MACRO_MEAN_PERSISTENCE_R2="
+                f"{_mean(run.persistence_r2 for run in runs):.6f}",
+                f"MACRO_MEAN_R2_GAIN={_mean(run.r2_gain for run in runs):.6f}",
+            ]
+        )
 
     fold_sds = []
     for fold in sorted({run.fold for run in runs}):
@@ -186,6 +273,21 @@ def write_reports(runs: list[CVRun], output_dir: Path) -> tuple[Path, Path]:
                 f"{prefix}_RMSE_SKILL_MEAN_PCT={_mean(r.rmse_skill_pct for r in fold_runs):.6f}",
             ]
         )
+        if all(
+            run.rmse_kw is not None
+            and run.persistence_rmse_kw is not None
+            and run.r2 is not None
+            for run in fold_runs
+        ):
+            lines.extend(
+                [
+                    f"{prefix}_VAL_RMSE_MEAN_KW={_mean(r.rmse_kw for r in fold_runs):.6f}",
+                    f"{prefix}_VAL_RMSE_SEED_SD_KW={_sample_sd(r.rmse_kw for r in fold_runs):.6f}",
+                    f"{prefix}_MEAN_VAL_R2={_mean(r.r2 for r in fold_runs):.6f}",
+                    f"{prefix}_ABSOLUTE_RMSE_GAIN_MEAN_KW={_mean(r.absolute_rmse_gain_kw for r in fold_runs):.6f}",
+                    f"{prefix}_R2_GAIN_MEAN={_mean(r.r2_gain for r in fold_runs):.6f}",
+                ]
+            )
     lines.append(f"MAX_WITHIN_FOLD_SEED_MAE_SD_KW={max(fold_sds):.6f}")
     text_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
     return csv_path, text_path
