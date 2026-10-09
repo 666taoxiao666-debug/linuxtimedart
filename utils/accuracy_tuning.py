@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import math
-from datetime import datetime
+import numpy as np
 
 
 def verify_inner_manifest(manifest, plan, expected_stage):
@@ -23,9 +23,13 @@ def verify_inner_manifest(manifest, plan, expected_stage):
         if not math.isclose(float(args[f"sdwpf_{name}_ratio"]), float(plan[f"inner_{name}_ratio"]), abs_tol=1e-12):
             raise ValueError("Inner split ratios changed")
     boundaries = manifest["datasets"]["train"]
-    fit = datetime.fromisoformat(boundaries["train_cutoff"])
-    selection = datetime.fromisoformat(boundaries["val_cutoff"])
-    outer = datetime.fromisoformat(plan["outer_train_cutoff"])
+    # Dataset manifests use NumPy's nine-digit nanosecond timestamps; Python
+    # 3.10 datetime.fromisoformat only accepts three or six fractional digits.
+    fit = np.datetime64(boundaries["train_cutoff"], "ns")
+    selection = np.datetime64(boundaries["val_cutoff"], "ns")
+    outer = np.datetime64(plan["outer_train_cutoff"], "ns")
+    if any(np.isnat(value) for value in (fit, selection, outer)):
+        raise ValueError("Inner boundaries must be real timestamps")
     if not fit < selection < outer:
         raise ValueError("Inner selection touches outer validation")
 

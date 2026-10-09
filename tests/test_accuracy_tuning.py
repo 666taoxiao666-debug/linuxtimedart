@@ -37,14 +37,14 @@ class AccuracyTuningTests(unittest.TestCase):
     def test_inner_boundary_and_data_hash_are_required(self):
         plan = {"sdwpf_fold": 1, "seed": 2024, "outer_data_sha256": "data",
                 "inner_train_ratio": .58, "inner_val_ratio": .07,
-                "outer_train_cutoff": "2023-06-30T00:00:00"}
+                "outer_train_cutoff": "2023-06-30T00:00:00.000000000"}
         manifest = {"stage": "finetune", "extra": {"status": "complete"},
                     "args": {"data": "SDWPF", "model": "PromptTimeDART", "prompt_router": "trend",
                              "sdwpf_split": "time_ratio", "sdwpf_fold": 1, "seed": 2024,
                              "sdwpf_train_ratio": .58, "sdwpf_val_ratio": .07},
                     "data_file": {"sha256": "data"},
-                    "datasets": {"train": {"train_cutoff": "2023-05-10T00:00:00",
-                                            "val_cutoff": "2023-06-01T00:00:00"}}}
+                    "datasets": {"train": {"train_cutoff": "2023-05-10T00:00:00.000000000",
+                                            "val_cutoff": "2023-06-01T00:00:00.000000000"}}}
         verify_inner_manifest(manifest, plan, "finetune")
         bad = copy.deepcopy(manifest)
         bad["datasets"]["train"]["val_cutoff"] = plan["outer_train_cutoff"]
