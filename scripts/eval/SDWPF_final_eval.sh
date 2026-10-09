@@ -94,6 +94,9 @@ case "${EVAL_SPLIT}" in
 esac
 
 PLOT_ARGS=(--forecast_plot_points "${FORECAST_PLOT_POINTS}")
+if [[ "${CONSISTENT_PHYSICS_NORM:-0}" == "1" ]]; then
+    PLOT_ARGS+=(--consistent_physics_norm)
+fi
 if [[ "${ROBUST_PITCH}" == "1" ]]; then
     PLOT_ARGS+=(--sdwpf_robust_pitch)
 fi

@@ -23,6 +23,7 @@ from layers.TimeDART_EncDec import (
 )
 from layers.Embed import Patch, PatchEmbedding, PositionalEncoding, TokenEmbedding_TimeDART
 from utils.regime_labels import compute_regime_pseudo_labels_from_series
+from utils.physics_normalization import normalize_history
 from utils.utility_wiki import EvidenceResidualAdapter
 from utils.factorized_wiki import (
     FactorizedEvidenceAdapter,
@@ -89,6 +90,7 @@ class Model(nn.Module):
         self.task_name = args.task_name
         self.pred_len = args.pred_len
         self.use_norm = args.use_norm
+        self.consistent_physics_norm = bool(getattr(args, "consistent_physics_norm", False))
         self.residual_forecast = getattr(args, "residual_forecast", False)
         self.residual_gate_init = float(getattr(args, "residual_gate_init", -4.0))
         self.residual_gate_logit = (
@@ -928,26 +930,11 @@ class Model(nn.Module):
         label_source = x
 
         if self.use_norm:
-            # Instance Normalization
-            means = torch.mean(
-                x,
-                dim=1,
-                keepdim=True,
-            ).detach()
-
-            x = x - means
-
-            stdevs = torch.sqrt(
-                torch.var(
-                    x,
-                    dim=1,
-                    keepdim=True,
-                    unbiased=False,
-                )
-                + 1e-5
-            ).detach()
-
-            x = x / stdevs
+            # Legacy checkpoints keep their historical all-channel RevIN.
+            # New matched runs retain absolute wind in BOTH stages, including
+            # correct inverse statistics for the reconstruction objective.
+            keep = self.revin_keep_indices if self.consistent_physics_norm else ()
+            x, means, stdevs = normalize_history(x, keep)
 
         # Channel Independence
         x = self.channel_independence(x)
@@ -1145,29 +1132,10 @@ class Model(nn.Module):
         )
 
         if self.use_norm:
-            x_raw = x
-            means = torch.mean(
-                x,
-                dim=1,
-                keepdim=True,
-            ).detach()
-
-            x = x - means
-
-            stdevs = torch.sqrt(
-                torch.var(
-                    x,
-                    dim=1,
-                    keepdim=True,
-                    unbiased=False,
-                )
-                + 1e-5
-            ).detach()
-
-            x = x / stdevs
-            if self.revin_keep_indices:
-                x = x.clone()
-                x[:, :, self.revin_keep_indices] = x_raw[:, :, self.revin_keep_indices]
+            x, means, stdevs = normalize_history(
+                x, self.revin_keep_indices,
+                identity_inverse_for_kept=self.consistent_physics_norm,
+            )
 
         x = self.channel_independence(x)
         x = self.patch(x)

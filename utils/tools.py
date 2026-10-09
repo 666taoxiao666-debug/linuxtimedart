@@ -231,6 +231,16 @@ def transfer_weights(
     """
 
     checkpoint = torch.load(weights_path, map_location=device)
+    # Older checkpoints have no flag and retain the legacy convention. For
+    # new runs, tensor shapes alone cannot establish normalization identity.
+    from utils.physics_normalization import check_normalization_contract
+    source_contract = checkpoint if isinstance(checkpoint, dict) else {}
+    if "consistent_physics_norm" not in source_contract:
+        manifest_path = os.path.join(os.path.dirname(weights_path), "run_manifest.json")
+        if os.path.isfile(manifest_path):
+            with open(manifest_path, "r", encoding="utf-8") as handle:
+                source_contract = json.load(handle).get("args", {})
+    check_normalization_contract(source_contract, model)
     if isinstance(checkpoint, dict):
         source_router = checkpoint.get("prompt_router")
         target_router = getattr(model, "prompt_router", None)

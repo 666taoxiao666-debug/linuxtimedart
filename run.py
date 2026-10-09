@@ -182,6 +182,10 @@ def build_parser():
     )
 
     # Checkpoints
+    parser.add_argument(
+        "--consistent_physics_norm", action=argparse.BooleanOptionalAction, default=False,
+        help="retain absolute wind in matched pretraining and forecasting; requires new pretraining",
+    )
     parser.add_argument("--checkpoints", default="./outputs/checkpoints/")
     parser.add_argument("--pretrain_checkpoints", default="./outputs/pretrain_checkpoints/")
     parser.add_argument("--transfer_checkpoints", default="ckpt_best.pth")
@@ -728,6 +732,8 @@ def pretrain_signature(args):
                 f"seed{args.seed}",
             ]
         )
+    if getattr(args, "consistent_physics_norm", False):
+        parts.append("physnorm1")
     if str(getattr(args, "pretrain_run_id", "")).strip():
         parts.append(f"rid{args.pretrain_run_id}")
     return bounded_component("_".join(str(part) for part in parts))
@@ -895,6 +901,11 @@ def configure_args(args):
         raise ValueError("fixed_finetune_epoch must be between 0 and train_epochs")
     if args.fixed_finetune_epoch and (args.task_name != "finetune" or args.utility_wiki):
         raise ValueError("fixed_finetune_epoch currently supports non-utility fine-tuning only")
+    if args.consistent_physics_norm and not (
+        args.data == "SDWPF" and args.model in ("TimeDART", "PromptTimeDART")
+        and args.features == "MS" and args.use_norm and args.revin_keep_wind
+    ):
+        raise ValueError("consistent_physics_norm requires SDWPF MS TimeDART, use_norm and revin_keep_wind")
     if args.utility_loss_weight < 0.0:
         raise ValueError("utility_loss_weight cannot be negative")
     for name in ("utility_event_max_scale", "utility_composition_max_scale"):
@@ -1224,6 +1235,9 @@ def load_finetuned_model(exp, checkpoint_path):
         with open(manifest_path, "r", encoding="utf-8") as handle:
             manifest = json.load(handle)
         training_args = manifest.get("args", {})
+        from utils.physics_normalization import check_normalization_contract
+        core_model = exp.model.module if isinstance(exp.model, torch.nn.DataParallel) else exp.model
+        check_normalization_contract(training_args, core_model)
         exp.args.checkpoint_training_args = training_args
         critical_keys = (
             "model",
@@ -1243,6 +1257,7 @@ def load_finetuned_model(exp, checkpoint_path):
             "sdwpf_robust_pitch",
             "mix_channels",
             "residual_forecast",
+            "consistent_physics_norm",
             "ramp_residual",
             "ramp_residual_max_scale",
             "ramp_gate_mode",
@@ -1302,6 +1317,8 @@ def load_finetuned_model(exp, checkpoint_path):
         exp.args.loaded_finetune_manifest = os.path.abspath(manifest_path)
         print(f"Loaded training manifest: {os.path.abspath(manifest_path)}")
     else:
+        if getattr(exp.args, "consistent_physics_norm", False):
+            raise ValueError("Physics-normalization evaluation requires a matching run_manifest.json")
         print(
             "[WARNING] Fine-tuned checkpoint has no run_manifest.json; "
             "training loss/LR/data provenance cannot be verified."

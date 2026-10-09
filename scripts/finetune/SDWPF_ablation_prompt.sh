@@ -37,6 +37,7 @@ POWER_WEIGHT_ALPHA="${POWER_WEIGHT_ALPHA:-0.0}"
 EARLY_STOP_METRIC="${EARLY_STOP_METRIC:-original_mae}"
 RATED_POWER="${RATED_POWER:-1500}"
 ROBUST_PITCH="${ROBUST_PITCH:-0}"
+CONSISTENT_PHYSICS_NORM="${CONSISTENT_PHYSICS_NORM:-0}"
 RAMP_RESIDUAL="${RAMP_RESIDUAL:-0}"
 RAMP_RESIDUAL_MAX_SCALE="${RAMP_RESIDUAL_MAX_SCALE:-0.5}"
 RAMP_GATE_MODE="${RAMP_GATE_MODE:-all}"
@@ -109,6 +110,9 @@ LOG_PARAMETERS="rpt${ROBUST_PITCH}_ramp${RAMP_RESIDUAL}_rgm${RAMP_GATE_MODE}_rma
 if [[ "${FIXED_FINETUNE_EPOCH}" != "0" ]]; then
     LOG_PARAMETERS="fixedep${FIXED_FINETUNE_EPOCH}_${LOG_PARAMETERS}"
 fi
+if [[ "${CONSISTENT_PHYSICS_NORM}" == "1" ]]; then
+    LOG_PARAMETERS="physnorm1_${LOG_PARAMETERS}"
+fi
 sdwpf_log_init "finetune" "${LOG_PARAMETERS}" "finetune.log" "${RUN_ID}"
 sdwpf_log_install_exit_trap
 LOG_ENV_FILE="$(sdwpf_log_sidecar env)"
@@ -136,6 +140,7 @@ LOG_SUMMARY_FILE="$(sdwpf_log_sidecar summary.txt)"
     echo "EVAL_STRIDE=${EVAL_STRIDE}"
     echo "TRAIN_EPOCHS=${TRAIN_EPOCHS}"
     echo "FIXED_FINETUNE_EPOCH=${FIXED_FINETUNE_EPOCH}"
+    echo "CONSISTENT_PHYSICS_NORM=${CONSISTENT_PHYSICS_NORM}"
     echo "LEARNING_RATE=${LEARNING_RATE}"
     echo "NEW_MODULE_LEARNING_RATE=${NEW_MODULE_LEARNING_RATE}"
     echo "PCT_START=${PCT_START}"
@@ -241,6 +246,9 @@ if [[ "${REVIN_KEEP_WIND}" == "1" ]]; then
     EXTRA+=(--revin_keep_wind)
 else
     EXTRA+=(--no-revin_keep_wind)
+fi
+if [[ "${CONSISTENT_PHYSICS_NORM}" == "1" ]]; then
+    EXTRA+=(--consistent_physics_norm)
 fi
 if [[ "${REGIME_PROMPT}" == "0" ]]; then
     EXTRA+=(--disable_regime_prompt)

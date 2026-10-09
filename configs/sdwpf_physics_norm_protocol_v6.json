@@ -1,0 +1,20 @@
+{
+  "protocol_id": "sdwpf_h12_matched_physics_normalization_pilot_v6",
+  "status": "exploratory_training_period_pilot",
+  "fold": 1,
+  "seed": 2024,
+  "input_len": 336,
+  "pred_len": 12,
+  "model": "PromptTimeDART",
+  "prompt_router": "trend",
+  "utility_wiki": false,
+  "consistent_physics_norm": true,
+  "inner_fit_fraction_of_outer_train": 0.8,
+  "inner_selection_fraction_of_outer_train": 0.1,
+  "reference_protocol_sha256": "dceead34bd1269a6554cf22847fe07f8bc9302dc9a55ae3732b87a16ac4fd739",
+  "pretraining": {"epochs": 20, "patience": 3, "learning_rate": 0.0001, "pred_len": 24},
+  "finetuning": {"schedule_epochs": 8, "fixed_epoch": 8, "learning_rate": 0.000001, "new_module_learning_rate": 0.000005, "pct_start": 0.2},
+  "objective": {"mix_mse_weight": 0.2, "horizon_weight_end": 1.0, "power_weight_alpha": 0.0},
+  "decision": "Compare final epoch8 against completed v5 reference epoch8 on identical internal targets. MAE and RMSE must both improve; otherwise stop. No outer refit is launched by this pilot.",
+  "scope_note": "Only pretraining normalization changes: absolute globally-standardized Wspd is retained consistently with forecasting, and its reconstruction inverse uses mean0/scale1. Forecast preprocessing/power residuals, losses, LR, seed, data labels, split and Wiki thresholds are unchanged. New matched pretraining is necessary, not a repeated run of the old pretrain. Internal selection was previously inspected and this is development evidence, not an untouched confirmation set. No outer validation/test is evaluated."
+}

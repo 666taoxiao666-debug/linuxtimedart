@@ -5,6 +5,34 @@ import math
 import numpy as np
 
 
+def compare_fixed_epoch(reference, candidate, epoch):
+    """One predeclared epoch comparison, not a new validation epoch search."""
+    keys = ("val_mae_kw", "val_rmse_kw", "val_r2_original",
+            "val_mae_skill_original_pct", "val_rmse_skill_original_pct",
+            "val_persistence_mae_kw", "val_persistence_rmse_kw")
+    def extract(history):
+        rows = [row for row in history if int(row["epoch"]) == epoch]
+        if len(rows) != 1:
+            raise ValueError("Fixed epoch must have exactly one complete history row")
+        values = {key: float(rows[0][key]) for key in keys}
+        if not all(math.isfinite(value) for value in values.values()):
+            raise ValueError("Nonfinite comparison metric")
+        if any(values[key] <= 0 for key in ("val_mae_kw", "val_rmse_kw",
+                "val_persistence_mae_kw", "val_persistence_rmse_kw")):
+            raise ValueError("Comparison errors must be positive")
+        return values
+    baseline, model = extract(reference), extract(candidate)
+    for key in ("val_persistence_mae_kw", "val_persistence_rmse_kw"):
+        if not math.isclose(baseline[key], model[key], rel_tol=1e-8):
+            raise ValueError("Fixed comparison targets/scaler differ")
+    return {"fixed_epoch": epoch, "reference": baseline, "candidate": model,
+        "gain_mae_kw": baseline["val_mae_kw"] - model["val_mae_kw"],
+        "gain_rmse_kw": baseline["val_rmse_kw"] - model["val_rmse_kw"],
+        "joint_improvement": (model["val_mae_kw"] < baseline["val_mae_kw"]
+                              and model["val_rmse_kw"] < baseline["val_rmse_kw"]),
+        "evaluation_scope": "training_period_internal_holdout_not_outer_validation"}
+
+
 def verify_inner_manifest(manifest, plan, expected_stage):
     args = manifest["args"]
     if manifest.get("stage") != expected_stage or manifest.get("extra", {}).get("status") != "complete":
