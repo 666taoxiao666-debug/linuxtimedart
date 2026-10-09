@@ -48,11 +48,13 @@ PY
             echo "Could not resolve the selected fine-tuning checkpoint." >&2
             exit 2
         }
-        mkdir -p "${SDWPF_LOG_DIR}/validation"
+        validation_dir="${SDWPF_LOG_DIR}/validation"
+        validation_log="${validation_dir}/validation.log"
+        mkdir -p "${validation_dir}"
         FINETUNE_CHECKPOINT="${checkpoint}" \
-        REPORT_OUTPUT_DIR="${SDWPF_LOG_DIR}/validation/artifacts" \
-        SDWPF_LOG_DIR="${SDWPF_LOG_DIR}/validation" \
-        SDWPF_LOG_FILE="${SDWPF_LOG_DIR}/validation/validation.log" \
+        REPORT_OUTPUT_DIR="${validation_dir}/artifacts" \
+        SDWPF_LOG_DIR="${validation_dir}" \
+        SDWPF_LOG_FILE="${validation_log}" \
         FORECAST_PLOT_POINTS=300 \
         bash scripts/eval/SDWPF_logged_validation_plot.sh
         exit 0
