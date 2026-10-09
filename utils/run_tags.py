@@ -95,6 +95,8 @@ def experiment_setting(args, run_index):
         )
     if getattr(args, "utility_factorized", False):
         base += "_factorized1"
+    if getattr(args, "fixed_finetune_epoch", 0):
+        base += f"_fixedep{args.fixed_finetune_epoch}"
     run_id = getattr(args, "run_id", "") or ""
     if str(run_id).strip():
         return bounded_component(f"{base}_id{safe_component(run_id)}")

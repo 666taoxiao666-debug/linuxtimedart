@@ -320,6 +320,10 @@ def build_parser():
     parser.add_argument("--num_workers", type=int, default=0)
     parser.add_argument("--itr", type=int, default=1)
     parser.add_argument("--train_epochs", type=int, default=10)
+    parser.add_argument(
+        "--fixed_finetune_epoch", type=int, default=0,
+        help="retain this predeclared epoch without outer-validation selection; 0 uses early stopping",
+    )
     parser.add_argument("--batch_size", type=int, default=32)
     parser.add_argument("--eval_batch_size", type=int, default=128)
     parser.add_argument("--patience", type=int, default=3)
@@ -887,6 +891,10 @@ def configure_args(args):
             raise ValueError("--freeze_non_utility requires --utility_wiki")
         if not args.overlay_checkpoint:
             raise ValueError("--freeze_non_utility requires --overlay_checkpoint")
+    if not 0 <= args.fixed_finetune_epoch <= args.train_epochs:
+        raise ValueError("fixed_finetune_epoch must be between 0 and train_epochs")
+    if args.fixed_finetune_epoch and (args.task_name != "finetune" or args.utility_wiki):
+        raise ValueError("fixed_finetune_epoch currently supports non-utility fine-tuning only")
     if args.utility_loss_weight < 0.0:
         raise ValueError("utility_loss_weight cannot be negative")
     for name in ("utility_event_max_scale", "utility_composition_max_scale"):

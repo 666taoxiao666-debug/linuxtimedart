@@ -87,6 +87,23 @@ class _OverlayTargetModel(_TransferModel):
 
 
 class ExperimentAuditTests(unittest.TestCase):
+    def test_fixed_epoch_rejects_invalid_or_utility_training(self):
+        base = ["--task_name", "finetune", "--model_id", "SDWPF", "--model",
+                "PromptTimeDART", "--data", "SDWPF", "--no-use_gpu"]
+        for extra in (["--train_epochs", "8", "--fixed_finetune_epoch", "9"],
+                      ["--fixed_finetune_epoch", "-1"],
+                      ["--fixed_finetune_epoch", "2", "--utility_wiki"]):
+            with self.subTest(extra=extra), self.assertRaises(ValueError):
+                configure_args(build_parser().parse_args(base + extra))
+
+    def test_fixed_epoch_is_auditable_and_has_a_distinct_checkpoint_tag(self):
+        base = ["--task_name", "finetune", "--model_id", "SDWPF", "--model",
+                "PromptTimeDART", "--data", "SDWPF", "--no-use_gpu"]
+        ordinary = configure_args(build_parser().parse_args(base))
+        fixed = configure_args(build_parser().parse_args(base + ["--fixed_finetune_epoch", "2"]))
+        self.assertEqual(fixed.fixed_finetune_epoch, 2)
+        self.assertNotEqual(experiment_setting(fixed, 0), experiment_setting(ordinary, 0))
+
     def test_split_boundary_check_rejects_overlap(self):
         dates = np.arange(
             np.datetime64("2023-01-01T00:00"),

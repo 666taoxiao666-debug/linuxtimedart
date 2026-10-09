@@ -1454,6 +1454,7 @@ class Exp_TimeDART(Exp_Basic):
         }
 
     def train(self, setting):
+        fixed_epoch = int(getattr(self.args, "fixed_finetune_epoch", 0))
         train_data, train_loader = (
             self._get_data(flag="train")
         )
@@ -1658,11 +1659,12 @@ class Exp_TimeDART(Exp_Basic):
                 initial_validation["loss"],
                 0,
             )
-            early_stopping(
-                initial_selection_value,
-                self.model,
-                path=path,
-            )
+            if not fixed_epoch:
+                early_stopping(
+                    initial_selection_value,
+                    self.model,
+                    path=path,
+                )
 
         for epoch in range(
             self.args.train_epochs
@@ -2197,7 +2199,14 @@ class Exp_TimeDART(Exp_Basic):
                 epoch + 1,
             )
 
-            if utility_phase == "adapter_warmup":
+            if fixed_epoch:
+                # The epoch comes from an earlier train-only search. Outer
+                # validation metrics remain diagnostic and never select it.
+                if epoch + 1 == fixed_epoch:
+                    torch.save(self.model.state_dict(), os.path.join(path, "checkpoint.pth"))
+                    print(f"[AUDIT] FIXED_FINETUNE_EPOCH={fixed_epoch} source=train_only_parameter_search")
+                    break
+            elif utility_phase == "adapter_warmup":
                 print(
                     "[UTILITY] Adapter warm-up validation is diagnostic only; "
                     "checkpoint selection and patience are deferred."
@@ -2245,9 +2254,10 @@ class Exp_TimeDART(Exp_Basic):
             for record in history
             if bool(record.get("selection_eligible", True))
         ]
-        best_record = min(
-            eligible_history,
-            key=lambda record: record["selection_value"],
+        best_record = (
+            next(record for record in history if record["epoch"] == fixed_epoch)
+            if fixed_epoch else
+            min(eligible_history, key=lambda record: record["selection_value"])
         )
         self.args.selected_finetune_checkpoint = os.path.abspath(best_model_path)
         write_run_manifest(
@@ -2270,6 +2280,9 @@ class Exp_TimeDART(Exp_Basic):
                 "status": "complete",
                 "setting": setting,
                 "best_epoch": int(best_record["epoch"]),
+                "checkpoint_selection_rule": (
+                    "predeclared_train_only_epoch" if fixed_epoch else "validation_early_stopping"
+                ),
                 "best_selection_value": float(best_record["selection_value"]),
                 "epochs_completed": sum(
                     int(record["epoch"] > 0) for record in history

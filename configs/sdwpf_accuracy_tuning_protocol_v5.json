@@ -1,0 +1,33 @@
+{
+  "protocol_id": "sdwpf_h12_train_only_objective_search_v5",
+  "status": "exploratory_development",
+  "fold": 1,
+  "seed": 2024,
+  "model": "PromptTimeDART",
+  "prompt_router": "trend",
+  "utility_wiki": false,
+  "input_len": 336,
+  "pred_len": 12,
+  "inner_split": "time_ratio",
+  "inner_fit_fraction_of_outer_train": 0.8,
+  "inner_selection_fraction_of_outer_train": 0.1,
+  "pretraining": {"epochs": 20, "patience": 3, "learning_rate": 0.0001, "pred_len": 24},
+  "finetuning": {"schedule_epochs": 8, "learning_rate": 0.000001, "new_module_learning_rate": 0.000005, "pct_start": 0.2},
+  "candidates": [
+    {"id": "reference", "mix_mse_weight": 0.2, "horizon_weight_end": 1.0, "power_weight_alpha": 0.0},
+    {"id": "balanced", "mix_mse_weight": 0.5, "horizon_weight_end": 1.0, "power_weight_alpha": 0.0},
+    {"id": "moderate_tail", "mix_mse_weight": 0.35, "horizon_weight_end": 1.25, "power_weight_alpha": 0.25},
+    {"id": "tail_v4", "mix_mse_weight": 0.5, "horizon_weight_end": 1.5, "power_weight_alpha": 0.5}
+  ],
+  "selection": {
+    "data": "inner_selection_wholly_before_outer_train_cutoff",
+    "reference_epoch": "minimum_inner_MAE_positive_epoch",
+    "feasibility": "candidate_inner_MAE <= reference_inner_MAE and candidate_inner_RMSE <= reference_inner_RMSE",
+    "ranking": "minimum_average_MAE_and_RMSE_ratio_to_inner_persistence_then_candidate_order_then_epoch",
+    "fallback": "reference_epoch_when_no_candidate_improves_both",
+    "outer_refit": "one_selected_configuration_at_inner_selected_fixed_epoch_with_original_8_epoch_lr_schedule",
+    "outer_validation": "diagnostic_only_no_checkpoint_selection",
+    "sealed_test_access": false
+  },
+  "scope_note": "This optimizes the numerical trend backbone. It does not measure a new Wiki contribution or permit retuning Wiki thresholds. Four candidates and the inner split are fixed before execution; no additional candidates are added after outer validation. Train-only selection applies to this new objective/finetuning epoch search. The outer refit reuses the historically validation-selected, now frozen trend pretrain checkpoint; the outer validation was already inspected in prior experiments and is not an untouched confirmatory set."
+}

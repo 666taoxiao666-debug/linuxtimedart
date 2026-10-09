@@ -18,7 +18,8 @@ case "${1:-}" in
         [[ ! -f "${directory}/status.env" ]] || cat "${directory}/status.env"
         [[ ! -f "${directory}/accuracy_v4.env" ]] || cat "${directory}/accuracy_v4.env"
         if [[ -f "${directory}/validation/artifacts/metrics.json" ]]; then
-            python - "${directory}/validation/artifacts/metrics.json" <<'PY'
+            status_python="$(command -v python || command -v python3)"
+            "${status_python}" - "${directory}/validation/artifacts/metrics.json" <<'PY'
 import json
 import sys
 
