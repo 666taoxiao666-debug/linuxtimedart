@@ -365,11 +365,20 @@ def build_parser():
     )
     parser.add_argument(
         "--early_stop_metric",
-        choices=["loss", "mse", "mae", "original_mae", "original_rmse"],
+        choices=[
+            "loss",
+            "mse",
+            "mae",
+            "original_mae",
+            "original_rmse",
+            "original_mae_rmse_ratio",
+        ],
         default="mse",
         help=(
             "validation quantity used for checkpoint selection; original_* "
-            "uses clipped, inverse-scaled kW and matches final reporting"
+            "uses clipped, inverse-scaled kW and matches final reporting; "
+            "original_mae_rmse_ratio averages the MAE and RMSE ratios to "
+            "the same-split persistence forecast (lower is better)"
         ),
     )
     parser.add_argument(

@@ -237,6 +237,7 @@ class ExperimentAuditTests(unittest.TestCase):
         result = experiment.valid(loader, nn.MSELoss())
         self.assertAlmostEqual(result["mae"], result["persistence_mae"])
         self.assertAlmostEqual(result["mae_skill_vs_persistence_pct"], 0.0)
+        self.assertAlmostEqual(result["original_mae_rmse_ratio"], 1.0)
 
     def test_validation_trend_names_match_history_label_semantics(self):
         experiment = Exp_TimeDART.__new__(Exp_TimeDART)

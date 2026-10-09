@@ -2580,6 +2580,12 @@ class Exp_TimeDART(Exp_Basic):
             - original_metrics["rmse"]
             / max(original_persistence["rmse"], np.finfo(float).eps)
         )
+        original_mae_rmse_ratio = 0.5 * (
+            original_metrics["mae"]
+            / max(original_persistence["mae"], np.finfo(float).eps)
+            + original_metrics["rmse"]
+            / max(original_persistence["rmse"], np.finfo(float).eps)
+        )
         per_horizon_mae = np.mean(
             np.abs(pred_original - true_original), axis=(0, 2)
         )
@@ -2950,6 +2956,7 @@ class Exp_TimeDART(Exp_Basic):
             "original_persistence_r2": float(original_persistence["r2"]),
             "original_mae_skill_vs_persistence_pct": float(original_mae_skill),
             "original_rmse_skill_vs_persistence_pct": float(original_rmse_skill),
+            "original_mae_rmse_ratio": float(original_mae_rmse_ratio),
             "diagnostics": diagnostics,
         }
 

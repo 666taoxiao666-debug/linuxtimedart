@@ -1,0 +1,58 @@
+{
+  "protocol_id": "sdwpf_h12_tail_balanced_accuracy_v4",
+  "status": "exploratory_validation_protocol",
+  "parent_protocol": "sdwpf_h12_rolling_holdout_frozen_v1",
+  "motivation": {
+    "observed_validation_fold": 1,
+    "observed_seed": 2024,
+    "overall_mae_kw": 127.880415,
+    "overall_rmse_kw": 212.808356,
+    "overall_r2": 0.658253,
+    "last_horizon_r2": 0.456545,
+    "high_power_bin_bias_kw": -284.24357,
+    "high_power_bin_rmse_kw": 440.10696,
+    "interpretation": "Long-horizon and high-power underprediction dominate squared error and therefore depress RMSE, R2 and RMSE skill."
+  },
+  "development_scope": {
+    "dataset": "SDWPF",
+    "split": "rolling_holdout",
+    "fold": 1,
+    "seed": 2024,
+    "input_len": 336,
+    "pred_len": 12,
+    "train_stride": 6,
+    "eval_stride": 12,
+    "sealed_test_access": false
+  },
+  "frozen_model_settings": {
+    "model": "PromptTimeDART",
+    "prompt_router": "trend",
+    "learning_rate": 0.000001,
+    "new_module_learning_rate": 0.000005,
+    "residual_gate_init": -2.2,
+    "channel_prior": true,
+    "operating_point_context": true,
+    "revin_keep_wind": true
+  },
+  "tail_balanced_objective": {
+    "loss": "MIXED",
+    "mix_mse_weight": 0.5,
+    "horizon_weight_end": 1.5,
+    "power_weight_alpha": 0.5,
+    "checkpoint_selection": "original_mae_rmse_ratio",
+    "checkpoint_selection_formula": "0.5 * (MAE_model / MAE_persistence + RMSE_model / RMSE_persistence)",
+    "train_epochs": 8,
+    "patience": 4
+  },
+  "decision_rule": {
+    "pilot_success": "The selected checkpoint must improve both MAE and RMSE over the paired trend baseline and increase R2 without a material regression in any reported metric.",
+    "pilot_failure": "Any material MAE regression, no RMSE/R2 improvement, or provenance mismatch.",
+    "expansion": "Only after pilot success, freeze the exact objective and run the predeclared remaining folds and seeds."
+  },
+  "locked_rules": [
+    "Do not tune the objective weights on the sealed test split.",
+    "Do not change data cleaning, folds, seed, architecture or pretraining in the pilot.",
+    "Do not compare against Persistence alone; retain paired trend and frozen strong baselines.",
+    "Do not claim significance from the single-fold development pilot."
+  ]
+}
