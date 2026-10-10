@@ -144,3 +144,13 @@ v6 已完成，固定第8轮 MAE152.4973457 / RMSE254.6750647 / R²0.6372884；�
 对每格前后MAE/SSE增益差做对称分解：共同支持箱的工况构成项 `(w_late-w_early)*(g_late+g_early)/2`、条件收益项 `(g_late-g_early)*(w_late+w_early)/2`，单边无支持箱贡献单独记录；三项必须严格还原总变化。该分解是描述性归因，不是时间漂移的因果证明；相关窗口/跨风机观测不当成独立样本。已有训练段摘要此前已被开发观察，本次仍是探索性定位。不给新alpha拟合、不增加候选/seed、不用外层负结果重新选系数；只有训练侧支持明确机制才能另建下一项试验。
 
 产物指针 `outputs/logs/SDWPF/residual_drift_audit_latest.txt`，包括冻结 `protocol.json`、历史上下文 `history_context.npz`、哈希缓存标记和 `report.json`。两线程CPU/nice10/CUDA不可见；单实例和完成哈希避免重复诊断。新增测试覆盖历史分箱、无未来上下文、原窗口身份、构成/条件项守恒（含无共同支持）和负收益如实保留。
+
+诊断在2026-10-10 12:01:39完成，目录 `outputs/logs/SDWPF/20261010/004_residual_drift_audit_h12_f1_s2024_train_midpoint_fixed_bins_cpu2`；本地/服务器5项测试通过。原历史与预测逐窗一致，无新模型推理。低于8%容量且风速低于3m/s的稳定组，前/后段支持2292/920窗口，四个缩放步均正收益；同样低功率但风速3—5m/s，支持134/111窗口，四步均负收益。上升组低功率且风速低于3m/s，支持98/115窗口，第11步前/后gain为-0.7164/-3.0592kW。因此三类历史涨跌把物理工作点不同的修正对象混在一起；不是单纯删极端样本或调一张状态表能解决。五格训练后段gain全部提高，主要条件收益变化为+2.381/+2.783/+4.065/+4.023/+5.024kW；不能据此声称已解释outer负收益的因果原因。
+
+### 有限训练侧改动：双时间块物理支持门控
+
+v8不重新拟合alpha、不训练神经底座/风险头、不改Wiki。仅允许已存在5格缩放在指定物理箱中启用：原OOF日历前50%（原alpha拟合块）与接着25%（门控校准块）都至少64窗口，且各自MAE与MSE增益严格为正；否则完全保留原checkpoint预测。最后25%只检查，跨两个分界的目标窗口丢弃。这是一个预先固定的支持/联合收益规则，没有新系数网格或阈值搜索，不把稀疏/单边有益箱纳入。
+
+代码 `utils/physical_scale_guard.py` 与 `scripts/train_sdwpf_physical_scale_guard.py`。应用接口只接受预测、last-power、历史state与物理bin，不接受未来标签；拟合接口只接受两个训练块，检查块标签不传入。沿用同checkpoint和历史上下文哈希，保存固定协议、guard证据和检查预测。仅原训练期探索开发，已有全段诊断曾被观察，不能当独立确认；不自动再看outer或sealed test。图复用原数值绘图管线，并把同checkpoint基准放入比较，避免Persistence正Skill掩盖改动损害。
+
+运行命令：`python scripts/train_sdwpf_physical_scale_guard.py --drift-dir "$(cat outputs/logs/SDWPF/residual_drift_audit_latest.txt)"`。结果指针 `outputs/logs/SDWPF/physical_scale_guard_latest.txt`。不满足联合改善就停止该规则，不能基于检查结果回调支持量、分箱或门槛。
