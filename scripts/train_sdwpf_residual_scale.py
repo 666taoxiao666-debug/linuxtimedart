@@ -25,6 +25,41 @@ def metrics(prediction, truth, persistence):
             for key, value in result.items()}
 
 
+def render_result(directory, source):
+    """Reproduce the saved plot, with numerical checks and absolutely no fit."""
+    protocol, model, report = (read_json(directory / name) for name in
+                               ("protocol.json", "calibration.json", "result.json"))
+    audit = read_json(source / "protocol.json")
+    predictions = source / "reference_predictions.npz"
+    if (sha256(predictions) != protocol["source_predictions_sha256"]
+            or sha256(source / "protocol.json") != protocol["source_audit_protocol_sha256"]
+            or model["source_checkpoint_sha256"] != protocol["source_checkpoint"]["checkpoint_sha256"]):
+        raise ValueError("Saved calibration/plot source identity changed")
+    with np.load(predictions, allow_pickle=False) as arrays:
+        reference, persistence, truth, trend, times = (arrays[key] for key in
+            ("prediction", "persistence", "truth", "trend", "target_timestamps"))
+    _, check, _ = chronological_masks(times, audit["selection_end"], audit["oof_end_exclusive"])
+    prediction = apply_scale(model, reference[check], persistence[check], trend[check])
+    actual = metrics(prediction, truth[check], persistence[check])
+    calibrated = report["check"]["calibrated"]
+    for key in ("mae", "rmse", "r2", "mae_skill_pct", "rmse_skill_pct",
+                "within_5pct_capacity_pct", "within_10pct_capacity_pct"):
+        np.testing.assert_allclose(actual[key], calibrated[key], rtol=1e-10, atol=1e-10)
+    if int(check.sum()) != report["check_windows"]:
+        raise ValueError("Plot check windows differ from the saved experiment")
+    from utils.forecast_report import _plot_accuracy_overview
+    check_times = times[check]
+    caption = (f"Source: frozen checkpoint {model['source_checkpoint_sha256'][:10]}; "
+        f"original-train OOF later block, {str(check_times.min())[:16]} to {str(check_times.max())[:16]}\n"
+        f"Exploratory, NOT outer validation or test; {int(check.sum())} windows, all h12 points. "
+        f"Capacity tolerance hits: ±5% {calibrated['within_5pct_capacity_pct']:.2f}%, "
+        f"±10% {calibrated['within_10pct_capacity_pct']:.2f}%")
+    _plot_accuracy_overview(prediction, truth[check], str(directory),
+        persistence=persistence[check], rated_power=1500, model_name="Residual scale calibration",
+        scope_caption=caption)
+    print("[SCALE] Saved metrics reproduced; plot only, no fitting", flush=True)
+
+
 def run(source):
     protocol = read_json(source / "protocol.json")
     if protocol["protocol_id"] != "sdwpf_f1_s2024_train_tail_error_audit_v1":
@@ -88,16 +123,7 @@ def run(source):
             reference=reference[check], persistence=persistence[check], truth=truth[check],
             target_timestamps=times[check], trend=trend[check])
         write_json(directory / "result.json", report)
-        from utils.forecast_report import _plot_accuracy_overview
-        check_times = times[check]
-        caption = (f"Source: frozen checkpoint {model['source_checkpoint_sha256'][:10]}; "
-            f"original-train OOF later block, {str(check_times.min())[:16]} to {str(check_times.max())[:16]}\n"
-            f"Exploratory, NOT outer validation or test; {int(check.sum())} windows, all h12 points. "
-            f"Capacity tolerance hits: ±5% {calibrated['within_5pct_capacity_pct']:.2f}%, "
-            f"±10% {calibrated['within_10pct_capacity_pct']:.2f}%")
-        _plot_accuracy_overview(prediction[check], truth[check], str(directory),
-            persistence=persistence[check], rated_power=1500, model_name="Residual scale calibration",
-            scope_caption=caption)
+        render_result(directory, source)
         finish_log_directory(directory, 0)
         print("[SCALE] check: " + str({key: report[key] for key in
             ("fit_windows", "check_windows", "check_gain_mae_kw", "check_gain_rmse_kw", "check_joint_improvement", "next_action")}), flush=True)
@@ -110,7 +136,11 @@ def run(source):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--audit-dir", type=Path, required=True)
+    parser.add_argument("--render-dir", type=Path, help="Replot an existing completed pilot; never train")
     args = parser.parse_args()
+    if args.render_dir is not None:
+        render_result(args.render_dir.resolve(), args.audit_dir.resolve())
+        return
     import fcntl
     lock_path = ROOT / "outputs/logs/SDWPF/residual_scale_pilot.lock"
     lock_path.parent.mkdir(parents=True, exist_ok=True)

@@ -942,6 +942,7 @@ def _plot_accuracy_overview(
     axes[0, 1].set_xticks(x, metric_names)
     axes[0, 1].set_ylabel("Error (kW)")
     axes[0, 1].set_title("Lower is better")
+    axes[0, 1].margins(y=0.15)
     axes[0, 1].legend()
     axes[0, 1].grid(axis="y", alpha=0.2)
 
@@ -957,6 +958,7 @@ def _plot_accuracy_overview(
     axes[1, 0].axhline(0.0, color="black", linewidth=1.0)
     axes[1, 0].set_ylabel("R²")
     axes[1, 0].set_title("R² goodness of fit (higher is better)")
+    axes[1, 0].margins(y=0.15)
     axes[1, 0].grid(axis="y", alpha=0.2)
 
     if persistence_metrics is not None:
@@ -981,6 +983,7 @@ def _plot_accuracy_overview(
         axes[1, 1].axhline(0.0, color="black", linewidth=1.0)
         axes[1, 1].set_ylabel("Skill vs persistence (%)")
         axes[1, 1].set_title("Positive skill means improvement")
+        axes[1, 1].margins(y=0.18)
     else:
         axes[1, 1].axis("off")
         axes[1, 1].text(

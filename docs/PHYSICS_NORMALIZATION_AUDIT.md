@@ -96,3 +96,15 @@ v6 已完成，固定第8轮 MAE152.4973457 / RMSE254.6750647 / R²0.6372884；�
 代码 `utils/residual_scale_calibration.py`、`scripts/train_sdwpf_residual_scale.py`；4项测试覆盖时间隔离、修正幅度、有界性、标签不进入应用接口与不支持状态回退。检查段的整体诊断此前已被观察过，故本轮是探索性开发证据，不是独立确认。禁止基于这段再次选择alpha网格/阈值/seed；没有联合改善则结束。参数绑定来源checkpoint SHA256，禁止把同一校准表移植到不同底座后冒充相同方法。
 
 运行：`python scripts/train_sdwpf_residual_scale.py --audit-dir "$(cat outputs/logs/SDWPF/train_error_audit_latest.txt)"`。最新目录指针 `outputs/logs/SDWPF/residual_scale_latest.txt`；内有 `protocol.json/calibration.json/result.json/check_predictions.npz/forecast_accuracy_overview.png` 及PDF。指标覆盖MAE/RMSE/R²/两类Skill和容量容差命中率；图注明训练期检查边界。单实例锁和已完成拒绝重跑保留既有结果。
+
+### 有界残差校准已完成：对自身底座小幅联合改善，MAE仍未胜Persistence
+
+`e28bad5` 已推送并在服务器快进；新增/相关测试共28项通过。校准仅用前段6668个窗口拟合，固定时间中点2023-06-21 03:55，后段5132窗口检查。来源是原先冻结reference SHA256 `4061d9afb646247c003f30f1d6d64d4277d02ec91c607d022c85e461f94b50dc`，没有重训主干或使用outer验证/封存测试。
+
+同后段reference → calibrated：MAE138.7710269 →137.8845108kW（改善0.8865161kW，0.638834%）；RMSE206.2587483 →205.4807104kW（改善0.7780380kW，0.377215%）；R²0.7091185 →0.7113088。±5%容量（±75kW）命中率44.0147% →44.2453%；±10%容量（±150kW）66.6780% →67.0531%。R²不是准确率。
+
+同后段Persistence的MAE为135.6615123 / RMSE211.2981543kW。校准后的MAE Skill仍为-1.638636%，RMSE Skill为+2.753192%。因此只能说相对自己底座有所改善，不能说已经全面击败Persistence或解决总体精度问题。前述强基线的outer结果属于不同时间范围，不直接与此训练期后段混排。
+
+36个state×horizon参数中只有5格被fit证据缩放为0.75：历史稳定组第4/5/8/9步，上升组第11步；其余alpha1。没有手工把所有稳定工况关掉，也没有以检查段标签决定参数。指标图和两种Skill忠实显示MAE仍为负收益。
+
+服务器目录 `outputs/logs/SDWPF/20261010/002_residual_scale_pilot_h12_f1_s2024_train_midpoint_grid5_cpu`，STATUS=COMPLETED。本地复制 `output/residual_scale_v7_f1_s2024_20261010`。下一步需要固定规则、底座身份和训练/确认边界后建立匹配对照；本轮不自动替换原论文模型、不追加本段参数搜索、不把数值校准收益计入Wiki贡献。原v6监控保持PAUSED，本轮无剩余训练进程。
