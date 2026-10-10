@@ -22,13 +22,14 @@ class ResidualScaleFollowupTests(unittest.TestCase):
             write_json(inner / "checkpoint", {"weight": 1})
             source_hash = sha256(inner / "checkpoint")
             args = dict(prompt_router="trend", utility_wiki=False, sdwpf_fold=1, seed=2024,
-                        seq_len=336, pred_len=12, sdwpf_split="time_ratio")
+                        seq_len=336, pred_len=12, sdwpf_split="time_ratio", sdwpf_robust_pitch=False)
             manifest = dict(args=args, extra=dict(best_epoch=8), data_file=dict(sha256="data"))
             write_json(inner / "run_manifest.json", manifest)
             outer_manifest = dict(args=dict(args, sdwpf_split="rolling_holdout"),
                 data_file=dict(sha256="data"), datasets=dict(val=dict(train_cutoff="2023-06-30",
                     val_cutoff="2023-07-08", test_start_cutoff="2023-07-16", windows=4,
                     target_date_min="2023-06-30", target_date_max="2023-07-07")))
+            outer_manifest["args"].pop("sdwpf_robust_pitch")  # legacy default = False
             write_json(outer / "run_manifest.json", outer_manifest)
             write_json(audit / "protocol.json", dict(source_plan=dict(outer_trend_checkpoint=str(outer / "checkpoint"),
                 outer_data_sha256="data"), oof_end_exclusive="2023-06-30", event_thresholds={}))
@@ -45,6 +46,11 @@ class ResidualScaleFollowupTests(unittest.TestCase):
                 sealed_test_evaluated=False, utility_wiki=False, source_checkpoint_sha256=source_hash))
             _, _, protocol = frozen_sources(scale)
             self.assertEqual(protocol["source_checkpoint_sha256"], source_hash)
+            outer_manifest["args"]["sdwpf_robust_pitch"] = True
+            write_json(outer / "run_manifest.json", outer_manifest)
+            with self.assertRaises(ValueError):
+                frozen_sources(scale)
+            outer_manifest["args"].pop("sdwpf_robust_pitch")
             outer_manifest["datasets"]["val"]["val_cutoff"] = "2023-07-20"
             write_json(outer / "run_manifest.json", outer_manifest)
             with self.assertRaises(ValueError):

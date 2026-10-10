@@ -62,9 +62,12 @@ def frozen_sources(source):
     # validation boundaries and window identities, NOT forecast parameters.
     data_keys = ("feature_columns", "rated_power", "sdwpf_clip_power", "sdwpf_filter_abnormal",
                  "sdwpf_causal_fill", "sdwpf_keep_curtailment", "sdwpf_robust_pitch",
-                 "sdwpf_physics_features", "sdwpf_drop_weak_features", "sdwpf_eval_stride")
+                 "sdwpf_physics_features", "sdwpf_drop_weak", "sdwpf_eval_stride")
     for key in data_keys:
-        if args.get(key) != outer["args"].get(key):
+        # The historical manifest predates the opt-in pitch repair flag.
+        # Its missing field means the established default False, not unknown.
+        default = False if key == "sdwpf_robust_pitch" else None
+        if args.get(key, default) != outer["args"].get(key, default):
             raise ValueError(f"Outer window convention differs: {key}")
     boundaries = outer["datasets"]["val"]
     start, end, sealed = (np.datetime64(boundaries[key], "ns") for key in
