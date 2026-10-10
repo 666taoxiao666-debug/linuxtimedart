@@ -134,3 +134,13 @@ v6 已完成，固定第8轮 MAE152.4973457 / RMSE254.6750647 / R²0.6372884；�
 审计评级维持B（数据路径与身份边界可复核，方法泛化收益未成立）。当前最需处理的是时间段依赖的修正收益，而非再调这张36格表。无需重跑完成的v7或本follow-up；新增单测覆盖身份/时间边界、只应用不拟合、精度与伤害如实报告、旧manifest默认值及续跑状态。停止在本fold验证段继续搜索，不自动移植校准表或追加seed，不把数值校准记作Wiki创新贡献。
 
 改变的第4/5/8/9/11步在本段的MAE gain点估计分别为-0.04384/-0.16080/-0.14798/-0.35530/-0.45850kW，方向均为负；这显示静态表的时间泛化不足，但不是证明某个新机制必然有效。补齐的图同时展示校准前同checkpoint、校准后与Persistence三者，Skill面板专门对同checkpoint显示负收益，避免只有Persistence对照掩盖机制损害。`--render-only`仅检查保存预测/校准哈希和指标一致性后重绘，不调用拟合或神经网络推理。新版图已在本地渲染检查，无标注遮挡或裁切；预测NPZ下载后SHA256与服务器一致。原结果JSON不修改。
+
+### 后续训练侧归因：工况构成与条件收益分离
+
+继续定位只复用原train-OOF配对预测与已有v7校准，不加载/运行神经网络，不读取outer validation或sealed test预测。新增 `utils/residual_utility_drift.py`、`scripts/audit_sdwpf_residual_drift.py`，启动器 `bash scripts/train/SDWPF_launch_residual_drift_audit.sh`，查看加 `--status`。只从原train dataset重建过去12点的物理上下文；核对raw data、原scaler/feature order、全部window starts/目标时间戳/风机、历史事件/趋势及last-power anchor，与原预测逐窗一致才计算。
+
+固定功率均值/容量分箱边界0.08/0.3/0.7/0.9、风速均值分箱3/5/10m/s；边界归上箱。这些诊断箱不按预测目标选择，不是Wiki gate或新的模型参数。时间段沿用原v7固定日历中点，跨界目标窗口丢弃。仅分析已存在的5个非恒等修正格，报告每箱前/后支持量、历史物理状态、预测与真实功率变化（后者仅作诊断）、偏差及反事实修正收益。
+
+对每格前后MAE/SSE增益差做对称分解：共同支持箱的工况构成项 `(w_late-w_early)*(g_late+g_early)/2`、条件收益项 `(g_late-g_early)*(w_late+w_early)/2`，单边无支持箱贡献单独记录；三项必须严格还原总变化。该分解是描述性归因，不是时间漂移的因果证明；相关窗口/跨风机观测不当成独立样本。已有训练段摘要此前已被开发观察，本次仍是探索性定位。不给新alpha拟合、不增加候选/seed、不用外层负结果重新选系数；只有训练侧支持明确机制才能另建下一项试验。
+
+产物指针 `outputs/logs/SDWPF/residual_drift_audit_latest.txt`，包括冻结 `protocol.json`、历史上下文 `history_context.npz`、哈希缓存标记和 `report.json`。两线程CPU/nice10/CUDA不可见；单实例和完成哈希避免重复诊断。新增测试覆盖历史分箱、无未来上下文、原窗口身份、构成/条件项守恒（含无共同支持）和负收益如实保留。
