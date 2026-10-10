@@ -118,3 +118,17 @@ v6 已完成，固定第8轮 MAE152.4973457 / RMSE254.6750647 / R²0.6372884；�
 在读取本段目标之前冻结统计设置：按forecast issue time跨风机平均损失差，移动时间块bootstrap144个观测时间点、5000次、seed2024，DM/Newey-West lag143。CI/DM是time-balanced均值的推断，主表MAE是window-weighted；时间网格有缺口时144个点不一定恰为一天。汇总每步长、历史状态、MAE/RMSE/R²/Skills/容量容差命中率，以及校准改变覆盖率和改变窗口伤害率；后两者不是Wiki指标。
 
 该outer段在历史研究中已被查看，故本次只是冻结方案的后续时间开发检查，而非全新独立确认。无论结果正负，不在本段追加系数、epoch、阈值或seed搜索。进程为两线程CPU/nice10，避免干扰其他用户GPU任务；锁与完成缓存防止重复运行。查看用启动器加 `--status`，结果指针 `outputs/logs/SDWPF/residual_scale_followup_latest.txt`。
+
+### 后续时间段结果：停止静态缩放机制
+
+后续检查在2026-10-10 11:21:17完成，目录 `outputs/logs/SDWPF/20261010/003_residual_scale_followup_h12_f1_s2024_frozen_cpu_outerval`，STATUS=COMPLETED/EXIT_CODE=0。首次source检查因旧outer manifest未记录后来加入的 `sdwpf_robust_pitch`，把missing与false误判为不一致，在推理前退出；已核对历史默认false及inner实际median repair=0，只做兼容修复，增加missing=false而true仍拒绝的测试，原目录续跑。另修复续跑时RUNNING状态未覆盖历史FAILED记录的问题，不影响预测或参数。
+
+全部6245个窗口/74940点/127台风机通过身份检查，目标实际从2023-06-30 08:10至2023-07-08 04:40；不可用点3.63491%仍保留。原尺度配对预测SHA256 `a73ebad1fd9b8022d45633534becf3b255d1697c552183b1e6e84f4aa65efc4f`。同inner checkpoint：reference MAE128.4141421 / RMSE212.5590193 / R²0.6590536；calibrated128.5113445 / 213.1031671 / 0.6573057。校准使MAE恶化0.0972024kW、RMSE恶化0.5441477kW，joint_improvement_vs_reference=false，不改挑参数。
+
+同窗Persistence为MAE132.3080376 / RMSE225.0524218 / R²0.6177967。校准后两类Skill为+2.869586% / +5.309543%，但这些正收益来自原底座，校准本身损失精度；未经校准的Skill为+2.943053% / +5.551330%。校准后的±5%/10%容量命中率51.015479%/69.918602%，也略低于reference51.023485%/69.921270%。不要把不同日期训练检查段的R²0.7113与本段0.6573直接当成方法退化幅度。
+
+校准实际改变19.862557%预测点、77.854283%窗口；未改变窗口22.145717%。改变点平均gain=-0.489375kW，改变窗口伤害率37.638832%。这些是校准反事实指标，不是Wiki coverage/伤害指标。
+
+按547个forecast issue times跨风机平均的MAE增益：相对reference均值-0.1933125kW，144点block/5000次bootstrap CI95%[-0.6571930,+0.0377004]kW，DM/Newey-West p=0.324188，不能声称显著提升。相对Persistence的window-weighted gain为3.7966931kW，time-balanced gain5.8602553kW；bootstrap CI[1.6318120,13.9279564]但DM p=0.071901，不能只挑有利检验。该段历史开发暴露和仅单fold仍限制证据范围。
+
+审计评级维持B（数据路径与身份边界可复核，方法泛化收益未成立）。当前最需处理的是时间段依赖的修正收益，而非再调这张36格表。无需重跑完成的v7或本follow-up；新增单测覆盖身份/时间边界、只应用不拟合、精度与伤害如实报告、旧manifest默认值及续跑状态。停止在本fold验证段继续搜索，不自动移植校准表或追加seed，不把数值校准记作Wiki创新贡献。

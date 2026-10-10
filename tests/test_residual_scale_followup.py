@@ -7,12 +7,20 @@ from unittest.mock import patch
 
 import numpy as np
 
-from scripts.confirm_sdwpf_residual_scale import followup_dataset, summarize, frozen_sources
+from scripts.confirm_sdwpf_residual_scale import followup_dataset, summarize, frozen_sources, mark_running
 from scripts.tune_sdwpf_accuracy import write_json, sha256
 from utils.residual_scale_calibration import fit_scale
 
 
 class ResidualScaleFollowupTests(unittest.TestCase):
+    def test_resume_status_does_not_retain_previous_failure(self):
+        with tempfile.TemporaryDirectory() as directory:
+            directory = Path(directory)
+            (directory / "status.env").write_text("STATUS=FAILED\nEXIT_CODE=1\n", encoding="utf-8")
+            mark_running(directory)
+            self.assertTrue((directory / "status.env").read_text().startswith("STATUS=RUNNING\n"))
+            self.assertNotIn("EXIT_CODE=1", (directory / "status.env").read_text())
+
     def test_checkpoint_hash_and_outer_boundary_are_required(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)

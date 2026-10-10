@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import copy
+from datetime import datetime
 import os
 from pathlib import Path
 import sys
@@ -161,6 +162,13 @@ def summarize(model, arrays, protocol):
     return calibrated, report
 
 
+def mark_running(directory):
+    """A safe resume must not continue displaying the previous failure."""
+    (directory / "status.env").write_text("STATUS=RUNNING\nSTARTED_AT=" +
+        datetime.now().astimezone().isoformat(timespec="seconds") + "\n", encoding="utf-8")
+    write_json(directory / "progress.json", dict(stage="frozen_source_checks", pid=os.getpid()))
+
+
 def run(source, directory):
     import fcntl
     import torch
@@ -169,6 +177,7 @@ def run(source, directory):
     torch.set_num_interop_threads(1)
     with (directory / "followup.lock").open("a") as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        mark_running(directory)
         model, manifest, protocol = frozen_sources(source)
         saved = directory / "protocol.json"
         if saved.exists() and read_json(saved) != protocol:
