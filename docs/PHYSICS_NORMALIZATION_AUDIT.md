@@ -154,3 +154,13 @@ v8不重新拟合alpha、不训练神经底座/风险头、不改Wiki。仅允�
 代码 `utils/physical_scale_guard.py` 与 `scripts/train_sdwpf_physical_scale_guard.py`。应用接口只接受预测、last-power、历史state与物理bin，不接受未来标签；拟合接口只接受两个训练块，检查块标签不传入。沿用同checkpoint和历史上下文哈希，保存固定协议、guard证据和检查预测。仅原训练期探索开发，已有全段诊断曾被观察，不能当独立确认；不自动再看outer或sealed test。图复用原数值绘图管线，并把同checkpoint基准放入比较，避免Persistence正Skill掩盖改动损害。
 
 运行命令：`python scripts/train_sdwpf_physical_scale_guard.py --drift-dir "$(cat outputs/logs/SDWPF/residual_drift_audit_latest.txt)"`。结果指针 `outputs/logs/SDWPF/physical_scale_guard_latest.txt`。不满足联合改善就停止该规则，不能基于检查结果回调支持量、分箱或门槛。
+
+### v8结果：精度收益不足，暂不采用物理支持门控
+
+提交 `f7b7f70` 已推送并在服务器同步，两项新增测试在本地/服务器通过；v8在2026-10-10 12:06:46完成，无神经网络重训/外层评估。目录 `outputs/logs/SDWPF/20261010/005_physical_scale_guard_h12_f1_s2024_train_50-25-25_min64_fixed_scale_cpu`，本地复制 `output/physical_scale_guard_f1_s2024_20261010`。原早块6668窗口、门控校准块2541、末块检查2506，跨两分界85窗丢弃。检查目标2023-06-25 15:10至06-27 23:50，严格在原outer train内；上下文与预测哈希均绑定原source checkpoint。
+
+末块同窗reference → v8：MAE117.7940869 →117.7809571kW、RMSE181.6945768 →181.6416689kW、R²0.4683565 →0.4686661。联合点估计虽然为正，净增益仅0.0131298/0.0529079kW，不能当作有价值或显著的泛化提升。v8的Persistence Skill为MAE+2.012163%/RMSE+1.530372%；±5%/10%容量命中率49.231844%/72.735435%。这些属于该训练末块，不能与不同outer时间段R²0.659等混排。
+
+重要对照：旧v7静态缩放在完全相同末块是MAE117.5916657 / RMSE181.3790671 / R²0.4702013。v8反而比它恶化MAE0.1892914/RMSE0.2626018kW。因此不能只报与原reference的正差而称新门控提高精度；旧v7的outer负结果也仍保留，不因本段静态正收益恢复采用。v8接受5个物理箱×步长格，改变6.790370%预测点/26.296887%窗口，不介入73.703113%；改变窗口伤害率34.901366%，改变点平均gain0.193359kW。这些是数值缩放门控的反事实指标，不是Wiki coverage。
+
+当前审计评级维持B。没有发现新增时间/标签错位，但本轮条件收益分解和末块开发证据不证明外层收益；当前最需解决的两项是：涨跌状态不能代表相同物理工作点，以及局部残差门控的覆盖/效果不足。无需重复v8训练或追加min64/分箱/系数搜索，原论文模型保持不变，新门控暂不采用、不自动outer refit。训练末块reference bias=-52.6816kW，门控后=-52.5348kW，说明本规则几乎未改变系统性低估；偏差是下一步训练侧定位线索，不是已经证明的全部误差原因，也不授权直接把这个数加到外层预测上。
