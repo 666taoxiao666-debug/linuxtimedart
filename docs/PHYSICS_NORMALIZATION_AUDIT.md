@@ -4,7 +4,7 @@
 
 ## 【最终评级】：C
 
-数据切分、训练集 scaler、单风机连续滑窗、标签对齐的已检路径未发现 P0。存在确定的预训练/预测表示错配；它对精度的贡献尚需实验确认。Wiki 原冻结比较的增益很小且统计检验未显著，不能用本次数值底座修正冒充 Wiki 贡献。
+数据切分、训练集 scaler、单风机连续滑窗、标签对齐的已检路径未发现 P0。存在确定的预训练/预测表示错配，但已完成的 v6 内部配对试验没有带来精度提升，不能把该错配当作主要误差原因。Wiki 原冻结比较的增益很小且统计检验未显著，不能用本次数值底座修正冒充 Wiki 贡献。
 
 ## 【必须立即修复 Top 5】
 
@@ -67,3 +67,13 @@
 服务器启动：`bash scripts/train/SDWPF_launch_physics_norm.sh`；查看：同命令加 `--status`；确认进程已退出、GPU空闲且是真实代码失败后才能 `--resume`。
 
 最新指针：`outputs/logs/SDWPF/physics_norm_latest.txt`。根目录包含 `protocol.json/provenance.json/train_audit.json/progress.json/result.json`；阶段日志在 `inner_pretrain/launcher.log` 和 `candidate/launcher.log`。本地原始训练审计产物为 `output/normalization_optimization/train_audit.json`。
+
+## 2026-10-10：完成结果与下一步只读定位
+
+v6 已完成，固定第8轮 MAE152.4973457 / RMSE254.6750647 / R²0.6372884；同内部段 reference 为151.1694846 / 254.1998380 / 0.6386408。MAE恶化1.3278611kW，RMSE恶化0.4752268kW，联合改善为false。因此停止该机制，不改挑早期 epoch，不启动外层 refit，不重新训练这两个检查点。原始目录：`outputs/logs/SDWPF/20261009/004_physics_norm_h12_f1_s2024_inner_physnorm1_mix0.2_ep8_trainonly`。
+
+下一步仅做训练侧错误归因，使用 v5 reference 与 v6 固定第8轮检查点，在2023-06-12 05:40（内部选择结束）至2023-06-30 02:10（outer train 截止，严格不含）之间的完整前向OOF窗口推理。这段未用于这两个模型拟合或选择 epoch；用于后续开发诊断后，不再当成独立确认集。只构造 train dataset 的数据路径，再筛取该训练期后段；不构造/评估 outer val 或 sealed test loader。
+
+工况定义来自原 `wind_event_factor_wiki.json` 的冻结物理门槛，仅看过去12点风速/功率。这是硬阈值诊断标签，不是 Wiki 的软激活率，不能把它称作 Wiki coverage。事件可能重叠，单事件误差占比不能相加；使用4位组合码做互斥分区，检验总贡献守恒。另报告每步长、每风机、历史涨跌（过去两半均值变化超过5%容量的固定诊断分箱），以及 MAE/RMSE/R²、Persistence Skill、偏差、容量容差命中率、大误差贡献。输出两模型的配对原尺度预测、时间戳、可用性掩码与源检查点/数据哈希；原标签、clip约定和采样 stride12 不改。
+
+实现：`utils/train_error_audit.py`、`scripts/audit_sdwpf_train_errors.py`。启动器 `bash scripts/train/SDWPF_launch_train_error_audit.sh`；查看加 `--status`，实时日志用 `tail -f "$(cat outputs/logs/SDWPF/train_error_audit_latest.txt)/launch.log"`。两线程CPU、nice10、CUDA不可见，避免干扰其他人的GPU任务。单实例锁、已完成推理缓存和哈希检查使 `--resume` 只续未完成阶段。未获得诊断结果前不预设新的模型原因，也不启动下一轮训练。
