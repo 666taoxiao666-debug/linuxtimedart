@@ -77,3 +77,22 @@ v6 已完成，固定第8轮 MAE152.4973457 / RMSE254.6750647 / R²0.6372884；�
 工况定义来自原 `wind_event_factor_wiki.json` 的冻结物理门槛，仅看过去12点风速/功率。这是硬阈值诊断标签，不是 Wiki 的软激活率，不能把它称作 Wiki coverage。事件可能重叠，单事件误差占比不能相加；使用4位组合码做互斥分区，检验总贡献守恒。另报告每步长、每风机、历史涨跌（过去两半均值变化超过5%容量的固定诊断分箱），以及 MAE/RMSE/R²、Persistence Skill、偏差、容量容差命中率、大误差贡献。输出两模型的配对原尺度预测、时间戳、可用性掩码与源检查点/数据哈希；原标签、clip约定和采样 stride12 不改。
 
 实现：`utils/train_error_audit.py`、`scripts/audit_sdwpf_train_errors.py`。启动器 `bash scripts/train/SDWPF_launch_train_error_audit.sh`；查看加 `--status`，实时日志用 `tail -f "$(cat outputs/logs/SDWPF/train_error_audit_latest.txt)/launch.log"`。两线程CPU、nice10、CUDA不可见，避免干扰其他人的GPU任务。单实例锁、已完成推理缓存和哈希检查使 `--resume` 只续未完成阶段。未获得诊断结果前不预设新的模型原因，也不启动下一轮训练。
+
+### 只读误差归因已完成
+
+`2557b68` 已在服务器同步，17项相关测试与Bash语法通过。诊断11800窗口、141600点、127台风机，全部目标晚于内部选择结束并严格早于outer train截止；可用性不足的4.1504%目标点仍按原actual-power协议纳入，没有按误差删数据。产物在 `outputs/logs/SDWPF/20261010/001_train_error_audit_h12_f1_s2024_forward_oof_cpu2_epoch8`，本地复制在 `output/train_error_audit_f1_s2024_20261010`，两个配对预测npz哈希已核对。
+
+- reference总体 MAE111.674994 / RMSE176.323530 / R²0.699585；Persistence111.586996 / 181.900155 / 0.680282。reference的MAE略差，但RMSE改善3.0658%。这些训练期后段指标不能和outer MAE128.13直接比较。
+- v6在这段 MAE111.406934 / RMSE175.963100，略好于reference，与先前固定内部选择段的负结果方向不同。这是时间敏感性线索，不改写v6停止决定，也不把新看的段改成epoch/参数选择集。
+- reference误差超过300kW的8.4767%预测点贡献63.0790% SSE；最后四步贡献47.8039% SSE。主要问题不是只发生于第一步。
+- 未命中四种冻结事件的53.1780%窗口贡献60.9159% SSE；前十高误差风机仅贡献16.2887% SSE。因此只增加异常事件条目或删少数风机不能解决主要总体误差。
+- 历史稳定组MAE91.4619，Persistence89.0011，Skill为-2.7649%；历史上升组reference146.7773，Persistence151.8259，Skill为+3.3252%。统一修正策略存在明显工况差异，但这不证明某个新门控必然有效。
+- 额定饱和组仅53窗口，reference MAE187.4888 vs Persistence123.7890，确实很差但SSE占比仅0.8519%；高风低功率仅213窗口，不能用其单组改善替代总体改善。
+
+### 新的有限训练侧假设：逐步长残差缩放
+
+以reference固定检查点为底座，预测形式 `last_power + alpha[history_trend, horizon] * (reference - last_power)`。alpha只允许0/0.25/0.5/0.75/1；历史组仍用固定5%容量、过去12点两半均值变化，不用未来涨跌。无截距、不放大残差、不改主干/标签/Wiki，不把此次数值校准声称为Wiki贡献。拟合期为原OOF时间范围的固定前半，后半仅检查，跨中点未来窗口丢弃。每格至少64个fit窗口；只在fit上选择MAE和RMSE均不差于原预测的alpha，以平均两种误差比排序，支持不足或同分回退alpha1。
+
+代码 `utils/residual_scale_calibration.py`、`scripts/train_sdwpf_residual_scale.py`；4项测试覆盖时间隔离、修正幅度、有界性、标签不进入应用接口与不支持状态回退。检查段的整体诊断此前已被观察过，故本轮是探索性开发证据，不是独立确认。禁止基于这段再次选择alpha网格/阈值/seed；没有联合改善则结束。参数绑定来源checkpoint SHA256，禁止把同一校准表移植到不同底座后冒充相同方法。
+
+运行：`python scripts/train_sdwpf_residual_scale.py --audit-dir "$(cat outputs/logs/SDWPF/train_error_audit_latest.txt)"`。最新目录指针 `outputs/logs/SDWPF/residual_scale_latest.txt`；内有 `protocol.json/calibration.json/result.json/check_predictions.npz/forecast_accuracy_overview.png` 及PDF。指标覆盖MAE/RMSE/R²/两类Skill和容量容差命中率；图注明训练期检查边界。单实例锁和已完成拒绝重跑保留既有结果。

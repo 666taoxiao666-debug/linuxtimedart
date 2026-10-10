@@ -878,6 +878,7 @@ def _plot_accuracy_overview(
     rated_power=None,
     model_name="Forecast model",
     max_points=150000,
+    scope_caption=None,
 ):
     """Save one auditable overview of forecast fit and baseline-relative skill."""
     model_metrics = forecast_metrics(pred, true, rated_power=rated_power)
@@ -911,7 +912,7 @@ def _plot_accuracy_overview(
     axes[0, 0].set_xlabel("True power (kW)")
     axes[0, 0].set_ylabel("Predicted power (kW)")
     axes[0, 0].set_title("Prediction–truth agreement")
-    fig.colorbar(density, ax=axes[0, 0], label="log10(count)")
+    fig.colorbar(density, ax=axes[0, 0], label="Point count (log scale)")
 
     metric_names = ["MAE", "RMSE"]
     model_errors = [model_metrics["mae"], model_metrics["rmse"]]
@@ -955,7 +956,7 @@ def _plot_accuracy_overview(
     axes[1, 0].bar_label(r2_bars, fmt="%.3f", padding=3)
     axes[1, 0].axhline(0.0, color="black", linewidth=1.0)
     axes[1, 0].set_ylabel("R²")
-    axes[1, 0].set_title("Explained variance fit (higher is better)")
+    axes[1, 0].set_title("R² goodness of fit (higher is better)")
     axes[1, 0].grid(axis="y", alpha=0.2)
 
     if persistence_metrics is not None:
@@ -999,7 +1000,11 @@ def _plot_accuracy_overview(
         f"RMSE={model_metrics['rmse']:.3f} kW | "
         f"R²={model_metrics['r2']:.4f}"
     )
-    fig.tight_layout()
+    if scope_caption:
+        fig.text(0.5, 0.012, scope_caption, ha="center", va="bottom", fontsize=8)
+        fig.tight_layout(rect=(0, .065, 1, .94))
+    else:
+        fig.tight_layout()
     fig.savefig(
         os.path.join(output_dir, "forecast_accuracy_overview.png"),
         dpi=220,
