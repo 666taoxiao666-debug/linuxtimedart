@@ -83,7 +83,7 @@ def restore_cpu(args_source):
     return Exp_TimeDART(args)
 
 
-def infer(exp, dataset, directory, name, protocol):
+def infer(exp, dataset, directory, name, protocol, *, progress_stage="cpu_oof_inference", log_prefix="ERROR AUDIT"):
     import torch
     from torch.utils.data import DataLoader
     from utils.forecast_report import inverse_transform_target
@@ -109,8 +109,8 @@ def infer(exp, dataset, directory, name, protocol):
             for key, value in values.items():
                 arrays[key].append(value)
             if batch % 20 == 0 or batch + 1 == len(loader):
-                print(f"[ERROR AUDIT] {name} CPU batch {batch + 1}/{len(loader)}", flush=True)
-                write_json(directory / "progress.json", dict(stage="cpu_oof_inference", model=name,
+                print(f"[{log_prefix}] {name} CPU batch {batch + 1}/{len(loader)}", flush=True)
+                write_json(directory / "progress.json", dict(stage=progress_stage, model=name,
                     batches_completed=batch + 1, batches_total=len(loader), pid=os.getpid()))
     return {key: np.concatenate(value) for key, value in arrays.items()}
 

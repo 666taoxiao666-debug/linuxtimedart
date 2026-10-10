@@ -108,3 +108,13 @@ v6 已完成，固定第8轮 MAE152.4973457 / RMSE254.6750647 / R²0.6372884；�
 36个state×horizon参数中只有5格被fit证据缩放为0.75：历史稳定组第4/5/8/9步，上升组第11步；其余alpha1。没有手工把所有稳定工况关掉，也没有以检查段标签决定参数。指标图和两种Skill忠实显示MAE仍为负收益。
 
 服务器目录 `outputs/logs/SDWPF/20261010/002_residual_scale_pilot_h12_f1_s2024_train_midpoint_grid5_cpu`，STATUS=COMPLETED。本地复制 `output/residual_scale_v7_f1_s2024_20261010`。下一步需要固定规则、底座身份和训练/确认边界后建立匹配对照；本轮不自动替换原论文模型、不追加本段参数搜索、不把数值校准收益计入Wiki贡献。原v6监控保持PAUSED，本轮无剩余训练进程。
+
+### 固定校准的后续时间段匹配检查
+
+用户继续授权后，新增 `scripts/confirm_sdwpf_residual_scale.py` 与启动器 `bash scripts/train/SDWPF_launch_residual_scale_followup.sh`。本轮不再拟合校准表、不重训神经网络；只把已保存的36格系数应用于完全相同的inner reference checkpoint SHA256 `4061d9...`。沿用该模型的inner-fit scaler，不加载outer模型预测权重；outer manifest仅提供原fold1验证窗口边界与身份。校准、源协议、原OOF预测、checkpoint和manifest均校验哈希，运行前固化follow-up协议。
+
+目标只能在2023-06-30 02:10至2023-07-08 04:50（严格不含）的原fold1验证段；绝不构造封存test loader，要求所有目标早于test起点2023-07-16 07:30。按原stride12和单风机无缺口窗口重新选择，必须和原manifest的6245窗口、目标最小/最大日期一致。raw labels、可用性掩码、clip规则不变。基线是同checkpoint未经校准的预测和同窗Persistence；历史outer full-train趋势模型训练数据更多，不能冒充同训练预算的对照。
+
+在读取本段目标之前冻结统计设置：按forecast issue time跨风机平均损失差，移动时间块bootstrap144个观测时间点、5000次、seed2024，DM/Newey-West lag143。CI/DM是time-balanced均值的推断，主表MAE是window-weighted；时间网格有缺口时144个点不一定恰为一天。汇总每步长、历史状态、MAE/RMSE/R²/Skills/容量容差命中率，以及校准改变覆盖率和改变窗口伤害率；后两者不是Wiki指标。
+
+该outer段在历史研究中已被查看，故本次只是冻结方案的后续时间开发检查，而非全新独立确认。无论结果正负，不在本段追加系数、epoch、阈值或seed搜索。进程为两线程CPU/nice10，避免干扰其他用户GPU任务；锁与完成缓存防止重复运行。查看用启动器加 `--status`，结果指针 `outputs/logs/SDWPF/residual_scale_followup_latest.txt`。
