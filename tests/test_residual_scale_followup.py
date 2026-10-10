@@ -21,6 +21,20 @@ class ResidualScaleFollowupTests(unittest.TestCase):
             self.assertTrue((directory / "status.env").read_text().startswith("STATUS=RUNNING\n"))
             self.assertNotIn("EXIT_CODE=1", (directory / "status.env").read_text())
 
+    def test_overview_includes_unchanged_checkpoint_and_negative_calibration_skill(self):
+        from utils.forecast_report import _plot_accuracy_overview
+        import matplotlib.pyplot as plt
+        truth = np.arange(36, dtype=float).reshape(3, 12)
+        with tempfile.TemporaryDirectory() as directory, patch("utils.forecast_report.plt.close") as close:
+            _plot_accuracy_overview(truth + 2, truth, directory, reference=truth + 1,
+                persistence=truth + 3, rated_power=1500, model_name="Calibrated")
+            fig = close.call_args.args[0]
+            self.assertEqual(len(fig.axes[1].patches), 6)  # MAE/RMSE, all three methods
+            self.assertEqual(len(fig.axes[2].patches), 3)
+            self.assertTrue(all(bar.get_height() < 0 for bar in fig.axes[3].patches))
+            self.assertIn("unchanged checkpoint", fig.axes[3].get_ylabel())
+        plt.close(fig)
+
     def test_checkpoint_hash_and_outer_boundary_are_required(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)

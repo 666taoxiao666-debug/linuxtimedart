@@ -879,6 +879,7 @@ def _plot_accuracy_overview(
     model_name="Forecast model",
     max_points=150000,
     scope_caption=None,
+    reference=None,
 ):
     """Save one auditable overview of forecast fit and baseline-relative skill."""
     model_metrics = forecast_metrics(pred, true, rated_power=rated_power)
@@ -886,6 +887,10 @@ def _plot_accuracy_overview(
         forecast_metrics(persistence, true, rated_power=rated_power)
         if persistence is not None
         else None
+    )
+    reference_metrics = (
+        forecast_metrics(reference, true, rated_power=rated_power)
+        if reference is not None else None
     )
 
     flat_pred = np.asarray(pred, dtype=float).reshape(-1)
@@ -939,6 +944,19 @@ def _plot_accuracy_overview(
             color="tab:orange",
         )
         axes[0, 1].bar_label(baseline_bars, fmt="%.2f", padding=3)
+    if reference_metrics is not None:
+        # Include the mechanism's own unchanged checkpoint, not only a weaker
+        # baseline. This branch leaves existing two-model reports unchanged.
+        axes[0, 1].clear()
+        comparisons = [("Unchanged checkpoint", reference_metrics, "tab:gray"),
+                       (model_name, model_metrics, "tab:blue")]
+        if persistence_metrics is not None:
+            comparisons.append(("Persistence", persistence_metrics, "tab:orange"))
+        width = .8 / len(comparisons)
+        for index, (label, values, color) in enumerate(comparisons):
+            bars = axes[0, 1].bar(x + (index - (len(comparisons) - 1) / 2) * width,
+                [values["mae"], values["rmse"]], width, label=label, color=color)
+            axes[0, 1].bar_label(bars, fmt="%.2f", padding=3)
     axes[0, 1].set_xticks(x, metric_names)
     axes[0, 1].set_ylabel("Error (kW)")
     axes[0, 1].set_title("Lower is better")
@@ -949,6 +967,10 @@ def _plot_accuracy_overview(
     r2_labels = [model_name]
     r2_values = [model_metrics["r2"]]
     r2_colors = ["tab:purple"]
+    if reference_metrics is not None:
+        r2_labels.append("Unchanged checkpoint")
+        r2_values.append(reference_metrics["r2"])
+        r2_colors.append("tab:gray")
     if persistence_metrics is not None:
         r2_labels.append("Persistence")
         r2_values.append(persistence_metrics["r2"])
@@ -961,27 +983,29 @@ def _plot_accuracy_overview(
     axes[1, 0].margins(y=0.15)
     axes[1, 0].grid(axis="y", alpha=0.2)
 
-    if persistence_metrics is not None:
+    skill_reference = reference_metrics if reference_metrics is not None else persistence_metrics
+    if skill_reference is not None:
         eps = np.finfo(float).eps
         skill_values = [
             100.0
             * (
                 1.0
                 - model_metrics["mae"]
-                / max(persistence_metrics["mae"], eps)
+                / max(skill_reference["mae"], eps)
             ),
             100.0
             * (
                 1.0
                 - model_metrics["rmse"]
-                / max(persistence_metrics["rmse"], eps)
+                / max(skill_reference["rmse"], eps)
             ),
         ]
         colors = ["tab:green" if value >= 0.0 else "tab:red" for value in skill_values]
         skill_bars = axes[1, 1].bar(metric_names, skill_values, color=colors)
         axes[1, 1].bar_label(skill_bars, fmt="%+.2f%%", padding=3)
         axes[1, 1].axhline(0.0, color="black", linewidth=1.0)
-        axes[1, 1].set_ylabel("Skill vs persistence (%)")
+        axes[1, 1].set_ylabel("Skill vs unchanged checkpoint (%)" if reference_metrics is not None
+                               else "Skill vs persistence (%)")
         axes[1, 1].set_title("Positive skill means improvement")
         axes[1, 1].margins(y=0.18)
     else:

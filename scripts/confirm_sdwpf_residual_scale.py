@@ -169,6 +169,32 @@ def mark_running(directory):
     write_json(directory / "progress.json", dict(stage="frozen_source_checks", pid=os.getpid()))
 
 
+def render_existing(source, directory):
+    """Only reproduce the completed graph; verify scores, never fit/infer."""
+    protocol, report = read_json(directory / "protocol.json"), read_json(directory / "result.json")
+    model = read_json(source / "calibration.json")
+    cache = directory / "predictions.npz"
+    if (sha256(source / "calibration.json") != protocol["calibration_sha256"]
+            or sha256(cache) != report["data_audit"]["predictions_sha256"]
+            or model["source_checkpoint_sha256"] != protocol["source_checkpoint_sha256"]):
+        raise ValueError("Completed plot source identity changed")
+    with np.load(cache, allow_pickle=False) as data:
+        arrays = {key: data[key] for key in data.files}
+    calibrated = apply_scale(model, arrays["prediction"], arrays["persistence"], arrays["trend"])
+    actual = metrics(calibrated, arrays["truth"], arrays["persistence"])
+    score = report["metrics"]["calibrated"]
+    for key in ("mae", "rmse", "r2", "mae_skill_pct", "rmse_skill_pct",
+                "within_5pct_capacity_pct", "within_10pct_capacity_pct"):
+        np.testing.assert_allclose(actual[key], score[key], rtol=1e-10, atol=1e-10)
+    from utils.forecast_report import _plot_accuracy_overview
+    caption = (f"Frozen checkpoint {protocol['source_checkpoint_sha256'][:10]} and saved v7 scales; f1 s2024 outer validation\n"
+        f"Previously exposed development segment, not sealed test; {len(calibrated)} h12 windows. "
+        f"Capacity hits: ±5% {score['within_5pct_capacity_pct']:.2f}%, ±10% {score['within_10pct_capacity_pct']:.2f}%")
+    _plot_accuracy_overview(calibrated, arrays["truth"], str(directory), persistence=arrays["persistence"],
+        reference=arrays["prediction"], rated_power=1500, model_name="Calibrated prediction", scope_caption=caption)
+    print("[FOLLOWUP] Plot verified against saved metrics; no fit/inference", flush=True)
+
+
 def run(source, directory):
     import fcntl
     import torch
@@ -217,13 +243,7 @@ def run(source, directory):
             unavailable_point_pct=float(100 * (~arrays["availability"]).mean()),
             availability_policy="retained unchanged actual-power protocol", predictions_sha256=sha256(cache))
         write_json(directory / "result.json", report)
-        from utils.forecast_report import _plot_accuracy_overview
-        score = report["metrics"]["calibrated"]
-        caption = (f"Frozen checkpoint {protocol['source_checkpoint_sha256'][:10]} and saved v7 scales; f1 s2024 outer validation\n"
-            f"Previously exposed development segment, not sealed test; {len(calibrated)} h12 windows. "
-            f"Capacity hits: ±5% {score['within_5pct_capacity_pct']:.2f}%, ±10% {score['within_10pct_capacity_pct']:.2f}%")
-        _plot_accuracy_overview(calibrated, arrays["truth"], str(directory), persistence=arrays["persistence"],
-            rated_power=1500, model_name="Frozen residual scale follow-up", scope_caption=caption)
+        render_existing(source, directory)
         write_json(directory / "progress.json", dict(stage="completed", pid=os.getpid()))
         finish_log_directory(directory, 0)
         print("[FOLLOWUP] Completed: " + str(directory / "result.json"), flush=True)
@@ -234,7 +254,11 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--calibration-dir", required=True, type=Path)
     parser.add_argument("--result-dir", required=True, type=Path)
+    parser.add_argument("--render-only", action="store_true", help="Verify saved scores and replot; no inference or fitting")
     args = parser.parse_args()
+    if args.render_only:
+        render_existing(args.calibration_dir.resolve(), args.result_dir.resolve())
+        return 0
     try:
         run(args.calibration_dir.resolve(), args.result_dir.resolve())
     except BlockingIOError:
