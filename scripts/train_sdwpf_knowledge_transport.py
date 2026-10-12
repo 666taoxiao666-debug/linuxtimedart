@@ -64,6 +64,12 @@ def evaluate(result, reference, truth, persistence, times):
     windows = changed.any(1)
     gain = np.abs(reference-truth)-np.abs(prediction-truth)
     window_gain = gain.mean(1)
+    paired = paired_forecast_statistics(prediction, reference, truth,
+        pd.DataFrame({"forecast_start":times[:, 0]}), block_length=12, replicates=5000, seed=2024)
+    paired["interpretation"] = (
+        "Exploratory original-train later-block check, not outer validation or sealed test. "
+        "Windows sharing a forecast time are averaged before temporal inference. "
+        "This previously inspected development interval is not independent confirmation.")
     return dict(metrics=metrics(prediction, truth, persistence),
         gain_mae_kw=float(gain.mean()),
         gain_rmse_kw=float(np.sqrt(np.mean((reference-truth)**2))-np.sqrt(np.mean((prediction-truth)**2))),
@@ -74,8 +80,21 @@ def evaluate(result, reference, truth, persistence, times):
         history_overlap_window_pct=float(100*result["history_overlap"].any((1,2)).mean()),
         physical_candidate_window_pct=float(100*result["physical_available"].any((1,2)).mean()),
         evidence_supported_window_pct=float(100*result["evidence_supported"].any((1,2)).mean()),
-        paired=paired_forecast_statistics(prediction, reference, truth,
-            pd.DataFrame({"forecast_start":times[:, 0]}), block_length=12, replicates=5000, seed=2024))
+        paired=paired)
+
+
+def render_check(directory, name, result, reference, truth, persistence, times, model):
+    from utils.forecast_report import _plot_accuracy_overview
+    plot_dir = directory/(name+"_artifacts")
+    plot_dir.mkdir(exist_ok=True)
+    caption = (f"Expert bundle {model['expert_bundle_id'][:10]}; original-train later block "
+        f"{str(times.min())[:16]} to {str(times.max())[:16]}\n"
+        f"{name.replace('_', ' ')}; {len(truth)} windows, all h12 points; "
+        "exploratory, NOT outer validation or test. Held-out scope: residual experts only.")
+    _plot_accuracy_overview(result["prediction"], truth, str(plot_dir),
+        persistence=persistence, reference=reference, rated_power=1500,
+        model_name="Physical event transport", scope_caption=caption)
+    return str((plot_dir/"forecast_accuracy_overview.png").relative_to(directory))
 
 
 def run(directory, source, protocol_path):
@@ -191,6 +210,8 @@ def run(directory, source, protocol_path):
                 event_only=coarse["prediction"], reference=reference, persistence=anchor, truth=truth,
                 action=guarded["action"], target_timestamps=times[mask], turbines=turbine[mask],
                 expert_bundle_id=np.asarray(model["expert_bundle_id"]), policy_id=np.asarray(policy["policy_id"]))
+            report["checks"][name]["prediction_plot"] = render_check(directory, name, guarded,
+                reference, truth, anchor, times[mask], model)
             print("[TRANSPORT] " + name + " " + str({
                 k:report["checks"][name]["physical_transport"][k] for k in
                 ("gain_mae_kw", "gain_rmse_kw", "coverage_window_pct", "harm_window_pct")}), flush=True)
@@ -201,7 +222,9 @@ def run(directory, source, protocol_path):
         write_json(directory/"result.json", report)
         write_json(directory/"completed.json", {name:sha256(directory/name) for name in
             ("result.json", "expert_model.json", "utility_policy.json", "provenance.json",
-             "future_source_turbines_predictions.npz", "future_residual_held_out_turbines_predictions.npz")})
+             "future_source_turbines_predictions.npz", "future_residual_held_out_turbines_predictions.npz",
+             "future_source_turbines_artifacts/forecast_accuracy_overview.png",
+             "future_residual_held_out_turbines_artifacts/forecast_accuracy_overview.png")})
         write_json(directory/"progress.json", dict(stage="completed", pid=os.getpid()))
         finish_log_directory(directory, 0)
         print("[TRANSPORT] Complete. joint_improvement_in_both_checks="+
