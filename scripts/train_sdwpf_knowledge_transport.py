@@ -19,8 +19,7 @@ import pandas as pd
 from scripts.tune_sdwpf_accuracy import read_json, write_json, sha256
 from scripts.train_sdwpf_residual_scale import metrics
 from utils.physical_scale_guard import three_blocks
-from utils.transport_event_wiki import (fit_experts, fit_transfer_policy, apply_transfer,
-    candidates, calibration_blocks, validate_identity)
+from utils.transport_event_wiki import calibration_blocks
 from utils.train_error_audit import EVENT_IDS
 from utils.paired_forecast_statistics import paired_forecast_statistics
 from utils.sdwpf_logging import finish_log_directory
@@ -28,6 +27,44 @@ from utils.sdwpf_logging import finish_log_directory
 
 def slice_context(context, mask):
     return {key:value[mask] for key,value in context.items()}
+
+
+def expert_api_for_type(expert_type):
+    if expert_type == "capacity_normalized_physical_ridge":
+        from utils import transport_event_wiki as api
+    elif expert_type == "physical_neighbor_balanced_median":
+        from utils import local_transport_event_wiki as api
+    else:
+        raise ValueError("Unsupported declared expert type: "+expert_type)
+    return api
+
+
+def candidate_audit(api, model, blocks):
+    """Descriptive source-fit/calibration diagnostics; never choose parameters."""
+    reports = {}
+    for name, block in blocks.items():
+        prediction, physical, overlap = api.candidates(model, block["context"], block["reference"],
+            block["anchor"], block["events"], model["contract"])
+        truth, reference = block["truth"], block["reference"]
+        rows = []
+        for k, event_id in enumerate(model["contract"]["event_ids"]+["composition"]):
+            mask = physical[..., k]
+            gain = np.abs(reference-truth)-np.abs(prediction[..., k]-truth)
+            delta = prediction[..., k]-reference
+            cap = model["composition_max_scale"] if event_id == "composition" else model["max_scale"]
+            supported = overlap[..., k]
+            rows.append(dict(event_id=event_id, physical_windows=int(mask.any(1).sum()),
+                supported_windows=int(supported.any(1).sum()),
+                signed_correction_kw=float(delta[mask].mean()) if mask.any() else None,
+                absolute_correction_kw=float(np.abs(delta[mask]).mean()) if mask.any() else None,
+                cap_hit_pct=float(100*(np.abs(delta[mask]) >= cap*model["contract"]["rated_power_kw"]-1e-6).mean()) if mask.any() else None,
+                candidate_mae_gain_kw=float(gain[mask].mean()) if mask.any() else None,
+                candidate_rmse_gain_kw=float(np.sqrt(np.mean((reference-truth)[mask]**2))-
+                    np.sqrt(np.mean((prediction[..., k]-truth)[mask]**2))) if mask.any() else None,
+                supported_candidate_mae_gain_kw=float(gain[supported].mean()) if supported.any() else None))
+        reports[name] = rows
+    return dict(expert_bundle_id=model["expert_bundle_id"], blocks=reports,
+        scope="Source turbines only. Fit is in-sample descriptive; calibration blocks occur after expert fitting. No check targets enter this audit.")
 
 
 def verify_source(source):
@@ -97,13 +134,15 @@ def render_check(directory, name, result, reference, truth, persistence, times, 
     return str((plot_dir/"forecast_accuracy_overview.png").relative_to(directory))
 
 
-def run(directory, source, protocol_path):
+def run(directory, source, protocol_path, reference_expert_dir=None):
     import fcntl
     with (directory/"transport.lock").open("a") as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         protocol = read_json(protocol_path)
-        if protocol["protocol_id"] != "sdwpf_expert_bound_physical_knowledge_transport_v12":
+        if protocol["protocol_id"] not in ("sdwpf_expert_bound_physical_knowledge_transport_v12",
+                                           "sdwpf_local_case_knowledge_transport_v13"):
             raise ValueError("Unsupported transport protocol")
+        api = expert_api_for_type(protocol["expert"]["type"])
         saved = directory/"protocol.json"
         if saved.exists() and sha256(saved) != sha256(protocol_path):
             raise ValueError("Protocol changed on resume")
@@ -119,7 +158,7 @@ def run(directory, source, protocol_path):
                 if sha256(directory/name) != expected:
                     raise ValueError("Completed transport artifact changed")
             model = read_json(directory/"expert_model.json")
-            validate_identity(model, model["contract"], read_json(directory/"utility_policy.json"))
+            api.validate_identity(model, model["contract"], read_json(directory/"utility_policy.json"))
             print("[TRANSPORT] Already complete; no training repeated", flush=True)
             finish_log_directory(directory, 0)
             return
@@ -143,7 +182,8 @@ def run(directory, source, protocol_path):
         contract = dict(base_checkpoint_sha256=drift["source_checkpoint_sha256"],
             base_manifest_sha256=sha256(manifest), event_config_sha256=audit["event_config_sha256"],
             data_sha256=drift["data_sha256"], input_len=336, pred_len=12, rated_power_kw=1500.,
-            physical_coordinate_version="observed_last12_v1", feature_basis="physical_ridge_v1",
+            physical_coordinate_version="observed_last12_v1", feature_basis=("physical_ridge_v1"
+                if protocol["expert"]["type"] == "capacity_normalized_physical_ridge" else "physical_case_median_v1"),
             event_ids=list(EVENT_IDS), source_turbines=sorted(int(v) for v in np.unique(turbine[source_mask])),
             residual_held_out_turbines=sorted(int(v) for v in np.unique(turbine[held_out])),
             backbone_seen_held_out_turbines=True)
@@ -162,10 +202,10 @@ def run(directory, source, protocol_path):
         write_json(directory/"progress.json", dict(stage="expert_fit", pid=os.getpid()))
         model_path = directory/"expert_model.json"
         if model_path.exists():
-            model = read_json(model_path); validate_identity(model, contract)
+            model = read_json(model_path); api.validate_identity(model, contract)
             print("[TRANSPORT] Reusing frozen fitted expert bundle", flush=True)
         else:
-            model = fit_experts(slice_context(context, fit), arrays["prediction"][fit],
+            model = api.fit_experts(slice_context(context, fit), arrays["prediction"][fit],
                 arrays["persistence"][fit], arrays["events"][fit], arrays["truth"][fit],
                 turbine[fit], contract, **{k:v for k,v in protocol["expert"].items()
                     if k not in ("type", "uses_hidden_backbone_features", "uses_turbine_id_as_predictor")})
@@ -179,14 +219,35 @@ def run(directory, source, protocol_path):
                 truth=arrays["truth"][mask], turbines=turbine[mask], times=times[mask]))
         policy_path = directory/"utility_policy.json"
         if policy_path.exists():
-            policy = read_json(policy_path); validate_identity(model, contract, policy)
+            policy = read_json(policy_path); api.validate_identity(model, contract, policy)
         else:
             settings = protocol["transport"]
-            policy = fit_transfer_policy(model, blocks, contract,
+            policy = api.fit_transfer_policy(model, blocks, contract,
                 min_windows=settings["min_windows_per_calibration_block"],
                 min_turbines=settings["min_turbines_per_calibration_block"],
                 min_positive_fraction=settings["min_positive_turbine_fraction"])
             write_json(policy_path, policy)
+        if protocol["protocol_id"] == "sdwpf_local_case_knowledge_transport_v13":
+            if reference_expert_dir is None:
+                raise ValueError("Declared v12 expert reference required for the mechanism audit")
+            old_completed = read_json(reference_expert_dir/"completed.json")
+            old_path = reference_expert_dir/"expert_model.json"
+            if sha256(old_path) != old_completed["expert_model.json"]:
+                raise ValueError("Reference expert artifact changed")
+            old_model = read_json(old_path)
+            if old_model["expert_bundle_id"] != protocol["reference_expert_bundle_id"]:
+                raise ValueError("Reference expert is not the declared frozen v12 bundle")
+            for key in ("base_checkpoint_sha256", "event_config_sha256", "data_sha256", "source_turbines"):
+                if old_model["contract"][key] != contract[key]:
+                    raise ValueError("Reference expert comparison mismatch: "+key)
+            audit_blocks = dict(source_fit=dict(context=slice_context(context, fit),
+                reference=arrays["prediction"][fit], anchor=arrays["persistence"][fit],
+                events=arrays["events"][fit], truth=arrays["truth"][fit]),
+                calibration_early=blocks[0], calibration_late=blocks[1])
+            write_json(directory/"train_candidate_audit.json", dict(
+                new_expert=candidate_audit(api, model, audit_blocks),
+                v12_expert=candidate_audit(expert_api_for_type(old_model["expert_type"]), old_model, audit_blocks),
+                outer_validation_used=False, check_targets_used=False, parameters_changed=False))
         write_json(directory/"progress.json", dict(stage="frozen_time_turbine_check", pid=os.getpid()))
         report = dict(protocol_id=protocol["protocol_id"], provenance=provenance,
             expert_bundle_id=model["expert_bundle_id"], policy_id=policy["policy_id"],
@@ -199,8 +260,8 @@ def run(directory, source, protocol_path):
                 raise ValueError("Both temporal and residual-turbine checks require observations")
             ctx = slice_context(context, mask)
             reference, truth, anchor = (arrays[k][mask] for k in ("prediction", "truth", "persistence"))
-            guarded = apply_transfer(model, policy, ctx, reference, anchor, arrays["events"][mask], contract)
-            coarse = apply_transfer(model, policy, ctx, reference, anchor, arrays["events"][mask], contract,
+            guarded = api.apply_transfer(model, policy, ctx, reference, anchor, arrays["events"][mask], contract)
+            coarse = api.apply_transfer(model, policy, ctx, reference, anchor, arrays["events"][mask], contract,
                                     event_only=True)
             report["checks"][name] = dict(windows=int(mask.sum()), turbines=int(len(np.unique(turbine[mask]))),
                 reference=metrics(reference, truth, anchor), persistence=metrics(anchor, truth, anchor),
@@ -220,11 +281,14 @@ def run(directory, source, protocol_path):
             for block in report["checks"].values())
         report["next_action"] = "review_train_only_evidence_no_automatic_outer_or_new_seed"
         write_json(directory/"result.json", report)
-        write_json(directory/"completed.json", {name:sha256(directory/name) for name in
+        completed_files = {name:sha256(directory/name) for name in
             ("result.json", "expert_model.json", "utility_policy.json", "provenance.json",
              "future_source_turbines_predictions.npz", "future_residual_held_out_turbines_predictions.npz",
              "future_source_turbines_artifacts/forecast_accuracy_overview.png",
-             "future_residual_held_out_turbines_artifacts/forecast_accuracy_overview.png")})
+             "future_residual_held_out_turbines_artifacts/forecast_accuracy_overview.png")}
+        if (directory/"train_candidate_audit.json").exists():
+            completed_files["train_candidate_audit.json"] = sha256(directory/"train_candidate_audit.json")
+        write_json(directory/"completed.json", completed_files)
         write_json(directory/"progress.json", dict(stage="completed", pid=os.getpid()))
         finish_log_directory(directory, 0)
         print("[TRANSPORT] Complete. joint_improvement_in_both_checks="+
@@ -236,9 +300,11 @@ def main():
     parser.add_argument("--result-dir", required=True, type=Path)
     parser.add_argument("--drift-dir", required=True, type=Path)
     parser.add_argument("--protocol", default=ROOT/"configs/sdwpf_knowledge_transport_protocol_v12.json", type=Path)
+    parser.add_argument("--reference-expert-dir", type=Path)
     args = parser.parse_args()
     try:
-        run(args.result_dir.resolve(), args.drift_dir.resolve(), args.protocol.resolve())
+        run(args.result_dir.resolve(), args.drift_dir.resolve(), args.protocol.resolve(),
+            args.reference_expert_dir.resolve() if args.reference_expert_dir else None)
     except BlockingIOError:
         print("[TRANSPORT] Existing process owns the run; no duplicate started", flush=True)
         return

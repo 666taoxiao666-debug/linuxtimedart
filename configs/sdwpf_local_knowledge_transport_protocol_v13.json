@@ -1,0 +1,55 @@
+{
+  "protocol_id": "sdwpf_local_case_knowledge_transport_v13",
+  "status": "exploratory_train_period_pilot",
+  "fold": 1,
+  "seed": 2024,
+  "input_len": 336,
+  "pred_len": 12,
+  "rated_power_kw": 1500,
+  "reference_expert_bundle_id": "ba0d7375bea539387fb9967082f0785316642b5684fbda5c94b4abaac22f371f",
+  "change": "Replace the global linear residual expert with a frozen local empirical expert and neighbor-based support; retain the v12 utility acceptance criteria and data splits.",
+  "expert": {
+    "type": "physical_neighbor_balanced_median",
+    "neighbors": 32,
+    "min_neighbor_turbines": 8,
+    "max_scale": 0.2,
+    "composition_max_scale": 0.05,
+    "min_fit_windows": 128,
+    "support_quantile": 0.95,
+    "uses_hidden_backbone_features": false,
+    "uses_turbine_id_as_predictor": false
+  },
+  "expert_definition": {
+    "coordinates": "Same ten v12 physical coordinates, standardized on the expert-fit source prefix only.",
+    "value": "Source-turbine-balanced weighted median of the 32 nearest stored fit residuals, separately for each event and horizon.",
+    "support": "At least eight neighbor turbines and kth squared distance within the fit-only 95th-percentile leave-one-turbine-out distance radius.",
+    "identity": "All memory cases, original fit residuals, neighbor rule, support geometry, physical features, implementation and fixed base checkpoint are bound to one expert hash.",
+    "update_rule": "Memory changes create a new expert identity and invalidate all old utility evidence."
+  },
+  "splits": {
+    "expert_fit": "first50pct_original_train_oof_source_turbines_only",
+    "utility_calibration": "next25pct_original_train_oof_source_turbines_only_split_into_two_purged_time_blocks",
+    "check": "last25pct_original_train_oof_report_source_and_residual_held_out_turbines_separately",
+    "held_out_rule": "integer_turbine_id_mod5_equals0",
+    "held_out_scope": "residual_knowledge_only_existing_trend_backbone_may_have_seen_these_turbines",
+    "purge_crossing_targets": true
+  },
+  "transport": {
+    "physical_power_edges": [0.08, 0.3, 0.7, 0.9],
+    "physical_wind_edges_mps": [3, 5, 10],
+    "min_windows_per_calibration_block": 64,
+    "min_turbines_per_calibration_block": 8,
+    "min_positive_turbine_fraction": 0.6666666666666666,
+    "acceptance": "both_time_blocks_positive_turbine_balanced_MAE_and_MSE_gain",
+    "score": "worst_of_two_time_block_mean_gains_kw_not_a_statistical_confidence_bound",
+    "backoff": "finest_supported_joint_then_power_then_event_known_harmful_fine_cell_vetoes_coarse"
+  },
+  "comparisons": ["same_frozen_reference", "same_experts_event_only_utility", "expert_bound_physical_transport"],
+  "mechanism_diagnostics": "Report all physical candidates on the source fit and calibration blocks: signed/absolute correction, cap-hit fraction and MAE/RMSE gain. These diagnostics do not change the declared parameters.",
+  "metrics": ["MAE", "MSE", "RMSE", "R2", "MAE_Skill", "RMSE_Skill", "coverage", "harm", "abstention", "history_overlap"],
+  "outer_validation_used": false,
+  "sealed_test_evaluated": false,
+  "automatic_outer_followup": false,
+  "new_candidates_or_seeds_after_check": false,
+  "scope_note": "Single declared development pilot prompted by v12 training-side extrapolation failures. The previously inspected original-train interval is not independent confirmation. No changes to the frozen v1 semantic-Wiki results."
+}

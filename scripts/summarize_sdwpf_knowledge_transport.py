@@ -9,7 +9,7 @@ import sys
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from scripts.tune_sdwpf_accuracy import read_json, write_json, sha256
-from utils.transport_event_wiki import validate_identity
+from scripts.train_sdwpf_knowledge_transport import expert_api_for_type
 
 
 def calibration_summary(model, policy):
@@ -43,7 +43,7 @@ def summarize(directory):
             raise ValueError("Completed transport artifact changed: "+name)
     model, policy, result = (read_json(directory/name) for name in
         ("expert_model.json", "utility_policy.json", "result.json"))
-    validate_identity(model, model["contract"], policy)
+    expert_api_for_type(model["expert_type"]).validate_identity(model, model["contract"], policy)
     audit = dict(source_completed_sha256=sha256(directory/"completed.json"),
         expert_bundle_id=model["expert_bundle_id"], policy_id=policy["policy_id"],
         supported_cells=sum(row["supported"] for row in policy["entries"].values()),

@@ -143,3 +143,47 @@ Both check groups have generated `forecast_accuracy_overview.png` under their
 own `_artifacts` directories. Their captions identify the original-train
 scope and residual-only held-out status. These figures were numerically
 checked against the saved predictions and visually inspected.
+
+## Local empirical expert follow-up (v13)
+
+A source-fit and calibration audit found a concrete v12 expert failure. The
+gust expert's average correction changed from +13.852606 kW in the fit block
+to -199.831798 kW in late calibration. 34.94% of its late-calibration physical
+candidate corrections reached the 300 kW bound. Mean actual residual in that
+block was +35.400153 kW. Correlated level features and the base-change feature
+contributed large extrapolated offsets after the physical distribution shifted.
+These diagnostics use original-train source turbines only.
+
+The declared follow-up changes the expert to a local empirical function. For
+each event and horizon it retrieves 32 source-fit cases in the same ten physical
+coordinates, and predicts their turbine-balanced weighted median residual.
+Each represented source turbine receives equal total mass. A local correction
+cannot extrapolate beyond the residual values represented by its neighbors.
+The same final capacity bounds apply. Fit-only leave-one-turbine-out neighbor
+distances define a 95th-percentile support radius; at least eight neighboring
+turbines must support a query. This is an empirical support test, not a guarantee
+that target conditional errors are invariant.
+
+All stored cases, their residuals, feature scaling, neighbor rules and support
+radius are frozen before utility calibration and bound to the actual expert's
+hash. Updating case memory creates a new expert identity and requires new
+utility evidence. v12 code remains byte-identical so that old bundle identities
+can still be checked. v13 is a new expert family, not a retroactive correction
+of v12's published result artifacts.
+
+Protocol: `configs/sdwpf_local_knowledge_transport_protocol_v13.json`.
+The source fit/calibration/check dates, turbine split, utility acceptance rules,
+capacity bounds and comparison methods remain those of v12. In addition to the
+final checks, `train_candidate_audit.json` compares the actual v12 and v13
+corrections on the same source fit and calibration windows. Fit measurements
+are in-sample descriptions. The calibration comparisons do not change the
+frozen neighbor count, support rule, thresholds or seed.
+
+```bash
+conda activate timedart
+bash scripts/train/SDWPF_launch_local_knowledge_transport.sh
+bash scripts/train/SDWPF_launch_local_knowledge_transport.sh --status
+RESULT_DIR="$(cat outputs/logs/SDWPF/local_knowledge_transport_latest.txt)"
+python scripts/summarize_sdwpf_knowledge_transport.py --result-dir "$RESULT_DIR"
+cat "$RESULT_DIR/summary.txt"
+```
