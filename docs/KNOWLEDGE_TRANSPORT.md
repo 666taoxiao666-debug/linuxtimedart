@@ -187,3 +187,47 @@ RESULT_DIR="$(cat outputs/logs/SDWPF/local_knowledge_transport_latest.txt)"
 python scripts/summarize_sdwpf_knowledge_transport.py --result-dir "$RESULT_DIR"
 cat "$RESULT_DIR/summary.txt"
 ```
+
+### Executed v13 pilot: 2026-10-12
+
+Protocol SHA-256:
+`3817c553c45ac312740b64ff6a7ded7b0bec963271f98db943fda03814a10d36`.
+Run: `outputs/logs/SDWPF/20261012/004_local_know_hed6097d92412_h12_f1_s2024_knn32_wind8_time50-25-25_cpu2`.
+Expert bundle:
+`d083b02dc5eb8c1ee6494eba04ec1fd3d657aecbdc880bbebb60b06b688715ea`.
+Policy:
+`ecb8af2cbbc62396494a3201dff94fda6f6edbe31ecb8db64ade430f0ff4d824`.
+
+The local expert reduced the linear extrapolation failure, but did not establish
+profitable transport. On the same 104 late-calibration gust windows, the mean
+correction changed from -199.831798 to -81.939571 kW, and the fraction reaching
+the correction bound fell from 34.935897% to 0.641026%. The all-physical-candidate
+MAE gain improved from -89.573695 to -34.016187 kW; it remained negative.
+The early-calibration gust candidate gain similarly improved from -91.634848
+to -34.342608 kW. These compare identical physical windows before either
+expert's support or utility filter, not selected final predictions.
+
+Low-wind early-calibration candidate MAE gain improved from -19.133791 to
++4.032353 kW on the same 397 windows. Its RMSE gain was still -13.063776 kW,
+so this was not a joint accuracy improvement. There were no low-wind physical
+event windows in the later calibration block. For gust, local in-support
+counts in that block were only 21–26 per horizon, and turbine-balanced MAE
+gains were negative at every horizon (-118.074620 to -1.917185 kW).
+
+Consequently no utility cell met the unchanged two-block requirements.
+Event-only and physical-conditional policies both abstained on every check
+window. The two final checks exactly reproduced v12's base-only metrics:
+source turbines MAE 118.216866 / RMSE 182.299589 kW / R² 0.468039, and
+residual-held-out turbines MAE 116.089386 / RMSE 179.234371 kW / R² 0.469129.
+Intervention was 0%, abstention 100%, and net improvement 0 kW; intervention
+harm is undefined. These are original-train development checks, not outer
+validation/test scores or an accuracy improvement attributable to Wiki.
+
+The evidence/executor identity contract is implemented and tested. The
+remaining scientific gap is useful conditional error stability: similar
+observed histories and bounded local residuals alone do not establish it.
+The current data also lack temporally repeated calibration support for some
+events. Lowering the gates or calling abstention a successful knowledge
+transfer would not address either problem. This pilot is retained as a
+negative result; no automatic outer refit, extra seed, or threshold search
+follows it.
