@@ -170,3 +170,9 @@ v8不重新拟合alpha、不训练神经底座/风险头、不改Wiki。仅允�
 针对末训练块约-52.7kW的系统性低估，只建立一个单变量、训练期内可证伪的偏置校准，不直接把该观察值加到预测上。沿用v8固定三段：前50%按每个预测步长拟合 `clip(median(truth-reference), -75, 75)` kW，75kW等于额定功率5%；接着25%仅作准入，不重新估计幅度；最后25%仅作一次检查，跨分界目标窗口全部丢弃。某步长只有在前两块各自至少64窗口且同一固定修正同时严格改善MAE和RMSE时才能启用，否则回退原checkpoint预测。输出仍限制在0—1500kW。
 
 代码 `utils/crossfit_bias_calibration.py`、`scripts/train_sdwpf_crossfit_bias.py`，测试要求应用接口不接受truth、拟合与准入块职责分离、容量上限与输出clip有效、支持不足回退。运行命令为 `python scripts/train_sdwpf_crossfit_bias.py --drift-dir "$(cat outputs/logs/SDWPF/residual_drift_audit_latest.txt)"`，结果指针 `outputs/logs/SDWPF/crossfit_bias_latest.txt`。本试验不重训神经网络、不改Wiki、不读取outer validation或sealed test；训练末块此前已被观察，仍只属于探索性开发证据。结果图必须注明训练期检查块。无联合改善或收益仍不足时停止，不依据末块结果回选步长、上限或支持量，也不自动发起outer验证。
+
+v9于2026-10-12完成，服务器目录 `outputs/logs/SDWPF/20261012/001_crossfit_bias_h12_f1_s2024_train_50-25-25_cap75_min64_cpu`。6个步长形式上通过准入，但前段各步中位残差都仅 `1.1490835e-05` kW，末块MAE只从117.7940869变为117.7940852kW、RMSE从181.6945768变为181.6945748kW，改善约0.000002kW，属于浮点数值零。均值bias仍为-52.6815983kW。说明系统性均值低估来自偏斜误差尾部，不能用全局MAE最优常数平移修复。该机制停止，不做outer确认。图的Skill轴因自动缩放显示 `1e-6`，虽标注+0.00%，仅可用于审计而不能宣传效果。
+
+### 预声明v10：固定历史物理箱的条件偏置
+
+为了直接检验“不同工作点混合导致全局中位数为零”，v10沿用此前冻结且非按目标选择的5个历史平均功率箱×4个历史平均风速箱，不增加分箱。每个物理箱×预测步长只允许一个前50%中位残差修正，绝对值不超过75kW；下一25%仅准入，要求两块各至少64窗口且同一修正分别严格改善MAE和RMSE；最后25%只检查。推理只接收原预测与历史物理箱，不接收truth；无支持单元完全回退。代码 `utils/conditional_bias_calibration.py`、`scripts/train_sdwpf_conditional_bias.py`，指针 `outputs/logs/SDWPF/conditional_bias_latest.txt`。由于同一末训练块已被v8/v9观察，本轮只是重复开发诊断，即使正收益也不能作为独立泛化证据，且不自动outer评估、不把它记作Wiki贡献。
