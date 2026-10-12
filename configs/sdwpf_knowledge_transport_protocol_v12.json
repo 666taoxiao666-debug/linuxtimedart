@@ -1,0 +1,46 @@
+{
+  "protocol_id": "sdwpf_expert_bound_physical_knowledge_transport_v12",
+  "status": "exploratory_train_period_pilot",
+  "fold": 1,
+  "seed": 2024,
+  "input_len": 336,
+  "pred_len": 12,
+  "rated_power_kw": 1500,
+  "expert": {
+    "type": "capacity_normalized_physical_ridge",
+    "ridge_lambda": 0.01,
+    "max_scale": 0.2,
+    "composition_max_scale": 0.05,
+    "min_fit_windows": 128,
+    "support_quantile": 0.95,
+    "uses_hidden_backbone_features": false,
+    "uses_turbine_id_as_predictor": false
+  },
+  "splits": {
+    "expert_fit": "first50pct_original_train_oof_source_turbines_only",
+    "utility_calibration": "next25pct_original_train_oof_source_turbines_only_split_into_two_purged_time_blocks",
+    "check": "last25pct_original_train_oof_report_source_and_residual_held_out_turbines_separately",
+    "held_out_rule": "integer_turbine_id_mod5_equals0",
+    "held_out_scope": "residual_knowledge_only_existing_trend_backbone_may_have_seen_these_turbines",
+    "purge_crossing_targets": true
+  },
+  "transport": {
+    "physical_power_edges": [0.08, 0.3, 0.7, 0.9],
+    "physical_wind_edges_mps": [3, 5, 10],
+    "min_windows_per_calibration_block": 64,
+    "min_turbines_per_calibration_block": 8,
+    "min_positive_turbine_fraction": 0.6666666666666666,
+    "acceptance": "both_time_blocks_positive_turbine_balanced_MAE_and_MSE_gain",
+    "score": "worst_of_two_time_block_mean_gains_kw_not_a_statistical_confidence_bound",
+    "backoff": "finest_supported_joint_then_power_then_event_known_harmful_fine_cell_vetoes_coarse",
+    "identity": "exact_expert_weights_code_feature_schema_base_checkpoint_manifest_rule_config_and_capacity_hashes",
+    "retraining_invalidates_evidence": true
+  },
+  "comparisons": ["same_frozen_reference", "same_experts_event_only_utility", "expert_bound_physical_transport"],
+  "metrics": ["MAE", "MSE", "RMSE", "R2", "MAE_Skill", "RMSE_Skill", "coverage", "harm", "abstention", "history_overlap"],
+  "outer_validation_used": false,
+  "sealed_test_evaluated": false,
+  "automatic_outer_followup": false,
+  "new_candidates_or_seeds_after_check": false,
+  "scope_note": "Uses the already inspected original-train OOF interval. This is mechanism development, not independent publication confirmation. Original v1 semantic-Wiki results remain unchanged. The new residual expert class is a declared research change, not a proxy reproduction of the old neural adapter."
+}
