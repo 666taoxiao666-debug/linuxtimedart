@@ -10,6 +10,34 @@ from __future__ import annotations
 
 from typing import Sequence
 
+import numpy as np
+
+ANGLE_MODES = ("legacy_difference", "relative_wdir")
+
+
+def yaw_degrees(wdir, ndir, angle_mode="legacy_difference"):
+    """SDWPF Wdir is already relative to the nacelle (official table 2).
+
+    Legacy subtraction is retained solely to reproduce frozen checkpoints.
+    Corrected inputs pair absolute nacelle heading with relative yaw, retaining
+    both observed angles without assuming a convention for absolute wind.
+    """
+    if angle_mode not in ANGLE_MODES:
+        raise ValueError("Unsupported SDWPF angle convention: " + str(angle_mode))
+    return np.asarray(wdir) if angle_mode == "relative_wdir" else np.asarray(wdir)-np.asarray(ndir)
+
+
+def check_angle_contract(source_args, target):
+    source = source_args.get("sdwpf_angle_mode", "legacy_difference")
+    current = getattr(target, "sdwpf_angle_mode", "legacy_difference")
+    if source != current:
+        raise RuntimeError("SDWPF angle checkpoint mismatch: retrain matched pretrain; "
+                           f"checkpoint={source}, target={current}")
+    if current == "relative_wdir":
+        features = list(getattr(target, "feature_columns", []))
+        if source_args.get("feature_columns") != features:
+            raise RuntimeError("Corrected-angle checkpoint feature order mismatch")
+
 
 # Relative mixer scales.  These are initial values, not frozen weights.
 # Wspd is largest because P ~ v^3 below rated; power is the persistence state;
@@ -47,8 +75,13 @@ def sdwpf_feature_columns(
     collapse_pitch: bool = True,
     physics_features: bool = True,
     drop_weak_features: bool = True,
+    angle_mode: str = "legacy_difference",
 ) -> list[str]:
     """Canonical input column order.  Target is always last for MS."""
+    if angle_mode not in ANGLE_MODES:
+        raise ValueError("Unsupported SDWPF angle convention: " + str(angle_mode))
+    if angle_mode == "relative_wdir" and (not physics_features or not circular_wind or features == "S"):
+        raise ValueError("relative_wdir requires multivariate circular physics features")
     if features == "S":
         return [target]
 
@@ -58,7 +91,8 @@ def sdwpf_feature_columns(
         columns.append("Itmp")
 
     if circular_wind:
-        columns.extend(["Wdir_sin", "Wdir_cos"])
+        prefix = "Ndir" if angle_mode == "relative_wdir" else "Wdir"
+        columns.extend([prefix+"_sin", prefix+"_cos"])
         if not physics_features:
             columns.extend(["Ndir_sin", "Ndir_cos"])
     else:
@@ -84,10 +118,13 @@ def sdwpf_feature_columns(
 def channel_prior_vector(
     feature_columns: Sequence[str],
     physics_init: bool = True,
+    angle_mode: str = "legacy_difference",
 ) -> list[float]:
     if not physics_init:
         return [1.0] * len(feature_columns)
-    return [float(CHANNEL_PRIOR.get(name, 0.25)) for name in feature_columns]
+    # Preserve the old per-slot initial scales in the matched angle experiment.
+    return [0.4 if angle_mode == "relative_wdir" and name in ("Ndir_sin", "Ndir_cos")
+            else float(CHANNEL_PRIOR.get(name, 0.25)) for name in feature_columns]
 
 
 def operating_context_dim(feature_columns: Sequence[str]) -> int:

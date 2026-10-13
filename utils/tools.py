@@ -235,12 +235,14 @@ def transfer_weights(
     # new runs, tensor shapes alone cannot establish normalization identity.
     from utils.physics_normalization import check_normalization_contract
     source_contract = checkpoint if isinstance(checkpoint, dict) else {}
-    if "consistent_physics_norm" not in source_contract:
+    if "consistent_physics_norm" not in source_contract or "sdwpf_angle_mode" not in source_contract:
         manifest_path = os.path.join(os.path.dirname(weights_path), "run_manifest.json")
         if os.path.isfile(manifest_path):
             with open(manifest_path, "r", encoding="utf-8") as handle:
                 source_contract = json.load(handle).get("args", {})
     check_normalization_contract(source_contract, model)
+    from data_provider.sdwpf_features import check_angle_contract
+    check_angle_contract(source_contract, model)
     if isinstance(checkpoint, dict):
         source_router = checkpoint.get("prompt_router")
         target_router = getattr(model, "prompt_router", None)
@@ -518,6 +520,8 @@ def overlay_utility_weights(
     with open(manifest_path, "r", encoding="utf-8") as handle:
         manifest = json.load(handle)
     source_args = manifest.get("args") or {}
+    from data_provider.sdwpf_features import check_angle_contract
+    check_angle_contract(source_args, model)
     if source_args.get("prompt_router") != "compositional_wiki":
         raise RuntimeError(
             "Utility warm-start source was not audited as compositional_wiki"

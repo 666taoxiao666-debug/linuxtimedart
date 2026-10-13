@@ -171,6 +171,7 @@ def data_provider(args, flag):
                 n_folds=args.sdwpf_n_folds,
                 physics_features=args.sdwpf_physics_features,
                 drop_weak_features=args.sdwpf_drop_weak,
+                angle_mode=getattr(args, "sdwpf_angle_mode", "legacy_difference"),
             )
         data_set = Data(**data_kwargs)
 

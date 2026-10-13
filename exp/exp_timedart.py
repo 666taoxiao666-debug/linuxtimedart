@@ -949,6 +949,7 @@ class Exp_TimeDART(Exp_Basic):
             "seed": self.args.seed,
             "feature_columns": list(getattr(self.args, "feature_columns", []) or []),
             "consistent_physics_norm": bool(getattr(self.args, "consistent_physics_norm", False)),
+            "sdwpf_angle_mode": getattr(self.args, "sdwpf_angle_mode", "legacy_difference"),
             "revin_keep_wind": bool(getattr(self.args, "revin_keep_wind", False)),
             "use_norm": bool(self.args.use_norm),
             "input_len": self.args.input_len,

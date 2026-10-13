@@ -49,6 +49,7 @@ REGIME_MIN_CLASS_FRACTION="${REGIME_MIN_CLASS_FRACTION:-0.05}"
 RATED_POWER="${RATED_POWER:-1500}"
 ROBUST_PITCH="${ROBUST_PITCH:-0}"
 CONSISTENT_PHYSICS_NORM="${CONSISTENT_PHYSICS_NORM:-0}"
+SDWPF_ANGLE_MODE="${SDWPF_ANGLE_MODE:-legacy_difference}"
 GPU="${GPU:-0}"
 PRETRAIN_RUN_ID="${PRETRAIN_RUN_ID:-pretrain_${SPLIT}_f${FOLD}_s${SEED}_$(date +%Y%m%d_%H%M%S)}"
 RUN_ID="${RUN_ID:-${PRETRAIN_RUN_ID}}"
@@ -102,6 +103,7 @@ LOG_SUMMARY_FILE="$(sdwpf_log_sidecar summary.txt)"
     echo "RATED_POWER=${RATED_POWER}"
     echo "ROBUST_PITCH=${ROBUST_PITCH}"
     echo "CONSISTENT_PHYSICS_NORM=${CONSISTENT_PHYSICS_NORM}"
+    echo "SDWPF_ANGLE_MODE=${SDWPF_ANGLE_MODE}"
     echo "STARTED_AT=$(date --iso-8601=seconds)"
 } > "${LOG_ENV_FILE}"
 
@@ -134,6 +136,7 @@ COMMAND=(python -u run.py
     --sdwpf_train_ratio "${SDWPF_TRAIN_RATIO}" \
     --sdwpf_val_ratio "${SDWPF_VAL_RATIO}" \
     --sdwpf_fold "${FOLD}" \
+    --sdwpf_angle_mode "${SDWPF_ANGLE_MODE}" \
     --sdwpf_n_folds "${N_FOLDS}" \
     --pretrain_run_id "${PRETRAIN_RUN_ID}" \
     --train_epochs "${TRAIN_EPOCHS}" \

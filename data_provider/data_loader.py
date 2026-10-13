@@ -6,7 +6,7 @@ import re
 import torch
 import pickle
 from torch.utils.data import Dataset
-from data_provider.sdwpf_features import sdwpf_feature_columns
+from data_provider.sdwpf_features import sdwpf_feature_columns, yaw_degrees
 from data_provider.sdwpf_quality import aggregate_blade_pitch
 from data_provider.m4 import M4Dataset, M4Meta
 from utils.timefeatures import time_features
@@ -732,6 +732,7 @@ class Dataset_SDWPF(Dataset):
         n_folds=3,
         physics_features=True,
         drop_weak_features=True,
+        angle_mode="legacy_difference",
     ):
         del seasonal_patterns
         if size is None:
@@ -786,6 +787,7 @@ class Dataset_SDWPF(Dataset):
             int(n_folds),
             bool(physics_features),
             bool(drop_weak_features),
+            angle_mode,
         )
         if cache_key not in self._cache:
             self._cache[cache_key] = self._prepare_data(
@@ -811,6 +813,7 @@ class Dataset_SDWPF(Dataset):
                 n_folds=int(n_folds),
                 physics_features=bool(physics_features),
                 drop_weak_features=bool(drop_weak_features),
+                angle_mode=angle_mode,
             )
 
         prepared = self._cache[cache_key]
@@ -861,6 +864,7 @@ class Dataset_SDWPF(Dataset):
         n_folds,
         physics_features,
         drop_weak_features,
+        angle_mode,
     ):
         if not os.path.isfile(file_path):
             raise FileNotFoundError(f"SDWPF data file not found: {file_path}")
@@ -939,16 +943,22 @@ class Dataset_SDWPF(Dataset):
 
         if physics_features and "Wdir" in df and "Ndir" in df:
             yaw = np.deg2rad(
-                (df["Wdir"].to_numpy(dtype=np.float64) - df["Ndir"].to_numpy(dtype=np.float64))
+                yaw_degrees(df["Wdir"].to_numpy(dtype=np.float64),
+                            df["Ndir"].to_numpy(dtype=np.float64), angle_mode)
             )
             df["yaw_sin"] = np.sin(yaw).astype(np.float32)
             df["yaw_cos"] = np.cos(yaw).astype(np.float32)
 
         if circular_wind:
+            relative_angle_valid = df["Wdir"].notna().to_numpy() if "Wdir" in df else None
             for angle_col, prefix in (("Wdir", "Wdir"), ("Ndir", "Ndir")):
                 if angle_col not in df:
                     continue
                 radians = np.deg2rad(df[angle_col].to_numpy(dtype=np.float64))
+                if angle_mode == "relative_wdir" and angle_col == "Ndir":
+                    # Match legacy joint-angle missingness, so correcting the
+                    # coordinate frame does not silently rescue extra windows.
+                    radians = np.where(relative_angle_valid, radians, np.nan)
                 df[f"{prefix}_sin"] = np.sin(radians).astype(np.float32)
                 df[f"{prefix}_cos"] = np.cos(radians).astype(np.float32)
                 df = df.drop(columns=[angle_col])
@@ -963,6 +973,7 @@ class Dataset_SDWPF(Dataset):
             collapse_pitch=collapse_pitch,
             physics_features=physics_features,
             drop_weak_features=drop_weak_features,
+            angle_mode=angle_mode,
         )
         missing_features = [c for c in feature_columns if c not in df]
         if missing_features:
@@ -1089,6 +1100,7 @@ class Dataset_SDWPF(Dataset):
             "causal_fill": bool(causal_fill),
             "keep_curtailment": bool(keep_curtailment),
             "filter_abnormal": bool(filter_abnormal),
+            "sdwpf_angle_mode": angle_mode,
         }
         print(
             "SDWPF prepared: "

@@ -157,6 +157,7 @@ class Model(nn.Module):
         self.features = getattr(args, "features", "M")
         self.enc_in = int(getattr(args, "enc_in", 1))
         self.feature_columns = list(getattr(args, "feature_columns", None) or [])
+        self.sdwpf_angle_mode = getattr(args, "sdwpf_angle_mode", "legacy_difference")
         if not self.feature_columns:
             self.feature_columns = [f"f{i}" for i in range(self.enc_in)]
         if len(self.feature_columns) != self.enc_in:
@@ -186,6 +187,7 @@ class Model(nn.Module):
                 channel_prior=channel_prior_vector(
                     self.feature_columns,
                     physics_init=self.use_channel_prior,
+                    angle_mode=self.sdwpf_angle_mode,
                 ),
                 context_dim=self.op_context_dim,
             )

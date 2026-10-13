@@ -19,6 +19,7 @@ RESIDUAL_GATE_INIT="${RESIDUAL_GATE_INIT:--2.2}"
 MODEL="${MODEL:-PromptTimeDART}"
 RATED_POWER="${RATED_POWER:-1500}"
 ROBUST_PITCH="${ROBUST_PITCH:-0}"
+SDWPF_ANGLE_MODE="${SDWPF_ANGLE_MODE:-legacy_difference}"
 RAMP_RESIDUAL="${RAMP_RESIDUAL:-0}"
 RAMP_RESIDUAL_MAX_SCALE="${RAMP_RESIDUAL_MAX_SCALE:-0.5}"
 RAMP_GATE_MODE="${RAMP_GATE_MODE:-all}"
@@ -185,6 +186,7 @@ python -u run.py \
     --sdwpf_eval_stride "${EVAL_STRIDE}" \
     --sdwpf_split "${SPLIT}" \
     --sdwpf_fold "${FOLD}" \
+    --sdwpf_angle_mode "${SDWPF_ANGLE_MODE}" \
     --sdwpf_n_folds "${N_FOLDS}" \
     --mix_channels \
     --residual_forecast \

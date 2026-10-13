@@ -151,8 +151,11 @@ def build_parser():
         "--sdwpf_physics_features",
         action=argparse.BooleanOptionalAction,
         default=True,
-        help="yaw error instead of nacelle heading; drop weak SCADA (Prtv/Itmp)",
+        help="include operating-angle physics features and drop weak SCADA (Prtv/Itmp)",
     )
+    parser.add_argument("--sdwpf_angle_mode", choices=("legacy_difference", "relative_wdir"),
+        default="legacy_difference",
+        help="relative_wdir: nacelle heading plus observed relative yaw; legacy_difference reproduces old checkpoints")
     parser.add_argument(
         "--sdwpf_drop_weak",
         action=argparse.BooleanOptionalAction,
@@ -734,6 +737,8 @@ def pretrain_signature(args):
         )
     if getattr(args, "consistent_physics_norm", False):
         parts.append("physnorm1")
+    if getattr(args, "sdwpf_angle_mode", "legacy_difference") != "legacy_difference":
+        parts.append("angle_relative_wdir")
     if str(getattr(args, "pretrain_run_id", "")).strip():
         parts.append(f"rid{args.pretrain_run_id}")
     return bounded_component("_".join(str(part) for part in parts))
@@ -771,6 +776,8 @@ def resolve_pretrained_checkpoint(args):
 
 
 def configure_args(args):
+    if args.sdwpf_angle_mode != "legacy_difference" and args.data != "SDWPF":
+        raise ValueError("Corrected SDWPF angles require data=SDWPF")
     args.seq_len = args.input_len if args.seq_len is None else args.seq_len
     if args.seq_len != args.input_len:
         raise ValueError("seq_len and input_len must be equal in this implementation")
@@ -794,6 +801,7 @@ def configure_args(args):
             collapse_pitch=args.sdwpf_collapse_pitch,
             physics_features=args.sdwpf_physics_features,
             drop_weak_features=args.sdwpf_drop_weak,
+            angle_mode=args.sdwpf_angle_mode,
         )
         n_features = len(args.feature_columns)
         args.enc_in = n_features
@@ -1238,6 +1246,8 @@ def load_finetuned_model(exp, checkpoint_path):
         from utils.physics_normalization import check_normalization_contract
         core_model = exp.model.module if isinstance(exp.model, torch.nn.DataParallel) else exp.model
         check_normalization_contract(training_args, core_model)
+        from data_provider.sdwpf_features import check_angle_contract
+        check_angle_contract(training_args, exp.args)
         exp.args.checkpoint_training_args = training_args
         critical_keys = (
             "model",
@@ -1258,6 +1268,7 @@ def load_finetuned_model(exp, checkpoint_path):
             "mix_channels",
             "residual_forecast",
             "consistent_physics_norm",
+            "sdwpf_angle_mode",
             "ramp_residual",
             "ramp_residual_max_scale",
             "ramp_gate_mode",
@@ -1317,6 +1328,8 @@ def load_finetuned_model(exp, checkpoint_path):
         exp.args.loaded_finetune_manifest = os.path.abspath(manifest_path)
         print(f"Loaded training manifest: {os.path.abspath(manifest_path)}")
     else:
+        if getattr(exp.args, "sdwpf_angle_mode", "legacy_difference") != "legacy_difference":
+            raise ValueError("Corrected-angle evaluation requires a matching run_manifest.json")
         if getattr(exp.args, "consistent_physics_norm", False):
             raise ValueError("Physics-normalization evaluation requires a matching run_manifest.json")
         print(

@@ -38,6 +38,7 @@ EARLY_STOP_METRIC="${EARLY_STOP_METRIC:-original_mae}"
 RATED_POWER="${RATED_POWER:-1500}"
 ROBUST_PITCH="${ROBUST_PITCH:-0}"
 CONSISTENT_PHYSICS_NORM="${CONSISTENT_PHYSICS_NORM:-0}"
+SDWPF_ANGLE_MODE="${SDWPF_ANGLE_MODE:-legacy_difference}"
 RAMP_RESIDUAL="${RAMP_RESIDUAL:-0}"
 RAMP_RESIDUAL_MAX_SCALE="${RAMP_RESIDUAL_MAX_SCALE:-0.5}"
 RAMP_GATE_MODE="${RAMP_GATE_MODE:-all}"
@@ -141,6 +142,7 @@ LOG_SUMMARY_FILE="$(sdwpf_log_sidecar summary.txt)"
     echo "TRAIN_EPOCHS=${TRAIN_EPOCHS}"
     echo "FIXED_FINETUNE_EPOCH=${FIXED_FINETUNE_EPOCH}"
     echo "CONSISTENT_PHYSICS_NORM=${CONSISTENT_PHYSICS_NORM}"
+    echo "SDWPF_ANGLE_MODE=${SDWPF_ANGLE_MODE}"
     echo "LEARNING_RATE=${LEARNING_RATE}"
     echo "NEW_MODULE_LEARNING_RATE=${NEW_MODULE_LEARNING_RATE}"
     echo "PCT_START=${PCT_START}"
@@ -324,6 +326,7 @@ COMMAND=(python -u run.py
     --sdwpf_train_ratio "${SDWPF_TRAIN_RATIO}" \
     --sdwpf_val_ratio "${SDWPF_VAL_RATIO}" \
     --sdwpf_fold "${FOLD}" \
+    --sdwpf_angle_mode "${SDWPF_ANGLE_MODE}" \
     --sdwpf_n_folds "${N_FOLDS}" \
     --pretrain_run_id "${PRETRAIN_RUN_ID}" \
     --prompt_router "${PROMPT_ROUTER}" \

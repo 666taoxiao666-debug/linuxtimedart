@@ -57,6 +57,8 @@ def forecast_result_tag(args):
     checkpoint = getattr(args, "loaded_finetune_checkpoint_info", {}) or {}
     if trained("consistent_physics_norm", False):
         parts.append("physnorm1")
+    if trained("sdwpf_angle_mode", "legacy_difference") != "legacy_difference":
+        parts.append("angle_relative_wdir")
     checkpoint_hash = checkpoint.get("sha256")
     if checkpoint_hash:
         parts.append(f"ckpt{checkpoint_hash[:12]}")
@@ -101,6 +103,8 @@ def experiment_setting(args, run_index):
         base += f"_fixedep{args.fixed_finetune_epoch}"
     if getattr(args, "consistent_physics_norm", False):
         base += "_physnorm1"
+    if getattr(args, "sdwpf_angle_mode", "legacy_difference") != "legacy_difference":
+        base += "_angle_relative_wdir"
     run_id = getattr(args, "run_id", "") or ""
     if str(run_id).strip():
         return bounded_component(f"{base}_id{safe_component(run_id)}")
