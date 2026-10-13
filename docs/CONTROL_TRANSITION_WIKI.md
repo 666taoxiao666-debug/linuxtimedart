@@ -166,3 +166,47 @@ repository. No new P0 found in this scoped data flow. Top remaining checks:
 5. [NEEDS-EVIDENCE] Text semantics and self-evolution: this module is a
    physical case-memory expert, not proof of an LLM semantic advantage or
    autonomous online knowledge evolution. Those claims need distinct tests.
+
+## Executed development pilot: 2026-10-13
+
+Implementation commit `bf6a28c`; protocol SHA-256
+`19ecc02d09ddfc713ec73f970dd8a828e8412c8e1aafc05d51dcc48e89600414`.
+Run: `outputs/logs/SDWPF/20261013/002_control_transition_h12_f1_s2024_2x2_control_transition_trainonly_cpu2`.
+Completed at 10:28:32 China time. Local and server targeted tests passed;
+server preflight verified 11,800 original-train OOF histories. Completion
+hashes for the root and all four arms were checked. No neural training,
+outer validation or sealed test was performed.
+
+**All four arms had zero supported/accepted utility cells.** All checks
+therefore preserved the identical frozen base, with coverage0%, abstention100%
+and gain0kW. Intervention harm is undefined, not a measured zero-harm result.
+Future source turbines: MAE118.216866, RMSE182.299589kW, R2=0.468039.
+Future knowledge-held-out turbines: MAE116.089386, RMSE179.234371kW,
+R2=0.469129. These are original-train later-block scores, not the outer
+validation scores of v1 or the internal-holdout scores of v14.
+
+The factorial diagnostics explain the rejection:
+
+- Late-calibration gust support increased from29 to59 windows when control
+  coordinates were included, with either readout. Yet the residual readout's
+  supported candidate MAE gain stayed negative (-55.9150 without controls,
+  -54.0362 with controls). Transition readout was worse there (-72.1815,
+  -76.4782kW). This is not a justification for lowering the64-window gate.
+- Early-calibration low-wind-idle residual candidates gained7.0700kW MAE
+  and23.0662kW RMSE without controls; controls gained4.9773/17.8153kW.
+  Transition candidates improved MAE but lost RMSE: +14.9090/-6.7264kW
+  without controls, +12.1575/-13.0860kW with controls. No low-wind-idle
+  physical windows occurred in the later calibration block.
+- The transition/control primary bank was
+  `1513abe26b9a576eed92fe5cf2a2d651d8ac8738cc91cdc370015f79cbb3a1b2`.
+  The executor base remained checkpoint
+  `4061d9afb646247c003f30f1d6d64d4277d02ec91c607d022c85e461f94b50dc`.
+
+The identity separation is executable and tested, but the proposed physical
+transition expert has **not** established better conditional transport.
+Control-aware matching improved observed support, not profitable correction.
+The failed primary hypothesis is retained; no subsequent threshold/seed
+search or automatic outer refit follows. Do not raise the paper's innovation
+or effectiveness claims on the basis of this negative pilot. Further work
+needs temporally repeated event evidence and an expert that captures the
+remaining conditional dynamics, not another gate attached to these outputs.
