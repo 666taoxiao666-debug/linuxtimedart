@@ -76,6 +76,33 @@ def moving_block_bootstrap_mean(series, block_length=12, replicates=5000, seed=2
     }
 
 
+def moving_block_bootstrap_ratio(numerators, counts, block_length=12, replicates=5000, seed=2024):
+    """Resample entire issue-time clusters, retaining their window counts.
+
+    A mean of issue-time means is NOT the overall window-weighted MAE gain
+    when different times contain different numbers of available turbines.
+    """
+    numerators, counts = np.asarray(numerators, float), np.asarray(counts, float)
+    if (numerators.ndim != 1 or counts.shape != numerators.shape or len(counts) < 2
+            or not np.isfinite(numerators).all() or not np.isfinite(counts).all()
+            or np.any(counts <= 0) or int(replicates) < 100):
+        raise ValueError("Aligned finite cluster sums and positive counts required")
+    block = min(max(1, int(block_length)), len(counts))
+    starts = np.arange(len(counts)-block+1)
+    needed = int(math.ceil(len(counts)/block))
+    rng = np.random.default_rng(int(seed))
+    estimates = np.empty(int(replicates))
+    for i in range(len(estimates)):
+        chosen = rng.choice(starts, size=needed, replace=True)
+        index = np.concatenate([np.arange(start, start+block) for start in chosen])[:len(counts)]
+        estimates[i] = numerators[index].sum()/counts[index].sum()
+    low, high = np.quantile(estimates, [.025, .975])
+    return dict(mean_gain_kw=float(numerators.sum()/counts.sum()), ci95_low_kw=float(low),
+                ci95_high_kw=float(high), probability_gain_positive=float((estimates > 0).mean()),
+                block_length_time_points=block, replicates=int(replicates), seed=int(seed),
+                estimand="window_uniform_ratio_of_cluster_sums")
+
+
 def paired_forecast_statistics(
     candidate,
     reference,
@@ -84,6 +111,7 @@ def paired_forecast_statistics(
     block_length=12,
     replicates=5000,
     seed=2024,
+    estimand="time_uniform",
 ):
     candidate = _as_2d(candidate, "candidate")
     reference = _as_2d(reference, "reference")
@@ -102,16 +130,32 @@ def paired_forecast_statistics(
             "gain_kw": gain,
         }
     )
-    by_time = frame.groupby("forecast_start", sort=True, observed=True).gain_kw.mean()
-    bootstrap = moving_block_bootstrap_mean(
-        by_time.to_numpy(), block_length=block_length, replicates=replicates, seed=seed
-    )
-    dm = newey_west_mean_test(by_time.to_numpy(), max_lag=block_length - 1)
+    if frame.forecast_start.isna().any() or estimand not in ("time_uniform", "window_uniform"):
+        raise ValueError("Finite issue times and an explicit supported estimand required")
+    by_time = frame.groupby("forecast_start", sort=True, observed=True).gain_kw.agg(["mean", "sum", "count"])
+    if estimand == "window_uniform":
+        bootstrap = moving_block_bootstrap_ratio(by_time["sum"].to_numpy(), by_time["count"].to_numpy(),
+            block_length=block_length, replicates=replicates, seed=seed)
+        # Delta-method influence series for the ratio mean. Its sample mean is
+        # the primary gain; HAC variance keeps turbine-count fluctuations.
+        primary_gain = float(gain.mean())
+        influence = (by_time["sum"].to_numpy()-primary_gain*by_time["count"].to_numpy())/by_time["count"].mean()
+        dm = newey_west_mean_test(influence+primary_gain, max_lag=block_length-1)
+        dm["method"] = "Newey-West ratio-mean influence test; not unweighted time-mean DM"
+    else:
+        primary_gain = float(by_time["mean"].mean())
+        bootstrap = moving_block_bootstrap_mean(by_time["mean"].to_numpy(),
+            block_length=block_length, replicates=replicates, seed=seed)
+        dm = newey_west_mean_test(by_time["mean"].to_numpy(), max_lag=block_length-1)
     return {
         "gain_definition": "MAE(reference)-MAE(candidate); positive favors candidate",
         "candidate_mae_kw": float(candidate_loss.mean()),
         "reference_mae_kw": float(reference_loss.mean()),
         "paired_gain_kw": float(gain.mean()),
+        "primary_estimand": estimand,
+        "primary_gain_kw": primary_gain,
+        "window_uniform_gain_kw": float(gain.mean()),
+        "time_uniform_gain_kw": float(by_time["mean"].mean()),
         "paired_gain_pct": float(100.0 * gain.mean() / max(reference_loss.mean(), np.finfo(float).eps)),
         "candidate_win_window_pct": float(100.0 * np.mean(candidate_loss < reference_loss)),
         "windows": int(len(gain)),
@@ -121,7 +165,8 @@ def paired_forecast_statistics(
         "dm_newey_west": dm,
         "interpretation": (
             "Exploratory validation inference; freeze the method before using a sealed test. "
-            "Windows sharing a forecast time are averaged before temporal inference."
+            "Forecast times are temporal clusters. Primary estimand is explicitly named; "
+            "historical default time-uniform CIs must not be read as CIs for window-uniform MAE gain."
         ),
     }
 
