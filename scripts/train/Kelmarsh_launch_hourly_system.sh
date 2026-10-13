@@ -29,6 +29,9 @@ case "${1:-}" in
     ;;
 esac
 echo "RESULT_DIR=${RESULT_DIR}"
+if [[ "${1:-}" == "--resume" ]]; then
+  git rev-parse HEAD >> "${RESULT_DIR}/resume_source_commits.log"
+fi
 if [[ ! -f "${RESULT_DIR}/source_commit.txt" ]]; then
   git rev-parse HEAD > "${RESULT_DIR}/source_commit.txt"
 fi

@@ -307,6 +307,9 @@ def model_metrics(prediction, truth, anchor, capacity):
 
 def report(name, prediction, dataset, directory, capacity):
     directory.mkdir(parents=True, exist_ok=True)
+    # sklearn may emit float32. Normalize in float64 before the report's
+    # inverse transform, otherwise the roundtrip adds an extra quantization.
+    prediction = np.asarray(prediction, dtype=np.float64)
     truth, anchor = dataset.truth_and_anchor()
     metrics = model_metrics(prediction, truth, anchor, capacity)
     mean, scale = dataset.scaler.mean_[-1], dataset.scaler.scale_[-1]

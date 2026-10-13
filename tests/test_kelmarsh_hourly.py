@@ -9,7 +9,7 @@ import pandas as pd
 import torch
 
 from data_provider.kelmarsh_hourly import FEATURES, valid_window_starts, time_bounds
-from scripts.train_kelmarsh_hourly import read, model_args, model_metrics, extract, numeric_residual_control, safe
+from scripts.train_kelmarsh_hourly import read, model_args, model_metrics, extract, numeric_residual_control, safe, report
 from utils import kelmarsh_hourly_wiki as wiki
 from utils.forecast_report import build_forecast_report
 
@@ -71,6 +71,32 @@ class KelmarshHourlyTests(unittest.TestCase):
             old = build_forecast_report(pred, true, Data(), str(Path(tmp) / "old"), rated_power=2050)
             expected = np.abs(np.clip(pred, 0, 2050) - np.clip(true, 0, 2050)).mean()
             self.assertAlmostEqual(old["mae"], expected)
+
+    def test_float32_baseline_report_has_no_extra_normalization_quantization(self):
+        from types import SimpleNamespace
+        class Data:
+            scale = True
+            target = "power"
+            feature_columns = ["Wspd", "power"]
+            scaler = SimpleNamespace(mean_=np.array([5., 428.22492242214264]),
+                                     scale_=np.array([2., 459.78659052225674]))
+            def truth_and_anchor(self):
+                return np.array([[0., 2100.], [350., 600.]]), np.array([[200., 200.], [500., 500.]])
+            def target_times(self):
+                return np.array([["2016-10-01T01", "2016-10-01T02"],
+                                 ["2016-10-01T04", "2016-10-01T05"]], dtype="datetime64[h]")
+            turbines = np.array([1, 2])
+            window_starts = np.array([0, 1])
+            def __len__(self):
+                return len(self.window_starts)
+        prediction = np.array([[-.0042, 2071.9233], [372.3372, 642.0123]], dtype=np.float32)
+        with tempfile.TemporaryDirectory() as temp, patch("utils.forecast_report._plot_horizon"), \
+                patch("utils.forecast_report._plot_horizon_segments"), patch("utils.forecast_report._plot_examples"), \
+                patch("utils.forecast_report._plot_continuous_forecast"), patch("utils.forecast_report._plot_scatter"), \
+                patch("utils.forecast_report._plot_accuracy_overview"), patch("utils.forecast_report._plot_residuals"), \
+                patch("utils.forecast_report._plot_per_turbine"), patch("utils.forecast_report._plot_power_bins"):
+            result = report("Ridge", prediction, Data(), Path(temp), 2050.)
+            self.assertAlmostEqual(result["metrics"]["mae"], np.abs(prediction.astype(float) - Data().truth_and_anchor()[0]).mean(), places=10)
 
     def test_actual_model_implementations_forward_and_pretrain(self):
         from models import DLinear, PatchTST, PromptTimeDART
