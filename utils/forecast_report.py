@@ -347,7 +347,7 @@ def _shade_lead_time_bands(axis, horizon, show_labels=False):
             )
 
 
-def _plot_horizon(table, output_dir):
+def _plot_horizon(table, output_dir, model_name="PromptTimeDART"):
     """Plot continuous 1-horizon model/baseline error curves."""
     if table is None or table.empty:
         return
@@ -359,7 +359,7 @@ def _plot_horizon(table, output_dir):
     model_style = {
         "color": "tab:blue",
         "linewidth": 2.2,
-        "label": "PromptTimeDART",
+        "label": str(model_name),
     }
     baseline_style = {
         "color": "tab:orange",
@@ -450,8 +450,9 @@ def _plot_horizon(table, output_dir):
         )
     )
     axes[3].set_xticks(major_ticks)
-    axes[3].set_xlabel("Forecast step (10 minutes per step)")
-    fig.suptitle("PromptTimeDART vs Persistence across the forecast horizon")
+    step_minutes = int(table["lead_minutes"].iloc[0] / table["horizon_step"].iloc[0]) if "lead_minutes" in table else 10
+    axes[3].set_xlabel(f"Forecast step ({step_minutes} minutes per step)")
+    fig.suptitle(f"{model_name} vs Persistence across the forecast horizon")
     fig.tight_layout()
     fig.savefig(
         os.path.join(output_dir, "error_by_horizon.png"),
@@ -461,7 +462,7 @@ def _plot_horizon(table, output_dir):
     plt.close(fig)
 
 
-def _plot_horizon_segments(table, output_dir):
+def _plot_horizon_segments(table, output_dir, model_name="PromptTimeDART"):
     """Compare model and persistence across the standard lead-time bands."""
     if table is None or table.empty:
         return
@@ -487,7 +488,7 @@ def _plot_horizon_segments(table, output_dir):
             x - width / 2,
             model,
             width,
-            label="PromptTimeDART",
+            label=str(model_name),
         )
         bars = [model_bars]
         baseline_key = f"persistence_{metric}"
@@ -566,7 +567,7 @@ def _plot_horizon_segments(table, output_dir):
 
 
 def _plot_examples(
-    pred, true, metadata, output_dir, persistence=None, count=6
+    pred, true, metadata, output_dir, persistence=None, count=6, step_minutes=10, model_name="PromptTimeDART"
 ):
     count = min(int(count), len(pred))
     if count <= 0:
@@ -590,7 +591,7 @@ def _plot_examples(
         axis.plot(
             steps,
             pred[sample_index],
-            label="PromptTimeDART",
+            label=str(model_name),
             color="tab:blue",
             linewidth=1.8,
         )
@@ -621,7 +622,7 @@ def _plot_examples(
         )
     )
     axes[-1, 0].set_xticks(major_ticks)
-    axes[-1, 0].set_xlabel("Forecast step (10 minutes per step)")
+    axes[-1, 0].set_xlabel(f"Forecast step ({int(step_minutes)} minutes per step)")
     fig.suptitle("Representative forecast windows by error quantile", y=1.002)
     fig.tight_layout()
     fig.savefig(os.path.join(output_dir, "forecast_examples.png"), dpi=180)
@@ -1209,6 +1210,7 @@ def build_forecast_report(
     trace_turbine_id=None,
     trace_start=None,
     model_name="Forecast model",
+    clip_to_capacity=True,
 ):
     """Save original-scale metrics, breakdown tables, arrays, and PNG charts."""
     os.makedirs(output_dir, exist_ok=True)
@@ -1219,7 +1221,7 @@ def build_forecast_report(
 
     pred = inverse_transform_target(dataset, pred_scaled)
     true = inverse_transform_target(dataset, true_scaled)
-    if rated_power is not None and float(rated_power) > 0:
+    if clip_to_capacity and rated_power is not None and float(rated_power) > 0:
         pred = np.clip(pred, 0.0, float(rated_power))
         true = np.clip(true, 0.0, float(rated_power))
     normalized_metrics = forecast_metrics(pred_scaled, true_scaled)
@@ -1230,7 +1232,7 @@ def build_forecast_report(
         last_scaled = np.asarray(last_observation_scaled, dtype=np.float64).reshape(-1, 1)
         if len(last_scaled) == len(pred):
             last = inverse_transform_target(dataset, last_scaled)
-            if rated_power is not None and float(rated_power) > 0:
+            if clip_to_capacity and rated_power is not None and float(rated_power) > 0:
                 last = np.clip(last, 0.0, float(rated_power))
             persistence = np.repeat(last, pred.shape[1], axis=1)
             _add_persistence_metrics(original_metrics, pred, true, persistence)
@@ -1325,14 +1327,16 @@ def build_forecast_report(
         arrays["available_mask"] = available_mask.astype(np.uint8)
     np.savez_compressed(os.path.join(output_dir, "predictions.npz"), **arrays)
 
-    _plot_horizon(horizon, output_dir)
-    _plot_horizon_segments(segments, output_dir)
+    _plot_horizon(horizon, output_dir, model_name=model_name)
+    _plot_horizon_segments(segments, output_dir, model_name=model_name)
     _plot_examples(
         pred,
         true,
         metadata,
         output_dir,
         persistence=persistence,
+        step_minutes=int(step_minutes),
+        model_name=model_name,
     )
     _plot_continuous_forecast(
         pred,
