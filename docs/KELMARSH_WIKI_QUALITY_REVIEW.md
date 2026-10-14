@@ -32,9 +32,9 @@ and byte-identical numerical inputs/labels/cohort after Wiki packing.
 ### Numerical regression dominates the combined result
 
 - 严重级别：P1 for an improvement claim, not a metric-calculation bug.
-- 位置：`scripts/train_kelmarsh_contextual_expert.py` -> `run` -> numerical
+- 位置：`scripts/train_kelmarsh_contextual_expert.py:302` -> `run` -> numerical
   adapter inference and `route` fallback; `route` returns NumericContext when
-  Wiki abstains, not the original PromptTimeDART forecast.
+  Wiki abstains, not the original PromptTimeDART forecast (`route`, line 234).
 - 触发条件及证据：three-fold seed2024 mean MAE is 142.494880101 kW for the
   original Trend, 145.127339363 for NumericContext, and 145.150652372 for
   WikiSelective. Of the 2.655772271 kW deterioration, 2.632459262 kW already
@@ -54,7 +54,7 @@ and byte-identical numerical inputs/labels/cohort after Wiki packing.
 ### Operationally different cases share the same retrieval bank
 
 - 严重级别：P2, a plausible transfer limitation, not yet a proven root cause.
-- 位置：`utils/kelmarsh_hourly_wiki.py` -> `keys` and `candidates`; legacy keys
+- 位置：`utils/kelmarsh_hourly_wiki.py:42` -> `keys` and `candidates`; legacy keys
   omit rotor-speed state and available capacity. `kelmarsh_episode_wiki.py`
   changes case weighting but does not enforce these operating-state matches.
 - 触发条件及证据：donor-only memory has 20/18/43 observed low-rotation windows
@@ -74,8 +74,8 @@ and byte-identical numerical inputs/labels/cohort after Wiki packing.
 ### Rare-event and sensor evidence is not a blanket cleaning justification
 
 - 严重级别：NEEDS-EVIDENCE for a claim that dirty labels caused the failure.
-- 位置：`data_provider/kelmarsh_hourly.py` -> `KelmarshSeries` pitch mean;
-  `utils/kelmarsh_hourly_wiki.py` -> `fit_experts` minimum support.
+- 位置：`data_provider/kelmarsh_hourly.py:74` -> `KelmarshSeries` pitch mean;
+  `utils/kelmarsh_hourly_wiki.py:78` -> `fit_experts` minimum support.
 - 触发条件及证据：training donor data has 30 hourly blade-disagreement rows
   above 5 degrees, affecting 31 eligible history windows in the early base-fit
   segment. No such windows occur in the three Wiki memory, adapter-fit or
