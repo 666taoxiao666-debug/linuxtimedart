@@ -106,3 +106,46 @@ sealed test is not inferred. This does not establish independent confirmation.
 Launch: `bash scripts/train/Kelmarsh_launch_wiki_quality.sh`.
 Status: append `--status`. After a genuine process failure, resume only missing
 stages with `--resume`; completed neural checkpoints must be reused.
+
+## Completed v5 result (2026-10-14)
+
+All three declared fold/seed2024 runs completed successfully, 20 epochs per
+Wiki arm, selected epochs 3/9/1 using only the internal training period. The
+numerical prediction arrays were checked against the old cache and unchanged.
+Results: `outputs/logs/Kelmarsh/20261014/001_wiki_quality_h2_f0-1-2_s2024_ep20`.
+
+Three-fold unweighted means (macro R² is not pooled R²):
+
+- Untreated WikiSelective: MAE 145.150652372 kW; RMSE 209.490632997 kW;
+  MSE 44968.360081630 kW²; R² 0.743369590.
+- Treated WikiQualitySelective: MAE 145.010081324 kW; RMSE 209.345746876 kW;
+  MSE 44900.307835919 kW²; R² 0.743662445. Mean persistence MAE Skill
+  -2.663315801%, RMSE Skill -0.605022947%; ±5%/±10% capacity hit rates
+  52.759488505%/76.067323481% (not classification accuracy).
+- Frozen numerical adapter: MAE 145.127339363 kW; RMSE 209.468342883 kW.
+- Original Trend remains better: MAE 142.494880101 kW; RMSE 205.714966101 kW;
+  R² 0.753201239.
+
+The treatment improves final-policy macro MAE over the untreated policy by
+0.140571047 kW (about 0.09685%), not a broad accuracy breakthrough. Per-fold
+MAE gains versus untreated Wiki are +0.465555351, -0.011428704 and
+-0.032413505 kW. Fold0's block-bootstrap interval is positive
+[0.030178344, 1.240429931] kW but its Newey–West p=0.13297 is not below .05;
+the other intervals cross zero. Do not select whichever test looks favorable.
+Three folds sharing one seed and a historically inspected validation protocol
+are development evidence, not independent confirmation.
+
+Input-treatment counterfactuals explain the scope: same old weights with new
+summaries give raw MAE 144.933780082 versus untreated raw 144.930634999;
+retraining the treated raw expert gives 144.960731168. Thus raw candidate MAE
+did not improve; the small final-policy benefit concerns routing/calibration,
+not demonstrated sensor cleaning. All train and outer Wiki query audits have
+zero repaired pitch hours. Only event0/state5 (full available capacity, normal
+rotation) retains sufficient bank support, with 136/151/394 cases.
+
+Effective intervention rates are 4.42177%, 10.65831% and 43.42404% by fold.
+Folds1/2 still have negative selected gains and harm rates 54.41176%/56.65796%.
+Fold2 benefit calibration has just 56 donor windows; correlated windows are
+not 56 independent weather situations. Preserve these failures. Do not tune
+new thresholds on these outer results, silently change the numerical fallback,
+or claim that Wiki-only treatment fixed the dominant numerical regression.
