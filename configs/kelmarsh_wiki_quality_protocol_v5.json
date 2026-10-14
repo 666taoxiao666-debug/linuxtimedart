@@ -1,0 +1,18 @@
+{
+  "protocol_id": "kelmarsh_h2_wiki_only_observed_quality_v5",
+  "source_directory": "outputs/logs/Kelmarsh/20261014/001_contextual_expert_h2_f0-1-2_s2024_ep20",
+  "source_protocol_sha256": "7fac528f663a433e33366e506122975133c401fdb73ccb06dcadeaa73cd2fd9e",
+  "folds": [0, 1, 2],
+  "seed": 2024,
+  "quality": {"capacity_kw": 2050.0, "pitch_spread_deg": 5.0, "pitch_pair_tolerance_deg": 1.0, "rotor_low_rpm": 1.0},
+  "change": "Only Wiki case context and matched retrieval: contemporaneous blade consensus and observed capacity/rotation state. Refit the Wiki neural arm with the exact v4 initialization and training schedule, then recompute its actual benefit evidence.",
+  "numerical_control": "Reuse byte-identical v4 NumericContext checkpoints/predictions; no preprocessing or retraining",
+  "unprocessed_control": "Reuse completed v4 WikiRaw and WikiSelective; same old model, seed, optimizer, epochs, cohort and labels",
+  "same_weight_counterfactual": "Apply quality summaries to old Wiki checkpoint without retraining to isolate input treatment from optimization",
+  "fit": "Same donor-only memory and calibration_early as v4, zero retrieval before bank maturity",
+  "selection": "Same donor-only first half of calibration_late; joint MAE/RMSE epoch criterion unchanged",
+  "benefit_calibration": "Same donor-only second half, after new checkpoint freeze; new exact executing expert identity",
+  "evaluation": "Same complete outer validation cohort as v4, development evidence only; no sealed test",
+  "forbidden": ["target edits", "evaluation-row removal", "future metadata", "numerical-path changes", "validation threshold search", "extra seeds"],
+  "expected_limitation": "No suspect blade disagreements were observed in train Wiki windows. This tests operating-regime mismatch, not a claim that bad labels caused the v4 loss. Most v4 degradation came from the frozen numerical adapter and cannot be repaired by Wiki-only handling."
+}
