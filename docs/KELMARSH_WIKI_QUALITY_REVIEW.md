@@ -149,3 +149,79 @@ Fold2 benefit calibration has just 56 donor windows; correlated windows are
 not 56 independent weather situations. Preserve these failures. Do not tune
 new thresholds on these outer results, silently change the numerical fallback,
 or claim that Wiki-only treatment fixed the dominant numerical regression.
+
+## Training-only certificate support audit (2026-10-14)
+
+Implementation commit `e779dbc` adds an audit, not a new model or policy. Ten
+related tests passed locally and on the server. The server fast-forwarded to
+that commit; all saved certificate cell window/turbine counts reproduced. No
+neural inference, fitting or outer target-value analysis was performed. Another
+user's GPU process was present, and was not interrupted or shared.
+
+Reproduce with:
+
+```bash
+python scripts/audit_kelmarsh_wiki_evidence.py \
+  --suite outputs/logs/Kelmarsh/20261014/001_wiki_quality_h2_f0-1-2_s2024_ep20 \
+  --output outputs/logs/Kelmarsh/20261014/wiki_evidence_support_audit.json
+```
+
+The local downloaded result is
+`output/kelmarsh_hourly/wiki_quality_review/evidence_support_audit.json`.
+Issue time is first target time minus one hour; blocks are UTC calendar days
+of issue time. These are descriptive concentration counts, not estimates of
+independent weather events or effective sample size.
+
+- Fold0 fresh calibration: 295 donor windows, 59 distinct issue times, 8 day
+  blocks. Its one accepted cell, `joint:1:0:0`, has 41 windows from 5 turbines
+  but only 15 issue times and 6 day blocks. One day contributes 43.90%.
+- Fold1 fresh calibration: 340 windows, 68 issue times, 10 day blocks. Its
+  accepted event-level horizon-2 cell has 94 windows, 38 issue times, 10 day
+  blocks. Four accepted power/joint rows duplicate the same respective
+  horizon memberships: 35 windows, 12 issue times, 4 day blocks each. They
+  must not be counted as four independent replications.
+- Fold2 fresh calibration: 56 windows, 12 issue times, 3 day blocks, with
+  71.43% of windows on one day. Its sole accepted cell `event:0:0:0` has only
+  30 windows, 10 issue times and 2 day blocks. The saved turbine-macro MAE
+  gain is +0.169624939 kW; a positive aggregate over that support is not a
+  temporal-transfer guarantee.
+
+The existing rule in `fit_certificate` checks >=24 windows, >=3 turbines,
+positive turbine-macro MAE/MSE gains and >=2/3 positive turbines. It does not
+check distinct issue times, time-block uncertainty or out-of-block stability.
+This is an identified design limitation, not proof that any new day threshold
+will improve accuracy. Do not tune such a threshold against the inspected
+outer validation.
+
+Blockwise gains/variance remain **uncomputed**: calibration prediction arrays
+were not retained, only their hash and aggregate certificate. Metadata alone
+cannot recover error magnitudes. A later frozen-checkpoint training-only
+replay must verify its provenance and numerical reproducibility before adding
+these values. It must not retrain completed experts or use outer labels.
+
+### Event labels are not separate neural experts
+
+`route` in `scripts/train_kelmarsh_contextual_expert.py` computes per-event
+scores but ultimately selects `np.where(active, candidate, numeric)`.
+`candidate` is one WikiContext forecast per horizon, shared by event labels;
+the returned `best+1` is evidence attribution, not a choice among four distinct
+neural event forecasts. Current claims should say event-conditioned selective
+correction. A multi-expert interpretation requires genuinely different
+executing candidates and separately bound evidence, not renamed action IDs.
+
+### What the literature suggests, and what is not implemented
+
+The public [Jev documentation](https://docs.typesafe.ai/concepts/system-one)
+describes typed probabilistic decisions rather than explanation generation.
+Its [confidence](https://docs.typesafe.ai/confidence) is derived from its output
+distribution, not an independent certificate of wind-forecast benefit. We did
+not call the API or send project data to it.
+
+[Regression with Multi-Expert Deferral, ICML 2024](https://proceedings.mlr.press/v235/mao24d.html)
+provides a closer formulation: frozen predictors and a separately learned
+choice based on prediction cost. For the current implementation the honest
+action set is only unchanged numeric versus the actual Wiki correction.
+Any conditional expected-loss selector is a proposed next mechanism, **not an
+implemented or validated improvement**. First establish training-only oracle
+headroom and blockwise benefit stability with the identical executing
+checkpoints. Hash binding addresses object identity, not distribution shift.
