@@ -1,0 +1,14 @@
+{
+  "scope": "read-only training memory to late chronological utility; no outer evaluation",
+  "source_directory": "outputs/logs/Kelmarsh/20261013/001_hourly_system_h2_f0-1-2_s2024-2025-2026",
+  "seed": 2024,
+  "event": "hourly_wind_variability",
+  "neighbors": 32,
+  "time_block_counts_are_independent_samples": false,
+  "folds": [
+    {"fold": 0, "memory_cases": 139, "memory_unique_origin_hours": 63, "query_windows": 271, "median_source_turbines": 5.0, "median_day_blocks": 6.0, "min_day_blocks": 4, "median_72h_blocks": 3.0},
+    {"fold": 1, "memory_cases": 175, "memory_unique_origin_hours": 60, "query_windows": 267, "median_source_turbines": 5.0, "median_day_blocks": 5.0, "min_day_blocks": 2, "median_72h_blocks": 4.0},
+    {"fold": 2, "memory_cases": 427, "memory_unique_origin_hours": 124, "query_windows": 122, "median_source_turbines": 5.0, "median_day_blocks": 7.0, "min_day_blocks": 3, "median_72h_blocks": 4.0}
+  ],
+  "reproduction": "Match memory-stage event masks to saved expert rows; retrieve K32 for late-utility donor queries with the frozen keys; count distinct first-target UTC hour //24 and //72 among returned cases. The name origin_hours retains the audit print label; these are first-target timestamps, one hour after issue time."
+}

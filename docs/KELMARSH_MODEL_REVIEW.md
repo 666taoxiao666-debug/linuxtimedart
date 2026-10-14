@@ -122,8 +122,17 @@ claim is introduced.
 
 ## Innovation boundary and verified nearby work
 
-- [Nearest Neighbor Multivariate Time Series Forecasting](https://arxiv.org/abs/2505.11625)
-  (2025 arXiv preprint; method): cached nearest-neighbor forecasting already
+The 2026-10-14 literature-grounded continuation is recorded in
+`output/literature-search/wind-wiki/papers.md` and the working manuscript
+`manuscript/wind_event_wiki.md`. Its timestamped episode-balanced readout is an
+opt-in prototype in `utils/kelmarsh_episode_wiki.py`, not a replacement for the
+frozen v1/v2 experiments. A three-fold training-only probe showed worse MAE/RMSE
+in both fold0 utility periods, better in both fold1 periods, and no action in
+fold2. The evidence does not justify a global accuracy-improvement claim.
+
+- [Nearest Neighbor Multivariate Time Series Forecasting](https://ieeexplore.ieee.org/document/10752995/)
+  (IEEE TNNLS 36(7), 2025, DOI 10.1109/TNNLS.2024.3490603; method;
+  publication status reverified 2026-10-14): cached nearest-neighbor forecasting already
   exists. Retrieval alone is not a new contribution.
 - [GNA](https://arxiv.org/abs/2609.36281)
   (2026-09-28 arXiv preprint; method): its inspected abstract explicitly describes
