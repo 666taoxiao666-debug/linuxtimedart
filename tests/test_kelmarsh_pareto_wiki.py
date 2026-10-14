@@ -7,6 +7,27 @@ from utils import kelmarsh_hourly_wiki as old
 
 
 class ParetoWikiTests(unittest.TestCase):
+    def test_long_history_summaries_alias_different_current_wind_states(self):
+        from types import SimpleNamespace
+        from scripts.audit_kelmarsh_phase_coordinates import phase_coordinates
+        wind_a = np.array([4.] * 10 + [2., 8.])
+        wind_b = np.array([4.] * 10 + [8., 2.])
+        def make(wind):
+            raw = np.full((14, 7), 500.)
+            raw[:12, 0] = wind
+            context = dict(power_ratio=np.array([500/2050]), wind_mean_mps=np.array([wind.mean()]),
+                wind_std_mps=np.array([wind.std()]), power_change_kw=np.array([0.]),
+                wind_change_mps=np.array([wind[6:].mean() - wind[:6].mean()]))
+            for key in old.CONTROLS:
+                context[key] = np.zeros(1)
+            dataset = SimpleNamespace(seq_len=12, window_starts=np.array([0]), series=SimpleNamespace(raw=raw))
+            anchor = np.full((1, 2), 500.)
+            return old.keys(context, anchor, 2050., True), phase_coordinates(dataset, 2050.)
+        old_a, phase_a = make(wind_a)
+        old_b, phase_b = make(wind_b)
+        np.testing.assert_array_equal(old_a, old_b)
+        self.assertNotEqual(phase_a[0, 0], phase_b[0, 0])
+
     def test_closed_form_shrinkage_improves_both_empirical_losses(self):
         values = np.tile([0., 0., 0., .6, .9], (1, 3))
         ids = np.repeat([[1, 2, 3]], 5, axis=1)

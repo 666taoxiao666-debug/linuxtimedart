@@ -17,7 +17,7 @@ only two active runs (both negative gain) and seven exact abstention runs.
 ## 必须立即修复 Top 5
 
 1. **[P1] Forecast-relative utility is missing at inference.**
-   `utils/kelmarsh_hourly_wiki.py -> candidates (lines 110-121), fit_policy
+   `utils/kelmarsh_hourly_wiki.py -> candidates (lines 123-127), fit_policy
    (lines 159-177), apply (lines 204-214)`: a neighborhood is compressed to a
    median; the candidate is a bounded replacement, selected by an event/bin's
    historical average gain. Individual current forecasts and local outcome
@@ -40,7 +40,7 @@ only two active runs (both negative gain) and seven exact abstention runs.
    an identifiable non-overlapping effect definition, not arbitrary addition.
 
 3. **[P2] Most advertised event experts never execute.**
-   `utils/kelmarsh_hourly_wiki.py -> fit_experts (lines 64-68)`:
+   `utils/kelmarsh_hourly_wiki.py -> fit_experts (lines 78-80)`:
    the uniform 128-window minimum closes low-wind idle with 45/17/85 memory
    windows across the three folds. High-wind low-power has 0/5/0 and rated
    saturation 0/0/0. Only hourly wind variability is active. More neural epochs
@@ -61,7 +61,7 @@ only two active runs (both negative gain) and seven exact abstention runs.
    study. The new empirical rule makes no distribution-shift guarantee.
 
 5. **[P2 / NEEDS-EVIDENCE] Numeric objective and desired joint improvement differ.**
-   `scripts/train_kelmarsh_hourly.py -> train_stage (lines 210-216, 261-264)`:
+   `scripts/train_kelmarsh_hourly.py -> train_stage (lines 214-220, 261-264)`:
    epoch selection uses MAE, while training blends absolute and squared error.
    Pretraining reconstructs historical inputs rather than directly forecasting
    future power (`models/TimeDART.py -> pretrain`, line 927 onward). f1 selects
@@ -74,6 +74,22 @@ only two active runs (both negative gain) and seven exact abstention runs.
    The present pilot freezes the base to avoid conflating base and Wiki gains.
 
 ## Implemented mechanism: forecast-relative empirical Pareto readout
+
+### Additional confirmed information omission
+
+`data_provider/kelmarsh_hourly.py -> physical_context` and
+`utils/kelmarsh_hourly_wiki.py -> keys` retain 12-hour wind mean/std and a
+six-hour-average change, but not last wind, immediate wind ramp, or rotor speed.
+For example, `[4]*10+[2,8]` and `[4]*10+[8,2]` have identical old wind coordinates
+yet current wind 8 and 2 m/s. A regression test proves the coordinate alias.
+This is a **[P2] confirmed representation limitation**, not proof that six extra
+features improve a neural model or that it explains every loss. A separate
+fixed-alpha Ridge probe fits only donor memory labels and predicts the two later
+training blocks using old coordinates versus old plus six current-state signals.
+It does not use outer labels or replace a full Wiki experiment. Its script is
+`scripts/audit_kelmarsh_phase_coordinates.py`; support for any subsequent new
+coordinate protocol must come from these train-side results, not another outer
+threshold search.
 
 For a query and lead, neighboring train cases provide normalized future power
 transitions `z_i`. Each represented donor has equal total mass. Let `m` be their
