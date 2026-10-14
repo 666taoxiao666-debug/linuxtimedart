@@ -1,0 +1,23 @@
+{
+  "protocol_id": "kelmarsh_h2_history_conditioned_executable_wiki_v4",
+  "source_directory": "outputs/logs/Kelmarsh/20261013/001_hourly_system_h2_f0-1-2_s2024-2025-2026",
+  "source_protocol_sha256": "61835c7d61043800c4023e0f6e63ddd8ee1564a23d5757f58e66e2e6e78e0c97",
+  "folds": [0, 1, 2],
+  "seed": 2024,
+  "arms": ["NumericContext", "WikiContext"],
+  "base": "Frozen fold-matched PromptTimeDART; no neural base or memory refit",
+  "adapter_fit": "memory plus calibration_early, source turbines1-5 only; memory-period queries have zero retrieval inputs because the complete bank was not yet available",
+  "adapter_selection": "first chronological half of calibration_late, donors only",
+  "benefit_calibration": "second chronological half of calibration_late, donors only; disjoint target intervals",
+  "selection": "lowest average MAE/RMSE ratio among epochs jointly no worse than epoch0; epoch0 fallback; no outer selection",
+  "training": {"epochs": 20, "batch_size": 128, "learning_rate": 0.001, "weight_decay": 0.0001, "grad_clip": 1.0, "mix_mse_weight": 0.2, "width": 32, "dropout": 0.1, "correction_bound_capacity": 0.2},
+  "memory": {"weather_block_hours": 24, "summary_per_event": ["candidate_delta_div_capacity", "alpha", "log1p_std_div_capacity", "physical", "history_overlap"], "summary_dimension": 20},
+  "utility": {"min_windows": 24, "min_turbines": 3, "positive_fraction": 0.6666666666666666},
+  "utility_rule": "Fresh actual frozen WikiContext minus NumericContext errors in later training calibration; positive MAE/MSE and >=2/3 positive donor units; finest supported cell vetoes fallback",
+  "evaluation": "One declared development outer evaluation per fold after all expert parameters and certificate are frozen; existing validation is not independent confirmation",
+  "statistics": {"block_length": 8, "replicates": 5000, "seed": 2024, "estimand": "window_uniform"},
+  "sealed_test_evaluated": false,
+  "outer_threshold_search": false,
+  "neural_training_is_new": true,
+  "known_limitation": "Different numeric adapters can improve due to additional train labels; Wiki contribution must be paired against NumericContext, not just original base"
+}
