@@ -174,3 +174,54 @@ tail -f "$(cat outputs/logs/Kelmarsh/pareto_wiki_latest.txt)/launch.log"
 Wait for real controller/GPU exit before either continuation. The outer
 evaluation marker persists for safe interrupted-report continuation. No new
 seed/threshold/candidate search is authorized by these commands.
+
+## Completed pilot evidence (2026-10-14)
+
+All three declared folds, seed 2024, completed with the same frozen numeric
+checkpoints, scaler, outer window timestamps and raw targets as v1. Reproduced
+base predictions were checked against v1 saved arrays before new evaluation.
+These are **three seed-2024 runs**, not the previous nine-run macro average.
+
+- Trend: macro MAE 142.494880 kW, RMSE 205.714966 kW, R² 0.753201.
+- Legacy Wiki: 143.294329 / 207.278705 / 0.749903.
+- ParetoWiki (predeclared primary): 142.681657 / 206.606880 / 0.751329.
+- MedianLocalWiki (predeclared mechanism control): 142.481954 / 206.548721 /
+  0.751319. Its MAE advantage over Trend is only 0.012926 kW, while RMSE is worse;
+  do not promote this ablation to primary or claim joint improvement.
+- Matched-label NumericControl: 141.998796 / 207.024948 / 0.750443. It also trades
+  a better MAE for a worse RMSE than Trend.
+
+ParetoWiki reduces legacy damage but **does not beat the actual base**: macro
+MAE is worse by 0.186776 kW and RMSE by 0.891914 kW. It intervenes only in fold 0.
+In that fold, early/late train-utility gains were +2.357812/+2.277824 kW, whereas
+outer gain was -0.560329 kW. This directly shows that empirical local dual-loss
+safety plus two train blocks still does not establish transport to a later
+period. The other folds have no accepted primary cells and exact abstention.
+The primary mechanism has not established the desired positive contribution.
+
+The additional current-state information probe also **does not support blindly
+adding more inputs**. Old -> augmented MAE/RMSE in later training blocks:
+
+- f0 early: 112.927149/144.280594 -> 111.758396/144.130896 kW (both improve).
+- f0 late: 137.258014/202.615489 -> 140.476928/205.503757 (both worsen).
+- f1 early: 193.499833/284.771846 -> 194.090848/284.874990 (both worsen).
+- f1 late: 165.155931/238.147176 -> 166.062465/237.748306 (trade-off).
+- f2 early: 139.832134/197.289560 -> 141.027981/198.472281 (both worsen).
+- f2 late: 109.526795/162.756615 -> 109.866257/165.175169 (both worsen).
+
+This is one fixed-alpha Ridge probe, not proof that these inputs cannot help
+nonlinear retrieval or a neural base. The confirmed coordinate alias remains,
+but it is not established as the dominant performance cause. No phase-augmented
+outer search, new seed sweep, or rare-event threshold relaxation was launched.
+
+### Research decision
+
+Keep the new readout as a tested development branch, not a proven accuracy claim.
+The immediate bottleneck is **predictive transport evidence**, not a missing
+method name: only one event family has support; local distributions and benefit
+signs shift; the base advantage over Persistence is already small. The next
+substantive study should distinguish (a) forecasting-relevant rather than merely
+reconstructive pretraining, and (b) event-duration/control-state-aware transition
+knowledge with sufficient observed cases and an untouched later period. It must
+not use a more elaborate gate as a substitute for that evidence. No subsequent
+outer refit or tuning is included in this completed pilot.

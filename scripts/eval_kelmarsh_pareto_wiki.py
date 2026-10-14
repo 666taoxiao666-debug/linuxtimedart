@@ -23,6 +23,32 @@ from utils import kelmarsh_pareto_wiki as new
 from utils.paired_forecast_statistics import paired_forecast_statistics
 
 
+def summarize_outputs(output):
+    """Read saved results only; never fit a policy, load CUDA or select a run."""
+    rows, inputs = [], {}
+    for path in sorted((Path(output) / "runs").glob("f*_s*/*/result.json")):
+        value = read(path)
+        fold, seed = path.parts[-3].split("_")
+        row = dict(model=value["model"], fold=int(fold[1:]), seed=int(seed[1:]),
+                   best_epoch=value.get("best_epoch"), **value["metrics"])
+        row.update({key: metric for key, metric in value.get("wiki", {}).items()
+                    if metric is None or isinstance(metric, (int, float))})
+        rows.append(row)
+        inputs[str(path.relative_to(output))] = sha(path)
+    if not rows:
+        raise ValueError("No completed result files to summarize")
+    frame = pd.DataFrame(rows)
+    frame.to_csv(Path(output) / "metrics_all_runs.csv", index=False)
+    columns = [key for key in frame.select_dtypes(include="number").columns if key not in ("fold", "seed", "best_epoch")]
+    macro = frame.groupby("model")[columns].agg(["mean", "std", "count"])
+    macro.columns = ["_".join(key) for key in macro.columns]
+    macro.to_csv(Path(output) / "metrics_macro.csv")
+    write(Path(output) / "summary_provenance.json", dict(inputs=inputs,
+          aggregation="unweighted mean across three folds at fixed seed2024; macro R2 is not pooled R2",
+          scripts_sha256=sha(Path(__file__))))
+    return frame
+
+
 def train_audit(model, policy, blocks, contract):
     results = []
     for stage, data in blocks.items():
@@ -154,6 +180,8 @@ def run(protocol_path, output, outer_validation, device):
             torch.cuda.empty_cache()
             print(f"[FOLD_COMPLETE] {run_name} outer={outer_validation}", flush=True)
         write(output / "progress.json", dict(stage="COMPLETED", outer_validation=outer_validation, folds=3))
+        if outer_validation:
+            summarize_outputs(output)
         (output / "status.env").write_text("STATUS=COMPLETED\nEXIT_CODE=0\n", encoding="utf-8")
 
 
@@ -162,8 +190,12 @@ def main():
     parser.add_argument("--protocol", type=Path, default=ROOT / "configs/kelmarsh_pareto_protocol_v2.json")
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--outer-validation", action="store_true", help="One frozen, exploratory outer evaluation; never tuning")
+    parser.add_argument("--summarize", action="store_true", help="Only summarize existing result files; no training or inference")
     parser.add_argument("--gpu", type=int, default=0)
     args = parser.parse_args()
+    if args.summarize:
+        summarize_outputs(args.output.resolve())
+        return
     try:
         run(args.protocol.resolve(), args.output.resolve(), args.outer_validation, torch.device(f"cuda:{args.gpu}"))
     except BlockingIOError:

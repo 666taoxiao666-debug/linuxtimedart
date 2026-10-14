@@ -7,6 +7,24 @@ from utils import kelmarsh_hourly_wiki as old
 
 
 class ParetoWikiTests(unittest.TestCase):
+    def test_read_only_summary_uses_each_saved_fold_once(self):
+        import json
+        from pathlib import Path
+        import tempfile
+        from scripts.eval_kelmarsh_pareto_wiki import summarize_outputs
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            for fold, mae in ((0, 1.), (1, 3.)):
+                path = root / "runs" / f"f{fold}_s2024" / "Test" / "result.json"
+                path.parent.mkdir(parents=True)
+                path.write_text(json.dumps(dict(model="Test", best_epoch=0, metrics=dict(mae=mae, rmse=mae + 1, r2=.5))))
+            frame = summarize_outputs(root)
+            self.assertEqual(len(frame), 2)
+            import pandas as pd
+            macro = pd.read_csv(root / "metrics_macro.csv")
+            self.assertEqual(macro.iloc[0]["mae_mean"], 2.)
+            self.assertEqual(macro.iloc[0]["mae_count"], 2)
+
     def test_long_history_summaries_alias_different_current_wind_states(self):
         from types import SimpleNamespace
         from scripts.audit_kelmarsh_phase_coordinates import phase_coordinates
