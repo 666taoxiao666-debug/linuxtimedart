@@ -1,0 +1,21 @@
+{
+  "protocol_id": "kelmarsh_hourly_forecast_relative_pareto_wiki_v2",
+  "source_directory": "outputs/logs/Kelmarsh/20261013/001_hourly_system_h2_f0-1-2_s2024-2025-2026",
+  "source_protocol_sha256": "61835c7d61043800c4023e0f6e63ddd8ee1564a23d5757f58e66e2e6e78e0c97",
+  "folds": [0, 1, 2],
+  "seed": 2024,
+  "variants": {"ParetoWiki": "pareto", "MedianLocalWiki": "median_local"},
+  "primary_variant": "ParetoWiki",
+  "base_refit": false,
+  "memory_refit": false,
+  "utility_fit": "same two chronological donor-only train blocks as v1, recomputed for each actual new readout",
+  "local_positive_donor_fraction": 0.6666666666666666,
+  "blend_rule": "alpha=clip((weighted_mean_transition-current_base_change)/clipped_median_direction,0,1); no alpha grid search",
+  "local_gate": "empirical MAE and MSE gain both positive and at least 2/3 represented donor turbines jointly benefit",
+  "selection_score": "minimum of realized two-block cell MAE gain and query-specific empirical MAE gain",
+  "composition": "disabled for primary and matched legacy no-composition control; legacy composition was inactive in all 9 runs",
+  "outer_validation": "one predeclared exploratory evaluation per fold; not an independent confirmation set",
+  "outer_validation_tuning": false,
+  "sealed_test_evaluated": false,
+  "stop_rule": "do not tune thresholds, seeds, neighborhood or alpha after outer results; do not automatically expand runs"
+}
