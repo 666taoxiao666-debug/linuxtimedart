@@ -130,3 +130,24 @@ Status: append `--status`. After a genuine stopped/failed process, append
 No automatic seed/fold expansion, new Wiki thresholds, sealed-test inference,
 numerical fallback changes or destructive result cleanup are authorized by this
 protocol. A negative result is retained and ends this particular experiment.
+
+## Deployment observation: 2026-10-14 14:40 Asia/Shanghai
+
+Implementation commit `11cc4a1` was pushed and fast-forwarded on the server.
+All 37 relevant tests passed locally and on the server; Python compilation,
+Bash syntax, source-protocol and data hashes passed. Protocol SHA256:
+`48f322088d9e444b7a082a5c66a64f65f34a970e52136eda498dfd585eb41be8`.
+
+The launched job was observed waiting, not training: Bash PID 1836763,
+Python PID 1836772, status `WAITING_FOR_GPU`. Another user's GPU job remained
+untouched. Result directory:
+`outputs/logs/Kelmarsh/20261014/001_incremental_wiki_h2_f1_s2024_ep20`.
+Outer launch log:
+`outputs/launch_logs/incremental_wiki_20261014_144016.log`.
+Use the status command/pointer for live state rather than this dated note.
+
+The queue is a single server experiment launcher, not a restored Codex
+recurring automation. It starts the declared pipeline when the GPU becomes
+idle, but does not provide periodic conversational notifications. No new
+accuracy numbers are available at deployment; synthetic test metrics must not
+be substituted for the real experiment.
