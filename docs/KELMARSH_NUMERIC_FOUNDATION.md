@@ -23,6 +23,46 @@ Bash 语法、源完成产物全部哈希、旧 scaler 一致性检查通过。�
 `outputs/launch_logs/numeric_foundation_20261015_145700.log`。已确认进入实际 GPU 训练，
 PromptExpanded 内部20轮完成，ResidualTCN 继续训练；当时为 `solo_unrestricted`，无其他GPU进程。
 
+## 完成结果：本轮没有优化成功，不替换原底座
+
+已 `COMPLETED`、exit0，GPU 训练进程退出。五个内部候选和唯一一次固定重训均完成，
+未追加候选或重选外层最佳 epoch。内部选中 PromptExpanded 第8轮，然后以同一初始化
+在完整训练期固定训练8轮，Wiki 全程关闭。
+
+- 原底座：MAE **101.888844** kW、MSE **24171.238137** kW²、RMSE **155.471020** kW、
+  R² **0.783236**，实质等同 Persistence。
+- 新底座：MAE **116.431975** kW、MSE **29585.416973** kW²、RMSE **172.004119** kW、
+  R² **0.734682**；MAE/RMSE Skill 为 **−14.273526% / −10.634200%**。
+- 新底座容量 ±5% / ±10% 命中率 **61.2853% / 84.3260%**，原底座为
+  **64.5768% / 86.5204%**。不能把 R² 或容量归一化误差补数当作准确率。
+- 同638窗口、1276目标点，新底座 MAE 比原底座差 **14.543130 kW**、RMSE 差 **16.533099 kW**。
+  MAE增益时间块95%区间 **[−26.319059, −2.159852] kW**；Newey–West ratio-mean
+  influence 检验 p=**0.020302**。这不是“微小舍入负收益”，但仍是历史开发验证集上的探索推断。
+
+服务器全部175项产物哈希校验通过；下载的12项注册产物也匹配哈希，预测数组的时间戳、风机、
+目标和窗口与原底座完全相同。本地独立重算 MAE/MSE/RMSE/R² 与服务器一致，精度图已下载并实看。
+完整8MB报告包的首次SFTP下载超时，只留下不完整副本，未用它做分析；关键文件通过legacy SCP
+成功下载并校验，没有因此重训。
+
+独立本地审计：`output/kelmarsh_hourly/numeric_foundation_v11_review/independent_metric_audit.json`。
+精度图：`output/kelmarsh_hourly/numeric_foundation_v11_review/reports/SelectedNumeric/artifacts/forecast_accuracy_overview.png`。
+
+## 训练侧诊断：为什么不能把内部正收益当作成功
+
+严格只用 original outer-train 的内部选择段，重载被冻结的实际内部 Prompt 检查点做只读推理，
+没有用 outer validation/test 选择参数。内部822窗口、137个 issue 时钟、18个自然日：
+MAE 141.873769 对 Persistence 146.678333 kW，净收益4.804564 kW；两个时间半段都为正，
+但18天仅9天同时改善MAE与MSE，时间块95%区间 **[−1.684444, 12.124896] kW**，p=**0.169430**。
+这些还是选择候选/epoch 后的描述性诊断，不能作为未经选择偏差影响的确认性显著性证据。
+诊断原文件：`outputs/launch_logs/numeric_foundation_v11_train_audit_20261015.json`。
+
+可确定的是内部收益不够稳定，且“扩大近期训练预算就能解决底座问题”的方案未通过本轮
+联合验收。不能仅凭这些结果把失败全部归因数据脏、时间漂移或某个具体模块；本轮还同时改变了
+训练预算和固定重训过程，不能做单因素归因。
+后续数值研究应先预声明训练期多时间起点的滚动验证，检验对季节/天气变化的稳定技能，
+而不是再看当前外层改选 TCN、alpha 或早期 epoch。本协议已结束，不追加新训练。
+原底座与全部负结果保留，Wiki 继续暂停，底座尚未达到“已稳定优化”的要求。
+
 ## 为什么先改底座
 
 旧流程在每个 outer-train 内只用前 60% 拟合数值模型，随后 10% 选数值 epoch，
@@ -70,9 +110,9 @@ bash scripts/train/Kelmarsh_launch_numeric_foundation.sh --status
 报告阶段失败只能补报告，不能重新训练完成阶段。仍按已有共享 GPU 策略限制本进程，
 绝不停止或修改其他用户任务；服务器空闲时无需人为限速。
 
-## 【最终评级】：C（运行前）
+## 【最终评级】：C（完成后，精度验收失败）
 
-实现可进入有限探索，但目前没有 v11 准确度结果，不足以支持“底座已优化成功”或论文结论。
+运行、哈希和独立指标复核已完成，但新模型明显劣于原底座，不支持“底座已优化成功”。
 未发现有证据的 P0；无 GRL/MMD/目标域无监督适配，不虚构此类问题。
 
 ## 【必须立即修复 Top 5】
@@ -94,7 +134,7 @@ bash scripts/train/Kelmarsh_launch_numeric_foundation.sh --status
 ## === 详细问题清单 ===
 
 - **严重级别**：P1（既有结论风险）。
-  **位置**：`data_provider/kelmarsh_hourly.py` 的分段、`scripts/train_kelmarsh_hourly.py::train_stage`。
+  **位置**：`data_provider/kelmarsh_hourly.py:26` 的分段、`scripts/train_kelmarsh_hourly.py:172::train_stage`。
   **触发条件及证据**：数值 fit 仅原 train 的前60%，f1 原模型最终 epoch0；其 MAE/RMSE 与
   Persistence 仅浮点舍入差异。**影响**：不能将原模型标为具备强数值预测技能。
   **修复**：`utils/numeric_foundation.py::partitions` 使用90%内部 fit、完整 train 固定 refit。
@@ -108,22 +148,23 @@ bash scripts/train/Kelmarsh_launch_numeric_foundation.sh --status
   **验证**：manifest 与原始对照窗口逐项一致性检查。**置信度**：高。
 
 - **严重级别**：P2（已修复）。
-  **位置**：`scripts/train_kelmarsh_numeric_foundation.py::neural_fit` 的 epoch0/完成记录。
+  **位置**：`scripts/train_kelmarsh_numeric_foundation.py:157::neural_fit` 的 epoch0/完成记录。
   **证据**：真实初始化检查点不应被替换的 Persistence 指标冒充。
   **影响**：候选失败可能被“零增益”掩盖。
   **修复**：记录真实保存模型的指标，独立标明是否存在合格训练 epoch，epoch0 不能选中 refit。
   **验证**：联合选择测试、实际 Prompt 构造/推理及完成记录检查。**置信度**：高。
 
 - **严重级别**：P2（已修复）。
-  **位置**：`scripts/train_kelmarsh_numeric_foundation.py::make_model` 的加载后校准。
+  **位置**：`scripts/train_kelmarsh_numeric_foundation.py:89::make_model` 的加载后校准。
   **证据**：迁移 state_dict 会覆盖已有 regime 阈值；新 fit 数据应重新校准且只用 fit。
   **影响**：可能悄悄沿用旧时间段阈值，妨碍解释近期训练。
   **修复**：先迁移兼容参数，再用当前 fit 校准。
   **验证**：植入错误阈值的真实 Prompt 预训练构造测试。**置信度**：高。
 
-- **严重级别**：NEEDS-EVIDENCE（结果未产生）。
-  **位置**：最终 `result.json` 和各报告 `raw_predictions.npz`。
-  **证据**：本地功能测试不代表服务器性能；外层/内部时间段也曾用于历史开发。
-  **影响**：不能宣布统计显著、独立泛化或恢复 Wiki 的条件已满足。
-  **修复**：先跑有限协议，核对窗口/标签与独立指标，再决定冻结确认。
-  **验证**：相同外层 cohort、原尺度独立重算及时间块区间。**置信度**：高。
+- **严重级别**：P1（内部选择不等于泛化，效果验收失败）。
+  **位置**：最终 `result.json` 的 `primary_joint_success=false`、内部 `selected.json` 以及只读时间诊断。
+  **证据**：内部收益区间跨0、仅9/18天联合受益；固定重训后外层 MAE/RMSE 明显恶化，
+  且外层/内部时间段都曾用于历史开发。
+  **影响**：不能宣布新底座有效、独立泛化或恢复 Wiki 的条件已满足。
+  **修复**：保留原模型，下一独立协议先检验训练期跨时段技能，不在旧外层重选候选。
+  **验证**：本地原尺度独立重算已一致；新的多时间起点验证尚未执行。**置信度**：高。
