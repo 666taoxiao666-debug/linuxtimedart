@@ -123,3 +123,9 @@ R²=0.7832358704272058，相对Persistence双Skill约0（浮点误差量级）�
 
 本地核心产物：`output/kelmarsh_hourly/certified_fallback_v7_review/`。该outer依然只是历史
 已查看的开发集，无新独立确认结论。本次用户请求的并行执行已完成，未干预他人任务。
+
+### 后续资源策略更新，不重跑本轮
+
+用户进一步明确：只有他人训练时才需限额，独占时解除限速。新的默认启动策略已改为动态
+`solo_unrestricted`/`shared_limited`切换，详细规则见`docs/GPU_RESOURCE_POLICY.md`。
+本节是后续执行设置；不追改本轮已登记的resource_policy/训练产物，不将已完成实验重新训练。

@@ -12,12 +12,14 @@ if [[ "${1:-}" == --status && $# -eq 1 ]]; then
   exit 0
 fi
 RESUME=0
-RESOURCE_ARGS=()
+# User-authorized default: full-speed solo, bounded sharing with competitors.
+RESOURCE_ARGS=(--allow-shared-gpu)
 for ARG in "$@"; do
   case "${ARG}" in
     --resume) RESUME=1 ;;
     --shared) RESOURCE_ARGS=(--allow-shared-gpu) ;;
-    *) echo "Usage: bash scripts/train/Kelmarsh_launch_certified_fallback.sh [--status|--resume] [--shared]" >&2; exit 2 ;;
+    --idle-only) RESOURCE_ARGS=() ;;
+    *) echo "Usage: bash scripts/train/Kelmarsh_launch_certified_fallback.sh [--status|--resume] [--shared|--idle-only]" >&2; exit 2 ;;
   esac
 done
 mkdir -p outputs/logs/Kelmarsh

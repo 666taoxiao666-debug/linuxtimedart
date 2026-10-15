@@ -196,13 +196,14 @@ def run(protocol, output, hours, *, shared_gpu=False):
             return
         torch.set_num_threads(2)
         torch.backends.cudnn.benchmark, torch.backends.cudnn.deterministic = False, True
-        resources = GPURuntimePolicy(shared=shared_gpu)
+        def record_resources(runtime):
+            runtime.update(training_protocol_sha256=old.sha(saved), training_hyperparameters_changed=False,
+                           shared_execution_overrides_only_protocol_idle_requirement=shared_gpu)
+            old.write(output / "resource_policy.json", runtime)
+        resources = GPURuntimePolicy(shared=shared_gpu, on_change=record_resources)
         if not shared_gpu:
             frozen.wait_for_gpu(output, hours)
         runtime = resources.configure()
-        runtime.update(training_protocol_sha256=old.sha(saved), training_hyperparameters_changed=False,
-                       shared_execution_overrides_only_protocol_idle_requirement=shared_gpu)
-        old.write(output / "resource_policy.json", runtime)
         print(f"[RESOURCE_POLICY] {runtime}", flush=True)
         resources.check()
         old.write(output / "status.json", dict(status="RUNNING", pid=os.getpid()))
@@ -244,7 +245,7 @@ if __name__ == "__main__":
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--gpu-wait-hours", type=float, default=24.)
     parser.add_argument("--allow-shared-gpu", action="store_true",
-                        help="Explicit opt-in only: 2 GiB PyTorch allocator cap, 4 GiB headroom, cooperative yielding")
+                        help="Adaptive: unrestricted when alone; 2 GiB allocator cap/headroom guard/yielding only with other GPU jobs")
     args = parser.parse_args()
     try:
         run(args.protocol.resolve(), args.output.resolve(), args.gpu_wait_hours, shared_gpu=args.allow_shared_gpu)
