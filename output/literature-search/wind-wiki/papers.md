@@ -1,5 +1,61 @@
 # Wind forecasting and executable Wiki: source notes
 
+## 2026-10-15 quick verification: history length versus forecast horizon
+
+Scope: answer the narrow task-length question, not a full novelty review or a
+meta-analysis of the most frequent protocol. Public queries used wind-power
+forecasting, hourly history/input length, forecast horizon, and named public
+benchmarks; no private model text or results were searched. Seven candidates
+were screened, three protocol anchors below verified in primary full text.
+MDPI sources excluded. No quality scores or cross-dataset accuracy rankings.
+
+- **M2WLLM**, Hang Fan et al., Information Fusion (2026), 103541,
+  DOI10.1016/j.inffus.2025.103541; method. The inspected author preprint v1,
+  section4.1, explicitly uses96 past15-min observations (24h) to predict16
+  future15-min observations (4h). Historical power AND future NWP variables
+  are inputs. This is a concrete24h->4h example, not evidence that all papers
+  use that window or a fair numerical comparison with history-only Kelmarsh.
+  [Primary full text](https://arxiv.org/html/2506.00531v1#S4.SS1),
+  [publisher record](https://doi.org/10.1016/j.inffus.2025.103541).
+- **Wind Power Forecasting with Deep Learning: Team didadida_hualahuala**,
+  KDD Cup2022 workshop solution; method. Section3.1.1 explicitly states that
+  XTGN uses288 ten-minute history steps (48h) for288 future steps (48h).
+  Its MDLinear component uses a different50-step input; do not conflate the
+  components. The SDWPF dataset paper section4 independently confirms the
+  48h target, but does not impose that every model has a48h history.
+  [Primary workshop PDF](https://baidukddcup2022.github.io/papers/Baidu_KDD_Cup_2022_Workshop_paper_5582.pdf),
+  [benchmark paper](https://arxiv.org/pdf/2208.04360).
+- **Forecasting High-Frequency Spatio-Temporal Wind Power with Dimensionally
+  Reduced Echo State Networks**, author preprint arXiv2102.01141v2 (2021);
+  method. Sections4.2.2/4.3 and Table3 report1-,2-,3-hour lead forecasts;
+  section4.4 focuses on2-hour power conversion. An ESN has recurrent hidden
+  history, so its input lag1 is NOT equivalent to observing only1hour.
+  Forecasting regional wind then converting to hypothetical turbine power
+  differs from actual single-turbine SCADA power. Publication venue was not
+  independently established here; cite as the inspected author preprint.
+  [Primary full text](https://arxiv.org/pdf/2102.01141).
+
+Inference for the local experiment:72h->2h is a defensible ultra-short-term
+setting, not an explanation of low skill by itself. It does not establish that
+the deployed model actually consumes all72h. Do not lengthen the target merely
+to match a paper or compare R2 across different capacities, weather information,
+target averaging, preprocessing or evaluation splits. Development should first
+improve both local1h and2h errors on fixed, chronological training-side blocks.
+
+Screening caution: the inspected Renewable Energy256 (2026)124008 paper,
+"Hybrid short-term wind power forecasting model using theoretical power curves
+and temporal fusion transformers", has24h illustration panels, which alone do
+not define a24h forecast horizon. Section4.1/4.2 also describes historical
+weather perturbed by +/-3% as simulated forecasts. That is not a verified
+issue-time NWP archive and will not be adopted as an operational input here.
+[Project-hosted publisher PDF](https://cretevalley.eu/wp-content/uploads/2025/08/Hybrid-short-term-wind-power-forecasting-model.pdf).
+
+Compact checklist: primary input/output units verified; model-component and
+information-budget distinctions retained; no paper accuracy values imported;
+no claim of exhaustive prevalence, independent confirmation, or novelty.
+
+---
+
 Search/read date: 2026-10-14. Scope: short-term SCADA forecasting, temporal/spatial
 adaptation, evidence-grounded knowledge organization and retrieval. Seventeen
 distinct candidates were screened. Eight focal papers below were inspected at
