@@ -17,6 +17,7 @@ import pandas as pd
 import torch
 from scripts import train_kelmarsh_incremental_wiki as frozen
 from utils import certified_numeric_residual as guard
+from utils.gpu_runtime_policy import GPURuntimePolicy
 
 old, previous = frozen.old, frozen.previous
 PROTOCOL_ID = "kelmarsh_h2_optional_numeric_residual_v7"
@@ -72,7 +73,7 @@ def prepare(spec, output, protocol_sha):
             "utils/certified_numeric_residual.py", "scripts/train_kelmarsh_incremental_wiki.py",
             "models/IncrementalWindWiki.py", "scripts/train_kelmarsh_contextual_expert.py",
             "scripts/train_kelmarsh_wiki_quality.py", "data_provider/kelmarsh_hourly.py",
-            "utils/kelmarsh_wiki_quality.py", "utils/paired_forecast_statistics.py")})
+            "utils/kelmarsh_wiki_quality.py", "utils/paired_forecast_statistics.py", "utils/gpu_runtime_policy.py")})
     if (output / "prepared.json").exists() and old.read(output / "prepared.json")["identity"] != identity:
         raise ValueError("v7 replay/protocol/executor changed on resume")
     parts, partition = guard.chronological_parts(packs["calibration"], 3, train_end=cutoff)
@@ -176,7 +177,7 @@ def evaluate(spec, output, trained, identity, numerical, information, device):
     pd.DataFrame(rows).to_csv(output / "metrics_all_runs.csv", index=False)
 
 
-def run(protocol, output, hours):
+def run(protocol, output, hours, *, shared_gpu=False):
     import fcntl
     output.mkdir(parents=True, exist_ok=True)
     with (output / "suite.lock").open("a") as lock:
@@ -195,7 +196,15 @@ def run(protocol, output, hours):
             return
         torch.set_num_threads(2)
         torch.backends.cudnn.benchmark, torch.backends.cudnn.deterministic = False, True
-        frozen.wait_for_gpu(output, hours)
+        resources = GPURuntimePolicy(shared=shared_gpu)
+        if not shared_gpu:
+            frozen.wait_for_gpu(output, hours)
+        runtime = resources.configure()
+        runtime.update(training_protocol_sha256=old.sha(saved), training_hyperparameters_changed=False,
+                       shared_execution_overrides_only_protocol_idle_requirement=shared_gpu)
+        old.write(output / "resource_policy.json", runtime)
+        print(f"[RESOURCE_POLICY] {runtime}", flush=True)
+        resources.check()
         old.write(output / "status.json", dict(status="RUNNING", pid=os.getpid()))
         old.write(output / "progress.json", dict(stage="training_only_numerical_guard"))
         packs, identity, numerical, information = prepare(spec, output, old.sha(saved))
@@ -203,11 +212,12 @@ def run(protocol, output, hours):
         device, capacity = torch.device("cuda:0"), information[3]["rated_power_kw"]
         trained = {}
         for name in spec["arms"]:
-            old.gpu_available_to_this_process()
+            resources.check()
             old.write(output / "progress.json", dict(stage="train_incremental", arm=name))
             execution = dict(identity, numerical_gate_id=numerical["gate_id"], arm=name,
                              fit_sha256=guard.array_digest(fit), selection_sha256=guard.array_digest(packs["selection"]))
-            model, done = frozen.train_arm(name, fit, packs["selection"], capacity, spec, output / name, execution, device)
+            model, done = frozen.train_arm(name, fit, packs["selection"], capacity, spec, output / name, execution, device,
+                                          resource_check=resources.check, after_step=resources.after_step)
             cal = packs["calibration"]
             candidate = frozen.infer(model, cal, capacity, device, name == "WikiIncrement")
             execution = dict(execution, wiki_checkpoint_sha256=old.sha(output / name / "checkpoint.pt"))
@@ -217,7 +227,7 @@ def run(protocol, output, hours):
                 certificate, train_end=information[0].bounds["train_end"]))
             trained[name] = model, done, execution
         old.write(output / "progress.json", dict(stage="frozen_outer_report"))
-        old.gpu_available_to_this_process()
+        resources.check()
         evaluate(spec, output, trained, identity, numerical, information, device)
         artifacts = {str(path.relative_to(output)): old.sha(path) for path in output.rglob("*")
                      if path.is_file() and path.name not in ("suite.lock", "launch.log", "launcher.pid", "source_commits.log",
@@ -233,9 +243,11 @@ if __name__ == "__main__":
     parser.add_argument("--protocol", type=Path, default=ROOT / "configs/kelmarsh_certified_fallback_protocol_v7.json")
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--gpu-wait-hours", type=float, default=24.)
+    parser.add_argument("--allow-shared-gpu", action="store_true",
+                        help="Explicit opt-in only: 2 GiB PyTorch allocator cap, 4 GiB headroom, cooperative yielding")
     args = parser.parse_args()
     try:
-        run(args.protocol.resolve(), args.output.resolve(), args.gpu_wait_hours)
+        run(args.protocol.resolve(), args.output.resolve(), args.gpu_wait_hours, shared_gpu=args.allow_shared_gpu)
     except BlockingIOError:
         print("[BUSY] Existing v7 suite not modified", flush=True)
     except Exception as error:

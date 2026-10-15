@@ -201,7 +201,7 @@ def infer(model, pack, capacity, device, use_memory):
     return pack["numeric"] + capacity * np.concatenate(chunks)
 
 
-def train_arm(name, fit, selection, capacity, spec, directory, identity, device):
+def train_arm(name, fit, selection, capacity, spec, directory, identity, device, *, resource_check=None, after_step=None):
     cfg, use_memory = spec["training"], name == "WikiIncrement"
     old.seed_all(spec["seed"])
     model = IncrementalWindWiki(width=cfg["width"], dropout=cfg["dropout"], bound=cfg["correction_bound_capacity"]).to(device)
@@ -236,7 +236,7 @@ def train_arm(name, fit, selection, capacity, spec, directory, identity, device)
     data = TensorDataset(*tensor_inputs(fit, capacity), targets)
     for epoch in range(start + 1, cfg["epochs"] + 1):
         if device.type == "cuda":
-            old.gpu_available_to_this_process()
+            (resource_check or old.gpu_available_to_this_process)()
         model.train()
         generator = torch.Generator().manual_seed(spec["seed"] + epoch)
         total, count = 0., 0
@@ -250,6 +250,8 @@ def train_arm(name, fit, selection, capacity, spec, directory, identity, device)
             loss.backward()
             torch.nn.utils.clip_grad_norm_(model.parameters(), cfg["grad_clip"])
             optimizer.step()
+            if after_step is not None:
+                after_step()
             total, count = total + float(loss.detach()) * len(context), count + len(context)
         metrics = old.model_metrics(infer(model, selection, capacity, device, use_memory), selection["truth"], selection["anchor"], capacity)
         score = old.joint_score(metrics, baseline)

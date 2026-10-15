@@ -3,7 +3,7 @@ set -euo pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")/../.."
 PYTHON="${KELMARSH_PYTHON:-python}"
 POINTER="outputs/logs/Kelmarsh/certified_fallback_latest.txt"
-if [[ "${1:-}" == --status ]]; then
+if [[ "${1:-}" == --status && $# -eq 1 ]]; then
   [[ -s "${POINTER}" ]] || { echo "STATUS=NOT_STARTED"; exit 0; }
   RESULT_DIR="$(<"${POINTER}")"
   printf 'RESULT_DIR=%s\n' "${RESULT_DIR}"
@@ -11,13 +11,19 @@ if [[ "${1:-}" == --status ]]; then
   [[ ! -f "${RESULT_DIR}/progress.json" ]] || cat "${RESULT_DIR}/progress.json"
   exit 0
 fi
-[[ $# -le 1 && ( "${1:-}" == "" || "${1:-}" == --resume ) ]] || {
-  echo "Usage: bash scripts/train/Kelmarsh_launch_certified_fallback.sh [--status|--resume]" >&2; exit 2;
-}
+RESUME=0
+RESOURCE_ARGS=()
+for ARG in "$@"; do
+  case "${ARG}" in
+    --resume) RESUME=1 ;;
+    --shared) RESOURCE_ARGS=(--allow-shared-gpu) ;;
+    *) echo "Usage: bash scripts/train/Kelmarsh_launch_certified_fallback.sh [--status|--resume] [--shared]" >&2; exit 2 ;;
+  esac
+done
 mkdir -p outputs/logs/Kelmarsh
 exec 9>outputs/logs/Kelmarsh/certified_fallback_launch.lock
 flock -n 9 || { echo "[BUSY] Certified fallback already running/queued" >&2; exit 2; }
-if [[ "${1:-}" == --resume ]]; then
+if [[ "${RESUME}" -eq 1 ]]; then
   [[ -s "${POINTER}" ]] || { echo "No v7 experiment to resume" >&2; exit 2; }
   RESULT_DIR="$(<"${POINTER}")"
   [[ -d "${RESULT_DIR}" ]] || exit 2
@@ -39,4 +45,5 @@ printf '%s\n' "${BASHPID}" > "${RESULT_DIR}/launcher.pid"
 git rev-parse HEAD >> "${RESULT_DIR}/source_commits.log"
 "${PYTHON}" -u scripts/train_kelmarsh_certified_fallback.py \
   --protocol configs/kelmarsh_certified_fallback_protocol_v7.json --output "${RESULT_DIR}" \
+  "${RESOURCE_ARGS[@]}" \
   2>&1 | tee -a "${RESULT_DIR}/launch.log"
