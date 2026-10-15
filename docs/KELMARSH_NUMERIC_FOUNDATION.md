@@ -15,6 +15,14 @@ ID：`kelmarsh_h2_numeric_foundation_trainonly_v11`。
 恢复时 GPU 无计算进程，3090 显存占用约 90 MiB。实际部署、启动及结果另记，不能把
 代码完成、GPU 空闲或训练 loss 下降当作预测改善。
 
+部署记录（2026-10-15）：实现提交 `1d4c9d6` 已推送并在服务器快进；服务器同一组65项测试、
+Bash 语法、源完成产物全部哈希、旧 scaler 一致性检查通过。实际内部 fit/selection 窗口
+5143/822、完整 outer-train 重训5965，旧数值 fit/selection 为3453/424，外层评估仍为638。
+14:57:00 启动，Bash PID1983019、Python PID1983027；结果目录
+`outputs/logs/Kelmarsh/20261015/001_numeric_foundation_h2_f1_s2024_inner90_ep20`，独立启动日志
+`outputs/launch_logs/numeric_foundation_20261015_145700.log`。已确认进入实际 GPU 训练，
+PromptExpanded 内部20轮完成，ResidualTCN 继续训练；当时为 `solo_unrestricted`，无其他GPU进程。
+
 ## 为什么先改底座
 
 旧流程在每个 outer-train 内只用前 60% 拟合数值模型，随后 10% 选数值 epoch，
