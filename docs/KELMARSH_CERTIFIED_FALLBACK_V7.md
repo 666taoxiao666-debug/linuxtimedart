@@ -103,3 +103,23 @@ PID1947905；新启动日志为`outputs/launch_logs/certified_fallback_shared_20
 首次确认时WikiIncrement已20轮完成、内选epoch13，ZeroMemoryIncrement正在第4轮；
 这是内部选择指标，不是outer精度结论。资源模式及授权分别保存在原结果目录的
 `resource_policy.json`和`shared_execution_authorization.json`，两者不会改变冻结协议哈希。
+
+### 本轮完成结果
+
+随后确认`status=COMPLETED`、exit_code=0，两个分支都完成20轮，内部均选epoch13。
+对方原GPU进程仍为1941402；我方进程正常结束并释放GPU。已核验全部269个登记产物哈希，
+并下载核心结果、训练历史、证书、预测数组和图；不自动扩展seed/fold。
+
+最终WikiIncrementSelective与ZeroMemoryIncrementSelective均完全回退共同底座：
+MAE=101.8888443279292kW，MSE=24171.238136705197kW²，RMSE=155.47102024719976kW，
+R²=0.7832358704272058，相对Persistence双Skill约0（浮点误差量级）；±5%容量命中率64.5768%，
+±10%容量命中率86.5204%。Wiki coverage=0%，不介入=100%，selected gain和harm为N/A，
+不能把“没有介入”写成“介入伤害率0”。预声明联合成功条件为false。
+
+未路由原始Wiki候选MAE101.535493/RMSE155.153206，未路由置零候选101.525857/155.149995；
+置零候选还略优，因此即使看raw也不能证明记忆贡献。raw未通过预声明证书，不能在看到outer后
+将其替换为正式输出，更不能修改门槛把这次实验改报成功。新执行回退避免旧数值适配器损害，
+但这属于数值安全策略，不是Wiki预测精度创新已获得验证。
+
+本地核心产物：`output/kelmarsh_hourly/certified_fallback_v7_review/`。该outer依然只是历史
+已查看的开发集，无新独立确认结论。本次用户请求的并行执行已完成，未干预他人任务。
