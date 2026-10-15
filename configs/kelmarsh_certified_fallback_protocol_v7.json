@@ -1,0 +1,23 @@
+{
+  "protocol_id": "kelmarsh_h2_optional_numeric_residual_v7",
+  "source_directory": "outputs/logs/Kelmarsh/20261014/001_incremental_wiki_h2_f1_s2024_ep20",
+  "source_protocol_sha256": "48f322088d9e444b7a082a5c66a64f65f34a970e52136eda498dfd585eb41be8",
+  "folds": [1],
+  "seed": 2024,
+  "mechanism": "Make the existing frozen NumericContext residual optional; learn per-lead convex shrinkage on the old training selection, retain only leads with positive MAE and MSE benefit in every chronological training evidence block. Never force a learned residual when its evidence fails.",
+  "numeric_guard": {"temporal_blocks": 3, "min_windows": 24, "min_turbines": 3, "min_issue_times": 4, "positive_fraction": 0.6666666666666666},
+  "partitions": "Old memory+early fit unchanged. Old selection fits two numerical shrink coefficients. Old fresh calibration is purged into three equal distinct-clock chronological parts: numerical gate evidence, Wiki epoch selection, fresh Wiki execution certificate. No part contains turbine6 or outer targets. Do not change these parts after viewing results.",
+  "arms": ["WikiIncrement", "ZeroMemoryIncrement"],
+  "training": {"epochs": 20, "batch_size": 128, "learning_rate": 0.001, "weight_decay": 0.0001, "grad_clip": 1.0, "mix_mse_weight": 0.2, "width": 32, "dropout": 0.1, "correction_bound_capacity": 0.2},
+  "ablation": "Same newly certified numerical fallback, parameters, initialization, support masks, training labels, selection and calibration budgets; zero only typed case-memory tokens. Not a pure removal of all knowledge.",
+  "selection": "Same MAE/RMSE jointly non-worse epoch selection including epoch0, on only middle third of original fresh training calibration.",
+  "utility": {"min_windows": 24, "min_turbines": 3, "positive_fraction": 0.6666666666666666},
+  "identity": "Bind numerical policy to actual original/numeric checkpoint SHA256 and source train packs; bind each Wiki certificate to the actual common numerical gate ID, its own checkpoint and unchanged quality bank.",
+  "controls": ["Persistence", "OriginalTrend", "NumericContextFrozen", "NumericCalibratedV4", "OldWikiIncrementV6", "CertifiedNumeric", "ZeroMemoryIncrementSelective", "WikiIncrementSelective"],
+  "primary_success": "WikiSelective MAE and RMSE both lower than the common CertifiedNumeric and ZeroMemoryIncrementSelective, and also lower than OriginalTrend/Persistence to support a useful end-to-end improvement. Numerical fallback benefits are not Wiki contributions.",
+  "statistics": {"block_length": 8, "replicates": 5000, "seed": 2024, "estimand": "window_uniform"},
+  "reports": ["MAE", "MSE", "RMSE", "R2", "MAE Skill", "RMSE Skill", "capacity tolerance", "horizon", "coverage", "abstention", "selected gain", "harm rate", "paired time-cluster bootstrap/Newey-West", "prediction plots"],
+  "budget": "One fold1 seed2024 development experiment, two 20-epoch incremental fits; old checkpoints and saved predictions are reused, no old model retraining, no automatic expansion.",
+  "limitations": "Outer validation has been repeatedly inspected historically: development evidence only. Empirical time-block checks are not a transfer guarantee. Smaller and newly allocated epoch-selection/certificate periods differ from v6, so v6-v7 is a system comparison, not an isolated causal attribution to Wiki.",
+  "forbidden": ["raw label changes", "outer validation/test fitting or cleaning", "sealed test inference", "seed/threshold search", "retraining completed experiments", "changing the quality case bank", "interfering with other users or parallel GPU jobs"]
+}

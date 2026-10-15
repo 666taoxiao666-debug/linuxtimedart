@@ -151,3 +151,91 @@ recurring automation. It starts the declared pipeline when the GPU becomes
 idle, but does not provide periodic conversational notifications. No new
 accuracy numbers are available at deployment; synthetic test metrics must not
 be substituted for the real experiment.
+
+## Completed-result numeric audit: 2026-10-15
+
+Mode: quick numeric/claim audit of the completed fold1/seed2024 pilot, not a
+new experiment or a full manuscript review. The original queued process
+completed normally on 2026-10-14 around 18:02 local server time. No shared-GPU
+mode was implemented or launched; the original idle-only strategy remained.
+At the next inspection the GPU had no compute processes. Do not restart this
+completed experiment or expand its folds/seeds.
+
+Both WikiIncrement and ZeroMemoryIncrement completed all 20 epochs; their
+training-only selection chose epoch3. The zero-memory arm retains the same
+observed context and support mask, so it isolates the retrieved memory features,
+not every possible use of knowledge. The original calibration input/output
+replay was bit-identical. All 34 artifacts registered by the server's
+`completed.json` passed SHA256 verification.
+
+The final WikiIncrementSelective metrics are MAE **107.2067030973 kW**, MSE
+**26567.2299595218 kW²**, RMSE **162.9945703375 kW**, R² **0.7617489661**,
+Persistence-relative MAE Skill **−5.2192747587%**, and RMSE Skill
+**−4.8391979658%**. Capacity tolerance hit rates are 64.8119122257% within
+±5% of 2050 kW capacity, and 85.3448275862% within ±10%; these are not
+classification accuracy, and both match the unchanged numerical control.
+
+The unchanged numerical control has MAE 107.2369139300 and RMSE 163.0183172547.
+Wiki therefore improves them by only **0.0302108327 kW** and
+**0.0237469172 kW**. Its MAE-gain 95% temporal-block bootstrap interval is
+[−0.0248542039, 0.1167059972] kW, and the Newey–West two-sided p-value is
+0.3984361149. The primary estimand is window-uniform MAE, temporal clusters are
+distinct forecast issue times, block length is 8, bootstrap replicates 5000,
+seed2024. The saved Newey–West statistic is the ratio-mean influence test,
+not an unweighted time-mean DM test.
+
+ZeroMemoryIncrementSelective has MAE **107.2092946349** and RMSE
+**162.9921781414**. Relative to it, retrieved memory improves MAE by just
+**0.0025915375 kW** while worsening RMSE by **0.0023921961 kW**. The MAE-gain
+interval [−0.0322661361, 0.0385076183] crosses zero, p=0.8840011735.
+The prespecified joint-improvement criterion is therefore **false**. Do not
+claim a demonstrated additional accuracy benefit from retrieved memory.
+
+New Wiki's intervention-window coverage is **21.1598746082%**, abstention
+**78.8401253918%**, selected-point mean gain **0.1554396068 kW**, and harmful
+intervention-window rate **46.6666666667%**. The zero-memory selective arm has
+coverage 10.6583072100%, abstention 89.3416927900%, selected-point gain
+0.2591339750 kW, and harm rate 38.2352941176%. Coverage and harm are window
+statistics, whereas selected gain is over actually intervened horizon points.
+
+For context, old WikiQualitySelective has MAE 107.3182816597, RMSE
+163.1230147249, R² 0.7613733209, coverage 10.6583072100%, and harm
+54.4117647059%. New Wiki improves its MAE by 0.1115785623 kW, but this
+comparison's interval also crosses zero, p=0.4347820943. OriginalTrend is still
+better: MAE **101.8888443279**, RMSE **155.4710202472**, R² **0.7832358704**.
+Its errors in this fold are numerically almost identical to Persistence; do
+not count this as another independent strong-baseline win. The current
+numerical adapter's deterioration cannot be assigned entirely to Wiki.
+
+The evaluation contains 638 windows / 1276 points / 107 distinct forecast issue
+times. These are one historically inspected development fold, not a three-fold
+macro result or an independent held-out confirmation. The negative joint result
+is retained. No new thresholds, seeds, epochs, labels, numeric inputs or model
+weights were selected from these outer results. A new mechanism or changes to
+the non-Wiki numerical path require a separate user decision.
+
+Raw downloaded evidence and the reproducible numeric audit are under
+`output/kelmarsh_hourly/incremental_v6_review/`. The compact result panel and
+saved forecast figures present these same measurements; no synthetic test
+numbers are substituted.
+
+Local recomputation from seven aligned prediction arrays reproduced the saved
+MAE/MSE/RMSE/R² and all new intervention statistics. The 27 registered artifacts
+included in the downloaded review subset also passed local SHA256 checks; the
+server verified all 34, including files intentionally not downloaded. The 126
+exported report/control files are read-only copies. Target times run from
+2016-10-19 12:00 through 2016-11-12 22:00 UTC. The overview and representative
+forecast-example images were visually inspected; their displayed metrics match
+the raw predictions. The result panel's live rendering was queued by the app,
+not independently screenshot-verified.
+
+Claim-evidence disposition: successful execution and exact replay are supported;
+small point-estimate improvement over unchanged numeric and old Wiki is supported;
+statistically significant gain is unsupported; extra retrieved-memory accuracy
+contribution fails the declared joint criterion; cross-fold or independent-test
+generalization is unverified. No citation or full manuscript review was attempted.
+
+On completion, a native pause request for the existing `kelmarsh-gpu` monitor
+returned that the automation no longer exists in the app. It was not recreated;
+do not claim that a successful pause operation occurred. This is distinct from
+the server experiment, whose completed state and retained results are verified.
