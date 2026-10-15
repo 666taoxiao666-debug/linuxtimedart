@@ -61,4 +61,20 @@ Wiki需MAE和RMSE同时优于共同CertifiedNumeric、匹配置零及OriginalTre
 
 ## 部署记录
 
-待本次推送及服务器校验后补充真实提交、PID、目录和状态。未完成前不填预测收益。
+- 模型提交：`a6fdf699cfdef9742ff20211ad53f59286f30324`，已推送并服务器快进。
+- 协议SHA256：`bcbd83611d86ef3c5fe268970c85fd893246947b2d3f66e9d809acca5e96ef8d`，服务器一致。
+- 本地、服务器均41项测试通过；服务器编译检查和Bash语法通过。
+- 2026-10-15 09:50:32 +08已部署启动等待队列，Bash PID1943173、Python PID1943181。
+  状态是`WAITING_FOR_GPU`，不是已开始GPU训练。09:41检查空闲，但09:50启动前复查时
+  用户gyx的新PID1941402已经占8754MiB显存、GPU利用率100%；未与其并行训练或修改其任务。
+- 启动日志：`outputs/launch_logs/certified_fallback_20261015_095032.log`。
+- 结果目录：`outputs/logs/Kelmarsh/20261015/001_certified_fallback_h2_f1_s2024_ep20`。
+- 指针：`outputs/logs/Kelmarsh/certified_fallback_latest.txt`。
+- 队列每30秒检查全部计算进程，GPU空闲后自动继续；等待上限24小时。到期失败保留原目录，
+  须核对实际进程/完成状态后`--resume`，不能新建重复实验。队列无需Codex持续在线。
+- 训练侧CPU预检已通过，未读取outer目标或做outer推理：原selection拟合alpha=[1,1]，
+  但后续三个固定块分别接受[真,真]/[假,真]/[假,假]，因此最终数值执行权重=[0,0]，
+  回退OriginalTrend。不能因为全拒绝改阈值来放行；这就是本协议预声明的风险控制结果。
+- 新内部选epoch115窗口、独立Wiki证书110窗口、数值证据115窗口，跨边界移除0；
+  memory/early拟合仍为360/685窗口。Wiki分支将围绕这个共同回退底座训练。
+- 新精度指标尚未产生；不以CPU预检代替训练结果，不宣称本轮Wiki贡献成立。
