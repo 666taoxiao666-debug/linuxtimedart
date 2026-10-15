@@ -201,10 +201,11 @@ def infer(model, pack, capacity, device, use_memory):
     return pack["numeric"] + capacity * np.concatenate(chunks)
 
 
-def train_arm(name, fit, selection, capacity, spec, directory, identity, device, *, resource_check=None, after_step=None):
+def train_arm(name, fit, selection, capacity, spec, directory, identity, device, *, resource_check=None, after_step=None, model_factory=None):
     cfg, use_memory = spec["training"], name == "WikiIncrement"
     old.seed_all(spec["seed"])
-    model = IncrementalWindWiki(width=cfg["width"], dropout=cfg["dropout"], bound=cfg["correction_bound_capacity"]).to(device)
+    factory = model_factory or IncrementalWindWiki
+    model = factory(width=cfg["width"], dropout=cfg["dropout"], bound=cfg["correction_bound_capacity"]).to(device)
     directory.mkdir(parents=True, exist_ok=True)
     marker = directory / "trained.json"
     if marker.exists():
@@ -268,6 +269,7 @@ def train_arm(name, fit, selection, capacity, spec, directory, identity, device,
     model.load_state_dict(torch.load(directory / "checkpoint.pt", map_location=device, weights_only=False)["model"])
     old.write(directory / "manifest.json", dict(identity=identity, best_epoch=best_epoch, training=cfg,
         parameters=sum(parameter.numel() for parameter in model.parameters()), use_memory=use_memory,
+        model_type=f"{type(model).__module__}.{type(model).__name__}",
         selection_scope="Original donor-only first half of late training calibration; zero-increment fallback",
         numerical_forecaster_in_optimizer=False, unsupported_increment_is_exact_zero=True))
     done = dict(identity=identity, best_epoch=best_epoch, epochs_completed=cfg["epochs"],
