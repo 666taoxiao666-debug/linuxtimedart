@@ -91,3 +91,15 @@ Wiki需MAE和RMSE同时优于共同CertifiedNumeric、匹配置零及OriginalTre
 这既不是GPU算力百分比限制，也不是总CUDA显存硬隔离，更不能保证他人零减速或零OOM。
 未启用MPS/MIG，不改整卡功耗/时钟/计算模式。保留batch size、LR、loss、seed、epoch和全部
 模型/标签不变；新可选回调只控制资源检查及执行节奏。新增5项资源测试与41项回归共46项本地通过。
+
+共享执行实现提交：`41b34e187f2e386d57bc3c64166f9b41d9fc6773`，已推送并服务器快进；
+服务器46项测试及Bash语法通过。仅向已核实属于XT、状态WAITING且未产生prepared/训练产物的
+排队Python PID1943181发送SIGTERM，原目录和旧日志保留，其他进程未操作。
+
+2026-10-15 10:26:42 +08，以`--resume --shared`成功实际启动，Bash PID1947900、Python
+PID1947905；新启动日志为`outputs/launch_logs/certified_fallback_shared_20261015_102642.log`。
+首次确认实际训练时，我方GPU显存338MiB，对方gyx PID1941402仍为8754MiB且正常存活；
+全卡9195MiB，温度78℃。该快照不能代替峰值测量，也未测量对方训练速度变化。
+首次确认时WikiIncrement已20轮完成、内选epoch13，ZeroMemoryIncrement正在第4轮；
+这是内部选择指标，不是outer精度结论。资源模式及授权分别保存在原结果目录的
+`resource_policy.json`和`shared_execution_authorization.json`，两者不会改变冻结协议哈希。
