@@ -4,7 +4,8 @@
 这是执行资源策略，不改变模型参数、标签、batch size、loss、LR、seed或实验轮数。
 
 实现：`utils/gpu_runtime_policy.py`。v7启动器
-`scripts/train/Kelmarsh_launch_certified_fallback.sh`默认开启自适应，`--shared`保留为显式别名，
+`scripts/train/Kelmarsh_launch_certified_fallback.sh`和v8启动器
+`scripts/train/Kelmarsh_launch_case_anchored_wiki.sh`默认开启自适应，`--shared`保留为显式别名，
 `--idle-only`仍可选择完全等待空闲的保守模式。未集成该工具的历史启动器不被悄悄更改。
 
 - `solo_unrestricted`：没有其他GPU计算PID时，将本进程PyTorch allocator fraction恢复为1.0，
