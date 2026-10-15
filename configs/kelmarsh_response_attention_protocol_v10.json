@@ -1,0 +1,23 @@
+{
+  "protocol_id": "kelmarsh_h2_cross_unit_response_attention_v10",
+  "source_directory": "outputs/logs/Kelmarsh/20261015/001_short_dynamics_wiki_h2_f1_s2024_ep20",
+  "source_protocol_sha256": "ec72cdb0607c5819c4fe372b6509a82fa6812140756f3abd26564db730b5a2c8",
+  "folds": [1],
+  "seed": 2024,
+  "mechanism": "Replace fixed case summarization followed by a confidence MLP with a response-trained local case weighting encoder. Values remain actual case power increments. Same-unit cases are excluded at both fitting and inference. Static original-key support and 32-case local pools remain train-only; the learned encoder only reranks these cases. Fit two convex execution coefficients on fitting labels, not on selection/calibration.",
+  "evidence": "Training early period, event0/state5: 352 eligible physical queries and151 old cases; standardized key distance vs response dissimilarity correlation0.259979. Cross-unit nearest32 response MSE0.0214996 vs all-cross0.0246746 shows locality is partly useful but responses remain heterogeneous. Fixed response readout h1 MAE146.1472 vs base145.4042, h2 MAE210.2909 vs214.7732. This supports testing response weighting, not a guaranteed fix.",
+  "training": {"epochs": 20, "batch_size": 128, "learning_rate": 0.001, "weight_decay": 0.0001, "grad_clip": 1.0, "mix_mse_weight": 0.2, "width": 32, "dropout": 0.1, "correction_bound_capacity": 0.2},
+  "attention": {"features": 23, "embedding": 16, "neighbors": 32, "same_unit_excluded": true, "value_head": false, "case_updates_after_fit": false},
+  "proposal_objective": "Same MIXED .8 absolute+.2 squared error on capacity-normalized case proposal residual. Proposal supervision is independent of the execution alpha, so exact-zero fallback does not kill the retrieval gradient. No new label rows.",
+  "confidence": "After each proposal epoch, exact convex fit_shrinkage on the same1045 fitting windows, constrained [0,1] and joint MAE/MSE non-worse on fit. No grid or validation threshold search. Epoch0 is exact common-base fallback.",
+  "selection": "Same115-window training-only selection; joint MAE/RMSE non-worse score;20 epochs only",
+  "benefit_calibration": "Same110 later donor training windows, min24 windows, min3 units,2/3 positive units. New actual-output certificate bound to learned checkpoint, source bank, view implementation, scaler and common numerical gate. No reduction of old utility thresholds.",
+  "utility": {"min_windows": 24, "min_turbines": 3, "positive_fraction": 0.6666666666666666},
+  "controls": "Reuse completed numerical, free Wiki, zero-memory and old-key/short-key anchored controls without retraining. Add FixedKernel: exact same cross-unit local pools and episode priors, fixed original-key distance, two fitting-only convex coefficients, no neural fitting or searched epochs. This is a mechanistic baseline, not a parameter-matched ablation.",
+  "primary_success": "ResponseAttentionSelective must jointly improve MAE/RMSE over CertifiedNumeric/Persistence, v9 DynamicsWikiSelective, old CaseAnchoredWikiSelective, FreeWikiSelective, ZeroMemorySelective and new FixedKernelSelective. Always report raw outputs but do not promote them after outer inspection.",
+  "statistics": {"block_length": 8, "replicates": 5000, "seed": 2024, "estimand": "window_uniform"},
+  "budget": "One new fold1 seed2024 proposal encoder20epochs plus deterministic FixedKernel confidence fit. No completed-control retraining or automatic fold/seed expansion.",
+  "scope": "Wiki executor only; same case rows/outcomes, source-unit labels, numerical arrays/scaler/backbone/gate and target cohorts. No NWP or future query covariates. The old memory remains frozen; no refreshing based on outer labels.",
+  "forbidden": ["query targets in input tensors", "same-unit case outcomes", "outer/test fitting or cleaning", "sealed test inference", "raw label changes", "lower utility threshold", "outer-guided epoch/seed/temperature/architecture search", "modifying other users' jobs"],
+  "limitations": "One historically inspected development fold, not independent confirmation or proven novelty. Learned weighting can overfit scarce/correlated donor episodes. Hash identity proves which executor ran, not guaranteed transport. FixedKernel has fewer fitted degrees of freedom; report this rather than claim matched capacity."
+}
