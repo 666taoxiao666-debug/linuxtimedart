@@ -1,6 +1,17 @@
 # Kelmarsh 数值底座：有限开发试验与24→4匹配基准
 
-## 当前候选：v21功率特征直通融合（训练侧门控，尚无新指标）
+## 当前候选：v21功率特征直通融合（已推送；服务器连接中断，未确认启动）
+
+实现提交`5006137126fe7fac9ceafe341507d188d8d31236`已推送GitHub。本地6项新测试、
+启动器Bash语法和diff检查通过；服务器本轮同步/测试/启动尚未确认，不能写成已运行。
+本轮部署SCP先报server not responding，随后SSH重试报banner exchange超时，
+Tailscale ping也无响应；仅能说明这些连接尝试失败，不能断言服务器或训练已故障。
+最后确认的服务器实现为v20的`b2e72d3`，其训练已正常完成，未被重启。
+
+沿用用户此前每20分钟重连授权，已更新原监控`v14`为“服务器重连与24→4底座检查”，
+状态ACTIVE，间隔与目标聊天不变。仅恢复冻结v21的安全部署/测试/顺序训练及结果
+核验，不开展新搜索；先查真实进程/指针/完成清单，不能重复启动。网络持续超时
+保持安静，连接恢复或实际阶段变化才通知，完成并汇总后PAUSED。
 
 v20补齐近期训练数据后DLinear/PatchTST/Ridge略改善，但TimeDART宏MAE/RMSE变差。
 训练内部曲线也暴露泛化风险：f0最优epoch2、f1 epoch6后，训练loss继续下降而
@@ -90,7 +101,11 @@ Wiki继续关闭；新的数值模型训练使用了过去为Wiki预留的标签
 服务器快进，本地/服务器4项新测试通过。真实训练Python PID2237459，结果目录
 `outputs/logs/Kelmarsh/20261016/recent24h4h_f0-1-2_s2024_FbpKqP`，全部18组完成，
 `STATUS=COMPLETED/exit0`，服务器全量注册产物哈希通过。证据已下载到
-`output/kelmarsh_hourly/recent_numeric_v20_review/`。
+`output/kelmarsh_hourly/recent_numeric_v20_review/`。本地144个已下载注册文件与91个
+Git源文件blob（提交b2e72d3）核验通过；18组总体和逐小时MAE/MSE/RMSE/R²独立重算
+最大差0，所有模型truth/时间/风机/窗口/Persistence与v19逐项一致。已实际查看f1
+TimeDART概览图，其MAE161.981405/RMSE240.474605/R²0.723202均与文件一致，
+图中的MAE/RMSE Skill为负，未隐藏该fold退化。
 
 v20三fold宏平均：TimeDART MAE191.246792/RMSE277.894466kW、R²0.648562，
 比v19的189.338150/273.165394/0.659831更差；不能报为优化成功。
