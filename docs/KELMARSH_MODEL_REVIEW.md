@@ -1,5 +1,102 @@
 # Kelmarsh model review and forecast-relative Wiki pilot
 
+## 2026-10-16：外部分析报告的逐项核对与改动边界
+
+以下核对针对用户提供的分析报告与当前24→4/v21—v22证据；下文2026-10-14审查是
+历史Wiki v1范围，不能把其中“7/9弃权”推广为所有后续Wiki版本的统一统计。
+
+【最终评级】：C。报告抓住了可用天气信息有限、早期过适应、强线性基线有竞争力、
+跨通道交互值得检验等合理方向，但多处把假设或局部实验夸成已确认根因。
+这不是创新评分，也不是对整个仓库无泄漏的认证。
+
+【必须立即修复 Top 5】：
+
+1. v22失败不能证明预训练无效：它没有随机初始化/不预训练的匹配对照。
+2. Epoch0与Epoch1不能混同：只有零残差起点是Persistence，训练1轮不等于自动回退。
+   不删除安全起点；应同时报告选择epoch、训练后最佳/最后结果和真实Skill。
+3. 通道独立不等于完全不能拟合跨变量关系；已有后置MLP/context。原建议同时换通道
+   结构和取消预训练，无法把结果归因于早期交互。
+4. 不提供NWP限制可用信息，但未测量其“首要天花板”，不等于任务不适定；不能把
+   未来实测/再分析天气直接当可用预报，不能删除停机样本抬高总体指标。
+5. 校正运行身份和统计范围：v21实际796082参数；v22只做内部评估；Wiki“7/9弃权”
+   是历史v1。不能把这些说成当前0.896M模型、所有版本、或正式封存test结论。
+
+【需重跑的实验与需补充的单元测试】：不重跑v19—v22。新增v23两个等参数分支：
+相同的同历史patch跨变量注意力，分别放在原时间编码器前/后，且都保留相同v20
+预训练、v21功率恒等旁路、零残差起点、数据/Scaler/loss/LR/预算。只检验位置差异，
+不声称一次实验能证明通道独立是根因。先完成两个分支×三fold的内部候选，固定门控
+通过才一次评估全部六个外层候选。关键测试覆盖跨变量交互不跨样本/patch、真实放置
+位置、身份初始化、等参数/等初始权重/RNG、真实训练梯度/LR、门控、历史分组不删样本，
+以及启动环境快照与续跑身份；测试值不作为真实实验精度。
+
+=== 详细问题清单 ===
+
+- 严重级别：[P1，外部报告的因果过度解读]；位置：
+  `scripts/train_kelmarsh_frozen_transfer.py -> decision/run`，
+  `configs/kelmarsh_frozen_transfer_protocol_v22.json -> outer_gate`。
+  证据：v22内部宏MAE/RMSE为158.691115/237.609277，v21为158.788086/235.683589；
+  v22仍优于内部DLinear/Persistence，但未联合胜过v21。它不是“无法支持预测”的证明。
+  影响：不能据此废除预训练或写完整因果结论。修复：降为冻结表示不足以解决泛化的
+  局部证据，暂不改变预训练。验证：若以后研究预训练价值，需同结构、同更新策略的
+  scratch/重构/预测导向对照，明确各自标签与计算预算；置信度高。
+
+- 严重级别：[P1，外部报告建议的评价偏移]；位置：
+  `models/TimeDART.py:1248 -> restore_scale`及
+  `scripts/train_kelmarsh_hourly.py:239 -> train_stage`。
+  证据：零头只定义epoch0为Persistence；v21选择epoch3/3/1，非三折epoch0。
+  MAE与含MSE的混合目标存在取舍，但不是错误实现。影响：去掉零头会改变起点并可能
+  使基线退化更难识别，不是“去伪优化”。修复：保留，并报告全部步长和训练后表现。
+  验证：新旧初始化预测与Persistence严格一致的单测保留；置信度高。
+
+- 严重级别：[NEEDS-EVIDENCE]；位置：`models/TimeDART.py:1142 -> forecast`、
+  `layers/TimeDART_EncDec.py:24 -> ChannelMixer`。证据：编码器内按变量分批是真的，
+  但后置MLP/context已有跨变量函数；v21并非逐折稳健胜过v20，仍不及DLinear。
+  影响：不能宣称“完全丧失风速功率函数能力”或已证明它是首要瓶颈。修复：只做
+  早/晚同模块匹配消融，参数增加的收益也必须对照晚置分支。验证：位置/参数/RNG/
+  输入队列/预训练来源锁定与训练内部门控；对根因排序置信度低。
+
+- 严重级别：[NEEDS-EVIDENCE]；位置：`data_provider/kelmarsh_hourly.py:80 ->`
+  前缀Scaler与`utils/physics_normalization.py:7 -> normalize_history`。
+  证据：Scaler60%是已记录的控制设计，v20拟合90%；当前模型已经窗口归一化并保留
+  风速绝对信息。全局非退化仿射标准化本身不删除信息，也不推出功率正偏差的符号。
+  影响：“夏季尺度必然造成全面高估”未经本数据量化。修复：本轮不换Scaler或重复加
+  RevIN；以后需仅训练侧分布审计及匹配重预训练，不能混用旧归一化检查点。
+  验证：原Scaler/窗口SHA与旧控制一致；对该因果解释置信度低。
+
+- 严重级别：[P2，外部报告的身份/范围错误]；位置：v21各fold的
+  `manifest.json -> parameters`、`docs/KELMARSH_MODEL_REVIEW.md`历史v1范围。
+  证据：当前参数796082，无外部LLM权重载入；历史Qwen参数名不是权重使用证据。
+  Wiki v1统计不能覆盖后续质量处理及神经Wiki。影响：误导论文方法身份和模块去留。
+  修复：记录真实工厂/参数/初始化checkpoint，当前Wiki仍关闭但不删除历史代码或结果。
+  验证：新runtime_identity记录实际工厂、LLM checkpoint=None，参数从实际模型计数；
+  对当前运行身份置信度高，对未审查的所有历史实验不作统一断言。
+
+### 接受、修正或暂不执行的建议
+
+接受：强基线、分步长Skill、仅基于历史状态的分组诊断、有限的早期跨通道交互实验、
+真实运行身份和复现日志。新分组按最后历史功率/额定容量<5%、5%—90%、≥90%划分；
+这只是观察分组，不声称等同停机/额定工况，不删任何评估窗口、不作为路由/调参标签。
+
+暂不执行：接入NWP（须先拿到含issue_time、valid_time、实际发布时间/延迟的历史
+预报，验证issue_time/availability≤预测起点，不能用未来实测或再分析替代）、缩到
+任意5—10万参数、改变loss、换Scaler或预测导向预训练。这些都需独立受控实验，不能
+同一次改完后把收益归给任一机制。Ridge拟合不是“零训练成本只读诊断”；原全局Ridge
+已经存在，局部归一化Ridge是新训练变体，不能直接把其效果等同Transformer无用。
+
+基础文献核对而非替本项目担保：[PatchTST作者论文](https://arxiv.org/abs/2211.14730)
+展示通道独立和掩码预训练在其基准可有效，反驳“结构/预训练必然无效”的普遍断言，
+但不证明本风电数据也有效。[RevIN作者说明](https://seharanul17.github.io/RevIN/)
+描述分布漂移归一化思路，不能证明本项目尚未采用。
+[IEA Wind研究论文](https://iea-wind.org/wp-content/uploads/2021/04/IEATask36-Torque-2016_FullPaper.pdf)
+讨论NWP和几小时以上预报的重要性，不能替本数据量化不可超越的误差下限。
+
+新试验协议`configs/kelmarsh_channel_timing_protocol_v23.json`，SHA256
+`43f17d453a2b52eda6c1d102a72d9d89f7daba9d78c49378a0afb2ae8e58b6a4`；
+实现/部署/真实结果进度统一写入[数值底座记录](KELMARSH_NUMERIC_FOUNDATION.md)，
+本审查不预填收益、不冒充已完成训练或新的论文创新。
+
+---
+
 Review date: 2026-10-14. Scope: hourly v1 data/model/knowledge/decision path and
 its completed 3-fold x 3-seed experiment. This is a development review, not a
 submission-ready claim or an independent assessment by multiple reviewers.

@@ -3,6 +3,36 @@
 版本/参数改动与恢复入口：[实验恢复索引](EXPERIMENT_REPLAY.md)。包含最近v19—v22的
 准确运行提交、父对照、改动/不变项、协议与结果路径、哈希、恢复方法和环境记录缺口。
 
+## 当前候选：v23跨通道交互位置匹配消融（本地测试通过，未确认服务器启动）
+
+用户提供外部分析报告并授权合理部分修改。逐条核对见
+[模型审查的2026-10-16部分](KELMARSH_MODEL_REVIEW.md)。接受检验编码器前的跨变量
+交互，但不接受“通道独立必然失效、v22证明预训练无效、删除零残差、删停机样本”的
+过度判断或评价偏移。本轮不接入NWP、不加未来协变量、不删除Wiki历史实现。
+
+新增`models/ChannelTimingTimeDART.py`：同一历史patch的七个变量token作自注意力，
+不跨样本或patch。Early放在时间编码器前，Late放在同一编码器后。两组实际参数均
+862386（比v21多66304），完全相同的初始状态和RNG、zero-output恒等初始化、
+相同v20预训练缓存/数据/Scaler/损失/LR/20epoch上限/patience5。相对v21增加容量，
+所以Late是必要对照；不能把单组胜过v21自动归因于“修好通道独立”。放置位置改变
+会改变dropout抽样执行顺序，协议明确记录；不宣称随机训练轨迹逐位相同。
+
+仅fold0/1/2、seed2024，共六个内部候选，不重新预训练或加载v21微调权重。
+早置组须至少两fold内部MAE/RMSE同时优于Late与v21，且内部宏两指标均优于Late、
+v21、同队列DLinear和Persistence，才一次评估全部六个外层候选，保留受损fold。
+失败只保留内部负结果，不按outer结果加候选/阈值/seed。外层已开发查看，不是独立确认。
+协议`configs/kelmarsh_channel_timing_protocol_v23.json` SHA256：
+`43f17d453a2b52eda6c1d102a72d9d89f7daba9d78c49378a0afb2ae8e58b6a4`。
+
+新增历史功率分组诊断（最后观测功率<5%/5%—90%/≥90%容量），不声称精确故障标签，
+不删任何样本、不参与训练路由。新增实际启动时Python/Python依赖及Conda元数据、
+CUDA构建/驱动、实际Python argv、线程环境、工厂/外部LLM身份日志；不初始化CUDA
+采集环境、不记录密钥环境变量，URL凭据/令牌脱敏。续跑保留原快照并拒绝关键依赖/
+线程配置变化。它不是完整容器，也不保证逐位复现，更不伪补历史环境。
+本地9项关键路径单测与Bash语法通过；真实精度尚未产生，不能引用合成测试值。
+新入口`scripts/train/Kelmarsh_launch_channel_timing.sh`，指针
+`outputs/logs/Kelmarsh/channel_timing_latest.txt`。全部旧结果/检查点保留，旧协议不改。
+
 ## 最新试验：v22固定预训练表示（已完成；未通过联合改善门槛，不替代v21）
 
 实现`dd7e1d07c1140ad1735796d815fbe200edf3f3b7`已推送GitHub并在服务器安全快进；
