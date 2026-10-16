@@ -1,6 +1,45 @@
 # Kelmarsh 数值底座：v11–v18有限开发试验
 
-## 最新工作：v18（两步长状态条件收缩，训练验收中）
+## 最新工作：v18（已完成；第二小时小幅改善，第一小时未通过且保持旧预测）
+
+模型实现`039b41d467d01ac23a0f729463c7da550f5be111`已推送并同步服务器。服务器结果
+`outputs/logs/Kelmarsh/20261016/001_numeric_state_h2_f1_s2024_shrunk`，PID2112589已退出，
+STATUS=COMPLETED、exit0。协议SHA256
+`1226787dbce638029e29e90bc61d96c6b22b8164d78966c8fdfc59e333c199b8`，完成清单SHA256
+`84d279a8c7b214ff2bc83d8711c5858ab4a96182bf246dd49148cebec86622c1`。
+服务器159个注册产物哈希通过，本地下载31个文件，其中28个为注册产物并已复核；
+22个实现源文件与提交字节一致。独立重放实际状态执行器，预测最大差为0；旧/新truth、
+时钟、风机、window start、Persistence队列逐项一致，第1小时预测bitwise相同。
+
+三个训练查询块中，第2小时MAE/RMSE相对v15分别改善2.571429/4.618973、
+0.047504/0.082448、2.439678/3.319909kW，均通过两个参考的联合验收。
+第1小时在o70/o90改善，但o80的MAE/RMSE恶化0.143476/1.652076kW，因此按冻结
+规则禁用该步长新系数。实际执行标记`enabled_leads=[false,true]`，不是挑外层最好步长。
+全部train的高功率下降/上升状态仅2/1个窗口，均精确回退原系数，不把稀疏状态当证据。
+
+**新外层开发集结果，原尺度独立重算一致**：
+
+- 第1小时：MAE82.469191、MSE15507.671375、RMSE124.529801kW、R²0.856821，
+  MAE/RMSE Skill9.170013%/3.903144%，±5/10%容量命中68.652038%/91.536050%；
+  与v15完全相同，不能宣称第一小时提高。
+- 第2小时：MAE111.209484、MSE31145.618389、RMSE176.481213kW、R²0.728482，
+  MAE/RMSE Skill1.569348%/0.642103%，容量命中63.479624%/84.639498%。v15对应
+  MAE112.715661、RMSE177.559572、R²0.725153；MAE改善1.506176kW/1.336262%。
+- 总体：MAE96.839338、MSE23326.644882、RMSE152.730629kW、R²0.790810，
+  MAE/RMSE Skill4.955897%/1.762638%，容量命中66.065831%/88.087774%。相对v15
+  MAE改善0.753088kW/0.771667%，RMSE改善0.623656kW，属于小幅点指标改善。
+
+MSE单位为kW²，MAE/RMSE单位为kW，Skill参考Persistence。638窗口/107个issue-time
+簇；总体相对v15时间块bootstrap95%CI[-0.188572,1.930253]kW、Newey–West ratio-mean
+双侧p=0.154871，未通过常用显著性门槛。第2小时CI[-0.377144,3.860505]也跨0。
+`primary_joint_success=true`仅指预声明的点指标条件，不代表统计显著、独立确认、
+跨fold稳定或Wiki贡献。两个小时都得到稳定提升的目标尚未完成。
+
+本地`output/kelmarsh_hourly/numeric_state_v18_review/`保留真实参数、逐样本预测、
+配对统计及`independent_metric_audit.json`。新预测概览图已下载、核对哈希并实际查看，
+位于`reports/SelectedNumeric/artifacts/forecast_accuracy_overview.png`。未改变原标签、
+未访问sealed test、未扩大候选/fold/seed；无GPU训练或其他用户进程操作，旧结果保留，
+没有自动恢复Wiki或迁移旧Wiki证书，也未替换任何在线服务。
 
 用户要求同时改善第一/第二小时，而非只保护第一小时不动。仍是原72小时资格窗口、
 直接预测未来2个小时均值、stride3，Wiki关闭。本轮并没有假称消费全部72小时：
@@ -35,8 +74,8 @@ lag1简单表述为只看1h。没有证据说论文统一使用某一种窗口�
 
 启动器`bash scripts/train/Kelmarsh_launch_numeric_state.sh`，指针
 `outputs/logs/Kelmarsh/numeric_state_latest.txt`；`--status`只读，`--resume`只续原阶段。
-完成后对两个小时分别报告MAE/MSE/RMSE/R²/Skill、容量命中率及v15配对时间块检验；
-没有新指标时不复用旧值冒充提升。新的数值状态函数不是Wiki创新。
+完成后已对两个小时分别报告MAE/MSE/RMSE/R²/Skill、容量命中率及v15配对时间块检验。
+第一小时是精确保留值、第二小时才是新预测，不混同。新的数值状态函数不是Wiki创新。
 
 ---
 
