@@ -1,6 +1,38 @@
 # Kelmarsh 数值底座：有限开发试验与24→4匹配基准
 
-## 当前修改：v20近期数值训练分配（已冻结；尚无新模型指标）
+## 当前候选：v21功率特征直通融合（训练侧门控，尚无新指标）
+
+v20补齐近期训练数据后DLinear/PatchTST/Ridge略改善，但TimeDART宏MAE/RMSE变差。
+训练内部曲线也暴露泛化风险：f0最优epoch2、f1 epoch6后，训练loss继续下降而
+内部选择MAE回升；f2直接选epoch0（Persistence），后续训练内部MAE从157.8613
+恶化到173.7063。不能把v20写成TimeDART改进成功，也不能把这些证据等同于已证明
+某个学习率或传感器错误是唯一原因。
+
+进一步代码审查：`layers/TimeDART_EncDec.py:24`的ChannelMixer只在MS微调时新增；
+预训练逐通道编码，微调却用随机MLP重写全部功率token后再接forecast head。
+三个v20 manifest均加载45个预训练状态，而`channel_mixer`加载数为0。旧mixer
+不存在恒等功率旁路。这是可检验的迁移结构风险，不是已证明导致全部误差的bug。
+
+v21仅增加功率token的恒等旁路，原mixer作为残差修正；最后修正投影与context
+投影零初始化。复用原mixer对象，不加参数，不额外抽随机数；保留完全相同的
+三fold预训练检查点、90/10分段、Scaler、输入、原标签、loss/LR和epoch选择规则。
+单测验证初始化时功率特征逐点恒等、修正可学习、参数量与RNG状态相同、预测起点
+仍精确Persistence、内评构造不请求outer subset、模型工厂身份绑定到stage契约。
+
+协议`configs/kelmarsh_power_anchor_protocol_v21.json`，SHA256
+`b0c83ac5bf96179865d635d1b1f846756b0d148ab278490b63c13e6c5bdca17b`。
+先仅训练三fold内部候选；至少两fold内部MAE/RMSE同时优于v20，且内部宏MAE/RMSE
+均优于v20及Persistence，才一次评估全部三fold新候选。门控失败就保留负结果，
+不生成新outer预测、不追加阈值/seed。若通过，也不剔除内部或外部受损的fold。
+新机制是数值迁移工程假设，不冒充Wiki创新；Wiki继续关闭，原数据未清洗。
+
+新增`train_stage(model_factory=...)`仅用于显式构造候选，并把工厂全名写入契约；
+原默认模型与训练公式不变。源码升级仍保持哈希锁，旧v19/v20如需严格重放应使用
+各自source_commit，不放宽旧源码哈希。现有已完成指标、检查点和注册产物未改动。
+启动器`bash scripts/train/Kelmarsh_launch_power_anchor.sh`，独立指针
+`outputs/logs/Kelmarsh/power_anchor_latest.txt`。三fold预训练只复用，不能重训。
+
+## v20近期数值训练分配（已完成；三种基线改善，TimeDART恶化）
 
 用户要求找出问题、提升精度或合理处理数据。本轮先修复已核实的数据使用设计，
 不把未证实的传感器极值当作误差主因，不同时改损失/网络/Scaler或清洗标签。
@@ -54,7 +86,19 @@ Wiki继续关闭；新的数值模型训练使用了过去为Wiki预留的标签
 启动器`bash scripts/train/Kelmarsh_launch_recent_numeric.sh`（`--status`/`--resume`），
 独立指针`outputs/logs/Kelmarsh/hourly_recent_latest.txt`；全局任务锁、源文件/协议/
 数据/完成产物哈希检查继续启用。仅在GPU无其他计算进程时训练，CPU自身2线程；
-不操作其他用户进程。尚未产生v20新指标，以下均为旧v19或更早结果。
+不操作其他用户进程。实现提交`b2e72d39ad860e195b67fd1c5a7206d61ac306ee`已推送并
+服务器快进，本地/服务器4项新测试通过。真实训练Python PID2237459，结果目录
+`outputs/logs/Kelmarsh/20261016/recent24h4h_f0-1-2_s2024_FbpKqP`，全部18组完成，
+`STATUS=COMPLETED/exit0`，服务器全量注册产物哈希通过。证据已下载到
+`output/kelmarsh_hourly/recent_numeric_v20_review/`。
+
+v20三fold宏平均：TimeDART MAE191.246792/RMSE277.894466kW、R²0.648562，
+比v19的189.338150/273.165394/0.659831更差；不能报为优化成功。
+DLinear186.958425/268.916936/0.670449，PatchTST189.542035/270.935827/0.665503，
+Ridge196.960973/273.007632/0.660784，三者相对各自v19宏MAE/RMSE均下降。
+Persistence189.724022/277.176876/0.649164和DailyPersistence完全不变。
+TimeDART的f0相对v19 MAE改善6.946166kW，f1/f2分别恶化6.378823/6.293267kW；
+数据分配修正不等于已经解决复杂模型的泛化问题。以下保留旧v19及更早结果。
 
 ## 当前任务：v19，24小时历史预测未来4小时（已完成；TimeDART未呈稳定优势）
 

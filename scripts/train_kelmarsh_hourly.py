@@ -169,7 +169,8 @@ def verify_stage(directory, contract):
     return state
 
 
-def train_stage(name, fit, selection, protocol, directory, seed, device, *, pretrain=False, initial=None):
+def train_stage(name, fit, selection, protocol, directory, seed, device, *, pretrain=False, initial=None,
+                model_factory=None):
     directory.mkdir(parents=True, exist_ok=True)
     gpu_available_to_this_process()
     contract = {"protocol_sha256": sha(directory.parents[2] / "protocol.json"), "data_sha256": protocol["data_sha256"],
@@ -177,9 +178,12 @@ def train_stage(name, fit, selection, protocol, directory, seed, device, *, pret
                 "scaler_scale": fit.scaler.scale_.tolist(), "fit_window_hash": hashlib.sha256(fit.window_starts.tobytes()).hexdigest(),
                 "selection_window_hash": hashlib.sha256(selection.window_starts.tobytes()).hexdigest(),
                 "initial_checkpoint_sha256": sha(initial) if initial else None}
+    if model_factory is not None:
+        contract["model_factory"] = f"{model_factory.__module__}.{model_factory.__qualname__}"
     seed_all(seed)
     args = model_args(name, fit, protocol, device, "pretrain" if pretrain else "finetune")
-    model = {"DLinear": DLinear, "PatchTST": PatchTST, "PromptTimeDART": PromptTimeDART}[name].Model(args).to(device)
+    factory = model_factory or {"DLinear": DLinear, "PatchTST": PatchTST, "PromptTimeDART": PromptTimeDART}[name].Model
+    model = factory(args).to(device)
     if name == "PromptTimeDART":
         audit = calibrate_regime_thresholds_from_dataset(fit)
         model.regime_down_thresh.fill_(audit["down_thresh"])

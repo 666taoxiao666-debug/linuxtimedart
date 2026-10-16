@@ -1,0 +1,32 @@
+{
+  "protocol_id": "kelmarsh_24h4h_identity_power_fusion_v21",
+  "base_protocol": "configs/kelmarsh_recent_train_protocol_v20.json",
+  "base_protocol_sha256": "600ef0bf4bc21ae59dc1a6701c6948ab0ac234936e205e3035208e384d9ebc9a",
+  "reference_dir": "outputs/logs/Kelmarsh/20261016/recent24h4h_f0-1-2_s2024_FbpKqP",
+  "reference_completed_sha256": "3963dda096e32d517a6c209721b033596952111023e2a60b16f6bf62e5cfe1d9",
+  "pretrain_checkpoint_sha256": {
+    "0": "a2afe1099ed5192cb7f3c0566ad84c7e795698f13c842120f3f30594d3a884e2",
+    "1": "4bbee59ea1974aa2c78a3f951723a639ebf8b87b26f1318fca40a9b9fe36714f",
+    "2": "92e25766781187dd8df0480bbe7003ef5d6cc20104d2a877a3fa85fc7384cad9"
+  },
+  "single_change": "Replace random non-residual channel fusion by an identity bypass of the pretrained power token plus the same mixer's zero-initialized learned correction. Parameter count, RNG draw count, inputs, scalers, labels, loss, LR, epochs and selection rule are unchanged.",
+  "pretrain_reuse": "Reuse exact corresponding completed v20 pretrain, never retrain it or load v20 finetune weights.",
+  "folds": [0, 1, 2],
+  "seeds": [2024],
+  "executed_model": "PowerAnchoredTimeDART",
+  "inner_epoch_selection": "Same original-scale MAE early stopping as v20, no alternate checkpoint choice.",
+  "outer_gate": {
+    "scope": "Chronological internal selection only; no new outer predictions before the gate",
+    "minimum_jointly_improved_folds_vs_v20": 2,
+    "macro_mae_and_rmse_must_both_improve_vs_v20": true,
+    "macro_mae_and_rmse_must_both_improve_vs_persistence": true,
+    "if_failed": "Complete the training-only experiment with no outer evaluation and retain the negative result",
+    "if_passed": "Evaluate the exact candidates in all three folds, including any internally harmed fold, with no outer-based fallback"
+  },
+  "wiki_enabled": false,
+  "data_cleaning": false,
+  "outer_validation_tuning": false,
+  "outer_validation_previously_inspected": true,
+  "sealed_test_evaluated": false,
+  "claim_scope": "Falsifiable numerical-transfer engineering hypothesis, not a novel Wiki contribution or independent confirmation. No appended thresholds, seeds or hyperparameter search."
+}
