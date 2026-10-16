@@ -1,9 +1,9 @@
 # Kelmarsh 数值底座：有限开发试验与24→4匹配基准
 
-版本/参数改动与恢复入口：[实验恢复索引](EXPERIMENT_REPLAY.md)。包含最近v19—v22的
+版本/参数改动与恢复入口：[实验恢复索引](EXPERIMENT_REPLAY.md)。包含已完成v19—v22及排队v23的
 准确运行提交、父对照、改动/不变项、协议与结果路径、哈希、恢复方法和环境记录缺口。
 
-## 当前候选：v23跨通道交互位置匹配消融（本地测试通过，未确认服务器启动）
+## 当前候选：v23跨通道交互位置匹配消融（已部署并排队，尚无真实训练结果）
 
 用户提供外部分析报告并授权合理部分修改。逐条核对见
 [模型审查的2026-10-16部分](KELMARSH_MODEL_REVIEW.md)。接受检验编码器前的跨变量
@@ -29,9 +29,23 @@ v21、同队列DLinear和Persistence，才一次评估全部六个外层候选�
 CUDA构建/驱动、实际Python argv、线程环境、工厂/外部LLM身份日志；不初始化CUDA
 采集环境、不记录密钥环境变量，URL凭据/令牌脱敏。续跑保留原快照并拒绝关键依赖/
 线程配置变化。它不是完整容器，也不保证逐位复现，更不伪补历史环境。
-本地9项关键路径单测与Bash语法通过；真实精度尚未产生，不能引用合成测试值。
+本地与服务器9项关键路径单测及Bash语法通过；真实精度尚未产生，不能引用合成测试值。
 新入口`scripts/train/Kelmarsh_launch_channel_timing.sh`，指针
 `outputs/logs/Kelmarsh/channel_timing_latest.txt`。全部旧结果/检查点保留，旧协议不改。
+
+2026-10-16 15:29（Asia/Shanghai）实现提交
+`60e7f725c73980d6f841a240247a036d6b0c4e33`已推送并在服务器安全快进，随后仅启动一次
+脱离SSH的排队控制器。Bash PID81501、实际Python PID81508；启动日志
+`outputs/launch_logs/channel_timing_v23_20261016_152948.log`，原目录
+`outputs/logs/Kelmarsh/20261016/channel_timing24h4h_f0-1-2_s2024_qnI0sb`。
+已核对`source_commit.txt`、协议与实际argv；`status.env=RUNNING`指控制器存活，
+`progress.json=WAITING_FOR_GPU`才是阶段：待运行Early/fold0/seed2024。
+当次GPU计算任务为用户gyx、PID74417、显存8944 MiB；没有启动本轮GPU训练，未操作对方进程。
+控制器每60秒只读检查全部GPU计算PID，空闲后自行继续，每次等待上限24小时；超时只能
+定位后续原目录，不能新开重复实验。此为部署时状态快照，不代表此后资源状态恒定。
+实际启动环境快照记录UTC07:29:53、Python依赖101项/Conda32项、Torch2.6.0+cu124与
+CUDA构建12.4；环境快照不是指标或训练完成证明。当前没有`inner_records.json`或
+`completed.json`，没有v23真实MAE/RMSE/R²，不能沿用v21值冒充新结果。
 
 ## 最新试验：v22固定预训练表示（已完成；未通过联合改善门槛，不替代v21）
 

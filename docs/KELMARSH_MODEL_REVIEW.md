@@ -41,7 +41,7 @@
   scratch/重构/预测导向对照，明确各自标签与计算预算；置信度高。
 
 - 严重级别：[P1，外部报告建议的评价偏移]；位置：
-  `models/TimeDART.py:1248 -> restore_scale`及
+  `models/TimeDART.py:1255 -> restore_scale`及
   `scripts/train_kelmarsh_hourly.py:239 -> train_stage`。
   证据：零头只定义epoch0为Persistence；v21选择epoch3/3/1，非三折epoch0。
   MAE与含MSE的混合目标存在取舍，但不是错误实现。影响：去掉零头会改变起点并可能

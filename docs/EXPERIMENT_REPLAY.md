@@ -1,7 +1,7 @@
 # 实验版本、参数改动与恢复索引
 
 本文件是查找和恢复实验的入口，不替代原始训练日志或冻结协议。
-首次整理：2026-10-16。当前已核验完成范围是Kelmarsh小时数据24→4的v19—v22；
+首次整理：2026-10-16。当前已核验完成范围是Kelmarsh小时数据24→4的v19—v22，v23已部署排队；
 更早的SDWPF、72→2及Wiki试验仍在原报告和日志中，尚未逐一加入此索引。
 各轮效果和完整诊断见[数值底座报告](KELMARSH_NUMERIC_FOUNDATION.md)。
 
@@ -16,13 +16,13 @@
   和`completed.json`还记录了有效配置、源码、窗口/Scaler、初始化检查点及产物身份。
   有这些记录仍须保留原CSV和实际`.pt`文件，只有哈希不能重建权重。
 
-## 最近四轮索引（运行提交已只读核对服务器记录）
+## 最近实验索引（运行提交已只读核对服务器记录）
 
 共同设置：Kelmarsh 2016小时SCADA，24小时输入、4小时输出，stride3，fold0/1/2、
 seed2024，原7通道与原始标签，Wiki关闭。下面的“收益/失败”是研究结论，
-不等同于进程退出状态；四轮均正常执行完成。
+不等同于进程退出状态；v19—v22均正常完成，v23的控制器排队不代表模型开始训练。
 
-### kelmarsh-24h4h-v23：待启动的通道交互位置匹配实验
+### kelmarsh-24h4h-v23：已部署排队的通道交互位置匹配实验
 
 - 父对照：v21及v20 DLinear；新增等参数、等初始化的Early/Late分支，只改交互位置。
   两分支参数均862386，原v21为796082，容量不同由Late对照控制，不冒充完全同模型。
@@ -30,10 +30,18 @@ seed2024，原7通道与原始标签，Wiki关闭。下面的“收益/失败”
   loss/LR/预算、相同三折预训练缓存、零残差头及功率直通；没有新的预训练或NWP。
 - 配置：`configs/kelmarsh_channel_timing_protocol_v23.json`，SHA256
   `43f17d453a2b52eda6c1d102a72d9d89f7daba9d78c49378a0afb2ae8e58b6a4`。
-- 计划入口：`bash scripts/train/Kelmarsh_launch_channel_timing.sh`；指针
-  `outputs/logs/Kelmarsh/channel_timing_latest.txt`。这是计划，不是已执行证明。
-- 运行提交、实际目录/命令和环境将由启动器的`source_commit.txt`、`launch.log`、
-  `runtime_snapshot.json`、`runtime_identity.json`记录，执行后回填本索引。
+- 运行提交：`60e7f725c73980d6f841a240247a036d6b0c4e33`；已推送并服务器快进。
+- 入口：`bash scripts/train/Kelmarsh_launch_channel_timing.sh`；指针
+  `outputs/logs/Kelmarsh/channel_timing_latest.txt`。本地与服务器9项单测及Bash语法通过。
+- 原目录：`outputs/logs/Kelmarsh/20261016/channel_timing24h4h_f0-1-2_s2024_qnI0sb`；
+  启动日志：`outputs/launch_logs/channel_timing_v23_20261016_152948.log`。
+- 2026-10-16 15:29启动的Bash PID81501/Python PID81508：控制器RUNNING，阶段
+  WAITING_FOR_GPU，待Early/fold0/seed2024。当次其他计算任务gyx/PID74417/8944 MiB，
+  未停止或并行干扰对方。每60秒自查空闲，单次等待上限24小时；不是已开始GPU训练。
+- 实际argv、UTC时间、工厂和Git身份见`runtime_snapshot.json`/`runtime_identity.json`；
+  采集到Torch2.6.0+cu124、CUDA构建12.4、101项Python依赖和32项Conda元数据。
+  原快照保留，续跑拒绝关键依赖变化，不倒填历史环境，不保证逐位复现。
+- 当前没有本轮真实训练指标或完成清单；环境/部署快照不能代替完成产物核验。
 - 决策：六个内部候选先通过冻结的MAE/RMSE及强基线门控，才一次评估全部六个外层
   候选；未通过不生成新outer精度，不追加搜索。已看外层仍是开发证据。
 - 依赖：v21完整结果、v20完整结果/预训练/同队列DLinear；旧实验不重跑。
