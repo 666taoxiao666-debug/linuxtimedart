@@ -47,6 +47,24 @@ CUDA构建/驱动、实际Python argv、线程环境、工厂/外部LLM身份日
 CUDA构建12.4；环境快照不是指标或训练完成证明。当前没有`inner_records.json`或
 `completed.json`，没有v23真实MAE/RMSE/R²，不能沿用v21值冒充新结果。
 
+### v23运行策略更正：明确授权的有界并行（2026-10-16）
+
+用户再次明确不应沿用旧的idle-only排队。新增独立入口
+`scripts/run_kelmarsh_channel_timing_shared.py --output <原v23目录>`，只改变运行资源策略，
+不修改v23冻结协议、原训练源码锁、batch/epoch/LR/初始化/候选/标签/评估门控。
+复用已存在的`GPURuntimePolicy`：有其他计算PID时，本进程PyTorch缓存分配器上限
+2 GiB、CPU/BLAS2线程、每批同步后让步20ms；空闲时自动恢复分配器和CPU亲和范围，
+取消额外让步。开始共享至少留有2+4 GiB空闲，运行期剩余低于4 GiB就只退出自身。
+显存分配器上限不覆盖CUDA上下文/驱动开销，不是整进程总显存上限或GPU算力配额，
+不能保证零影响或绝不发生OOM；不停止/降速别人，也不修改整卡设置。
+
+共享入口仅在原队列确认未开始模型训练后替换我们自己的排队进程，续同一原目录。
+旧`source_commit.txt`与首次环境快照不改写；新增不可变`shared_execution_contract.json`
+绑定共享入口/资源控制源码哈希和授权，`shared_launch_<pid>.json`追加实际命令/提交，
+`resource_policy.json`记录实测模式切换。该运行补充不冒充原始idle-only执行条件，
+也不承诺数值逐位相同或把并行墙钟时间当作公平效率比较。
+本地5项共享入口测试、11项资源策略测试及9项v23模型/管线测试通过。
+
 ## 最新试验：v22固定预训练表示（已完成；未通过联合改善门槛，不替代v21）
 
 实现`dd7e1d07c1140ad1735796d815fbe200edf3f3b7`已推送GitHub并在服务器安全快进；

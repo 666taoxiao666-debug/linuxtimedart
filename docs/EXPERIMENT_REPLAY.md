@@ -45,6 +45,12 @@ seed2024，原7通道与原始标签，Wiki关闭。下面的“收益/失败”
 - 决策：六个内部候选先通过冻结的MAE/RMSE及强基线门控，才一次评估全部六个外层
   候选；未通过不生成新outer精度，不追加搜索。已看外层仍是开发证据。
 - 依赖：v21完整结果、v20完整结果/预训练/同队列DLinear；旧实验不重跑。
+- 后续授权更正：用户明确要求有界并行而非idle-only。仅替换自己的未训练排队控制器，
+  使用`/home/XT/miniconda3/envs/timedart/bin/python -u scripts/run_kelmarsh_channel_timing_shared.py --output <上述原目录>`。
+  他人运行时本进程allocator2 GiB/CPU2/每批让步20ms，至少保留4 GiB空闲；独占时解除，
+  显存上限不含上下文/驱动，不保证固定算力或零风险。冻结训练协议和源码锁不变。
+  新增`shared_execution_contract.json`、`shared_launch_<pid>.json`和`resource_policy.json`，
+  保留原启动提交/快照；共享入口源码哈希单独绑定，恢复时仍须核验，不能隐瞒运行条件变化。
 
 ### kelmarsh-24h4h-v19：匹配的小时预测基准
 
