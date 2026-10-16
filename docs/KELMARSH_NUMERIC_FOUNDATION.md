@@ -1,4 +1,38 @@
-# Kelmarsh 数值底座：v11–v18有限开发试验
+# Kelmarsh 数值底座：有限开发试验与24→4匹配基准
+
+## 当前任务：v19，24小时历史预测未来4小时（用户已选择；尚未产生新指标）
+
+用户于2026-10-16确认改为24→4。独立协议
+`configs/kelmarsh_24h4h_protocol_v19.json`，SHA256
+`2330f209f6af0fdba123244c8d8a997471cff5d2c0ac538da866f0aa24fd3474`。
+原72→2协议、检查点、全部历史结果不覆盖；改变任务不等于提高精度或Wiki创新。
+
+本轮固定三个rolling fold、seed2024，所有可训练预测器实际接收同一24×7小时历史，
+直接输出未来1/2/3/4小时功率均值。比较Persistence、上一日同小时Persistence、
+全历史Ridge、DLinear、PatchTST、纯趋势PromptTimeDART。后三者使用真实原模型，
+不以v15/v18的末端状态凸组合替代；PromptTimeDART在新24小时输入下匹配预训练。
+学习率、epoch/patience和内部时间选择沿用小时管线的既定设置，不作验证超参搜索。
+逐fold共用样本队列、fit前缀Scaler、标签和输入；无未来NWP或10分钟侧输入。
+这是新的同信息预算比较，不能把它的MAE与v18不同任务/队列/输入预算的数值直接排序。
+
+只训练数值底座；Wiki及额外数值残差适配器关闭，不加载两小时旧专家、旧证书或
+旧神经检查点。后续Wiki必须对实际四步执行专家重新生成训练侧收益证据，不能复制
+两步证书。保留原fit/selection分段以便将来建立冻结底座后独立的知识训练/校准队列；
+当前数值拟合并非使用外层训练期所有标签。每个模型仅在内部selection选择epoch，
+outer只报告、不得按outer选回退模型或更换超参；历史outer已看过，属于开发证据。
+一颗预声明seed不能支持seed稳定性结论，暂不扩展搜索。
+
+报告总体和逐小时MAE/MSE/RMSE/R²、MAE/RMSE Skill、容量容差命中率、预测图，以及
+对Persistence的issue-time聚类时间块bootstrap和Newey–West检验。stride3的四步
+预测有一小时重叠；采用整issue簇重采样，不能当所有风机/步长相互独立。
+`metrics_by_hour_all_runs.csv`保留四个提前量指标，不用四小时均值掩盖远端退化。
+
+启动器`bash scripts/train/Kelmarsh_launch_24h4h.sh`，查看加`--status`，仅原目录
+未完成阶段可`--resume`；指针`outputs/logs/Kelmarsh/hourly_24h4h_latest.txt`。
+全局任务锁、协议/实现/数据/产物哈希检查防重复；其他GPU计算任务存活时等待，
+不杀进程、不修改整卡配置、不并行抢占。原标签与封存test不变。
+
+以下保留原72→2实验的真实结果，不能用来冒充v19四小时指标。
 
 ## 最新工作：v18（已完成；第二小时小幅改善，第一小时未通过且保持旧预测）
 
