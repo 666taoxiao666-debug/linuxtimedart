@@ -7,6 +7,14 @@
 `2330f209f6af0fdba123244c8d8a997471cff5d2c0ac538da866f0aa24fd3474`。
 原72→2协议、检查点、全部历史结果不覆盖；改变任务不等于提高精度或Wiki创新。
 
+实现提交`ad2b51a8e9b4e181d834c4c4c9650aa869565ac3`已推送并在服务器快进；
+本地/服务器5项针对性测试、Bash语法与协议哈希通过。真实数据三fold预检已完成，
+`STATUS=AUDIT_COMPLETED/exit0`，随后安全启动原目录训练。启动Bash PID2229448，
+启动日志`outputs/launch_logs/hourly_24h4h_20261016_095320.log`，结果目录
+`outputs/logs/Kelmarsh/20261016/24h4h_f0-1-2_s2024_y7r1Jh`。
+该PID只是启动器，训练阶段须以最新status/progress、真实Python进程和epoch日志为准；
+本节尚未记录任何新任务的预测指标，不沿用旧两小时数值。
+
 本轮固定三个rolling fold、seed2024，所有可训练预测器实际接收同一24×7小时历史，
 直接输出未来1/2/3/4小时功率均值。比较Persistence、上一日同小时Persistence、
 全历史Ridge、DLinear、PatchTST、纯趋势PromptTimeDART。后三者使用真实原模型，
