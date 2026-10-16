@@ -1,6 +1,6 @@
 # Kelmarsh 数值底座：有限开发试验与24→4匹配基准
 
-## 当前任务：v19，24小时历史预测未来4小时（用户已选择；尚未产生新指标）
+## 当前任务：v19，24小时历史预测未来4小时（已完成；TimeDART未呈稳定优势）
 
 用户于2026-10-16确认改为24→4。独立协议
 `configs/kelmarsh_24h4h_protocol_v19.json`，SHA256
@@ -12,8 +12,40 @@
 `STATUS=AUDIT_COMPLETED/exit0`，随后安全启动原目录训练。启动Bash PID2229448，
 启动日志`outputs/launch_logs/hourly_24h4h_20261016_095320.log`，结果目录
 `outputs/logs/Kelmarsh/20261016/24h4h_f0-1-2_s2024_y7r1Jh`。
-该PID只是启动器，训练阶段须以最新status/progress、真实Python进程和epoch日志为准；
-本节尚未记录任何新任务的预测指标，不沿用旧两小时数值。
+服务器已完成全部18组模型×fold组合，`STATUS=COMPLETED/exit0`，注册产物全量哈希
+核验通过。精简证据下载到`output/kelmarsh_hourly/24h4h_v19_review/`，本地144个已下载
+注册文件、90个提交源文件blob核验通过；未下载的381个注册图/检查点等仍在服务器，
+不声称本地保存了全量产物。独立从18组原尺度预测重算总体和每个提前量的
+MAE/MSE/RMSE/R²，最大差0；各fold六模型的truth、Persistence、时间、风机和窗口
+队列逐项一致，神经模型选中epoch均对应原内部selection最小MAE。
+
+**三fold算术宏平均，不是单fold或合并样本指标：**
+
+- Persistence：MAE189.724022、RMSE277.176876kW、R²0.649164。
+- DLinear：MAE187.520234、RMSE269.785516kW、R²0.668564。
+- PatchTST：MAE189.834796、RMSE271.531906kW、R²0.664095。
+- PromptTimeDART：MAE189.338150、MSE75581.051257kW²、RMSE273.165394kW、
+  R²0.659831；逐fold MAE Skill平均-0.038663%、RMSE Skill平均1.282176%。
+- Ridge：MAE199.300791、RMSE276.206094kW、R²0.653000。
+- DailyPersistence：MAE428.117920、RMSE567.289912kW、R²-0.463310。
+
+TimeDART相对Persistence的宏MAE差仅+0.385872kW（改善约0.203%）；这不等于逐fold
+Skill平均，不能混用聚合口径。f0/f1/f2选中epoch4/4/1，MAE分别
+197.987277/155.602583/214.424591kW，相对各自Persistence收益
+-2.738307/-2.397345/+6.293267kW。前两fold bootstrap95%CI均跨0，Newey–West
+p=.497466/.517666；f2 CI[0.872426,12.983224]、p=.043099，仅为未作多重比较校正的
+单fold探索结果，不支持跨fold稳定优越结论。当前DLinear的宏MAE/RMSE均优于TimeDART。
+
+TimeDART未来第1/2/3/4小时的宏平均MAE为131.063848/175.423715/209.045974/
+241.819063kW，RMSE184.887310/249.656839/298.336042/335.863124kW，R²
+0.845987/0.711050/0.588116/0.490591；MAE Skill平均-1.437389/-1.981600/
+1.142729/0.977590%。第一小时高R²仍不代表超过Persistence。
+已实际查看下载并校验哈希的f1 TimeDART概览图：该fold MAE155.602583、
+RMSE230.846329、R²0.744924，较Persistence MAE/RMSE均略差；图中负Skill正确显示，
+不拿该单fold图冒充三fold宏平均。图位于
+`runs/f1_s2024/PromptTimeDART/artifacts/forecast_accuracy_overview.png`。
+
+本轮没有按outer回选模型、追加epoch/seed/超参，也未继续启动Wiki或其他新试验。
 
 本轮固定三个rolling fold、seed2024，所有可训练预测器实际接收同一24×7小时历史，
 直接输出未来1/2/3/4小时功率均值。比较Persistence、上一日同小时Persistence、
