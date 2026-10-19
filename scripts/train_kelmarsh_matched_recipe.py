@@ -108,8 +108,8 @@ def arm_summary(records, arm, ensembles):
     seed_mean = {key: float(np.mean([np.mean([r["metrics"][key] for r in rows if r["fold"] == f])
                                      for f in folds])) for key in ("mae", "rmse")}
     seeds = sorted({r["seed"] for r in rows})
-    seed_macro = {key: [float(np.mean([r["metrics"][key] for r in rows if r["fold"] == f and r["seed"] == s])
-                              for f in folds) for s in seeds] for key in ("mae", "rmse")}
+    seed_macro = {key: [float(np.mean([np.mean([r["metrics"][key] for r in rows if r["fold"] == f and r["seed"] == s])
+                                       for f in folds])) for s in seeds] for key in ("mae", "rmse")}
     slopes = [r["slope"]["pooled"] for r in rows if r["slope"]["pooled"] is not None]
     summary = {"macro_single_seed_mean": seed_mean,
                "macro_by_seed": {key: dict(zip(map(str, seeds), values)) for key, values in seed_macro.items()},
@@ -189,6 +189,36 @@ def ensemble_inner(directory, recipe, fold, arm, rated):
     metrics = shared.model_metrics(mean, truth, base, rated)
     metrics["slope"] = residual_slope(mean, truth, base)["pooled"]
     return metrics
+
+
+def summarize_inner(directory, recipe, records, persistence, dlinear, previous, rated):
+    """Predeclared gate and factorial summary from internal-selection records only."""
+    arms = recipe["arms"]
+    ensembles = {arm: {fold: ensemble_inner(directory, recipe, fold, arm, rated) for fold in recipe["folds"]}
+                 for arm in arms}
+    rows = []
+    for fold in recipe["folds"]:
+        def seed_mean(arm):
+            return {key: float(np.mean([r["metrics"][key] for r in records
+                                        if r["fold"] == fold and r["arm"] == arm])) for key in ("mae", "rmse")}
+        rows.append({"fold": fold, "candidate": seed_mean(recipe["primary_candidate"]),
+                     "reference": seed_mean(recipe["reference_arm"]),
+                     "persistence": {key: persistence[fold][key] for key in ("mae", "rmse")},
+                     "dlinear": {key: dlinear[fold][key] for key in ("mae", "rmse")}})
+    gate = decision(rows, recipe["outer_gate"])
+    reproduction = []
+    for r in records:
+        if r["arm"] == recipe["reference_arm"] and r["seed"] == PRETRAIN_SEED:
+            old = shared.read(previous / "runs" / f"f{r['fold']}_s{PRETRAIN_SEED}/PowerAnchoredTimeDART/inner_metrics.json")
+            reproduction.append({"fold": r["fold"], **{f"{key}_abs_difference": abs(r["metrics"][key] - old["candidate"][key])
+                                                       for key in ("mae", "rmse")}})
+    factorial = {"arms": {arm: arm_summary(records, arm, ensembles) for arm in arms},
+                 "paired_effects": {name: {"first": a, "second": b, **paired_effect(records, a, b)}
+                                    for name, a, b in PAIRS},
+                 "reproduces_v21_seed_2024": reproduction,
+                 "persistence_inner": persistence, "dlinear_inner_seed_2024": dlinear,
+                 "scope": "chronological internal selection only; negative differences favour the first arm"}
+    return gate, factorial
 
 
 def outer_evaluation(directory, recipe, v21, effective, prepared, device):
@@ -313,31 +343,7 @@ def run(directory, gpu=0):
                     gc.collect()
                     torch.cuda.empty_cache()
             prepared[fold] = (series, data)
-        arms = recipe["arms"]
-        ensembles = {arm: {fold: ensemble_inner(directory, recipe, fold, arm, rated) for fold in recipe["folds"]}
-                     for arm in arms}
-        rows = []
-        for fold in recipe["folds"]:
-            def seed_mean(arm):
-                return {key: float(np.mean([r["metrics"][key] for r in records
-                                            if r["fold"] == fold and r["arm"] == arm])) for key in ("mae", "rmse")}
-            rows.append({"fold": fold, "candidate": seed_mean(recipe["primary_candidate"]),
-                         "reference": seed_mean(recipe["reference_arm"]),
-                         "persistence": {key: persistence[fold][key] for key in ("mae", "rmse")},
-                         "dlinear": {key: dlinear[fold][key] for key in ("mae", "rmse")}})
-        gate = decision(rows, recipe["outer_gate"])
-        reproduction = []
-        for r in records:
-            if r["arm"] == recipe["reference_arm"] and r["seed"] == PRETRAIN_SEED:
-                old = shared.read(previous / "runs" / f"f{r['fold']}_s{PRETRAIN_SEED}/PowerAnchoredTimeDART/inner_metrics.json")
-                reproduction.append({"fold": r["fold"], **{f"{key}_abs_difference": abs(r["metrics"][key] - old["candidate"][key])
-                                                           for key in ("mae", "rmse")}})
-        factorial = {"arms": {arm: arm_summary(records, arm, ensembles) for arm in arms},
-                     "paired_effects": {name: {"first": a, "second": b, **paired_effect(records, a, b)}
-                                        for name, a, b in PAIRS},
-                     "reproduces_v21_seed_2024": reproduction,
-                     "persistence_inner": persistence, "dlinear_inner_seed_2024": dlinear,
-                     "scope": "chronological internal selection only; negative differences favour the first arm"}
+        gate, factorial = summarize_inner(directory, recipe, records, persistence, dlinear, previous, rated)
         shared.write(directory / "factorial.json", factorial)
         shared.write(directory / "gate.json", gate)
         print(f"[TRAIN_ONLY_GATE] passed={gate['passed']} jointly_improved_folds={gate['jointly_improved_folds']}", flush=True)

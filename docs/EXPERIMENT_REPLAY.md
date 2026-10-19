@@ -49,8 +49,18 @@ seed2024，原7通道与原始标签，Wiki关闭。下面的“收益/失败”
   失败则保留负结果，不追加epoch数、seed或阈值。
 - 另报告：臂间配对差异（调度效应、预训练效应）、seed间标准差、残差斜率（过度离散）、
   以及`PretrainedOriginal` seed 2024对已完成v21内部指标的复现差（只报告）。
-- 运行提交：启动时由启动器写入`source_commit.txt`；本条目写作时没有任何v24训练记录。
-- 状态：本地测试通过；需用户明确授权后才启动GPU训练。
+- 第一次尝试（失败，保留不删）：运行提交`a681a9d1291919f15bc23afbf70357289568baa8`，
+  目录`outputs/logs/Kelmarsh/20261019/matched_recipe24h4h_f0-1-2_s2024-2025-2026_EChSmc`，
+  2026-10-19 15:03（UTC+8）经用户授权启动。27次训练全部正常完成，随后汇总阶段抛出
+  `TypeError: float() argument must be ... 'generator'`（`arm_summary`里括号放错，属于代码笔误，
+  与协议、数据、训练无关），`status.env`为`FAILED`。失败发生在写`gate.json`、`factorial.json`之前，
+  因此该目录没有门控结论、没有外层预测；`inner_records.json`和各臂训练产物保留。
+  原目录不`--resume`：修复会改变源码哈希，而源码锁不放宽。
+- 处理：修复该笔误并把门控/汇总逻辑抽成`summarize_inner`，补充端到端汇总测试和外层评估
+  冒烟测试（测试已确认能复现该`TypeError`）；冻结协议、SHA、门控规则、臂、seed和epochs
+  一律不变。随后在新的结果目录从头重跑同一协议，训练结果与失败目录对比可检验可复现性。
+  第一次尝试中`PretrainedOriginal` fold0 seed2024的内部MAE/RMSE与v21记录逐位一致。
+- 运行提交（重跑）：见下方“重跑结果”；运行目录的`source_commit.txt`为准。
 
 ### kelmarsh-24h4h-v23：有界共享训练中的通道交互位置匹配实验
 

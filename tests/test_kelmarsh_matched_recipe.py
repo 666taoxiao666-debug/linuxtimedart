@@ -159,5 +159,107 @@ class MatchedRecipeTests(unittest.TestCase):
             self.assertGreater(len(moved), 0)  # the control really lacks the transferred weights
 
 
+def synthetic_inner_run(root, recipe, rng):
+    """Write the per-run files that run() leaves behind, with arbitrary but valid numbers."""
+    rated, records, persistence, dlinear = 2050., [], {}, {}
+    for fold in recipe["folds"]:
+        truth, base = rng.uniform(0, rated, (40, 4)), rng.uniform(0, rated, (40, 4))
+        persistence[fold] = task.shared.model_metrics(base, truth, base, rated)
+        dlinear[fold] = {"mae": 150. + fold, "rmse": 230. + fold}
+        previous = root / "previous" / "runs" / f"f{fold}_s{task.PRETRAIN_SEED}" / "PowerAnchoredTimeDART"
+        for seed in recipe["seeds"]:
+            for arm in recipe["arms"]:
+                prediction = base + .5 * (truth - base) + rng.normal(0, 30, base.shape)
+                folder = root / "runs" / f"f{fold}_s{seed}" / arm
+                folder.mkdir(parents=True)
+                np.savez(folder / "inner_predictions.npz", prediction=prediction, truth=truth, anchor=base)
+                metrics = task.shared.model_metrics(prediction, truth, base, rated)
+                records.append({"fold": fold, "seed": seed, "arm": arm, "best_epoch": int(rng.integers(0, 6)),
+                                "metrics": metrics, "slope": task.residual_slope(prediction, truth, base)})
+                if arm == recipe["reference_arm"] and seed == task.PRETRAIN_SEED:
+                    previous.mkdir(parents=True, exist_ok=True)
+                    task.shared.write(previous / "inner_metrics.json", {"candidate": metrics})
+    return records, persistence, dlinear, rated
+
+
+class AggregationTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        torch.set_num_threads(2)
+
+    def test_inner_summary_runs_end_to_end_and_serialises(self):
+        recipe, _, _ = task.protocol()
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            records, persistence, dlinear, rated = synthetic_inner_run(root, recipe, np.random.default_rng(3))
+            gate, factorial = task.summarize_inner(root, recipe, records, persistence, dlinear, root / "previous", rated)
+            task.shared.write(root / "gate.json", gate)
+            task.shared.write(root / "factorial.json", factorial)  # must be strict-JSON serialisable
+            self.assertEqual(set(factorial["arms"]), set(recipe["arms"]))
+            for summary in factorial["arms"].values():
+                self.assertEqual(set(summary["macro_by_seed"]["mae"]), {str(s) for s in recipe["seeds"]})
+                self.assertEqual(len(summary["seed_std_of_macro"]), 2)
+                self.assertIn("macro_seed_mean_ensemble", summary)
+            self.assertEqual(set(factorial["paired_effects"]), {name for name, _, _ in task.PAIRS})
+            for effect in factorial["paired_effects"].values():
+                self.assertEqual(effect["units"], len(recipe["folds"]) * len(recipe["seeds"]))
+            # The synthetic seed-2024 reference arm equals the stored v21 metrics by construction.
+            self.assertEqual(len(factorial["reproduces_v21_seed_2024"]), len(recipe["folds"]))
+            for row in factorial["reproduces_v21_seed_2024"]:
+                self.assertEqual(row["mae_abs_difference"], 0.)
+            self.assertEqual(len(gate["rows"]), len(recipe["folds"]))
+            self.assertIn("dlinear", gate["macro_inner"])
+
+    def test_outer_evaluation_path_runs_on_fixture_data(self):
+        from data_provider.kelmarsh_hourly import KelmarshWindows
+        _, _, effective = task.protocol()
+        rng = np.random.default_rng(5)
+        series = fixture()
+        series.raw = rng.uniform(0, 2050., (200, 7))
+        series.values = rng.normal(size=(200, 7)).astype(np.float32)
+        series.subset = lambda name: KelmarshWindows(series, np.arange(120, 173, 3), name)
+        fit = KelmarshWindows(series, np.arange(0, 100, 3), "fit")
+        recipe = {"primary_candidate": "PretrainedMatched", "seeds": [2024, 2025], "v21_reference_dir": "previous",
+                  "arms": {"PretrainedMatched": {"init": "pretrained", "epochs": 2}}}
+        v21 = {"reference_dir": "reference"}
+        validation = series.subset("validation")
+        truth, base = validation.truth_and_anchor()
+        arm_p = task.arm_protocol(effective, recipe["arms"]["PretrainedMatched"])
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            directory = root / "result"
+            for name, sub, key in (("previous", "PowerAnchoredTimeDART", "prediction"),
+                                   ("reference", "DLinear", "prediction")):
+                folder = root / name / "runs/f0_s2024" / sub
+                folder.mkdir(parents=True)
+                np.savez(folder / "raw_predictions.npz", **{key: base + 10.}, truth=truth)
+            for seed in recipe["seeds"]:
+                output = directory / "runs" / f"f0_s{seed}" / "PretrainedMatched"
+                output.mkdir(parents=True)
+                torch.manual_seed(seed)
+                model = Model(task.shared.model_args("PromptTimeDART", None, arm_p, torch.device("cpu")))
+                model.regime_down_thresh.fill_(-.1)
+                model.regime_up_thresh.fill_(.1)
+                torch.save({"model": model.state_dict()}, output / "checkpoint.pt")
+                task.shared.write(output / "trained.json", {"best_epoch": 1})
+            stub_report = lambda name, prediction, data, folder, p, state=None: {"model": name}
+            with patch.object(task, "ROOT", root), patch.object(task.recent, "assert_reference_cohort"), \
+                    patch.object(task.prior, "wait_for_gpu"), patch.object(task.prior, "update_summary"), \
+                    patch.object(task.prior, "write_report", side_effect=stub_report), \
+                    patch.object(task.prior, "paired_forecast_statistics", return_value={"stub": True}):
+                records = task.outer_evaluation(directory, recipe, v21, effective, {0: (series, {"fit": fit})},
+                                                torch.device("cpu"))
+            names = [r["name"] for r in records]
+            self.assertEqual(names, ["PretrainedMatched_s2024", "PretrainedMatched_s2025", "PretrainedMatchedSeedMean",
+                                     "v21_single_seed", "DLinear_v20", "Persistence"])
+            persistence = records[-1]
+            self.assertAlmostEqual(persistence["mae_skill_pct"], 0.)
+            self.assertTrue((directory / "outer_records.json").exists())
+            self.assertTrue((directory / "runs/f0_s2024/PretrainedMatched/completed.json").exists())
+            ensemble = task.shared.read(directory / "runs/ensemble_f0/PretrainedMatchedSeedMean/result.json")
+            self.assertEqual(set(ensemble) - {"model"}, {"paired_vs_v21", "paired_vs_dlinear"})
+            self.assertIn("paired_vs_v21", task.shared.read(directory / "runs/f0_s2025/PretrainedMatched/result.json"))
+
+
 if __name__ == "__main__":
     unittest.main()
