@@ -1,7 +1,8 @@
 # 实验版本、参数改动与恢复索引
 
 本文件是查找和恢复实验的入口，不替代原始训练日志或冻结协议。
-首次整理：2026-10-16。当前已核验完成范围是Kelmarsh小时数据24→4的v19—v22，v23已开始共享训练；
+首次整理：2026-10-16；2026-10-19补记v23最终结果并新增v24（已实现、未运行）。
+当前已核验完成范围是Kelmarsh小时数据24→4的v19—v23（v23内部门控失败）；
 更早的SDWPF、72→2及Wiki试验仍在原报告和日志中，尚未逐一加入此索引。
 各轮效果和完整诊断见[数值底座报告](KELMARSH_NUMERIC_FOUNDATION.md)。
 
@@ -20,7 +21,36 @@
 
 共同设置：Kelmarsh 2016小时SCADA，24小时输入、4小时输出，stride3，fold0/1/2、
 seed2024，原7通道与原始标签，Wiki关闭。下面的“收益/失败”是研究结论，
-不等同于进程退出状态；v19—v22均正常完成，v23原排队已按明确授权切换为有界共享训练。
+不等同于进程退出状态；v19—v23均正常完成（v23原排队曾按明确授权切换为有界共享训练）。
+
+### kelmarsh-24h4h-v24：匹配调度与预训练价值因子实验（已实现，尚未运行GPU训练）
+
+- 动机：2026-10-19对v19—v23的独立诊断。（a）`CosineAnnealingLR(T_max=20)`从未走完：
+  已记录的运行都在epoch 1—11内停止或达到最优，等效学习率为未规划的高LR平台；
+  （b）预训练与“有无预训练”此前混在一起，且只有单seed，预训练价值尚未被证明；
+  （c）v21的修正量对残差斜率仅0.48—0.63，说明单次运行方差大于偏差。
+- 父对照：v21（架构、数据、loss、LR、预算、选择规则逐项不变）；DLinear取自v20同队列。
+- 因子：3臂×3折×3 seed（2024/2025/2026）=27次运行。
+  `PretrainedOriginal`（v21原配方，epochs=20，作参照）；`PretrainedMatched`
+  （epochs=8，唯一改动是余弦周期与实际运行长度对齐，8取v21三折实际长度8/8/6的中位数，
+  实验前声明、不调参）；`ScratchMatched`（与上一臂完全相同，仅不加载预训练权重）。
+  预训练仍是固定的seed 2024三折缓存，seed 2025/2026只改变微调阶段，不度量预训练方差。
+- 配置：`configs/kelmarsh_matched_recipe_protocol_v24.json`，SHA256
+  `0e4a97e5f414289af1ce77ab8eb263110986cf7de04a7a23fbe535be72d570ea`。
+- 实现：`scripts/train_kelmarsh_matched_recipe.py`、`tests/test_kelmarsh_matched_recipe.py`、
+  `scripts/train/Kelmarsh_launch_matched_recipe.sh`。**未改动任何已冻结文件**，
+  `models/`、`layers/`、`utils/`、`data_provider/`及既有训练脚本字节不变，v19—v23源码锁不受影响。
+- 入口：`bash scripts/train/Kelmarsh_launch_matched_recipe.sh --check`只做CPU校验
+  （协议/参考完成清单/三折预训练SHA/窗口身份），不占GPU；不带参数才会启动训练；
+  指针`outputs/logs/Kelmarsh/matched_recipe_latest.txt`，另有`--status`、`--resume`。
+- 门控（仅内部选择段，外层之前）：各折三seed均值后，主候选对参照臂至少2折同时改善
+  MAE与RMSE，且宏平均MAE/RMSE均优于参照臂与Persistence；DLinear只报告不门控。
+  通过才对全部三折评估主候选的三个seed及其seed均值，并与v21、DLinear配对；
+  失败则保留负结果，不追加epoch数、seed或阈值。
+- 另报告：臂间配对差异（调度效应、预训练效应）、seed间标准差、残差斜率（过度离散）、
+  以及`PretrainedOriginal` seed 2024对已完成v21内部指标的复现差（只报告）。
+- 运行提交：启动时由启动器写入`source_commit.txt`；本条目写作时没有任何v24训练记录。
+- 状态：本地测试通过；需用户明确授权后才启动GPU训练。
 
 ### kelmarsh-24h4h-v23：有界共享训练中的通道交互位置匹配实验
 
@@ -55,7 +85,18 @@ seed2024，原7通道与原始标签，Wiki关闭。下面的“收益/失败”
   原PID81508确认未训练后仅结束自己的队列；共享PID85111于2026-10-16 15:43启动。
   日志`outputs/launch_logs/channel_timing_shared_v23_20261016_154258.log`，原结果目录不变。
   已确认Early/fold0跑出epoch1—4，mode=shared_limited；当次本进程显存464 MiB，
-  其他用户PID74417仍运行且显存8944 MiB。尚无本轮最终结论，以上非最终精度。
+  其他用户PID74417仍运行且显存8944 MiB。以上为运行中的快照，非最终精度。
+- **最终结果（2026-10-19只读核对服务器`gate.json`/`result.json`，原目录未改动）**：
+  已正常完成，内部门控失败，`outer_evaluated=false`，没有v23外层预测/指标。
+  宏平均内部MAE/RMSE（kW）：Early 159.387/239.087；Late 158.522/235.750；
+  v21参照 158.788/235.684；DLinear 160.925/239.629；Persistence 163.197/247.726。
+  候选是Early，Late是位置对照；门控要求Early在同一折同时优于Late与v21的MAE和RMSE，
+  实际0/3折满足，宏平均上Early的MAE/RMSE也都劣于Late与v21。Late相对v21的逐折差
+  （MAE/RMSE，kW）：fold0 −1.06/+2.54，fold1 +1.04/−1.09，fold2 −0.79/−1.26，
+  量级远小于折间离散，不构成稳定收益。内部选择epoch：Early 2/1/1，Late 2/5/1，
+  最优点集中在前几轮，而余弦周期仍是20。
+  结论：早期通道交互未通过门控；不得追加本轮搜索，不得把它写成收益。
+  这一结果也是v24把余弦周期与实际运行长度对齐的依据之一。
 
 ### kelmarsh-24h4h-v19：匹配的小时预测基准
 
@@ -116,6 +157,34 @@ seed2024，原7通道与原始标签，Wiki关闭。下面的“收益/失败”
 - 本地最小证据：`output/kelmarsh_hourly/frozen_transfer_v22_review/`。
 - 依赖：v21完整原结果以及v20完整原结果/预训练。
 - 状态：正常完成但内部门控失败；没有v22外层预测/指标，不替代v21，不追加本轮搜索。
+
+## 诊断前恢复点（2026-10-19，v24之前）
+
+按独立诊断修改模型前，已在提交`0e39d731ac32beac8875be2e530c299f827c25ce`（v23运行记录）
+处固定恢复点：
+
+- 带注释标签：`pre-diagnosis-v21-0e39d73`；备份分支：`backup/pre-diagnosis-0e39d73`。
+- v24是纯新增：没有修改或删除任何已冻结的模型、训练脚本、配置或测试，因此该提交的
+  训练实现与v24提交之后逐字节相同。若v24不满意，删除上述三个新增文件和本节/v24条目即可，
+  或用`git revert`撤销v24提交，不影响任何已完成的v19—v23结果目录。
+
+只读核对（不切换当前工作区）：
+
+```bash
+git show --stat pre-diagnosis-v21-0e39d73
+git diff pre-diagnosis-v21-0e39d73 HEAD --stat -- models layers utils data_provider scripts configs
+```
+
+第二条的输出应只列出v24新增文件（`scripts/train_kelmarsh_matched_recipe.py`、
+`scripts/train/Kelmarsh_launch_matched_recipe.sh`、`configs/kelmarsh_matched_recipe_protocol_v24.json`）。
+需要恢复源码时，在独立目录而非覆盖当前工作区：
+
+```bash
+git worktree add --detach ../TimeDARTFirst-pre-diagnosis pre-diagnosis-v21-0e39d73
+```
+
+服务器上的结果目录（`outputs/logs/Kelmarsh/...`）和检查点从未被本次改动触碰；
+恢复点保存的是源码与配置身份，不是数据、权重或日志的备份。
 
 ## 每轮以后必须留下的变更记录
 

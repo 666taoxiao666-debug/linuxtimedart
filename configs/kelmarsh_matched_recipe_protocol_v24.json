@@ -1,0 +1,41 @@
+{
+  "protocol_id": "kelmarsh_24h4h_matched_recipe_factorial_v24",
+  "diagnosis_basis": "2026-10-19 independent diagnosis of v19-v23: (a) CosineAnnealingLR(T_max=20) never completes because every recorded run stops or peaks within epochs 1-11, so the effective schedule is an unplanned high-LR plateau; (b) one seed and a pretrain/no-pretrain confound make 'pretraining value' unproven; (c) the correction-vs-residual slope of v21 was 0.48-0.63, i.e. single-run variance is a larger problem than bias.",
+  "base_recipe": "configs/kelmarsh_power_anchor_protocol_v21.json",
+  "base_recipe_sha256": "b0c83ac5bf96179865d635d1b1f846756b0d148ab278490b63c13e6c5bdca17b",
+  "v21_reference_dir": "outputs/logs/Kelmarsh/20261016/power_anchor24h4h_f0-1-2_s2024_8FUYCF",
+  "v21_reference_completed_sha256": "fb23ab5551255cd93201009e4bddf6caa05e556a24a20970581c76606cc54afc",
+  "model_architecture": "models.PowerAnchoredTimeDART.Model, byte-identical to v21; no model, loss, feature, scaler, label, optimizer-group, learning-rate, weight-decay, gradient-clip or selection-rule change",
+  "pretrain_scope": "Same-fold seed-2024 pretrain checkpoint of the completed v20 reference, SHA-pinned in the v21 recipe. Seeds 2025 and 2026 vary the fine-tuning stage only; pretraining variance is not measured.",
+  "folds": [0, 1, 2],
+  "seeds": [2024, 2025, 2026],
+  "arms": {
+    "PretrainedOriginal": {"init": "pretrained", "epochs": 20, "role": "reference: exact v21 recipe, now with three seeds"},
+    "PretrainedMatched": {"init": "pretrained", "epochs": 8, "role": "primary candidate: cosine horizon matched to the observed run length"},
+    "ScratchMatched": {"init": "scratch", "epochs": 8, "role": "pretraining control: identical to PretrainedMatched except no transferred weights"}
+  },
+  "matched_epochs_rationale": "8 is the median of the three v21 completed run lengths (8, 8, 6 epochs); declared before any v24 run, never tuned. Patience stays 5 and the selection rule is unchanged.",
+  "primary_candidate": "PretrainedMatched",
+  "reference_arm": "PretrainedOriginal",
+  "control_arm": "ScratchMatched",
+  "dlinear_reference_dir_source": "reference_dir of the v21 recipe (completed v20 suite); only seed 2024 exists there",
+  "inner_epoch_selection": "Original-scale MAE on the chronological internal selection block, epoch 0 (Persistence-equivalent) included, strict improvement only.",
+  "readout": "Per-arm seed mean of the three single-seed forecasts is reported as a secondary estimator. The gate uses single-seed means, which is the conservative reading.",
+  "outer_gate": {
+    "scope": "Chronological internal selection only; no outer predictions before the gate",
+    "minimum_jointly_improved_folds_vs_reference_arm": 2,
+    "macro_mae_and_rmse_must_both_improve_vs_reference_arm": true,
+    "macro_mae_and_rmse_must_both_improve_vs_persistence": true,
+    "dlinear_is_reported_not_gated": true,
+    "seed_aggregation": "per-fold mean of the three single-seed metrics",
+    "if_failed": "Complete the training-only factorial with no outer evaluation and retain the negative result",
+    "if_passed": "Evaluate the exact PretrainedMatched seeds and their seed mean in all three folds, including any internally harmed fold, with no outer-based fallback"
+  },
+  "reproducibility_check": "PretrainedOriginal seed 2024 repeats the completed v21 candidate. The maximum absolute inner MAE/RMSE difference is reported, not gated.",
+  "wiki_enabled": false,
+  "data_cleaning": false,
+  "outer_validation_tuning": false,
+  "outer_validation_previously_inspected": true,
+  "sealed_test_evaluated": false,
+  "claim_scope": "Falsifiable training-recipe and pretraining-value test on a single wind farm and the same recipes already inspected on the outer validation block. A pass is a candidate for independent confirmation, not a final model. No appended epochs, seeds, thresholds or hyperparameter search."
+}
