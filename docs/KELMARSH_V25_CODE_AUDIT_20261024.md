@@ -53,3 +53,11 @@
 GPU 共享时只限制本任务 PyTorch 分配器至 4 GiB，CPU 线程为 2；该分配器限制不等于整进程总显存硬隔离，CUDA 上下文和库可能有额外开销，也不能保证同卡并行不影响对方速度。没有停止、暂停或调整其他用户任务。服务器已有两份 tracked 文档修改应保留。
 
 部署、测试和启动的最终状态以本次后续记录及服务器真实日志为准；未产生 G1/G2 或 outer 产物前不填写精度。
+
+## 部署核验补记（北京时间 2026-10-24 19:49）
+
+- 实现修复提交 `54a8d3a0a06922337a8d1528b6fc2a4ecdfeab6d` 已推送 GitHub，并用 SHA-256 核验的 Git bundle 在服务器快进同步；服务器两份既有文档修改保留。
+- 生产预检 `outputs/logs/Kelmarsh/backbone_information_preflight/20261024T114538Z_e5f2ec52222f/preflight.json` 的 `passed=true`。67 项测试中 66 项通过、1 项缺少旧版本地镜像的条件测试跳过；三个 fold 的真实 A0 重放与合成恢复检查全部通过。
+- 训练实际启动：北京时间 19:48:56，Bash PID 682492、Python PID 682508。运行目录 `outputs/logs/Kelmarsh/20261024/backbone_information_v25_f0-1-2_grq4Ps`，来源提交固定为 `54a8d3a`。
+- 首次核验状态为 A1 / fold0 / seed2024 / TSMixerFull，epoch8 已有日志。实际显存 432 MiB，分配器上限 4 GiB；其他用户 gyx 的 PID 680983 仍运行，显存 5,764 MiB。未停止或调节任何其他用户进程。
+- 本补记仅记录启动证据，不是 G1/G2 或外层结果。后续脚本按冻结门槛推进，失败即停止扩展；所有完成状态、预测和报告均按注册哈希复核。
