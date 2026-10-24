@@ -1,0 +1,12 @@
+{
+  "repository": "https://github.com/google-research/google-research",
+  "path": "tsmixer/tsmixer_basic/models/tsmixer.py",
+  "license": "Apache-2.0",
+  "license_path": "LICENSE",
+  "commit": null,
+  "file_sha256": null,
+  "license_sha256": null,
+  "resolved_utc": null,
+  "resolved_with": null,
+  "note": "Unresolved at implementation time (no GitHub egress from the implementation sandbox). Resolve with scripts/deploy/v25_server_ops.sh resolve-pin on a machine with GitHub access and commit BEFORE any real fit; the runner refuses A1 while commit/file_sha256 are null."
+}
