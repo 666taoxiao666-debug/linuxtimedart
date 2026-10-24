@@ -97,6 +97,45 @@ def build_fake_run(root, outer):
 
 
 class ReportTests(unittest.TestCase):
+    def test_report_refuses_changed_registered_training_gate(self):
+        from scripts import report_kelmarsh_backbone_information as report
+        with tempfile.TemporaryDirectory() as tmp:
+            run, ref = build_fake_run(Path(tmp), outer=False)
+            name = "inner_gate_seed2024.json"
+            v25.write_json(run / "training_completed.json", {"outer_evaluated": False,
+                           "hashes": {name: v25.file_sha256(run / name)}})
+            record = v25.read_json(run / name)
+            record["G1"]["passed"] = True
+            v25.write_json(run / name, record)
+            with self.assertRaisesRegex(ValueError, "Registered artifact"):
+                report.build_report(run, reference_root=ref)
+
+    def test_cached_dlinear_predictions_are_included_in_all_seed_reports(self):
+        from scripts import report_kelmarsh_backbone_information as report
+        with tempfile.TemporaryDirectory() as tmp:
+            run, ref = build_fake_run(Path(tmp), outer=True)
+            folder = run / "runs/f1_s2025/DLinear"
+            (folder / "trained.json").unlink()
+            v25.write_json(folder / "reused_cache.json", {
+                "selection_predictions_sha256": v25.file_sha256(folder / "selection_predictions.npz")})
+            sets, _ = report.collect(run, protocol(), {}, ref)
+            self.assertIn((1, 2025, "DLinear"), sets["inner_selection"])
+            (folder / "selection_predictions.npz").write_bytes(b"corrupt")
+            with self.assertRaisesRegex(ValueError, "prediction file changed"):
+                report.collect(run, protocol(), {}, ref)
+
+    def test_gain_plot_preserves_interval_not_containing_the_estimate(self):
+        from scripts import report_kelmarsh_backbone_information as report
+        from unittest.mock import MagicMock
+        fig, ax = MagicMock(), MagicMock()
+        ax.plot.return_value = [MagicMock()]
+        stats = {"folds": {"0": {"primary_full_vs_dlinear": {
+            "absolute_error": {"gain": 1., "ci95_low": 2., "ci95_high": 3.}}}}}
+        with patch.object(report.plt, "subplots", return_value=(fig, ax)), patch.object(report.plt, "close"):
+            report.figure_gain(stats, "inner_selection", "unused.png")
+        args = ax.vlines.call_args.args
+        self.assertEqual(args[1:], ([2.], [3.]))
+
     def test_inner_only_report_after_failed_gate_has_no_outer_numbers(self):
         from scripts import report_kelmarsh_backbone_information as report
         with tempfile.TemporaryDirectory() as tmp:
@@ -175,6 +214,32 @@ def synthetic_series(fold, frame):
 
 @unittest.skipUnless(HAS_TORCH, "torch/sklearn unavailable on this host")
 class FitResumeTests(unittest.TestCase):
+    def test_source_closure_ignores_pytorch_virtual_modules(self):
+        from types import SimpleNamespace
+        import sys
+        real = ROOT / "models/TSMixerBasicSmall.py"
+        with patch.dict(sys.modules, {"v25_virtual_ops": SimpleNamespace(__file__="_ops.py"),
+                                      "v25_real_model": SimpleNamespace(__file__=str(real))}):
+            closure = self.task.imported_closure()
+        self.assertNotIn("_ops.py", closure)
+        self.assertEqual(closure["models/TSMixerBasicSmall.py"], v25.file_sha256(real))
+
+    def test_reused_dlinear_cache_rechecks_source_completion_and_weights(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            suite = Path(tmp) / "suite"
+            source = suite / "runs/f0_s2025/DLinear"
+            source.mkdir(parents=True)
+            (source / "checkpoint.pt").write_bytes(b"synthetic-test-checkpoint")
+            v25.write_json(source / "completed.json", {"checkpoint.pt": v25.file_sha256(source / "checkpoint.pt")})
+            v25.write_json(suite / "completed.json", {
+                "runs/f0_s2025/DLinear/completed.json": v25.file_sha256(source / "completed.json")})
+            record = {"source_run": str(source), "checkpoint_sha256": v25.file_sha256(source / "checkpoint.pt"),
+                      "source_completed_sha256": v25.file_sha256(suite / "completed.json")}
+            self.task.V25Run.verify_dlinear_cache(record)
+            (source / "checkpoint.pt").write_bytes(b"changed-checkpoint")
+            with self.assertRaisesRegex(ValueError, "artifact changed"):
+                self.task.V25Run.verify_dlinear_cache(record)
+
     @classmethod
     def setUpClass(cls):
         from scripts import train_kelmarsh_backbone_information as task
@@ -316,6 +381,12 @@ class ControllerTests(unittest.TestCase):
             again = self.make(tmp, dlinear_inner=0.)
             with patch.object(self.task, "fit_arm", side_effect=AssertionError("retrained")):
                 self.assertEqual(again.run(), "COMPLETED")
+            damaged = run.dir / "runs/f0_s2024/TSMixerFull/best.pt"
+            with damaged.open("ab") as handle:
+                handle.write(b"corrupt")
+            with patch.object(self.task, "fit_arm", side_effect=AssertionError("retrained")):
+                with self.assertRaisesRegex(ValueError, "Registered artifact"):
+                    self.make(tmp, dlinear_inner=0.).run()
 
     def test_report_failure_never_reruns_training(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -385,6 +456,22 @@ class ControllerTests(unittest.TestCase):
             g2_index = next(i for i, e in enumerate(events) if e["event"] == "G2")
             first_outer = next(i for i, e in enumerate(events) if e.get("subset") == "validation")
             self.assertLess(g2_index, first_outer)
+            # A crash after NPZ but before its result marker must redo inference only.
+            base = run.dir / "runs/f0_s2024/TSMixerFull"
+            prediction_path = base / "outer_predictions.npz"
+            original_sha = v25.file_sha256(prediction_path)
+            (base / "result.json").unlink()
+            validation = self.series[0].subset("validation")
+            with np.load(prediction_path) as saved:
+                same_cohort = {k: saved[k] for k in saved.files if k != "prediction"}
+            with patch.object(self.task, "fit_arm", side_effect=AssertionError("retrained")):
+                run.outer_prediction(0, 2024, "TSMixerFull", validation, same_cohort)
+            self.assertEqual(v25.file_sha256(prediction_path), original_sha)
+            self.assertTrue((base / "result.json").exists())
+            with prediction_path.open("ab") as handle:
+                handle.write(b"corrupt")
+            with self.assertRaisesRegex(ValueError, "Registered artifact"):
+                run.outer_prediction(0, 2024, "TSMixerFull", validation, same_cohort)
 
 
 if __name__ == "__main__":

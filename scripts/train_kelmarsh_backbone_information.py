@@ -417,8 +417,13 @@ def imported_closure():
         filename = getattr(module, "__file__", None)
         if not filename:
             continue
+        path = Path(filename)
+        # torch.ops/torch.classes expose synthetic relative __file__ names; these
+        # are not repository source modules and must not be resolved against cwd.
+        if not path.is_absolute() or not path.is_file():
+            continue
         try:
-            relative = Path(filename).resolve().relative_to(ROOT)
+            relative = path.resolve().relative_to(ROOT)
         except ValueError:
             continue
         closure[str(relative).replace("\\", "/")] = v25.file_sha256(ROOT / relative)
@@ -817,6 +822,7 @@ class V25Run:
                 history = v25.read_json(run / "training_history.json")
                 entry = next(r["selection"] for r in history if r["epoch"] == trained["best_epoch"])
                 return {"source_run": self.rel_root(run), "checkpoint_sha256": trained["artifacts"]["checkpoint.pt"],
+                        "source_completed_sha256": v25.file_sha256(suite / "completed.json"),
                         "best_epoch": trained["best_epoch"], "selection": {"mae": entry["mae"], "rmse": entry["rmse"]},
                         "raw_predictions": self.rel_root(run / "raw_predictions.npz") if (run / "raw_predictions.npz").exists() else None}
             except (KeyError, ValueError, StopIteration, OSError):
@@ -827,15 +833,45 @@ class V25Run:
         out = self.dir / "runs" / f"f{fold}_s{seed}" / v25.BASELINE
         registration = out / "reused_cache.json"
         if registration.exists():
-            return v25.read_json(registration)
+            record = v25.read_json(registration)
+            self.verify_dlinear_cache(record)
+            v25.verify_registered_files(out, {"selection_predictions.npz": record["selection_predictions_sha256"]})
+            return record
         if not (out / "trained.json").exists() and not (out / "last.pt").exists():
             _, data = self.prepare_fold(fold, stage)
             cache = self.find_dlinear_cache(fold, seed, data)
             if cache is not None:
+                self.verify_dlinear_cache(cache)
+                model, _ = build_model(v25.BASELINE, self.p)
+                model.load_state_dict(torch.load(ROOT / cache["source_run"] / "checkpoint.pt", map_location="cpu",
+                                                weights_only=False)["model"], strict=True)
+                selection = data["selection"]
+                truth, persistence = selection.truth_and_anchor()
+                prediction = predict(model, selection, seed, torch.device("cpu"), self.p["training"]["eval_batch_size"])
+                metrics = forecast_metrics(prediction, truth, rated_power=self.p["rated_power_kw"])
+                if any(abs(metrics[k] - cache["selection"][k]) > self.p["reference"]["replay_tolerance_kw"]
+                       for k in ("mae", "rmse")):
+                    raise ValueError("Cached DLinear selection replay differs from its registered history")
+                out.mkdir(parents=True, exist_ok=True)
+                target = out / "selection_predictions.npz"
+                np.savez_compressed(target, prediction=prediction, truth=truth, persistence=persistence,
+                                    times=selection.target_times(), turbines=selection.turbines[selection.window_starts],
+                                    window_starts=selection.window_starts)
+                cache["selection_predictions_sha256"] = v25.file_sha256(target)
                 v25.write_json(registration, cache | {"reused": True, "registered_utc": now()})
                 v25.append_event(self.events, "dlinear_cache_reused", fold=fold, seed=seed, **cache)
                 return v25.read_json(registration)
         return self.fit(fold, seed, v25.BASELINE, device, stage)
+
+    @staticmethod
+    def verify_dlinear_cache(record):
+        source = ROOT / record["source_run"]
+        suite = source.parents[2]
+        if v25.file_sha256(suite / "completed.json") != record["source_completed_sha256"]:
+            raise ValueError("Cached DLinear completion registry changed")
+        verify_completed_suite(suite)
+        if v25.file_sha256(source / "checkpoint.pt") != record["checkpoint_sha256"]:
+            raise ValueError("Cached DLinear checkpoint changed")
 
     # ------------------------------------------------------------------ records and gates
     def inner_record(self, fold, seed, arm):
@@ -980,14 +1016,23 @@ class V25Run:
             path = self.reference_root / self.p["reference"]["dir"] / "runs" / f"f{fold}_s{seed}" / "DLinear" / "raw_predictions.npz"
             source = "v20 registered outer prediction, hash-verified, not recomputed"
         elif (base / "reused_cache.json").exists():
-            raw = v25.read_json(base / "reused_cache.json")["raw_predictions"]
+            cache = v25.read_json(base / "reused_cache.json")
+            self.verify_dlinear_cache(cache)
+            raw = cache["raw_predictions"]
             if raw is None:
                 raise ValueError("Cached DLinear has no registered outer prediction")
             path, source = ROOT / raw, "exact-contract cached outer prediction"
         else:
             path, source = base / "outer_predictions.npz", "v25 best.pt"
-            if not path.exists():
-                trained = v25.read_json(base / "trained.json")
+            trained = v25.read_json(base / "trained.json")
+            v25.verify_registered_files(base, trained["artifacts"])
+            result_path = base / "result.json"
+            if result_path.exists():
+                result = v25.read_json(result_path)
+                if result["best_state_sha256"] != trained["best_state_sha256"]:
+                    raise ValueError("Outer prediction executor differs from the registered selected state")
+                v25.verify_registered_files(base, {path.name: result["outer_predictions_sha256"]})
+            else:
                 device = self.outer_device(fold, seed)
                 model, _ = build_model(arm, self.p)
                 state = torch.load(base / "best.pt", map_location="cpu", weights_only=False)["model"]
@@ -998,10 +1043,20 @@ class V25Run:
                 begin = time.monotonic()
                 prediction = predict(model, validation, seed, device, self.p["training"]["eval_batch_size"])
                 seconds = time.monotonic() - begin
-                np.savez_compressed(path, prediction=prediction, **cohort)
+                # An interrupted inference may leave an unregistered NPZ. Replay inference only,
+                # and require exact agreement before adopting it; never retrain or silently replace it.
+                arrays = {"prediction": prediction, **cohort}
+                if path.exists():
+                    with np.load(path, allow_pickle=False) as saved:
+                        v25.assert_aligned(arrays, dict(saved), keys=tuple(arrays), label="interrupted outer inference")
+                else:
+                    temporary = path.with_name(path.stem + ".tmp.npz")
+                    np.savez_compressed(temporary, **arrays)
+                    os.replace(temporary, path)
                 metrics = forecast_metrics(prediction, cohort["truth"], rated_power=self.p["rated_power_kw"])
                 v25.write_json(base / "result.json", {"arm": arm, "fold": fold, "seed": seed, "split": "outer_validation",
                                "best_epoch": trained["best_epoch"], "metrics": metrics, "inference_seconds": seconds,
+                               "best_state_sha256": trained["best_state_sha256"],
                                "inference_device": str(device), "outer_predictions_sha256": v25.file_sha256(path),
                                "evidence_scope": "development; outer previously inspected in earlier versions"})
                 print(f"[OUTER] f{fold} s{seed} {arm} MAE={metrics['mae']:.6f} RMSE={metrics['rmse']:.6f}", flush=True)
@@ -1027,11 +1082,7 @@ class V25Run:
                  budget=f"<= {self.p['budget']['new_fits_max']} fits")
 
     def verify_training_completed(self):
-        record = v25.read_json(self.dir / "training_completed.json")
-        for name, digest in record["hashes"].items():
-            if v25.file_sha256(self.dir / name) != digest:
-                raise ValueError(f"Registered training artifact changed: {name}")
-        return record
+        return v25.verify_training_completed(self.dir)
 
     def report(self):
         from scripts import report_kelmarsh_backbone_information as reporting
@@ -1059,6 +1110,8 @@ class V25Run:
         try:
             if (self.dir / "completed.json").exists() and not report_only:
                 self.freeze_protocol_record()  # verifies identity only; writes nothing into a completed run
+                self.verify_training_completed()
+                verify_completed_suite(self.dir)
                 print("[REUSE] v25 already completed; nothing retrained", flush=True)
                 return "COMPLETED"
             configure_determinism()

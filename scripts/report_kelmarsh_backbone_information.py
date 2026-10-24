@@ -69,7 +69,11 @@ def collect(directory, protocol, a0, reference_root):
             sets["inner_selection"][(fold, protocol["reference"]["seed"], "DLinear")] = load_npz(path) | {
                 "source": "v20 checkpoint CPU replay (gates used the registered history values)"}
     for cache in sorted((directory / "runs").glob("f*_s*/DLinear/reused_cache.json")):
-        notes.append(f"{cache.parent.parent.name} DLinear reused from cache; no v25 selection predictions (registered metrics only)")
+        record = v25.read_json(cache)
+        fold, seed = (int(part[1:]) for part in cache.parent.parent.name.split("_"))
+        arrays = load_npz(cache.parent / "selection_predictions.npz", record["selection_predictions_sha256"])
+        sets["inner_selection"][(fold, seed, "DLinear")] = arrays | {"source": "exact-contract cache CPU replay"}
+        notes.append(f"{cache.parent.parent.name} DLinear reused from cache; selection predictions replayed without training")
     index_path = directory / "outer_index.json"
     if index_path.exists():
         for key, entry in v25.read_json(index_path)["entries"].items():
@@ -321,11 +325,14 @@ def figure_gain(stats, split, path):
                 a = comparison["absolute_error"]
                 xs.append(i + offset)
                 ys.append(a["gain"])
-                # a percentile block bootstrap need not contain the point estimate; never pass negative yerr
-                lo.append(max(0., a["gain"] - a["ci95_low"]))
-                hi.append(max(0., a["ci95_high"] - a["gain"]))
+                lo.append(a["ci95_low"])
+                hi.append(a["ci95_high"])
         if xs:
-            ax.errorbar(xs, ys, yerr=[lo, hi], fmt="o", capsize=4, label=label)
+            # Percentile intervals need not include the estimate: draw their actual endpoints.
+            points, = ax.plot(xs, ys, "o", label=label)
+            ax.vlines(xs, lo, hi, color=points.get_color())
+            ax.plot(xs, lo, "_", color=points.get_color())
+            ax.plot(xs, hi, "_", color=points.get_color())
     ax.axhline(0, color="black", lw=.8)
     ax.set_xticks(range(len(folds)))
     ax.set_xticklabels([f"fold {f}" for f in folds])
@@ -377,6 +384,7 @@ def v21_historical(protocol, sets, reference_root):
     try:
         if v25.file_sha256(folder / "completed.json") != spec["completed_sha256"]:
             return {"available": False, "reason": "v21 completed.json identity differs"}
+        v25.verify_registered_files(folder, v25.read_json(folder / "completed.json"))
         for fold in protocol["folds"]:
             run = folder / "runs" / f"f{fold}_s{spec['seed']}" / spec["model"]
             hashes = v25.read_json(run / "completed.json")
@@ -441,7 +449,7 @@ def build_report(directory, reference_root=ROOT):
     directory = Path(directory)
     record = v25.read_json(directory / "protocol.json")
     protocol = record["protocol"]
-    training = v25.read_json(directory / "training_completed.json")
+    training = v25.verify_training_completed(directory)
     a0 = v25.read_json(directory / "a0_result.json")
     capacity = protocol["rated_power_kw"]
     figures = directory / "figures"

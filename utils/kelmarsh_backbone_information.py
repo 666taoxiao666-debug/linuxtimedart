@@ -79,6 +79,21 @@ def text_sha256_lf(path):
     return hashlib.sha256(Path(path).read_bytes().replace(b"\r\n", b"\n")).hexdigest()
 
 
+def verify_registered_files(directory, hashes):
+    """Fail closed on missing/changed registered artifacts, including completed resumes."""
+    directory = Path(directory).resolve()
+    for name, digest in hashes.items():
+        path = (directory / name).resolve()
+        if directory not in path.parents or not path.is_file() or file_sha256(path) != digest:
+            raise ValueError(f"Registered artifact changed or missing: {name}")
+
+
+def verify_training_completed(directory):
+    record = read_json(Path(directory) / "training_completed.json")
+    verify_registered_files(directory, record["hashes"])
+    return record
+
+
 def canonical_sha256(value):
     return hashlib.sha256(json.dumps(safe(value), sort_keys=True, separators=(",", ":"),
                                      allow_nan=False).encode("utf-8")).hexdigest()

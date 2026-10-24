@@ -30,7 +30,7 @@ incoming=$(git rev-parse FETCH_HEAD)
 [ "$incoming" = "$TARGET" ] || { echo "fetched $incoming but local HEAD is $TARGET; push/bundle first"; exit 4; }
 [ "$(git branch --show-current)" = "'"${BRANCH}"'" ] || { echo "server is not on '"${BRANCH}"'"; exit 4; }
 git merge-base --is-ancestor HEAD FETCH_HEAD || { echo "not a fast-forward; refusing (no reset/force)"; exit 4; }
-overlap=$(comm -12 <(git diff --name-only HEAD FETCH_HEAD | sort) <(git diff --name-only | sort))
+overlap=$(comm -12 <(git diff --name-only HEAD FETCH_HEAD | sort) <(git diff HEAD --name-only | sort))
 [ -z "$overlap" ] || { echo "incoming commit touches locally modified tracked files: $overlap"; exit 4; }
 echo "server tracked modifications kept:"; git status --porcelain --untracked-files=no
 git merge --ff-only FETCH_HEAD

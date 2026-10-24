@@ -3,10 +3,10 @@
   "path": "tsmixer/tsmixer_basic/models/tsmixer.py",
   "license": "Apache-2.0",
   "license_path": "LICENSE",
-  "commit": null,
-  "file_sha256": null,
-  "license_sha256": null,
-  "resolved_utc": null,
-  "resolved_with": null,
-  "note": "Unresolved at implementation time (no GitHub egress from the implementation sandbox). Resolve with scripts/deploy/v25_server_ops.sh resolve-pin on a machine with GitHub access and commit BEFORE any real fit; the runner refuses A1 while commit/file_sha256 are null."
+  "commit": "5b09c22d73a9d35eb6c5d2a99b95677a45053466",
+  "file_sha256": "84a7451f86b40b989f7ab7aa36368f24f39610ad62d7ce43e474a30a4e006159",
+  "license_sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+  "resolved_utc": "2026-10-24T08:46:25Z",
+  "resolved_with": "GitHub commits API (last commit touching the file), immutable raw file and LICENSE SHA256 verified on Windows",
+  "note": "PyTorch port of basic TSMixer: two residual temporal/feature blocks, LayerNorm over time and channels, fixed 2 blocks/ff32/dropout0.1, no RevIN, power-slot head and optional power-only input mask. See docs/KELMARSH_BACKBONE_INFORMATION_V25.md."
 }
