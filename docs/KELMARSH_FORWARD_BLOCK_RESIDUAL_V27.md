@@ -3,6 +3,8 @@
 日期：2026-10-25。完整协议 ID：`kelmarsh_forward_block_residual_diagnostic_v27`（不要只写“v27”）。
 状态：原稿已完成代码审查，用户已授权修正、部署及本轮训练；真实训练仍须先通过服务器 `--preflight-only`。本次运行前修订不改网络、训练配方、44 fit 预算和窗口队列，调整隔离实现、身份核验和不充分的结论规则。原稿协议 SHA 为 `702f4e537c737b1fef7165668da981a34911043aef0d03db6007ab0fef76a2ec`，从未执行。
 
+执行补记：审查版已通过正式预检并完成44 fits/396 epochs，独立复核807/807通过；协议结论 STOP。详见 `docs/CLAUDE_FORWARD_BLOCK_RESIDUAL_HANDOFF_20261025.md`。本文保留运行前设计，不因负结果修改规则。
+
 ## 1. v26 运行身份核对（交接 §9.1）
 
 | 项目 | 交接所写 | 本地核对 |
