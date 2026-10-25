@@ -1356,6 +1356,51 @@ def smoke(p, folder):
             "data": "synthetic tensors and a synthetic anchor only; not a real-data candidate"}
 
 
+def protocol_namespace_check(p, config_dir, log_root, own_protocol, own_pointer):
+    """Detect duplicate full protocol identities, not unrelated historical shorthand version numbers."""
+    own_id = p["protocol_id"]
+    configs, pointers, ambiguous = [], {}, {}
+    distinct = {}
+
+    def identity(record):
+        for value in (record, record.get("protocol", {}), record.get("recipe", {})):
+            if isinstance(value, dict) and value.get("protocol_id"):
+                return value["protocol_id"]
+        return None
+
+    for path in sorted(Path(config_dir).glob("*protocol*.json")):
+        if path.resolve() == Path(own_protocol).resolve():
+            continue
+        other_id = identity(v26.read_json(path))
+        if other_id == own_id:
+            configs.append(str(path))
+        elif "v26" in path.name:
+            distinct[str(path)] = other_id
+    for path in sorted(Path(log_root).glob("*latest.txt")):
+        if path.resolve() == Path(own_pointer).resolve():
+            continue
+        target = Path(path.read_text().strip())
+        if not target.is_absolute():
+            target = ROOT / target
+        marker = target / "protocol.json"
+        if marker.exists():
+            other_id = identity(v26.read_json(marker))
+            if other_id == own_id:
+                pointers[str(path)] = str(target)
+            elif "v26" in str(target):
+                if other_id:
+                    distinct[str(path)] = other_id
+                else:
+                    ambiguous[str(path)] = str(target)
+        elif "v26" in str(target):
+            ambiguous[str(path)] = str(target)
+    return {"protocol_id": own_id, "other_configs_with_same_id": configs,
+            "other_pointers_with_same_id": pointers, "unresolved_v26_pointers": ambiguous,
+            "distinct_historical_identities": distinct,
+            "own_pointer": Path(own_pointer).read_text().strip() if Path(own_pointer).exists() else None,
+            "passed": not configs and not pointers and not ambiguous}
+
+
 def preflight(gpu_index=0, skip_tests=False):
     p, protocol_sha = load_protocol()
     pin, resolved = load_pin(p, require_resolved=False)
@@ -1364,14 +1409,7 @@ def preflight(gpu_index=0, skip_tests=False):
     folder.mkdir(parents=True, exist_ok=False)
     configure_determinism()
     checks = {"pin_resolved": resolved, "upstream_pin": pin}
-    others = sorted({str(path.relative_to(ROOT)) for path in (ROOT / "configs").glob("*v26*")} - {
-        "configs/kelmarsh_anchored_residual_protocol_v26.json"})
-    pointers = {str(path.relative_to(ROOT)): path.read_text(errors="replace").strip()
-                for path in LOG_ROOT.glob("*latest.txt") if "v26" in path.read_text(errors="replace")
-                and path.resolve() != POINTER.resolve()}
-    checks["v26_id_free"] = {"other_v26_configs": others, "other_pointers_mentioning_v26": pointers,
-                             "own_pointer": POINTER.read_text().strip() if POINTER.exists() else None,
-                             "passed": not others and not pointers}
+    checks["v26_id_free"] = protocol_namespace_check(p, ROOT / "configs", LOG_ROOT, PROTOCOL, POINTER)
     if skip_tests:
         checks["tests"] = {"passed": False, "skipped": True}
     else:

@@ -509,6 +509,35 @@ class FitTests(unittest.TestCase):
             self.assertEqual(str(device), "cpu")
             cap.assert_not_called()
 
+    def test_namespace_uses_full_id_and_rejects_duplicate_or_unresolved_runs(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            config, logs = root / "configs", root / "logs"
+            config.mkdir()
+            logs.mkdir()
+            own = config / "kelmarsh_anchored_residual_protocol_v26.json"
+            pointer = logs / "anchored_residual_latest.txt"
+            v26.write_json(own, self.p)
+            other = config / "kelmarsh_capacity_protocol_v26.json"
+            old_id = "kelmarsh_24h4h_forecast_only_capacity_v26"
+            v26.write_json(other, {"protocol_id": old_id})
+            old = root / "capacity_v26_run"
+            old.mkdir()
+            v26.write_json(old / "protocol.json", {"recipe": {"protocol_id": old_id}})
+            other_pointer = logs / "capacity_v26_latest.txt"
+            other_pointer.write_text(str(old), encoding="utf-8")
+            check = lambda: self.task.protocol_namespace_check(self.p, config, logs, own, pointer)
+            self.assertTrue(check()["passed"])
+            # Even a different shorthand version must not reuse this full identity.
+            duplicate = config / "another_protocol_v99.json"
+            v26.write_json(duplicate, {"protocol_id": self.p["protocol_id"]})
+            self.assertFalse(check()["passed"])
+            duplicate.unlink()
+            v26.write_json(old / "protocol.json", {"protocol": {"protocol_id": self.p["protocol_id"]}})
+            self.assertFalse(check()["passed"])
+            (old / "protocol.json").unlink()
+            self.assertFalse(check()["passed"])
+
     def assert_same_final_state(self, a, b):
         x = torch.load(a / "last.pt", map_location="cpu", weights_only=False)
         y = torch.load(b / "last.pt", map_location="cpu", weights_only=False)
