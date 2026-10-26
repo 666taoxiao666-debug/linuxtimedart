@@ -22,7 +22,9 @@
 
 参数复核：DLinear 200；LinearFlat base/last10 676/868；TSMixer base/last10 3618/4262。所有模型直接预测未来 4 个小时，输入 24 小时；没有 Wiki、残差专家或新物理阈值。normal 使用目标期间状态，是事后条件队列；必须同时报告 all，不能将 normal 精度冒充全样本部署精度。
 
-本地 Python 语法与 Bash 语法已通过。原测试在 Windows 因既有 Linux `fcntl` 依赖不能导入，不能记作已通过；完整含 torch 测试将在服务器执行。服务器原 `docs/EXPERIMENT_REPLAY.md` 和 `docs/KELMARSH_MODEL_REVIEW.md` 改动保留。其他用户 GPU 任务不做任何管理操作；本任务遵守共享时 4 GiB 分配器上限和 CPU 2 线程。
+代码提交 `26f0ad3` 已推送并在服务器安全快进。服务器完整 **48 项测试通过**（日志 `outputs/logs/Kelmarsh/multiyear_benchmark_preflight/review_26f0ad3_tests.log`），包含断点等价和完整合成控制器；耗时 41.753 秒（不含冷启动库加载）。本地 Python/Bash 语法通过；Windows 对 11 项纯指标/协议/报告测试使用仅用于导入的空 `fcntl` 模块运行通过，该本地结果不覆盖锁或训练，服务器真实 Linux 测试才覆盖这些功能。
+
+服务器原 `docs/EXPERIMENT_REPLAY.md` 和 `docs/KELMARSH_MODEL_REVIEW.md` 改动保留。其他用户 GPU 任务不做任何管理操作；本任务遵守共享时 4 GiB 分配器上限和 CPU 2 线程。
 
 数据准备 PID `896486`，日志 `outputs/launch_logs/multiyear_v28_prepare_20261026_101813.log`。只准备 2016–2021，2022–2024 不读。2016–2019 将与已登记开发 CSV 逐列核验，功率曲线只拟合 2016–2019。若预检失败，只修实现问题并重新预检，不启动 fit。
 
