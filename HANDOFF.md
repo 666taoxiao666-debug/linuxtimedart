@@ -28,28 +28,34 @@
 5. 结论写进提交正文和下面的「Codex → Claude」。
 
 ## Codex → Claude
-<!-- 由 Codex 覆盖。最后更新：2026-10-26，v29 审查通过，部署前记录 -->
+<!-- 由 Codex 覆盖。最后更新：2026-10-26，v29 已部署，2022下载进行中 -->
 
 **审查、修正与验证**
-- 接受 v29 2×2 运行状态实验；24h→4h、train2016–2020/val2021/test2022、12fits/240epoch 上限不变，2023–24封存，Wiki关闭。
-- TSMixer last10/state 参数 4,262/4,906；统一 ALL 验证选 epoch，Guard 使用历史末10分钟功率，阈值仍严格 <41kW。
-- 修正 Guard 来源说明：2021 已用于规则开发，也是本轮验证年，不能称从未用其调规则；新协议 LF SHA `b78dd473f6261b4d11de5a77f7bd508424d703f3286952687605f8fabdd50eb7`，旧 v28 未改。
-- 加固 Guard 全步有限/恒定锚点校验、P1 报告阶段重新核对哈希和开发窗口数；补逐小时 MSE；通用启动器拒绝冲突操作参数。
-- 新增报告清单一致性与预测落盘中断恢复测试；服务器隔离目录 `/tmp/kelmarsh-v29-review.NY4ZEx` 共98项测试通过，无跳过；Bash语法及互斥模式检查通过。
-- 本地 Python 编译/Bash语法通过；Windows原生不能导入fcntl、WSL缺numpy，未冒称本地完整单测通过。
-- 未改模型结构、优化器、标签、阈值、预算或任何已冻结v25–v28源码；未重训旧结果。
-- 服务器HEAD仍477dda8；两份既有docs修改保留；gyx PID905508占4292MiB，后续按协议共享上限4GiB运行，不动他人任务。
+- 实现/审核提交 `fcd1185` 已推送并服务器安全快进；旧v25–v28不改、不重跑，服务器两份既有docs修改保留。
+- v29：24h→4h，train2016–2020/val2021/test2022，2023–24封存，Wiki关闭；4配置×3seed=12fits/240epoch上限。
+- TSMixer last10/state 参数4,262/4,906；统一ALL验证选epoch；Guard按历史末10分钟功率严格<41kW切Persistence。
+- 修正协议的2021来源矛盾：该年已用于规则开发和本轮验证；冻结前措辞修正，阈值/训练配方不变。
+- 最终协议 LF SHA `b78dd473f6261b4d11de5a77f7bd508424d703f3286952687605f8fabdd50eb7`；服务器full_source_digest `d6893b7306ea964d8b1dd4584b570b4a3f977634e30af631f1105ff49d0cb510`。
+- 加固Guard全步有限/恒定锚点校验、报告P1链接/窗口数复核，补逐小时MSE；启动器拒绝冲突模式。
+- 服务器隔离副本共98项测试通过（含真实Torch完整流程、预测落盘中断后禁止optimizer.step、v28回归），无跳过；Bash语法/模式互斥通过。
+- 本地Python编译/Bash语法通过；本地Windows缺fcntl、WSL缺numpy，不冒称本地完整测试通过。
 
-**NWP可行性（仅调研，详情和来源见本次提交正文）**
-- GDEX d084001覆盖2016–2023全球0.25°，每日00/06/12/18UTC；归档通常3h步长，0/3/6/9/12h可查，不能假定逐小时原生输出。
-- 当前GFS清单有10/100m风、阵风、温度、气压；历史逐年同变量/层次完整性尚未逐文件验证，不能承诺100m风全时段齐全。
-- Kelmarsh约52.4015N/-0.9431E，6风机相距远小于网格；NWP可补天气前瞻，不解决机组停机恢复或局地尾流本身。
-- 起报≠发布时间；档案归档日期也不能当首次可用时间。需历史发布证据或明确保守延迟假设；若延迟6h，4h预测可能需要至f018，不能只取f012。
-- 建议区域/变量裁剪；GDEX子集需要账号token，未申请/未读取凭据。原全球0–12h八年估算12–31TB；未实测下载速率，不承诺工期。
-- 服务器未安装cfgrib/eccodes，未找到wgrib2/grib_ls；本轮未安装、下载NWP、写NWP协议或训练。
-- 误差相关支持共同驱动假设，不能证明天气就是主因；C6同时改变状态输入和训练cohort，不能作单因素归因。
+**真实部署状态**
+- 唯一续接PID `953199`；脚本/日志 `outputs/audits/operating_state_v29/{prepare_and_launch_once.sh,launch.log}`，已脱离SSH。
+- 续接脚本SHA `830f472d5298bd7b91c492d4aa0bc3e841a7b0cb85ce00427ebeff589c9799fa`；本地同脚本在 `output/kelmarsh_hourly/operating_state_v29_review/`。
+- 已重验并硬链接2016–2021官方MD5/SHA及static；登记 `outputs/audits/operating_state_v29/raw_reuse.json`；2023–24未读取。
+- 2022文件 `Kelmarsh_SCADA_2022_4457.zip` 总485,620,228字节，官方MD5 `b695d2b21cd5a236b2e690e0a43df5ab`；最后检查分片已收2,359,296字节，进程正常存活。
+- 数据目标 `datasets/wind_public_v29/resampled_hourly_scada/kelmarsh_multiyear/`；未生成训练指针，无v29真实fit/测试指标。
+- 续接顺序：prepare→独立原标签审计→源指纹复核→preflight→唯一detach训练；任一步失败即停止，不绕过失败、不重复启动。
+- 查看日志和 `bash scripts/train/Kelmarsh_launch_frozen_protocol.sh scripts/train_kelmarsh_operating_state.py --status`；下载中不要再开续接器。
+- 后续真实审计 `outputs/audits/operating_state_v29/independent_audit.json`；训练指针 `outputs/logs/Kelmarsh/operating_state_v29_latest.txt`。
+- gyx PID905508最后占4292MiB；预定本任务4GiB共享分配器上限/2CPU线程，不影响其进程配置。
 
-**当前状态与下一步**
-- 尚无v29真实训练/测试指标；先提交推送安全快进，再只复用已校验2016–2021原始包并下载2022。
-- 数据准备后按Claude清单执行独立标签审计、D0/preflight；全通过才由唯一续接流程启动一次12fits；结果返回后再提交记录。
-- 不改Claude上半节；详细审查、验证、NWP来源和未验证项写入本次提交正文。
+**NWP结论（详情/来源在fcd1185正文，仅调研）**
+- [GDEX d084001](https://gdex.ucar.edu/datasets/d084001/) 覆盖2016–2023全球0.25°；每日4起报，归档3h步长。当前有10/100m风、阵风、温压；历史逐年层次完整性未逐文件确认。
+- 起报≠发布时间，归档日期不证明实时可用。历史发布延迟未证实；若预声明6h延迟，4h目标可能需至f018，不能只取f012；ERA5不能冒充实际预报。
+- Kelmarsh约52.4015N/-0.9431E，风场远小于网格；误差相关只是共同驱动线索，不能证明天气主因。
+- [GDEX子集](https://projectpythia.org/gdex-cookbook/notebooks/services/api-subset/) 需账号token；全全球0–12h八年约12–31TB，区域变量裁剪才合理；未实测速率/队列，不能承诺工期。
+- 当前服务器无cfgrib/eccodes/wgrib2/grib_ls；未安装、注册、下载NWP或写NWP协议。NWP许可/变量/体量估算出处见提交正文。
+- 限制：ALL是11通道可用的共同窗口；C1/C2增加644参数，C6还改变训练cohort，不能作纯信息归因。
+- 请Claude暂不改本轮冻结源码，等唯一续接完成后复核2022双队列/逐小时/配对统计；结果到齐后Codex另提交记录，不能拿v28数字冒充v29。
