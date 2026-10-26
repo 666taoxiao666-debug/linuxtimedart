@@ -1,0 +1,120 @@
+{
+  "protocol_id": "kelmarsh_multiyear_base_benchmark_v28",
+  "status": "FROZEN_EXECUTABLE",
+  "launch_authorization": "Implemented and unit-tested (torch-free part) only; nothing prepared, fitted or evaluated by the author. Requires the user's decision, the D0 preparation below and a passed --preflight-only.",
+  "created_date": "2026-10-26",
+  "design_source": "GPT handoff 2026-10-26 section 7 (multi-year protocol, controller, fixed baselines, one information group per comparison, all+normal reporting); user decisions 2026-10-25 (add years; normal-operation training and primary evaluation)",
+  "scope": "first multi-year numeric base benchmark; no Wiki; no novelty claim",
+  "questions": [
+    "Q1 information: does the end-of-hour state (power_last10, wind_last10) improve the same architecture?",
+    "Q2 capacity: with four training years, does a small nonlinear mixer beat a flattened linear map on the same inputs?",
+    "Q3 training cohort: does training DLinear on normal-operation windows instead of all windows help, on each test cohort?",
+    "Q4 naive: does the validation-chosen trained configuration beat the last-10-minute Persistence?"
+  ],
+  "novelty_claim": "none; DLinear, a flattened linear map and TSMixer-basic are published baselines",
+  "data": {
+    "source": "Zenodo 16807551, Kelmarsh six Senvion MM92, CC BY 4.0",
+    "development_preparation": {
+      "csv": "datasets/wind_public/resampled_hourly_scada/kelmarsh_multiyear/hourly/kelmarsh_multiyear_hourly_enriched.csv",
+      "csv_sha256": "50134f7b6c23c9608d7ef7926ff67692463e9846fa7204a9515b2b7d473dfd0e",
+      "preparation_json_sha256": "ff4f6ebd9ed3dd59016295a81bb9b614cbb77dbfe6d3355a3efa170c1ff09aa2",
+      "years": [2016, 2017, 2018, 2019],
+      "use": "identity reference only: every 2016-2019 row of the v28 preparation must equal this registered CSV"
+    },
+    "v28_preparation": {
+      "root": "datasets/wind_public_v28",
+      "csv": "datasets/wind_public_v28/resampled_hourly_scada/kelmarsh_multiyear/hourly/kelmarsh_multiyear_hourly_enriched.csv",
+      "years": [2016, 2017, 2018, 2019, 2020, 2021],
+      "curve_years": [2016, 2017, 2018, 2019],
+      "schema_version": 2,
+      "command": "python scripts/prepare_kelmarsh_multiyear.py --root datasets/wind_public_v28 --years 2016 2017 2018 2019 2020 2021 --curve-years 2016 2017 2018 2019 --download",
+      "rule": "prepared only after this protocol is frozen; 2022-2024 are never prepared or read in v28"
+    },
+    "start_utc": "2016-05-01T00:00:00Z",
+    "rated_power_kw": 2050.0,
+    "input_len": 24,
+    "pred_len": 4,
+    "stride": 3,
+    "extras_in_common_series": ["power_last10", "wind_last10"],
+    "common_window_rule": "ONE series is built with the union of all channels; every arm uses exactly these windows (finite history in all nine channels, finite four power targets); smaller-input arms only drop channels",
+    "channels": ["Wspd", "Etmp", "Ndir_sin", "Ndir_cos", "Pab_mean", "rotor_speed", "power_last10", "wind_last10", "power"],
+    "channel_sets": {"base": [0, 1, 2, 3, 4, 5, 8], "last10": [0, 1, 2, 3, 4, 5, 6, 7, 8]},
+    "splits": {"train": [2016, 2017, 2018, 2019], "validation": [2020], "test": [2021]},
+    "sealed_years": [2022, 2023, 2024],
+    "scaler": "provider rule: mean/std of all training-year rows (ddof 0, NaN ignored); not refitted per cohort",
+    "labels_modified": false,
+    "yaw_error_channels_enabled": false,
+    "yaw_error_reason": "wind-direction reference frame not verified (GPT 2026-10-26)"
+  },
+  "cohorts": {
+    "normal": "all four target hours are normal-operation hours (ex-post, uses the target period's operating state; conditional accuracy only)",
+    "all": "every common window with original labels (deployment accuracy)",
+    "training_cohort_policy": "every arm trains on normal windows of the train years and selects its epoch on normal windows of the validation year, except the declared control DLinear_alltrain which trains and selects on all windows",
+    "reporting": "every metric table reports BOTH test cohorts; normal is primary by user decision, all is mandatory secondary; cohort sizes and normal share are reported"
+  },
+  "arms": {
+    "PersistenceHour": {"family": "Persistence", "anchor": "last hourly mean power", "fit": false},
+    "PersistenceLast10": {"family": "Persistence", "anchor": "last observed 10-minute power at issue", "fit": false},
+    "DLinear_normal": {"family": "DLinear", "channels": "base", "train_cohort": "normal"},
+    "DLinear_alltrain": {"family": "DLinear", "channels": "base", "train_cohort": "all"},
+    "LinearFlat_base": {"family": "LinearFlat", "channels": "base", "train_cohort": "normal"},
+    "LinearFlat_last10": {"family": "LinearFlat", "channels": "last10", "train_cohort": "normal"},
+    "TSMixer_base": {"family": "TSMixerBasicSmall", "channels": "base", "train_cohort": "normal"},
+    "TSMixer_last10": {"family": "TSMixerBasicSmall", "channels": "last10", "train_cohort": "normal"}
+  },
+  "families": {
+    "DLinear": {"factory": "models.DLinear.Model", "args": {"task_name": "finetune", "downstream_task": "forecast", "individual": 0, "moving_avg": 25},
+                "parameters": {"base": 200}},
+    "LinearFlat": {"factory": "models.LinearFlat.Model", "parameters": {"base": 676, "last10": 868}},
+    "TSMixerBasicSmall": {"factory": "models.TSMixerBasicSmall.Model", "args": {"blocks": 2, "ff_dim": 32, "dropout": 0.1, "norm_eps": 0.001},
+                          "parameters": {"base": 3618, "last10": 4262}}
+  },
+  "seeds": [2024, 2025, 2026],
+  "training": {
+    "optimizer": "AdamW", "learning_rate": 0.001, "weight_decay": 0.0001, "batch_size": 64, "eval_batch_size": 512,
+    "max_epochs": 20, "patience": 5, "grad_clip_norm": 1.0, "scheduler": "CosineAnnealingLR", "scheduler_t_max": 20,
+    "scheduler_eta_min": 0.0, "loss_space": "standardized power", "loss_mae_weight": 0.8, "loss_mse_weight": 0.2,
+    "loss_leads": "uniform", "selection_cohort": "normal", "selection_metric": "validation original-scale MAE on the same normal cohort for every arm, including DLinear_alltrain",
+    "epoch0_included": true, "tie_policy": "strictly lower MAE updates; ties keep the earlier epoch",
+    "refit_after_selection": false, "dtype": "float32", "amp": false, "tf32": false, "num_workers": 0,
+    "shuffle": "torch.Generator().manual_seed(seed + epoch)", "same_recipe_as": "v20 DLinear / v25 recipe"
+  },
+  "budget": {"fits": 18, "new_fits_max": 18, "new_epochs_max": 360, "additional_seeds": false, "additional_arms": false,
+             "hyperparameter_search": false},
+  "stages": [
+    {"id": "D0", "name": "data identity", "fits": 0, "test_access": false,
+     "checks": "v28 preparation metadata (schema 2, years, curve years, CSV hash); every 2016-2019 row equal to the registered development CSV; identical power curves; common-window counts"},
+    {"id": "T1", "name": "fit 6 configurations x 3 seeds", "fits": 18, "test_access": false},
+    {"id": "S1", "name": "selection freeze", "fits": 0, "test_access": false,
+     "freeze": "every selected state hash and validation metrics, plus the validation-chosen configuration for Q4 and for any next round, written before any test window is instantiated"},
+    {"id": "E1", "name": "single test evaluation of every arm on both cohorts", "fits": 0, "test_access": true},
+    {"id": "R1", "name": "independent recomputation and report", "fits": 0, "test_access": "registered predictions only"}
+  ],
+  "comparisons": {
+    "C1": {"candidate": "LinearFlat_last10", "reference": "LinearFlat_base", "question": "Q1"},
+    "C2": {"candidate": "TSMixer_last10", "reference": "TSMixer_base", "question": "Q1"},
+    "C3": {"candidate": "TSMixer_base", "reference": "LinearFlat_base", "question": "Q2"},
+    "C4": {"candidate": "DLinear_normal", "reference": "DLinear_alltrain", "question": "Q3"},
+    "C5": {"candidate": "VALIDATION_CHOSEN", "reference": "PersistenceLast10", "question": "Q4"}
+  },
+  "validation_choice": "among LinearFlat_base, LinearFlat_last10, TSMixer_base, TSMixer_last10: lowest seed-mean validation normal MAE (ties: fewer parameters)",
+  "statistics": {"cohort": "computed separately on test normal and test all", "seed_handling": "losses averaged over the 3 seeds on identical windows",
+                 "cluster": "issue time across turbines", "block_length": 8, "replicates": 5000, "seed": 2024, "hac_max_lag": 7,
+                 "multiple_testing": "Holm over the C1-C5 MAE Newey-West p-values within each cohort; raw p retained",
+                 "rmse": "issue-time block bootstrap of squared-error sums; separate from the MAE CI"},
+  "rules": {
+    "information_supported": "C1 or C2 on test normal: MAE gain CI95 lower > 0, Holm p <= 0.05 and RMSE gain > 0, AND the same comparison on test all has MAE gain >= 0; supports the wider input variant, not pure information attribution at equal parameter count",
+    "capacity_supported": "C3 on test normal: MAE gain CI95 lower > 0, Holm p <= 0.05 and RMSE gain > 0, AND on test all MAE gain >= 0",
+    "training_cleaning_supported": "C4 on test normal: MAE gain CI95 lower > 0 and Holm p <= 0.05, AND on test all MAE gain >= 0; both arms select epochs on the same normal validation cohort",
+    "beats_naive": "C5 on test normal AND test all: MAE gain CI95 lower > 0 and Holm p <= 0.05",
+    "attribution_limits": "C1/C2 change input width and parameter count. C3 changes architecture, parameter count and optimization geometry, not capacity alone. No Wiki contribution or causal attribution is established by these contrasts.",
+    "next_round": "the next protocol starts from the validation-chosen configuration, adds at most one further information group, and confirms on 2022 prepared under its own frozen protocol; 2021 is not reused as a confirmation year; 2023-2024 stay sealed",
+    "no_post_hoc": "no arm, seed, epoch, threshold, cohort rule or channel may be chosen from test results"
+  },
+  "operations": {"cpu_threads": 2, "gpu_free_gib_min_for_new_pair": 6, "shared_gpu_pytorch_allocator_cap_gib": 4,
+                 "idle_gpu_allocator_fraction_max": 0.9, "cpu_fallback_before_pair_start": true,
+                 "modify_other_users_processes": false, "duplicate_launch_lock": true, "atomic_epoch_checkpoint": true},
+  "forbidden": ["preparing or reading 2022-2024", "test access before the S1 freeze", "selection or thresholds from test",
+                "label clipping, imputation or modification", "yaw-error channels", "loading old Wiki certificates",
+                "modifying v25-v27 or the registered development preparation"]
+}
