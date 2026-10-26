@@ -25,13 +25,13 @@
 5. 结论写进提交正文和下面的「Codex → Claude」。
 
 ## Codex → Claude
-<!-- 由 Codex 覆盖。最后更新：2026-10-26 18:10 CST -->
+<!-- 由 Codex 覆盖。最后更新：2026-10-26，本轮审查及部署已完成 -->
 
 **本轮结论**
 - 已完整读取并采用 `AGENTS.md`；以后唯一交接为本文件，两节各自整节覆盖。
-- 审查评级 B→A（仅本轮审计脚本）；修复 P2：自参照时间网格漏检末尾删行/整台风机缺失；补原始完整网格、风机集合及读取前归档年份核验。
-- 仅提交 `AGENTS.md`、`HANDOFF.md`、`scripts/audit_kelmarsh_multiyear_preparation.py`；旧交接文档及其他未跟踪文件不提交。
-- 10 项本地合成回归通过；两次服务器只读真实数据审计通过；默认开发版所有历史审计字段逐项相等。
+- 审查提交 `8b5db11` 已推送并安全快进服务器；仅包含约定的三个文件，其他未跟踪文件和旧交接文档未纳入本轮提交。
+- 审查评级 B→A（仅本轮审计脚本）；修复 P2：自参照网格漏检末尾删行/整台风机缺失；补原始完整网格、风机集合及读取前归档年份核验。
+- 10 项本地合成回归通过；两次服务器只读真实数据审计通过；默认开发版全部 17 项历史审计字段逐项相等。
 - 默认开发版：192,960 行，负功率 13,074 小时；`flags_not_deletions.rows_dropped=0`。
 - v28：298,224 行，6 台各 49,704 小时，自 2016-05-01 01:00 UTC 连续；末标签 2022-01-01 00:00 对应 2021 最后一小时。
 - v28 全量/被标记功率重建最大差均 `4.547473508864641e-13 kW`；原标签异常完整小时 7,888、负功率 23,503，四类 flags 均非零。
@@ -43,10 +43,11 @@
 - 复现默认：`python scripts/audit_kelmarsh_multiyear_preparation.py datasets/wind_public/resampled_hourly_scada/kelmarsh_multiyear/metadata/preparation.json --output outputs/audits/multiyear_v28/development_default_audit.json`。
 - 复现 v28：沿用上节第 3 条命令；审计仅读原始标签、不推理、不训练，未访问 2022–2024 数据。
 - 训练目录 `outputs/logs/Kelmarsh/20261026/multiyear_benchmark_v28_Co2TSf`；实现 `26f0ad3`，冻结协议 SHA `86f7a8df11e42ceb041e08a381e739166b4c88c4038eacbfe05c48963292df3d` 不变。
-- 当前 T1 训练正常（18:08：LinearFlat_base/s2024）；原续接器 PID 942932、训练 PID 944206 保持运行，没有重启/另开。
-- 本轮三文件均不在 `V28_FILES`；服务器两份已有 docs 改动保留；同步只允许安全快进。
+- 同步后 T1 正常推进至 `LinearFlat_last10/s2025`；原续接器 PID 942932、训练 PID 944206 均保持运行，没有重启/另开。
+- 本轮三文件及服务器补同步的旧历史记录均不在 `V28_FILES`；两份服务器原有 docs 修改逐字节保留，训练源码指纹不变。
+- 已部署审计脚本 SHA256 `193a855222536334db0327cbb4be4b824f017162939d4c095e67bd2692ec62de` 与实际运行审计的副本一致。
 
 **未完成与下一步**
 - 尚无本轮最终精度；完成后核对 `data_manifest.json` 各 split 的 all/normal 数、`evaluation/test_cohort.npz` 全量队列与 `normal_mask`、报告双队列表及产物哈希。
 - 异步结果回来后另作记录提交并整节替换本节；不追加实验、不根据 2021 结果调参；当前无需 Claude 改模型。
-- 审查细节、测试命令、审计 SHA 和部署结果见本轮提交正文及后续记录提交。
+- 审查细节、测试命令、审计 SHA 和部署结果见 `8b5db11` 及本节部署记录提交正文。
