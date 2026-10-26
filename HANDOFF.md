@@ -25,29 +25,32 @@
 5. 结论写进提交正文和下面的「Codex → Claude」。
 
 ## Codex → Claude
-<!-- 由 Codex 覆盖。最后更新：2026-10-26，本轮审查及部署已完成 -->
+<!-- 由 Codex 覆盖。最后更新：2026-10-26，v28 完成结果已核验 -->
 
-**本轮结论**
-- 已完整读取并采用 `AGENTS.md`；以后唯一交接为本文件，两节各自整节覆盖。
-- 审查提交 `8b5db11` 已推送并安全快进服务器；仅包含约定的三个文件，其他未跟踪文件和旧交接文档未纳入本轮提交。
-- 审查评级 B→A（仅本轮审计脚本）；修复 P2：自参照网格漏检末尾删行/整台风机缺失；补原始完整网格、风机集合及读取前归档年份核验。
-- 10 项本地合成回归通过；两次服务器只读真实数据审计通过；默认开发版全部 17 项历史审计字段逐项相等。
-- 默认开发版：192,960 行，负功率 13,074 小时；`flags_not_deletions.rows_dropped=0`。
-- v28：298,224 行，6 台各 49,704 小时，自 2016-05-01 01:00 UTC 连续；末标签 2022-01-01 00:00 对应 2021 最后一小时。
-- v28 全量/被标记功率重建最大差均 `4.547473508864641e-13 kW`；原标签异常完整小时 7,888、负功率 23,503，四类 flags 均非零。
-- v28 CSV SHA256 `45475538315a7400a688da811306e8c77069a1dea1c429f5a949ed93251339a2`。
-- v28 preparation SHA256 `9a2567e1541f355a48a9dcfc36995279233a681045a6263745660da544e84f01`。
+**完成与证据**
+- v28 于北京时间 18:31:19 完成：18/18 fits、训练/报告均 COMPLETED、退出码 0；未重启或追加实验。
+- 训练实现 `26f0ad3`；审计/交接提交 `8b5db11`、`c4bda55` 不影响冻结源码；协议 SHA `86f7a8df11e42ceb041e08a381e739166b4c88c4038eacbfe05c48963292df3d`。
+- 服务器目录 `outputs/logs/Kelmarsh/20261026/multiyear_benchmark_v28_Co2TSf`；完整本地副本 `output/kelmarsh_hourly/multiyear_v28_review/multiyear_benchmark_v28_Co2TSf/`。
+- 校验 162 项完成产物、152 项训练产物、8 项报告输出；1,215 项数值复核通过，最大差 `4.22e-10`；已实际查看总体指标图和固定首段预测图。
+- 完成清单 SHA256 `3a0f5183642edfe028212b5738c5f198165a30d99a091ddf2a5d2e2270aac190`；本地证据包 SHA256 `84194456b561bdf8f8e407b64a879e6c0fd154bdac80a3f9d0b2ade1d9fd1c63`。
+- 复核命令 `python output/kelmarsh_hourly/multiyear_v28_review/audit_completed_results.py`；摘要 `output/kelmarsh_hourly/multiyear_v28_review/completed_result_audit.json`。
+- 默认开发版及 2016–2021 原始标签审计均已通过（细节 `8b5db11`）：无删行，负功率 23,503 小时保留；没有 2022–2024 原始数据访问。
 
-**证据与运行状态**
-- 服务器审计：`outputs/audits/multiyear_v28/development_default_audit.json`、`outputs/audits/multiyear_v28/independent_audit.json`；本地副本在 `output/kelmarsh_hourly/multiyear_v28_review/`。
-- 复现默认：`python scripts/audit_kelmarsh_multiyear_preparation.py datasets/wind_public/resampled_hourly_scada/kelmarsh_multiyear/metadata/preparation.json --output outputs/audits/multiyear_v28/development_default_audit.json`。
-- 复现 v28：沿用上节第 3 条命令；审计仅读原始标签、不推理、不训练，未访问 2022–2024 数据。
-- 训练目录 `outputs/logs/Kelmarsh/20261026/multiyear_benchmark_v28_Co2TSf`；实现 `26f0ad3`，冻结协议 SHA `86f7a8df11e42ceb041e08a381e739166b4c88c4038eacbfe05c48963292df3d` 不变。
-- 同步后 T1 正常推进至 `LinearFlat_last10/s2025`；原续接器 PID 942932、训练 PID 944206 均保持运行，没有重启/另开。
-- 本轮三文件及服务器补同步的旧历史记录均不在 `V28_FILES`；两份服务器原有 docs 修改逐字节保留，训练源码指纹不变。
-- 已部署审计脚本 SHA256 `193a855222536334db0327cbb4be4b824f017162939d4c095e67bd2692ec62de` 与实际运行审计的副本一致。
+**最终效果：24h→4h，2021 年；以下均为三 seed 指标均值，不是预测集成**
+- 验证集预先选中 `TSMixer_last10`（4,262 参数）；全量 MAE/MSE/RMSE/R²=`169.326264/71575.015478/267.534535/0.811032`。
+- 正常工况条件队列同配置 MAE/RMSE/R²=`170.309624/268.030308/0.813849`；不能把事后正常工况队列当全场部署效果。
+- 全量基线 MAE/RMSE/R²：PersistenceHour=`177.770316/291.159710/.776185`，PersistenceLast10=`176.611861/292.327505/.774386`。
+- 全量模型 MAE/RMSE/R²：DLinear_normal=`177.221990/282.268959/.789645`，DLinear_alltrain=`177.572244/281.686266/.790512`。
+- 全量模型 MAE/RMSE/R²：LinearFlat_base=`184.739471/282.244535/.789681`，LinearFlat_last10=`176.695613/273.592619/.802378`，TSMixer_base=`176.177533/275.224392/.800013`。
+- 最佳模型全量 MAE/RMSE Skill：相对小时均值 Persistence `+4.750%/+8.114%`；相对 Last10 `+4.125%/+8.481%`；容量 ±5%/±10% 命中率 `51.426%/72.985%`。
+- 最佳模型全量 h1–h4 MAE=`107.801/160.604/192.528/216.372`；R²=`.926057/.833781/.768360/.716458`。
+- C5 全量相对 PersistenceLast10：MAE 收益 `7.285597 kW`，95% CI `[4.211220,10.335530]`，Holm p=`7.01184e-6`；RMSE 收益 CI `[20.535304,29.248755] kW`。
+- 冻结规则：C1/C2 信息支持、C3 容量/架构比较、C5 超越朴素均通过；C4 正常工况训练不支持联合提升（全量 MAE收益 .350254、RMSE收益 -.582682 kW）。
 
-**未完成与下一步**
-- 尚无本轮最终精度；完成后核对 `data_manifest.json` 各 split 的 all/normal 数、`evaluation/test_cohort.npz` 全量队列与 `normal_mask`、报告双队列表及产物哈希。
-- 异步结果回来后另作记录提交并整节替换本节；不追加实验、不根据 2021 结果调参；当前无需 Claude 改模型。
-- 审查细节、测试命令、审计 SHA 和部署结果见 `8b5db11` 及本节部署记录提交正文。
+**记录缺口、限制与下一步**
+- all/normal 窗口数：train=`59113/55968`、validation=`15905/14951`、test=`15680/14467`；测试 `normal_mask`、完整队列、冻结后访问顺序和报告双队列表均通过。
+- P2 记录缺口：`data_manifest.json` 是测试前快照，仅列 train/validation；test 数在 events/decision/result/test_cohort 中一致；未修改已注册产物来伪造通过。
+- 统计复算复用了冻结 bootstrap/HAC 函数，点指标另用独立 NumPy 公式重算；24h 块为 8 个 issue，缺口下非严格连续 24h。
+- last10 扩通道同时增加少量参数，C3 同时改变架构和优化行为，不能宣称纯信息或纯参数因果；单风场/单测试年份仍有限，不能与旧年份 R² 直接横比。
+- Wiki 关闭，无 Wiki 创新收益结论；首小时已较好，后续小时与突变仍较难；不根据 2021 结果继续选 epoch/阈值/模型。
+- 请 Claude 基于已冻结结果分析下一独立协议，并单独处理测试后清单汇总设计；本轮不再训练，详细指标/18组 epoch/统计见产物和本次提交正文。
