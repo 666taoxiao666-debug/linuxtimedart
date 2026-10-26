@@ -28,6 +28,23 @@
 
 数据准备 PID `896486`，日志 `outputs/launch_logs/multiyear_v28_prepare_20261026_101813.log`。只准备 2016–2021，2022–2024 不读。2016–2019 将与已登记开发 CSV 逐列核验，功率曲线只拟合 2016–2019。若预检失败，只修实现问题并重新预检，不启动 fit。
 
+### 2026-10-26 13:46（UTC+8）实际状态
+
+**尚未开始真实 fit，也没有新的精度指标或真实预测图。** 原数据准备 PID `896486` 已因 HTTP `ChunkedEncodingError` 退出；原始分片保留。2020 的三个分片完整，另一段尚缺约 6.7 MB。这是数据传输失败，不是模型训练失败。
+
+服务器已启动一次性串行续接器 PID `920032`，当前数据准备子进程 `920051`；路径 `outputs/launch_logs/continue_v28_once_26f0ad3.sh`，脚本 SHA-256 `dafc71dec6c76f77cc11ffef1c32fa78ad63981d9a1c610240bdea912c4674dc`，日志 `outputs/launch_logs/multiyear_v28_continuation_26f0ad3.log`。该续接器在服务器脱离 SSH 运行：等待已存在的数据进程结束；在没有已发布准备产物时最多三次复用原下载分片；有 CSV 但没有 metadata 时停止，不覆盖；数据完成后执行正式 preflight，通过后只启动一次冻结实验。若结果指针已存在，只读状态后退出。源码变化、预检失败或数据三次续传仍失败均停止，不放宽任何哈希或门槛。没有创建新的定时任务或循环模型搜索。
+
+本机已完整下载两份官方 ZIP 并验证 MD5，供网络恢复后复用，目录 `output/kelmarsh_hourly/multiyear_v28_review/download/`：
+
+| 文件 | bytes | 官方 MD5 | SHA-256 |
+|---|---:|---|---|
+| Kelmarsh_SCADA_2020_3086.zip | 473677799 | e189e02da98f32e74acc72e8559ef0db | 1cf3ad08aaed0952055b3668e39f73bbea8e09654d28b104ad2c4041b256452a |
+| Kelmarsh_SCADA_2021_4456.zip | 467454435 | 4e0ef3d65f067fd3d8f3d30e79ab01ae | 9b9aed27db92ede492d83d59083c2d4463d74716746606adcb08b2b3bb393ea6 |
+
+本机到服务器的大文件上传也很慢，已停止本任务自己创建的 SCP 进程；服务器上的 `.incoming_codex` / `.incoming_jump_codex` 是未完成传输，不能当作有效 ZIP。没有停止、暂停或修改其他用户 `gyx` 的 GPU 任务。
+
+读取当前状态：先看续接器日志，再看 `outputs/logs/Kelmarsh/multiyear_benchmark_latest.txt`；指针尚不存在时不能声称训练已开始。不要为此新建第二次实验或再次启动续接器。续接器和训练启动器都有独占锁。
+
 ## 0. 请 GPT 做什么（测试 + 训练）
 
 1. **审查**：按第 6 节审查附录源码，有问题直接修，并写明改了哪里。协议若需改动，必须在任何真实 fit 之前改并重新冻结，同时更新控制器里的 SHA 常量。
@@ -94,7 +111,7 @@
 
 **臂（共 18 个 fit = 6 种配置 × 3 个 seed）：**
 
-| 臂 | 家族 | 输入 | 训练与选 epoch 的队列 | 参数 |
+| 臂 | 家族 | 输入 | 训练队列（所有臂选 epoch 均为 normal） | 参数 |
 |---|---|---|---|---:|
 | PersistenceHour | 上一小时均值 | — | — | 0 |
 | PersistenceLast10 | 最后 10 分钟功率 | — | — | 0 |
@@ -125,10 +142,10 @@
 | C5 | 验证集选出的配置 vs PersistenceLast10 | 是否打败更强的朴素基线 |
 
 **判据（预声明）：**
-- `information_supported`：C1 或 C2 在 test normal 上 MAE 增益区间下界 > 0 且 RMSE 增益 > 0，并且同一比较在 test all 上 MAE 增益 ≥ 0。
+- `information_supported`：C1 或 C2 在 test normal 上 MAE 增益区间下界 > 0、Holm p≤0.05 且 RMSE 增益 > 0，并且同一比较在 test all 上 MAE 增益 ≥ 0。仅支持包含更多输入且参数更多的方案，不是等参数信息归因。
 - `capacity_supported`：C3 满足同样条件。
-- `training_cleaning_supported`：C4 在 normal 上区间下界 > 0，且在 all 上增益 ≥ 0。
-- `beats_naive`：C5 在 normal 和 all 上区间下界都 > 0。
+- `training_cleaning_supported`：C4 在 normal 上区间下界 > 0 且 Holm p≤0.05，在 all 上增益 ≥ 0。
+- `beats_naive`：C5 在 normal 和 all 上区间下界都 > 0 且各自 Holm p≤0.05。
 
 **下一轮：** 从验证集选出的配置出发，最多再加一组信息，用 2022 年做确认（由下一轮自己的冻结协议准备）。2021 不再用作确认年；2023–2024 继续封存。任何臂、seed、epoch、阈值、通道都不能依据 test 结果来选。
 
@@ -138,13 +155,13 @@
 
 | 文件 | 行数 | SHA-256（LF，前 16 位） | 作用 |
 |---|---:|---|---|
-| `configs/kelmarsh_multiyear_base_benchmark_protocol_v28.json` | 119 | `2a488b44734b0ad1` | 冻结协议 |
+| `configs/kelmarsh_multiyear_base_benchmark_protocol_v28.json` | 120 | `86f7a8df11e42ceb` | 冻结协议 |
 | `models/LinearFlat.py` | 22 | `b81c347fd2aea5c3` | 展平线性：`Linear(24·C → 4)` |
-| `utils/kelmarsh_multiyear_benchmark.py` | 240 | `cd577677d8bb5417` | 不依赖 torch：协议校验、参数公式、D0 身份核验、指标、配对比较、Holm、验证集选择、判据、`evaluate_registered` |
-| `scripts/train_kelmarsh_multiyear_benchmark.py` | 745 | `2fd952608e77a15c` | 控制器：D0/T1/S1/E1、通用训练器、断点恢复、锁、指针、预检 |
-| `scripts/report_kelmarsh_multiyear_benchmark.py` | 167 | `937efb6a4813e8b0` | 不依赖 torch 的报告：从登记数组独立重算，与登记判据不一致即拒绝 |
+| `utils/kelmarsh_multiyear_benchmark.py` | 266 | `313e2102a80abc93` | 不依赖 torch：协议校验、参数公式、D0 身份核验、指标、配对比较、Holm、验证集选择、判据、`evaluate_registered` |
+| `scripts/train_kelmarsh_multiyear_benchmark.py` | 785 | `f0455cda23cf0398` | 控制器：D0/T1/S1/E1、通用训练器、断点恢复、锁、指针、预检 |
+| `scripts/report_kelmarsh_multiyear_benchmark.py` | 207 | `afbebb26ed1fde4e` | 不依赖 torch 的报告：从登记数组独立重算，与登记判据不一致即拒绝 |
 | `scripts/train/Kelmarsh_launch_multiyear_benchmark.sh` | 89 | `2bd0aa347a75f4d8` | 启动器（由 v26 启动器改名，LF） |
-| `tests/test_kelmarsh_multiyear_benchmark.py` | 295 | `f5bed3e984a358f7` | 测试 |
+| `tests/test_kelmarsh_multiyear_benchmark.py` | 352 | `fcb90dadcb006237` | 测试 |
 
 ## 4. 关键实现说明
 
