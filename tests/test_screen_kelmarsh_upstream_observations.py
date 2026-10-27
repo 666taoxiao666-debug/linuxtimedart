@@ -37,6 +37,20 @@ class ScreenTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'truncated'):
             screen.read_badc_csv(path)
 
+    def test_real_ceda_long_name_units(self):
+        path = self.badc(['1,2021-01-01 00:00,10,90,1000,1'])
+        path.write_text(path.read_text().replace('unit,wind_speed,knots', 'long_name,wind_speed,wind speed,knots')
+                        .replace('unit,wind_direction,degrees', 'long_name,wind_direction,wind direction,deg true')
+                        .replace('unit,msl_pressure,hPa', 'long_name,msl_pressure,mean sea level air pressure,hPa'))
+        obs, files, _ = screen.load_observations(self.root, {1})
+        self.assertAlmostEqual(obs[1].wind_speed.iloc[0], 10*1852/3600)
+
+    def test_conflicting_header_units_rejected(self):
+        path = self.badc(['1,2021-01-01 00:00,10,90,1000,1'])
+        path.write_text('long_name,wind_speed,wind speed,m/s\n'+path.read_text())
+        with self.assertRaisesRegex(ValueError, 'Conflicting BADC unit'):
+            screen.read_badc_csv(path)
+
     def test_knots_to_ms_and_version_one(self):
         self.badc(['1,2021-01-01 00:00,99,90,1000,0', '1,2021-01-01 00:00,10,90,1000,1'])
         obs, files, _ = screen.load_observations(self.root, {1})

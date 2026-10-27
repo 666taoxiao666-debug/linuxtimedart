@@ -70,9 +70,17 @@ def read_badc_csv(path):
         if end is None:
             raise ValueError(f"{path}: truncated BADC-CSV (no end data)")
         out = pd.read_csv(io.StringIO("\n".join(lines[start + 1:end])), low_memory=False)
-        out.attrs['units'] = {row[1].strip().lower(): row[2].strip().lower()
-                              for row in csv.reader(lines[:start])
-                              if len(row) >= 3 and row[0].strip().lower() == 'unit'}
+        units = {}
+        for row in csv.reader(lines[:start]):
+            key = row[0].strip().lower() if row else ''
+            unit = (row[2] if key == 'unit' and len(row) >= 3 else
+                    row[3] if key == 'long_name' and len(row) >= 4 else '').strip().lower()
+            if unit:
+                name = row[1].strip().lower()
+                if name in units and units[name] != unit:
+                    raise ValueError('Conflicting BADC unit declarations')
+                units[name] = unit
+        out.attrs['units'] = units
     out.columns = [str(c).strip().lower() for c in out.columns]
     return out
 
@@ -156,7 +164,7 @@ def load_observations(root, candidates):
         if pressure and units.get(pressure) not in ('hpa', 'mb', 'millibars'):
             raise ValueError(f'{path}: unsupported or missing pressure unit')
         direction = column(data, 'wind_direction', 'mean_wind_dir')
-        if units.get(direction) not in ('degrees', 'degree', 'degrees true', 'degrees_true'):
+        if units.get(direction) not in ('degrees', 'degree', 'degrees true', 'degrees_true', 'deg true'):
             raise ValueError(f'{path}: unsupported or missing wind-direction unit')
         frame["msl_pressure"] = pd.to_numeric(data.loc[keep, pressure], errors="coerce") if pressure else np.nan
         if (frame['time'].dropna().dt.year != year).any():

@@ -32,33 +32,31 @@
 5. 结论写进提交正文和「Codex → Claude」。
 
 ## Codex → Claude
-<!-- 由 Codex 覆盖。最后更新：2026-10-27，已检查用户指定令牌路径，服务器文件不存在 -->
+<!-- 由 Codex 覆盖。最后更新：2026-10-27，CEDA认证通过，下载器待服务器预检启动 -->
 
-**结论与修改（本轮仅筛选，不训练、不写v30）**
-- 【最终评级】B（修正后的筛选代码可用，真实气象结论仍缺证据）；【必须立即修复】下述已修；【重跑/测试】不重跑旧模型，新测试及下载回归均通过。
-- 原脚本需修正后使用；P1：气象设计额外含功率区间项，原intercept-only对照会把工况修偏归因于天气。主对照改为相同intercept+issue-power-regime；原2%双年门槛保留，原偏差对照另报。
-- P1：补knots→m/s、方向/气压单位、version_num=1、截断BADC拒绝、冲突重复观测拒绝、观测年份与文件年份核对。
-- P1/P2：预测输入必须匹配原completed清单、种子/窗口/小时/风机/年份身份；无效输入写passed=null，不能冒充阴性结果或保留过期成功。
-- 半年边界丢弃跨界目标；只用拟合半年的特征尺度；分别报早拟合→晚评估与反向结果、有效覆盖及同队列场内对照。
-- 双向半年筛选是回顾性开发证据；L1/L2系数不同，不能据此说同一模型联合改善或内部信息已耗尽。dropout训练损失较高也不能证明不过拟合。
-- `scripts/screen_kelmarsh_upstream_observations.py`；新增测试 `tests/test_screen_kelmarsh_upstream_observations.py`；新增仅原始字节下载器 `scripts/acquire_kelmarsh_sealed_years.py`。
+**结论与本轮修改：只获取数据及开发筛选，不训练、不写v30**
+- 评级B：筛选方法修正见b9e7b19；真实合格站点数、天气收益和passed仍待完整开发数据，不能先下结论。
+- CEDA认证已解决：用户提供的令牌通过加密连接存入服务器`/home/XT/.ceda_token`，权限0600；官方元数据请求HTTP200。只作Authorization头，未写入仓库/命令参数/日志。
+- 固定MIDAS Open v202607，DOI`10.5285/d04207b551674c07801b7d4e6d883e50`，150km内335个历史站点，其中118个元数据年份与2016–24重叠；不等于合格站点。
+- 新增`scripts/acquire_midas_upstream_observations.py`和对应测试：官方大小/MD5固定计划、两请求限流、Range续传、失败保留字节、单进程锁、SHA256清单。
+- 公共目录请求不发送令牌，丢弃content预览；原始数据请求拒绝重定向/登录HTML，错误不回显令牌。
+- 2016–22单独development根目录；2023–24独立sealed根目录，仅原始字节校验，不解析/解压/推理。
+- 真实Scampton2016文件MD5`76a21c8b7dbdf08d6485f594e7f02f2c`、3,223,499字节已验收；8,784条version1记录，无冲突重复。
+- 发现真实CEDA把单位置于`long_name`第4列；最小修正筛选解析器并新增回归测试，支持`deg true`，冲突声明拒绝；knots仍按1852/3600转换。
+- 开发文件下载完自动运行原双年筛选，再获取sealed字节；筛选绑定输入/源码/结果哈希，同一证据只算一次，部分发布或身份不一致拒绝重算。
+- 原主对照为相同intercept+issue-power-regime，双年lead2–4 MAE与RMSE各≥2%规则不变；半年双向回顾诊断不是独立确认，L1/L2系数不同。
+- 本地24项获取测试（23通过、1项POSIX权限检查需服务器执行）+31项筛选测试+7项下载回归通过；尚须服务器全项预检及真实2016文件解析核验。
 
-**核验与数据进度**
-- 本轮Claude仅修改HANDOFF中令牌说明，没有新模型或脚本改动；用户称令牌在`~/.ceda_token`，已直接SSH到XT@100.89.238.37核验。
-- 审查提交 `b9e7b19` 已推送并服务器快进；本地/服务器29项新测试+7项既有下载测试全部通过，无跳过；真实v28/v29登记预测只读载入通过，2021/2022队列15,680/16,949窗口；未训练/推理新模型。
-- 最新MIDAS为v202607（不是预计v202507），DOI `10.5285/d04207b551674c07801b7d4e6d883e50`，OGLv3；源站要求注册CEDA账户。
-- 当前登录用户XT、home=/home/XT；`/home/XT/.ceda_token`不存在（不是权限错误或空文件），`/home/XT/.config/ceda/access_token`及home中近似文件名也未找到；本地`C:/Users/XT/.ceda_token`同样不存在。
-- 气象筛选状态BLOCKED_TOKEN_FILE_MISSING：未读取或输出任何秘密，尚不能带Bearer头验证认证；请用户确认实际存放的服务器/账号/绝对路径，不要贴令牌正文。合格站点数、增益和passed仍未产生。
-- 认证审计 `outputs/audits/upstream_screen/access_audit_20261027.json`，SHA `f44ec2f4d52fd9d94b6c23573a31796e9a62a7c273db3d3c1d1ac648600bd20b`；本地副本 `output/upstream_observation_review/`。
-- MIDAS数据计划：半径150km站点2016–2024；2016–22开发，2023–24放独立sealed目录且不解析。qc-version-1为归档最新值，1h滞后不能证明实时发布可用。
-- Kelmarsh公开SCADA原始2023/2024共1,420,698,115字节，授权仅下载与大小/官方MD5/SHA256核验，绝不解压、准备或推理。
-- 首轮PID977895已因网络ChunkedEncodingError退出，保留145,489,920字节分片；核对无存活同类进程及b9e7b19源码身份后，按原命令断点续传，未改代码/协议或丢弃旧字节。
-- 当前PID984553真实Python进程仍存活，STATUS=DOWNLOADING，分片增至214,958,080字节，两年均尚未整文件验收。总量1,420,698,115字节，不可称“下载完成”；位置 `datasets/upstream_observations/sealed/kelmarsh`；未停止或重复启动。
-- 首轮日志 `outputs/audits/upstream_screen/sealed_download_20261027.log` 保留；续传日志同目录 `sealed_download_resume_20261027_1246.log`，PID文件 `sealed_download.pid`；单进程锁保留。
-- 官方记录 `10.5281/zenodo.16807551`；2023 MD5 `685d9589347d1866f6f2cfe45b9af4f4`，2024 MD5 `e9e3318f5b393d8596ff1801f8da0414`。
-- 安全快进前后服务器两份docs原改动SHA均一致；未停止其他任务、未初始化CUDA；只新增本轮文件，v28/v29哈希锁不变。
+**位置与异步任务**
+- MIDAS开发：`datasets/upstream_observations/midas_open_v202607/development`；封存：`datasets/upstream_observations/sealed/midas_open_v202607`。
+- 计划/进度/筛选：`outputs/audits/upstream_screen/midas_v202607/{download_plan.json,download_manifest.json,screen.json,screen_completed.json}`。
+- 入口：新获取脚本`--development-root`、`--sealed-root`、`--audit-root`及HANDOFF上半节原`--eval-2021/2022`，凭据用默认文件，不传正文。
+- Kelmarsh sealed旧下载PID984553上次仍存活，已保留214,958,080字节分片；本轮继续核对真实状态，不重启存活任务。
+- Kelmarsh总量1,420,698,115字节，DOI`10.5281/zenodo.16807551`，目录`datasets/upstream_observations/sealed/kelmarsh`；尚无整年完成结论。
+- 原续传日志`outputs/audits/upstream_screen/sealed_download_resume_20261027_1246.log`，原源码和单进程锁保留。
+- 预检后部署及实际PID/文件数/字节数将以异步记录提交覆盖本节；不把部署准备当下载完成。
 
-**下一步**
-- 先核对下载PID/日志；存活就等待，结束后核对两年官方MD5和SHA256；若中断，仅同一命令续字节，不重复完整文件或重跑v28/v29。
-- 先确认真实存在且仅本人可读的CEDA令牌文件；找到后只在服务器进程内作为Bearer头使用，再下载固定版本元数据/站点及哈希、运行筛选；不把秘密放进命令行、Git或日志。
-- 无真实上游筛选结果前，Claude不要写“已支持未来天气瓶颈/通过v30门槛”；既有v29指标详见c6e1b72正文和结果文件。
+**给Claude的下一步**
+- 等真实开发筛选产物；核对合格站点、逐年/逐小时增益、覆盖和passed后才决定v30；输入无效passed=null，不能当阴性天气结果。
+- qc-version1为回顾归档，1h滞后不证明实时发布可用；不把本轮筛选当信息天花板证明。
+- 不重复旧模型训练，不解析封存年份，不新增阈值/种子搜索；凭据过期再由用户更新私有文件。
