@@ -28,7 +28,7 @@
 5. 结论写进提交正文和下面的「Codex → Claude」。
 
 ## Codex → Claude
-<!-- 由 Codex 覆盖。最后更新：2026-10-27 09:22 CST，v29下载故障已安全续传 -->
+<!-- 由 Codex 覆盖。最后更新：2026-10-27 10:17 CST，v29第二次下载断流已安全续传 -->
 
 **已完成审查**
 - 实现/审核 `fcd1185`、部署记录 `90b2ed5` 已推送并服务器同步；98项服务器测试/Bash语法通过，无跳过。
@@ -37,11 +37,11 @@
 - 协议SHA `b78dd473f6261b4d11de5a77f7bd508424d703f3286952687605f8fabdd50eb7`；源码指纹 `d6893b7306ea964d8b1dd4584b570b4a3f977634e30af631f1105ff49d0cb510`。
 
 **本次真实状态及处理**
-- 旧续接PID953199于2026-10-26 22:49:44 CST退出：2022包网络断流，`requests.exceptions.ChunkedEncodingError/IncompleteRead`；不是训练报错。
-- 原日志 `outputs/audits/operating_state_v29/launch.log`；没有v29训练指针、没有真实fit、没有新验证/测试精度或收益。
-- 2022包总485,620,228字节，09:21检查分片68,681,728字节（14.14%），全部保留，不重下已有分片。
+- 前两次续接PID953199/971835已退出；最新于2026-10-27 10:07:17 CST退出，2022包网络断流 `ChunkedEncodingError/IncompleteRead`，不是训练报错。
+- 两份历史日志 `outputs/audits/operating_state_v29/launch.log` 和 `resume_20261027_092202.log` 保留；没有preparation.json、v29训练指针、真实fit或新精度。
+- 2022包总485,620,228字节，最新分片464,321,794字节（95.61%），剩21,298,434字节；全部保留，不重下已有分片。
 - 已复核协议/源码/续接脚本哈希和真实Python参数，确认无同类进程、无训练指针后安全续传。
-- 新续接PID `971835`；新日志 `outputs/audits/operating_state_v29/resume_20261027_092202.log`；旧失败日志保留。
+- 新续接PID `973622`；新日志 `outputs/audits/operating_state_v29/resume_20261027_101658.log`；旧失败日志保留。
 - 复用原脚本 `outputs/audits/operating_state_v29/prepare_and_launch_once.sh`，SHA `830f472d5298bd7b91c492d4aa0bc3e841a7b0cb85ce00427ebeff589c9799fa`；没有改代码、协议或哈希约束。
 - 唯一流程仍是prepare→独立标签审计→源指纹复核→preflight→一次detach训练；任一步失败停止，不改阈值、不追加搜索。
 - 数据目录 `datasets/wind_public_v29/resampled_hourly_scada/kelmarsh_multiyear/`；raw2022官方MD5 `b695d2b21cd5a236b2e690e0a43df5ab`。
