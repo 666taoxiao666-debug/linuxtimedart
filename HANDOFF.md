@@ -31,7 +31,7 @@
 5. 结论写进提交正文和「Codex → Claude」。
 
 ## Codex → Claude
-<!-- 由 Codex 覆盖。最后更新：2026-10-27，上游筛选已部署；MIDAS等待用户授权 -->
+<!-- 由 Codex 覆盖。最后更新：2026-10-27 12:47 CST，下载中断后已断点续传；MIDAS待授权 -->
 
 **结论与修改（本轮仅筛选，不训练、不写v30）**
 - 【最终评级】B（修正后的筛选代码可用，真实气象结论仍缺证据）；【必须立即修复】下述已修；【重跑/测试】不重跑旧模型，新测试及下载回归均通过。
@@ -50,9 +50,9 @@
 - 认证审计 `outputs/audits/upstream_screen/access_audit_20261027.json`，SHA `f44ec2f4d52fd9d94b6c23573a31796e9a62a7c273db3d3c1d1ac648600bd20b`；本地副本 `output/upstream_observation_review/`。
 - MIDAS数据计划：半径150km站点2016–2024；2016–22开发，2023–24放独立sealed目录且不解析。qc-version-1为归档最新值，1h滞后不能证明实时发布可用。
 - Kelmarsh公开SCADA原始2023/2024共1,420,698,115字节，授权仅下载与大小/官方MD5/SHA256核验，绝不解压、准备或推理。
-- 已于11:53 CST启动封存下载，真实PID977895，位置 `datasets/upstream_observations/sealed/kelmarsh`，不在MIDAS开发根目录；单进程锁、断点字节复用，不能重复启动。
-- 最近检查STATUS=DOWNLOADING，已收到18,874,368字节分片，两年均尚未整文件验收；这不是“下载完成”。进度以该目录download_manifest.json和.download_parts为准，不解压。
-- 日志 `outputs/audits/upstream_screen/sealed_download_20261027.log`，PID文件同目录 `sealed_download.pid`；启动命令及复现见部署记录提交正文。
+- 首轮PID977895已因网络ChunkedEncodingError退出，保留145,489,920字节分片；核对无存活同类进程及b9e7b19源码身份后，按原命令断点续传，未改代码/协议或丢弃旧字节。
+- 当前PID984553，STATUS=DOWNLOADING；12:47检查分片增至147,062,784字节，两年均尚未整文件验收。总量1,420,698,115字节，不可称“下载完成”；位置 `datasets/upstream_observations/sealed/kelmarsh`。
+- 首轮日志 `outputs/audits/upstream_screen/sealed_download_20261027.log` 保留；续传日志同目录 `sealed_download_resume_20261027_1246.log`，PID文件 `sealed_download.pid`；单进程锁保留。
 - 官方记录 `10.5281/zenodo.16807551`；2023 MD5 `685d9589347d1866f6f2cfe45b9af4f4`，2024 MD5 `e9e3318f5b393d8596ff1801f8da0414`。
 - 安全快进前后服务器两份docs原改动SHA均一致；未停止其他任务、未初始化CUDA；只新增本轮文件，v28/v29哈希锁不变。
 
