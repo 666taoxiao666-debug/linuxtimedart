@@ -28,7 +28,7 @@
 5. 结论写进提交正文和下面的「Codex → Claude」。
 
 ## Codex → Claude
-<!-- 由 Codex 覆盖。最后更新：2026-10-27 10:17 CST，v29第二次下载断流已安全续传 -->
+<!-- 由 Codex 覆盖。最后更新：2026-10-27 10:35 CST，2022下载/审计/预检完成，v29正式训练已启动 -->
 
 **已完成审查**
 - 实现/审核 `fcd1185`、部署记录 `90b2ed5` 已推送并服务器同步；98项服务器测试/Bash语法通过，无跳过。
@@ -37,14 +37,14 @@
 - 协议SHA `b78dd473f6261b4d11de5a77f7bd508424d703f3286952687605f8fabdd50eb7`；源码指纹 `d6893b7306ea964d8b1dd4584b570b4a3f977634e30af631f1105ff49d0cb510`。
 
 **本次真实状态及处理**
-- 前两次续接PID953199/971835已退出；最新于2026-10-27 10:07:17 CST退出，2022包网络断流 `ChunkedEncodingError/IncompleteRead`，不是训练报错。
-- 两份历史日志 `outputs/audits/operating_state_v29/launch.log` 和 `resume_20261027_092202.log` 保留；没有preparation.json、v29训练指针、真实fit或新精度。
-- 2022包总485,620,228字节，最新分片464,321,794字节（95.61%），剩21,298,434字节；全部保留，不重下已有分片。
-- 已复核协议/源码/续接脚本哈希和真实Python参数，确认无同类进程、无训练指针后安全续传。
-- 新续接PID `973622`；新日志 `outputs/audits/operating_state_v29/resume_20261027_101658.log`；旧失败日志保留。
-- 复用原脚本 `outputs/audits/operating_state_v29/prepare_and_launch_once.sh`，SHA `830f472d5298bd7b91c492d4aa0bc3e841a7b0cb85ce00427ebeff589c9799fa`；没有改代码、协议或哈希约束。
-- 唯一流程仍是prepare→独立标签审计→源指纹复核→preflight→一次detach训练；任一步失败停止，不改阈值、不追加搜索。
-- 数据目录 `datasets/wind_public_v29/resampled_hourly_scada/kelmarsh_multiyear/`；raw2022官方MD5 `b695d2b21cd5a236b2e690e0a43df5ab`。
-- 审计目标 `outputs/audits/operating_state_v29/independent_audit.json`；训练指针 `outputs/logs/Kelmarsh/operating_state_v29_latest.txt`；未出现前不能宣称开训。
-- 查看新日志/真实进程和启动器 `--status`；不得因旧launch.log的历史报错再启动副本，不影响其他用户任务。
+- 2022包已完整下载485,620,228字节，独立重算官方MD5 `b695d2b21cd5a236b2e690e0a43df5ab` 一致；2016–2022数据准备完成，2023–24未访问。
+- 续接PID973622于10:34:28 CST正常退出code=0；日志 `outputs/audits/operating_state_v29/resume_20261027_101658.log`；旧网络失败日志保留。
+- 独立审计 `outputs/audits/operating_state_v29/independent_audit.json` passed=true：350,784行、42组质量记录、5,880小时原标签复核，最大浮点差4.55e-13kW；flags_not_deletions通过。
+- 数据CSV SHA `b7ba24a6e8f5a57b154adc769b90d6c40b5040c7e418f2b4b71912e710b7681c`；metadata SHA `1d0fe22fca7bc18eb3ece4f751bcd11a5a9f6e67a3deb91f6d579737a5fea262`。
+- 预检 `outputs/logs/Kelmarsh/operating_state_v29_preflight/20261027T023319Z_d6893b7306ea/preflight.json`：passed/tests/D0/smoke/namespace全部true；smoke指标是合成测试，不是正式精度。
+- 正式训练10:34启动，运行提交 `28455ab`；Bash PID974582、真实Python/GPU PID974606（检查时454MiB），仅一套控制器。
+- 运行目录 `outputs/logs/Kelmarsh/20261027/operating_state_v29_vEjzoZ`；指针 `outputs/logs/Kelmarsh/operating_state_v29_latest.txt`。
+- 当前TRAIN=RUNNING、REPORT=PENDING、stage=T1，第一组 `TSMixer_last10_normal/seed2024`；尚无本轮最终精度或收益，不能用预检或v28数字替代。
+- 启动日志 `outputs/logs/Kelmarsh/launcher/operating_state_v29_run_20261027_103428.log`，运行目录另有launch.log/status.json/progress.json；正常训练不重启。
+- 没有改冻结代码、协议或哈希约束，没有启动重复训练；源指纹复核→预检→一次detach原流程完成，不影响其他用户任务。
 - 请Claude暂不改冻结源码；结果到齐后再核对2022双队列/逐小时/统计并记录，不能拿v28结果冒充v29。
