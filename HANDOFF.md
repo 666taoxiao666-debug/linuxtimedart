@@ -3,7 +3,7 @@
 规则见 AGENTS.md：两节各由一方整节覆盖、不追加，每节不超过 40 行；历史用 `git log -p HANDOFF.md` 查。
 
 ## Claude → Codex
-<!-- 由 Claude 覆盖。最后更新：2026-10-27 第 1 次 -->
+<!-- 由 Claude 覆盖。最后更新：2026-10-27 第 2 次（追加第 6 条） -->
 
 **已读 v29（c6e1b72）及瓶颈诊断**（2021、2022 自此都是开发数据；复现：`python output/kelmarsh_hourly/operating_state_v29_review/claude_v29_bottleneck_diagnosis.py`，未跟踪的复核目录）
 - 模型本身没有发现缺陷：不过拟合（带 dropout 的训练损失 0.296 高于验证等价损失 0.263），约 10 个 epoch 后就平台；各臂差距在 2% 以内；校准斜率 0.91–0.97；3 seed 平均只再降 0.9 kW。
@@ -30,9 +30,13 @@
 3. 运行：`python scripts/screen_kelmarsh_upstream_observations.py --midas-root <下载目录> --metadata <站点元数据> --eval-2021 outputs/logs/Kelmarsh/20261026/multiyear_benchmark_v28_Co2TSf/evaluation --eval-2022 outputs/logs/Kelmarsh/20261027/operating_state_v29_vEjzoZ/evaluation --output outputs/audits/upstream_screen/screen.json`
 4. 报告：合格站点数、覆盖率、各年各 lead 的增益、passed。通过则由 Claude 写 v30（已封存的 2023 年 Kelmarsh 与站点数据在冻结后才解析）；不通过就如实记录。
 5. 结论写进提交正文和「Codex → Claude」。
+6. 追加下载（用户 2026-10-27 决定：Kelmarsh 为主，SDWPF 完整版与 Penmanshiel 作外部验证）。排在当前下载之后，同样一次下完。
+   - SDWPF 完整版：figshare 24798654；Penmanshiel：Zenodo 5946808 的最新版本。都下载全部文件，按官方校验值或 SHA256 核对。
+   - 封存：两者整体放入 sealed 目录，只记录文件清单、大小、哈希和许可，可以读 README 与列名，不读数据值、不画图、不统计。
+   - 等 Kelmarsh 上的方案定型、外部验证协议冻结后才解析。用哪个、怎么报告由用户确认（Claude 建议两个都跑、都报告，不按效果挑选）。
 
 ## Codex → Claude
-<!-- 由 Codex 覆盖。最后更新：2026-10-27，CEDA认证通过，下载器待服务器预检启动 -->
+<!-- 由 Codex 覆盖。最后更新：2026-10-27，认证/服务器预检通过，两个原始数据下载已启动 -->
 
 **结论与本轮修改：只获取数据及开发筛选，不训练、不写v30**
 - 评级B：筛选方法修正见b9e7b19；真实合格站点数、天气收益和passed仍待完整开发数据，不能先下结论。
@@ -45,16 +49,18 @@
 - 发现真实CEDA把单位置于`long_name`第4列；最小修正筛选解析器并新增回归测试，支持`deg true`，冲突声明拒绝；knots仍按1852/3600转换。
 - 开发文件下载完自动运行原双年筛选，再获取sealed字节；筛选绑定输入/源码/结果哈希，同一证据只算一次，部分发布或身份不一致拒绝重算。
 - 原主对照为相同intercept+issue-power-regime，双年lead2–4 MAE与RMSE各≥2%规则不变；半年双向回顾诊断不是独立确认，L1/L2系数不同。
-- 本地24项获取测试（23通过、1项POSIX权限检查需服务器执行）+31项筛选测试+7项下载回归通过；尚须服务器全项预检及真实2016文件解析核验。
+- 本地24项获取测试（23通过、1项POSIX权限检查跳过）+31项筛选测试+7项下载回归通过；服务器62项全部通过、无跳过，真实2016文件解析为8,784条m/s观测。
 
 **位置与异步任务**
 - MIDAS开发：`datasets/upstream_observations/midas_open_v202607/development`；封存：`datasets/upstream_observations/sealed/midas_open_v202607`。
 - 计划/进度/筛选：`outputs/audits/upstream_screen/midas_v202607/{download_plan.json,download_manifest.json,screen.json,screen_completed.json}`。
 - 入口：新获取脚本`--development-root`、`--sealed-root`、`--audit-root`及HANDOFF上半节原`--eval-2021/2022`，凭据用默认文件，不传正文。
-- Kelmarsh sealed旧下载PID984553上次仍存活，已保留214,958,080字节分片；本轮继续核对真实状态，不重启存活任务。
+- 源码提交`12b82e7`已推送GitHub并服务器快进；两份服务器docs原改动SHA不变；未初始化CUDA、未停止其他用户进程。
+- 确认无同类存活进程后，MIDAS首次脱离SSH启动PID994152；日志`outputs/audits/upstream_screen/midas_v202607_launch.log`，PID文件同目录`midas_v202607.pid`。
+- Kelmarsh旧PID984553已因ChunkedEncodingError退出；不是数据丢失，`.download_parts`四片合计231,997,440字节，顶层.part为零只是占位。
 - Kelmarsh总量1,420,698,115字节，DOI`10.5281/zenodo.16807551`，目录`datasets/upstream_observations/sealed/kelmarsh`；尚无整年完成结论。
-- 原续传日志`outputs/audits/upstream_screen/sealed_download_resume_20261027_1246.log`，原源码和单进程锁保留。
-- 预检后部署及实际PID/文件数/字节数将以异步记录提交覆盖本节；不把部署准备当下载完成。
+- 核对无同类运行后，Kelmarsh原命令原目录续传PID994153，日志`outputs/audits/upstream_screen/sealed_download_resume_20261027_1505.log`；原源码、分片和锁保留。
+- 服务器存储I/O压力一度约94%，预检曾磁盘等待但已通过；两个任务已确认真实进程，下载完成数/筛选尚待产物，不把启动当完成。
 
 **给Claude的下一步**
 - 等真实开发筛选产物；核对合格站点、逐年/逐小时增益、覆盖和passed后才决定v30；输入无效passed=null，不能当阴性天气结果。
