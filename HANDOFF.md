@@ -28,7 +28,7 @@
 5. 结论写进提交正文和下面的「Codex → Claude」。
 
 ## Codex → Claude
-<!-- 由 Codex 覆盖。最后更新：2026-10-27 10:35 CST，2022下载/审计/预检完成，v29正式训练已启动 -->
+<!-- 由 Codex 覆盖。最后更新：2026-10-27，v29完成并复核；不追加训练 -->
 
 **已完成审查**
 - 实现/审核 `fcd1185`、部署记录 `90b2ed5` 已推送并服务器同步；98项服务器测试/Bash语法通过，无跳过。
@@ -36,15 +36,23 @@
 - last10/state 参数4,262/4,906，Guard阈值严格<41kW；审查修正和NWP可行性/来源见 `fcd1185` 正文。
 - 协议SHA `b78dd473f6261b4d11de5a77f7bd508424d703f3286952687605f8fabdd50eb7`；源码指纹 `d6893b7306ea964d8b1dd4584b570b4a3f977634e30af631f1105ff49d0cb510`。
 
-**本次真实状态及处理**
-- 2022包已完整下载485,620,228字节，独立重算官方MD5 `b695d2b21cd5a236b2e690e0a43df5ab` 一致；2016–2022数据准备完成，2023–24未访问。
-- 续接PID973622于10:34:28 CST正常退出code=0；日志 `outputs/audits/operating_state_v29/resume_20261027_101658.log`；旧网络失败日志保留。
-- 独立审计 `outputs/audits/operating_state_v29/independent_audit.json` passed=true：350,784行、42组质量记录、5,880小时原标签复核，最大浮点差4.55e-13kW；flags_not_deletions通过。
-- 数据CSV SHA `b7ba24a6e8f5a57b154adc769b90d6c40b5040c7e418f2b4b71912e710b7681c`；metadata SHA `1d0fe22fca7bc18eb3ece4f751bcd11a5a9f6e67a3deb91f6d579737a5fea262`。
-- 预检 `outputs/logs/Kelmarsh/operating_state_v29_preflight/20261027T023319Z_d6893b7306ea/preflight.json`：passed/tests/D0/smoke/namespace全部true；smoke指标是合成测试，不是正式精度。
-- 正式训练10:34启动，运行提交 `28455ab`；Bash PID974582、真实Python/GPU PID974606（检查时454MiB），仅一套控制器。
-- 运行目录 `outputs/logs/Kelmarsh/20261027/operating_state_v29_vEjzoZ`；指针 `outputs/logs/Kelmarsh/operating_state_v29_latest.txt`。
-- 当前TRAIN=RUNNING、REPORT=PENDING、stage=T1，第一组 `TSMixer_last10_normal/seed2024`；尚无本轮最终精度或收益，不能用预检或v28数字替代。
-- 启动日志 `outputs/logs/Kelmarsh/launcher/operating_state_v29_run_20261027_103428.log`，运行目录另有launch.log/status.json/progress.json；正常训练不重启。
-- 没有改冻结代码、协议或哈希约束，没有启动重复训练；源指纹复核→预检→一次detach原流程完成，不影响其他用户任务。
-- 请Claude暂不改冻结源码；结果到齐后再核对2022双队列/逐小时/统计并记录，不能拿v28结果冒充v29。
+**本次结果（2022 ALL主队列，指标为3种子指标均值，非集成）**
+- 10:58 CST训练/报告均完成，退出0；12fits、214epoch（预算12/240），没有追加或重训；运行提交 `28455ab`。
+- 服务器目录 `outputs/logs/Kelmarsh/20261027/operating_state_v29_vEjzoZ`，指针 `outputs/logs/Kelmarsh/operating_state_v29_latest.txt`。
+- 完成清单SHA `da36df218ac10fa616e949baf6740d04040a10abec90c8de3c144b47ce2197a6`；122项服务器哈希全部一致。
+- 本地 `output/kelmarsh_hourly/operating_state_v29_review/results/` 已下载非权重报告/预测/图；74项哈希一致，另外48项权重/验证预测仅在服务器验过。
+- 本地 `output/kelmarsh_hourly/operating_state_v29_review/audit_results.py` 独立复算456个总体/逐小时/Skill/命中率值，最大差8.45e-10；24个配对中心差最大6.04e-14；Guard逐元素一致，test窗口实例化晚于selection freeze。
+- 服务器只读重算12项对比的bootstrap/Newey–West/Holm及RMSE区间，共96值最大差0，四条规则全部一致；未重跑模型推理或训练。
+- 2022 ALL=16,949窗口，normal=15,382（事后条件队列）；2023–24封存。原数据审计/身份见 `d25cac3` 正文。
+- 验证预选 `Guard_last10_normal`：MAE180.403064、MSE77724.716749、RMSE278.791213、R²0.768418；对Last10持续法MAE/RMSE Skill=8.118764%/10.067549%，±5/10%容量命中48.123291%/69.054221%。
+- 两种持续法MAE/RMSE/R²：小时193.872724/301.865838/0.728498；Last10 196.343749/310.000683/0.713668。
+- last10_normal=183.972701/277.047429/0.771306；last10_all=180.729162/276.301755/0.772536；state_normal=190.134702/281.633472/0.763663；state_all=180.826624/276.873790/0.771592（MAE/RMSE/R²）。
+- Guard逐h1–4 MAE=113.9812/172.3912/205.3646/229.8753；R²=.904959/.795178/.717484/.656244；仅MAE更好不代表所有指标最好。
+- C5 Guard vs Last10持续法：MAE收益15.940685kW、95%CI[13.229697,18.506462]、Holm p=1.74e-30；对小时持续法MAE/RMSE下降6.9477%/7.6440%。
+- C1 state_all vs last10_all：MAE收益-0.097462kW、CI[-0.505492,0.375810]、Holm p=.66977；新增状态信息不获支持。
+- C3 all vs normal训练（state）：MAE收益9.308078、CI[7.158373,11.730700]、Holm p=6.78e-15；last10对应C4收益3.243540、CI[2.280762,4.258053]。
+- 冻结结论：state_information_supported=false；all_window_training_supported=true；learned_state_beats_rule=false；beats_naive=true。
+- 预选Guard三种子预测平均仅描述性：MAE179.682722/RMSE277.869914/R².769947；不能混同上述种子指标均值或事后更换主模型。
+- 【最终评级】B（本轮结果可复现，但不支持新增状态机制/Wiki贡献）；【必须立即修复】无新实证P0/P1；【需重跑/补测试】无，不改冻结代码。已实看首72h的h1/h4预测图，远期峰谷误差仍明显。
+- 请Claude读取results/report.md、test_metrics.csv、test_comparisons.csv、regime_metrics.csv及提交正文；2021曾用于开发，不能把v28 R²≈.81与本轮2022直接比较。
+- 下一步仅设计评估：沿预选方案研究发布时刻可用NWP；不得对已看2022追加阈值/seed搜索，2023需独立新协议授权，2024继续封存。
