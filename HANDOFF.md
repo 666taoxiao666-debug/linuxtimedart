@@ -31,9 +31,10 @@
 5. 结论写进提交正文和「Codex → Claude」。
 
 ## Codex → Claude
-<!-- 由 Codex 覆盖。最后更新：2026-10-27，上游观测筛选审查；部署状态待跟进记录 -->
+<!-- 由 Codex 覆盖。最后更新：2026-10-27，上游筛选已部署；MIDAS等待用户授权 -->
 
 **结论与修改（本轮仅筛选，不训练、不写v30）**
+- 【最终评级】B（修正后的筛选代码可用，真实气象结论仍缺证据）；【必须立即修复】下述已修；【重跑/测试】不重跑旧模型，新测试及下载回归均通过。
 - 原脚本需修正后使用；P1：气象设计额外含功率区间项，原intercept-only对照会把工况修偏归因于天气。主对照改为相同intercept+issue-power-regime；原2%双年门槛保留，原偏差对照另报。
 - P1：补knots→m/s、方向/气压单位、version_num=1、截断BADC拒绝、冲突重复观测拒绝、观测年份与文件年份核对。
 - P1/P2：预测输入必须匹配原completed清单、种子/窗口/小时/风机/年份身份；无效输入写passed=null，不能冒充阴性结果或保留过期成功。
@@ -42,17 +43,20 @@
 - `scripts/screen_kelmarsh_upstream_observations.py`；新增测试 `tests/test_screen_kelmarsh_upstream_observations.py`；新增仅原始字节下载器 `scripts/acquire_kelmarsh_sealed_years.py`。
 
 **核验与数据进度**
-- 本地29项新测试+7项既有下载测试全部通过；真实v28/v29登记预测只读载入通过，2021/2022队列15,680/16,949窗口；未训练/推理新模型。
+- 审查提交 `b9e7b19` 已推送并服务器快进；本地/服务器29项新测试+7项既有下载测试全部通过，无跳过；真实v28/v29登记预测只读载入通过，2021/2022队列15,680/16,949窗口；未训练/推理新模型。
 - 最新MIDAS为v202607（不是预计v202507），DOI `10.5285/d04207b551674c07801b7d4e6d883e50`，OGLv3；源站要求注册CEDA账户。
 - 官方目录可访问，但元数据请求返回HTTP200登录HTML并转accounts.ceda.ac.uk，不能当CSV成功；服务器未配置CEDA访问令牌/凭据。
 - 气象筛选状态BLOCKED_AUTH：合格站点数、各lead增益、passed尚未产生，不能判通过/失败；请用户本人在服务器配置CEDA访问令牌，不在聊天发送秘密。
+- 认证审计 `outputs/audits/upstream_screen/access_audit_20261027.json`，SHA `f44ec2f4d52fd9d94b6c23573a31796e9a62a7c273db3d3c1d1ac648600bd20b`；本地副本 `output/upstream_observation_review/`。
 - MIDAS数据计划：半径150km站点2016–2024；2016–22开发，2023–24放独立sealed目录且不解析。qc-version-1为归档最新值，1h滞后不能证明实时发布可用。
 - Kelmarsh公开SCADA原始2023/2024共1,420,698,115字节，授权仅下载与大小/官方MD5/SHA256核验，绝不解压、准备或推理。
-- 计划封存位置 `datasets/upstream_observations/sealed/kelmarsh`，不放在未来MIDAS开发根目录内；单进程锁、断点字节复用、失败保留碎片。
+- 已于11:53 CST启动封存下载，真实PID977895，位置 `datasets/upstream_observations/sealed/kelmarsh`，不在MIDAS开发根目录；单进程锁、断点字节复用，不能重复启动。
+- 最近检查STATUS=DOWNLOADING，已收到18,874,368字节分片，两年均尚未整文件验收；这不是“下载完成”。进度以该目录download_manifest.json和.download_parts为准，不解压。
+- 日志 `outputs/audits/upstream_screen/sealed_download_20261027.log`，PID文件同目录 `sealed_download.pid`；启动命令及复现见部署记录提交正文。
 - 官方记录 `10.5281/zenodo.16807551`；2023 MD5 `685d9589347d1866f6f2cfe45b9af4f4`，2024 MD5 `e9e3318f5b393d8596ff1801f8da0414`。
-- 服务器仍在c6e1b72，只有两份原有docs tracked改动，GPU计算进程为空；新文件不改v28/v29哈希锁。同步、服务器测试与下载实际状态见后续本节/提交记录。
+- 安全快进前后服务器两份docs原改动SHA均一致；未停止其他任务、未初始化CUDA；只新增本轮文件，v28/v29哈希锁不变。
 
 **下一步**
-- Codex安全快进部署，服务器测试后启动一次封存下载；不因下载或认证受阻重跑v28/v29。
+- 先核对下载PID/日志；存活就等待，结束后核对两年官方MD5和SHA256；若中断，仅同一命令续字节，不重复完整文件或重跑v28/v29。
 - 获得CEDA授权后下载固定版本元数据/站点清单与哈希，再运行本节上方Claude命令；先审计有效覆盖，不能把选择性缺测样本当全队列提升。
 - 无真实上游筛选结果前，Claude不要写“已支持未来天气瓶颈/通过v30门槛”；既有v29指标详见c6e1b72正文和结果文件。
