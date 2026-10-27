@@ -36,7 +36,7 @@
    - 等 Kelmarsh 上的方案定型、外部验证协议冻结后才解析。用哪个、怎么报告由用户确认（Claude 建议两个都跑、都报告，不按效果挑选）。
 
 ## Codex → Claude
-<!-- 由 Codex 覆盖。最后更新：2026-10-27，已审查第6条并实现后置外部数据封存队列 -->
+<!-- 由 Codex 覆盖。最后更新：2026-10-27，外部队列已等待；Kelmarsh真实网络中断已定位 -->
 
 **本轮结论与修改（只下载和原MIDAS开发筛选）**
 - 已读第6条；Kelmarsh主数据集、SDWPF完整版和Penmanshiel外部验证的下载安排已接受；如何使用/报告尚未决定，本轮不训练、不写v30、不选外部协议。
@@ -55,13 +55,16 @@
 - 外部原始文件根`datasets/external_validation/sealed/{sdwpf_24798654,penmanshiel_16807304}/<file_id>/`；整套封存，等待未来冻结协议。
 
 **验证与现有进度**
-- 新16项本地测试15通过、1项Linux队列锁/等待集成测试待服务器执行；原24+31+7项回归通过（仅POSIX权限项在Windows跳过）；py_compile/diff检查通过。
+- 新16项测试服务器全部通过（本地15通过、1项Linux测试跳过）；原24+31+7项本地回归通过（仅POSIX权限项跳过）；py_compile/diff检查通过。
 - 原62项服务器测试已于上一轮全部通过，CEDA令牌只在服务器私有文件和Authorization头中使用，不进入本轮配置或日志。
-- 最新实查MIDAS PID994152正常：计划118站共946文件、2,307,301,313字节，已验收6文件；335为半径内历史站数，不是合格站数。
+- 最新实查MIDAS PID994152正常：计划118站共946文件、2,307,301,313字节，已验收13文件；335为半径内历史站数，不是合格站数。
 - MIDAS进度/结果仍在`outputs/audits/upstream_screen/midas_v202607/`；先2016–22开发筛选，再下载2023–24 sealed字节；未产生合格站点/增益/passed结论。
-- Kelmarsh PID994153仍续传；分片305,659,904字节，2023/2024总计1,420,698,115字节，尚未整年验收；原日志`outputs/audits/upstream_screen/sealed_download_resume_20261027_1505.log`。
+- Kelmarsh PID994153已退出，真实报错ChunkedEncodingError；312,475,648分片字节保留，总量1,420,698,115字节尚未完成；旧日志`outputs/audits/upstream_screen/sealed_download_resume_20261027_1505.log`保留。
+- 新增`scripts/resume_kelmarsh_sealed_transport.py`只包装原acquire，同一锁/参数/范围分片；最多24轮、连接/超时后等待300秒再续，身份/校验/HTTP拒绝不重试；4项本地测试通过，待服务器预检后恢复。
 - 服务器目标盘可用约992 GB，满足本轮原始文件与拼接空间；不占GPU，不改其他用户任务。
-- 预检/部署及队列真实PID待服务器步骤完成后更新本节；入口`python scripts/acquire_sealed_external_validation.py`，清单登记先用`--prepare-only --figshare-record ... --penmanshiel-record ...`。
+- `257e4e3`已推送并服务器快进；原两下载脚本及两份服务器docs SHA不变。外部队列PID997938真实存活，状态WAITING_FOR_PREDECESSORS，未传输外部数据。
+- 服务器inventory SHA`0753917c1b8519d013f64ba954deca858d2033640ca1d0b2f4beb5de71a0031d`；本地同内容换行不同，勿混用文件字节哈希。
+- 队列入口`python scripts/acquire_sealed_external_validation.py`；状态/日志/PID在`outputs/audits/external_validation_download/{queue_status.json,queue_launch.log,queue.pid}`；不要重复启动。
 
 **给Claude的下一步**
 - 不把元数据清单/启动当下载完成；看`queue_status.json`和`download_manifest.json`，全部完成需`SEALED_VERIFIED`及37份字节校验记录。
