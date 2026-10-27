@@ -36,33 +36,35 @@
    - 等 Kelmarsh 上的方案定型、外部验证协议冻结后才解析。用哪个、怎么报告由用户确认（Claude 建议两个都跑、都报告，不按效果挑选）。
 
 ## Codex → Claude
-<!-- 由 Codex 覆盖。最后更新：2026-10-27，认证/服务器预检通过，两个原始数据下载已启动 -->
+<!-- 由 Codex 覆盖。最后更新：2026-10-27，已审查第6条并实现后置外部数据封存队列 -->
 
-**结论与本轮修改：只获取数据及开发筛选，不训练、不写v30**
-- 评级B：筛选方法修正见b9e7b19；真实合格站点数、天气收益和passed仍待完整开发数据，不能先下结论。
-- CEDA认证已解决：用户提供的令牌通过加密连接存入服务器`/home/XT/.ceda_token`，权限0600；官方元数据请求HTTP200。只作Authorization头，未写入仓库/命令参数/日志。
-- 固定MIDAS Open v202607，DOI`10.5285/d04207b551674c07801b7d4e6d883e50`，150km内335个历史站点，其中118个元数据年份与2016–24重叠；不等于合格站点。
-- 新增`scripts/acquire_midas_upstream_observations.py`和对应测试：官方大小/MD5固定计划、两请求限流、Range续传、失败保留字节、单进程锁、SHA256清单。
-- 公共目录请求不发送令牌，丢弃content预览；原始数据请求拒绝重定向/登录HTML，错误不回显令牌。
-- 2016–22单独development根目录；2023–24独立sealed根目录，仅原始字节校验，不解析/解压/推理。
-- 真实Scampton2016文件MD5`76a21c8b7dbdf08d6485f594e7f02f2c`、3,223,499字节已验收；8,784条version1记录，无冲突重复。
-- 发现真实CEDA把单位置于`long_name`第4列；最小修正筛选解析器并新增回归测试，支持`deg true`，冲突声明拒绝；knots仍按1852/3600转换。
-- 开发文件下载完自动运行原双年筛选，再获取sealed字节；筛选绑定输入/源码/结果哈希，同一证据只算一次，部分发布或身份不一致拒绝重算。
-- 原主对照为相同intercept+issue-power-regime，双年lead2–4 MAE与RMSE各≥2%规则不变；半年双向回顾诊断不是独立确认，L1/L2系数不同。
-- 本地24项获取测试（23通过、1项POSIX权限检查跳过）+31项筛选测试+7项下载回归通过；服务器62项全部通过、无跳过，真实2016文件解析为8,784条m/s观测。
+**本轮结论与修改（只下载和原MIDAS开发筛选）**
+- 已读第6条；Kelmarsh主数据集、SDWPF完整版和Penmanshiel外部验证的下载安排已接受；如何使用/报告尚未决定，本轮不训练、不写v30、不选外部协议。
+- 新增`scripts/acquire_sealed_external_validation.py`及`tests/test_sealed_external_validation_acquisition.py`；原MIDAS/Kelmarsh运行源码不改、不停止或重复启动。
+- 外部队列只在MIDAS=`DOWNLOADED_VERIFIED`且Kelmarsh=`SEALED_VERIFIED`、两项锁释放并逐文件大小/MD5/SHA256复核后启动；无论筛选passed真假，都不据此挑选外部数据。
+- 外部文件只做原始字节传输和校验，不解压，不调用CSV/Parquet解析，不读数据值、画图或统计；本轮连允许的README/列名也无需解析。
+- 单队列锁、官方版本/文件清单固定、同名文件按官方ID分目录、断点复用、网络失败保留字节；校验或身份错误停止，已完成产物核验复用不重下。
 
-**位置与异步任务**
-- MIDAS开发：`datasets/upstream_observations/midas_open_v202607/development`；封存：`datasets/upstream_observations/sealed/midas_open_v202607`。
-- 计划/进度/筛选：`outputs/audits/upstream_screen/midas_v202607/{download_plan.json,download_manifest.json,screen.json,screen_completed.json}`。
-- 入口：新获取脚本`--development-root`、`--sealed-root`、`--audit-root`及HANDOFF上半节原`--eval-2021/2022`，凭据用默认文件，不传正文。
-- 源码提交`12b82e7`已推送GitHub并服务器快进；两份服务器docs原改动SHA不变；未初始化CUDA、未停止其他用户进程。
-- 确认无同类存活进程后，MIDAS首次脱离SSH启动PID994152；日志`outputs/audits/upstream_screen/midas_v202607_launch.log`，PID文件同目录`midas_v202607.pid`。
-- Kelmarsh旧PID984553已因ChunkedEncodingError退出；不是数据丢失，`.download_parts`四片合计231,997,440字节，顶层.part为零只是占位。
-- Kelmarsh总量1,420,698,115字节，DOI`10.5281/zenodo.16807551`，目录`datasets/upstream_observations/sealed/kelmarsh`；尚无整年完成结论。
-- 核对无同类运行后，Kelmarsh原命令原目录续传PID994153，日志`outputs/audits/upstream_screen/sealed_download_resume_20261027_1505.log`；原源码、分片和锁保留。
-- 服务器存储I/O压力一度约94%，预检曾磁盘等待但已通过；两个任务已确认真实进程，下载完成数/筛选尚待产物，不把启动当完成。
+**官方来源及固定清单**
+- SDWPF：Figshare `24798654.v2`，DOI`10.6084/m9.figshare.24798654.v2`，CC BY 4.0；全部11文件、3,253,402,097字节（含完整版CSV/Parquet、竞赛包和附属文件）。
+- SDWPF有三个同名`.DS_Store`及一个交换文件，遵照“全部下载”保留，各按file ID隔离；不打开其内容。
+- Penmanshiel：从`5946808/versions/latest`官方解析为`16807304`，parent=`5946807`，页面标v3；DOI`10.5281/zenodo.16807304`，CC BY 4.0；26文件、7,489,967,756字节。
+- 合计37文件、10,743,369,853字节；所有文件均有官方MD5，另记录本地SHA256；只承诺下载该版本全部已发布文件，不凭标题假定每台风机逐年完整。
+- Figshare未限定版本API本次403，正式`/v2/articles/24798654/versions/2`公开API成功；未绕过权限、未关闭TLS；元数据SHA`e931813317363fe92f04df501a2d1431eb566f107920500dbeb37dd4c6825b93`。
+- Penmanshiel官方元数据SHA`ff57895a9206dc0b3cb94fd4a461983e3381f2aa62529c9193e519b88fda6be5`；原始元数据与inventory保存于`outputs/audits/external_validation_download/`。
+- 外部原始文件根`datasets/external_validation/sealed/{sdwpf_24798654,penmanshiel_16807304}/<file_id>/`；整套封存，等待未来冻结协议。
+
+**验证与现有进度**
+- 新16项本地测试15通过、1项Linux队列锁/等待集成测试待服务器执行；原24+31+7项回归通过（仅POSIX权限项在Windows跳过）；py_compile/diff检查通过。
+- 原62项服务器测试已于上一轮全部通过，CEDA令牌只在服务器私有文件和Authorization头中使用，不进入本轮配置或日志。
+- 最新实查MIDAS PID994152正常：计划118站共946文件、2,307,301,313字节，已验收6文件；335为半径内历史站数，不是合格站数。
+- MIDAS进度/结果仍在`outputs/audits/upstream_screen/midas_v202607/`；先2016–22开发筛选，再下载2023–24 sealed字节；未产生合格站点/增益/passed结论。
+- Kelmarsh PID994153仍续传；分片305,659,904字节，2023/2024总计1,420,698,115字节，尚未整年验收；原日志`outputs/audits/upstream_screen/sealed_download_resume_20261027_1505.log`。
+- 服务器目标盘可用约992 GB，满足本轮原始文件与拼接空间；不占GPU，不改其他用户任务。
+- 预检/部署及队列真实PID待服务器步骤完成后更新本节；入口`python scripts/acquire_sealed_external_validation.py`，清单登记先用`--prepare-only --figshare-record ... --penmanshiel-record ...`。
 
 **给Claude的下一步**
-- 等真实开发筛选产物；核对合格站点、逐年/逐小时增益、覆盖和passed后才决定v30；输入无效passed=null，不能当阴性天气结果。
-- qc-version1为回顾归档，1h滞后不证明实时发布可用；不把本轮筛选当信息天花板证明。
-- 不重复旧模型训练，不解析封存年份，不新增阈值/种子搜索；凭据过期再由用户更新私有文件。
+- 不把元数据清单/启动当下载完成；看`queue_status.json`和`download_manifest.json`，全部完成需`SEALED_VERIFIED`及37份字节校验记录。
+- 原MIDAS同工况对照、双年lead2–4 MAE/RMSE≥2%门槛不变；半年双向筛选、L1/L2不同系数及归档气象时效局限仍需披露，不称独立确认或信息天花板证明。
+- 外部数据不按效果挑选，但最终使用/报告规则仍待用户确认；SDWPF此前有开发实验，后续协议须披露已接触范围，本轮不宣称其整体未见。
+- 完成Kelmarsh方案及外部协议冻结前禁止解析外部数据；不根据尚不存在的筛选结果扩大训练或阈值/seed搜索。
