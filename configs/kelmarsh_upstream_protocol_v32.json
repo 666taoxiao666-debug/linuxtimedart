@@ -1,0 +1,717 @@
+{
+  "protocol_id": "kelmarsh_upstream_v32",
+  "status": "FROZEN_EXECUTABLE",
+  "launch_authorization": "Implemented and unit-tested (torch-free part) by Claude; requires Codex review, the D0 preparation below and a passed --preflight-only. User decision 2026-10-28: confirm the v31 design once on the sealed 2024 year.",
+  "created_date": "2026-10-28",
+  "design_source": "v31 results (31faad6, decision SHA f5ef6b33...): on 2023 ALL, upstream channels MAE gain 20.91 kW [18.28, 23.44] and RMSE gain 32.07 kW [28.00, 35.97]; balanced loss RMSE +1.13 kW [0.41, 1.90] with MAE -0.81 kW [-1.27, -0.30] inside the 2 kW margin; validation chose TSMixer_upstream_all_balanced by joint score 1.763087 vs 1.763634. User decision 2026-10-28: confirm the unchanged v31 design on 2024.",
+  "deviations": [
+    "None in model, features, stations, losses, seeds, selection or rules. Only the years roll forward by one (train 2016-2022, validation 2023, test 2024) and the duplicate-row normalization records each turbine id explicitly (Claude's non-blocking v31 note); the normalization rule itself is the frozen v31 canonical_ticks.",
+    "2023 (v31 test year) becomes the validation year; after v32 no sealed Kelmarsh year remains."
+  ],
+  "scope": "confirmation of the frozen v31 design on the last sealed Kelmarsh year (2024); no new information group, no search; no Wiki; no novelty claim",
+  "questions": [
+    "Q1 information: do the screened upstream station features, as input channels, improve TSMixer_last10_all on 2024 for BOTH MAE and RMSE?",
+    "Q2 loss: with the upstream channels, does a balanced 0.5 MAE + 0.5 MSE loss improve RMSE without worsening MAE beyond the non-inferiority margin?",
+    "Q3 naive: does the validation-chosen configuration beat the last-10-minute Persistence on 2024 for both metrics?"
+  ],
+  "novelty_claim": "none; TSMixer-basic and Persistence are published baselines; MIDAS Open are public observations",
+  "data": {
+    "source": "Zenodo 16807551, Kelmarsh six Senvion MM92, CC BY 4.0",
+    "upstream": {
+      "dataset": {
+        "name": "MIDAS Open UK hourly weather observations",
+        "version": "202607",
+        "doi": "10.5285/d04207b551674c07801b7d4e6d883e50",
+        "licence": "Open Government Licence v3"
+      },
+      "download_manifest": "outputs/audits/upstream_screen/midas_v202607/download_manifest.json",
+      "download_manifest_sha256_lf": "00d22a6e290bf8aeda8aefde0223ffe56d27dd91658536c3f9a4810653f5cec1",
+      "development_years": [
+        2016,
+        2017,
+        2018,
+        2019,
+        2020,
+        2021,
+        2022,
+        2023
+      ],
+      "test_root": "datasets/upstream_observations/sealed/midas_open_v202607",
+      "test_years": [
+        2024
+      ],
+      "test_access": "2023 station files were opened by v31 E1 and are development data here; 2024 station files are opened only inside E1, after the S1 freeze",
+      "station_rule": "the 36 stations qualified by the completed screen (150 km of Kelmarsh, hourly wind completeness >= 85% in every year 2016-2022); frozen below, never re-selected",
+      "stations": [
+        {
+          "src_id": 595,
+          "name": "CHURCH LAWFORD",
+          "lat": 52.359,
+          "lon": -1.331,
+          "distance_km": 26.765776252586885,
+          "bearing_deg": 260.0326613304533
+        },
+        {
+          "src_id": 461,
+          "name": "BEDFORD",
+          "lat": 52.227,
+          "lon": -0.465,
+          "distance_km": 37.822432949728096,
+          "bearing_deg": 120.63637678121532
+        },
+        {
+          "src_id": 583,
+          "name": "WITTERING",
+          "lat": 52.612,
+          "lon": -0.468,
+          "distance_km": 39.76869438739783,
+          "bearing_deg": 53.716945146639006
+        },
+        {
+          "src_id": 24102,
+          "name": "COVENTRY, COUNDON",
+          "lat": 52.424,
+          "lon": -1.536,
+          "distance_km": 40.31312719857759,
+          "bearing_deg": 273.8247990594367
+        },
+        {
+          "src_id": 456,
+          "name": "MONKS WOOD",
+          "lat": 52.402,
+          "lon": -0.237,
+          "distance_km": 47.883116522735094,
+          "bearing_deg": 89.62725776190842
+        },
+        {
+          "src_id": 19187,
+          "name": "COLESHILL",
+          "lat": 52.48,
+          "lon": -1.691,
+          "distance_km": 51.46411305491311,
+          "bearing_deg": 280.0866128757329
+        },
+        {
+          "src_id": 556,
+          "name": "NOTTINGHAM, WATNALL",
+          "lat": 53.006,
+          "lon": -1.251,
+          "distance_km": 70.37291424946544,
+          "bearing_deg": 342.96017531957403
+        },
+        {
+          "src_id": 386,
+          "name": "CRANWELL",
+          "lat": 53.031,
+          "lon": -0.504,
+          "distance_km": 76.00171767926973,
+          "bearing_deg": 22.71124390043549
+        },
+        {
+          "src_id": 692,
+          "name": "LITTLE RISSINGTON",
+          "lat": 51.861,
+          "lon": -1.693,
+          "distance_km": 78.93953019435924,
+          "bearing_deg": 220.7386336825939
+        },
+        {
+          "src_id": 657,
+          "name": "PERSHORE",
+          "lat": 52.148,
+          "lon": -2.041,
+          "distance_km": 79.85023729385557,
+          "bearing_deg": 249.78072379789208
+        },
+        {
+          "src_id": 605,
+          "name": "BRIZE NORTON",
+          "lat": 51.758,
+          "lon": -1.578,
+          "distance_km": 83.67111013257937,
+          "bearing_deg": 211.50145895384702
+        },
+        {
+          "src_id": 613,
+          "name": "BENSON",
+          "lat": 51.62,
+          "lon": -1.099,
+          "distance_km": 87.53183828395733,
+          "bearing_deg": 187.0769177057319
+        },
+        {
+          "src_id": 395,
+          "name": "HOLBEACH NO 2",
+          "lat": 52.873,
+          "lon": 0.139,
+          "distance_km": 89.88735977404542,
+          "bearing_deg": 53.87351950115582
+        },
+        {
+          "src_id": 384,
+          "name": "WADDINGTON",
+          "lat": 53.175,
+          "lon": -0.523,
+          "distance_km": 90.54438504406001,
+          "bearing_deg": 17.99963030882136
+        },
+        {
+          "src_id": 393,
+          "name": "CONINGSBY",
+          "lat": 53.094,
+          "lon": -0.173,
+          "distance_km": 92.82962657075961,
+          "bearing_deg": 33.62296924418133
+        },
+        {
+          "src_id": 709,
+          "name": "NORTHOLT",
+          "lat": 51.549,
+          "lon": -0.417,
+          "distance_km": 101.38337550128018,
+          "bearing_deg": 158.98459310642315
+        },
+        {
+          "src_id": 409,
+          "name": "MARHAM",
+          "lat": 52.651,
+          "lon": 0.566,
+          "distance_km": 105.77838847569089,
+          "bearing_deg": 74.18481570589465
+        },
+        {
+          "src_id": 30690,
+          "name": "LEEK, THORNCLIFFE",
+          "lat": 53.128,
+          "lon": -1.981,
+          "distance_km": 106.81050725236464,
+          "bearing_deg": 319.5701471838381
+        },
+        {
+          "src_id": 708,
+          "name": "HEATHROW",
+          "lat": 51.479,
+          "lon": -0.453,
+          "distance_km": 107.91074118103101,
+          "bearing_deg": 161.67882815742755
+        },
+        {
+          "src_id": 19188,
+          "name": "ANDREWSFIELD",
+          "lat": 51.896,
+          "lon": 0.451,
+          "distance_km": 110.45530309008284,
+          "bearing_deg": 120.02370044708756
+        },
+        {
+          "src_id": 723,
+          "name": "KEW GARDENS",
+          "lat": 51.482,
+          "lon": -0.294,
+          "distance_km": 111.47592282553686,
+          "bearing_deg": 156.2316090627205
+        },
+        {
+          "src_id": 16725,
+          "name": "WAINFLEET NO 2",
+          "lat": 53.088,
+          "lon": 0.271,
+          "distance_km": 111.82856474518361,
+          "bearing_deg": 46.45601835560125
+        },
+        {
+          "src_id": 643,
+          "name": "SHAWBURY",
+          "lat": 52.795,
+          "lon": -2.665,
+          "distance_km": 124.27878181316713,
+          "bearing_deg": 291.3070568038287
+        },
+        {
+          "src_id": 719,
+          "name": "WISLEY",
+          "lat": 51.311,
+          "lon": -0.476,
+          "distance_km": 125.40223036345348,
+          "bearing_deg": 165.0041681129031
+        },
+        {
+          "src_id": 862,
+          "name": "ODIHAM",
+          "lat": 51.239,
+          "lon": -0.945,
+          "distance_km": 129.2419516806994,
+          "bearing_deg": 180.06790187583235
+        },
+        {
+          "src_id": 24996,
+          "name": "HEREFORD, CREDENHILL",
+          "lat": 52.08,
+          "lon": -2.802,
+          "distance_km": 131.53310965575412,
+          "bearing_deg": 254.97617471754387
+        },
+        {
+          "src_id": 440,
+          "name": "WATTISHAM",
+          "lat": 52.124,
+          "lon": 0.957,
+          "distance_km": 132.9144441663377,
+          "bearing_deg": 102.66117617876583
+        },
+        {
+          "src_id": 669,
+          "name": "SHOBDON AIRFIELD",
+          "lat": 52.243,
+          "lon": -2.886,
+          "distance_km": 133.23264298518367,
+          "bearing_deg": 263.178089961497
+        },
+        {
+          "src_id": 726,
+          "name": "KENLEY AIRFIELD",
+          "lat": 51.304,
+          "lon": -0.092,
+          "distance_km": 135.2833116061147,
+          "bearing_deg": 154.07363956447426
+        },
+        {
+          "src_id": 405,
+          "name": "DONNA NOOK NO 2",
+          "lat": 53.475,
+          "lon": 0.153,
+          "distance_km": 140.16247123913143,
+          "bearing_deg": 31.15882543499178
+        },
+        {
+          "src_id": 56958,
+          "name": "EMLEY MOOR NO 2",
+          "lat": 53.612,
+          "lon": -1.668,
+          "distance_km": 143.09911220746045,
+          "bearing_deg": 340.4685097190477
+        },
+        {
+          "src_id": 57199,
+          "name": "ROSTHERNE NO 2",
+          "lat": 53.36,
+          "lon": -2.382,
+          "distance_km": 143.8376580603248,
+          "bearing_deg": 318.39730885975183
+        },
+        {
+          "src_id": 847,
+          "name": "MIDDLE WALLOP",
+          "lat": 51.15,
+          "lon": -1.57,
+          "distance_km": 145.67461307602588,
+          "bearing_deg": 197.47749068844618
+        },
+        {
+          "src_id": 888,
+          "name": "LARKHILL",
+          "lat": 51.202,
+          "lon": -1.806,
+          "distance_km": 145.9658960152481,
+          "bearing_deg": 204.33313078012497
+        },
+        {
+          "src_id": 30620,
+          "name": "CHARLWOOD",
+          "lat": 51.144,
+          "lon": -0.229,
+          "distance_km": 148.17924588942682,
+          "bearing_deg": 160.36272388682312
+        },
+        {
+          "src_id": 889,
+          "name": "BOSCOMBE DOWN",
+          "lat": 51.162,
+          "lon": -1.755,
+          "distance_km": 148.69743902184373,
+          "bearing_deg": 202.38995352161976
+        }
+      ],
+      "features": [
+        "upwind_ws",
+        "upwind_dws3",
+        "upwind_minus_local",
+        "local_ws",
+        "local_dws3",
+        "regional_ws",
+        "regional_dws3",
+        "local_dp3",
+        "grad_east",
+        "grad_north",
+        "grad_magnitude_change3"
+      ],
+      "feature_source": "scripts/screen_kelmarsh_upstream_observations.upstream_features (screen-reviewed definitions), evaluated for every hourly label tau",
+      "lag_hours": 1,
+      "timing": "row with hour-end label tau uses observations at tau - 1 h (3-hour changes: tau - 1 h minus tau - 4 h); at issue time T the newest observation used is T - 1 h. Archival qc-version-1 values; real-time availability with a 1 h lag is an assumption, disclosed",
+      "parsing": "screen rules: version_num 1 only, declared units (knots -> m/s; degrees; hPa), conflicting duplicates refused, file year = row year, SHA256 equal to the download manifest",
+      "missing_policy": "input-only: a missing upstream feature is replaced by its training-year mean and the row is flagged in channel upstream_missing; labels are never filled; the window queue is exactly the SCADA-only queue",
+      "development_roots": [
+        {
+          "root": "datasets/upstream_observations/midas_open_v202607/development",
+          "years": [
+            2016,
+            2017,
+            2018,
+            2019,
+            2020,
+            2021,
+            2022
+          ]
+        },
+        {
+          "root": "datasets/upstream_observations/sealed/midas_open_v202607",
+          "years": [
+            2023
+          ]
+        }
+      ]
+    },
+    "start_utc": "2016-05-01T00:00:00Z",
+    "rated_power_kw": 2050,
+    "farm_turbines": 6,
+    "input_len": 24,
+    "pred_len": 4,
+    "stride": 3,
+    "extras_in_common_series": [
+      "power_last10",
+      "wind_last10"
+    ],
+    "common_window_rule": "ONE series is built with the union of all channels; the queue is defined by the SCADA channels and power (upstream channels are always finite after the input-only fill), so every arm uses exactly the same windows",
+    "channels": [
+      "Wspd",
+      "Etmp",
+      "Ndir_sin",
+      "Ndir_cos",
+      "Pab_mean",
+      "rotor_speed",
+      "power_last10",
+      "wind_last10",
+      "upwind_ws",
+      "upwind_dws3",
+      "upwind_minus_local",
+      "local_ws",
+      "local_dws3",
+      "regional_ws",
+      "regional_dws3",
+      "local_dp3",
+      "grad_east",
+      "grad_north",
+      "grad_magnitude_change3",
+      "upstream_missing",
+      "power"
+    ],
+    "channel_sets": {
+      "last10": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        20
+      ],
+      "upstream": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20
+      ]
+    },
+    "splits": {
+      "train": [
+        2016,
+        2017,
+        2018,
+        2019,
+        2020,
+        2021,
+        2022
+      ],
+      "validation": [
+        2023
+      ],
+      "test": [
+        2024
+      ]
+    },
+    "sealed_years": [],
+    "scaler": "mean/std of all training-year rows (ddof 0, NaN ignored) after the input-only upstream fill; SCADA channels identical to the provider scaler",
+    "labels_modified": false,
+    "yaw_error_channels_enabled": false,
+    "v31_registered_preparation": {
+      "csv": "datasets/wind_public_v31/resampled_hourly_scada/kelmarsh_multiyear/hourly/kelmarsh_multiyear_hourly_enriched.csv",
+      "csv_sha256": "dc2365fbda0377f973b02300655067ae2ddbdc1e956742992eee3c0631a80564",
+      "preparation_json_sha256": "df41d9992e86658a063626534df889fe7f028a84de606b3e2ab405ed832f8fc3",
+      "years": [
+        2016,
+        2017,
+        2018,
+        2019,
+        2020,
+        2021,
+        2022,
+        2023
+      ],
+      "use": "identity reference only: every 2016-2023 row of the v32 preparation must equal this registered CSV, and the power curves must be identical"
+    },
+    "v32_preparation": {
+      "root": "datasets/wind_public_v32",
+      "csv": "datasets/wind_public_v32/resampled_hourly_scada/kelmarsh_multiyear/hourly/kelmarsh_multiyear_hourly_enriched.csv",
+      "years": [
+        2016,
+        2017,
+        2018,
+        2019,
+        2020,
+        2021,
+        2022,
+        2023,
+        2024
+      ],
+      "curve_years": [
+        2016,
+        2017,
+        2018,
+        2019
+      ],
+      "schema_version": 2,
+      "raw_reuse": "after this protocol is frozen: hard-link the MD5-verified 2016-2023 archives and Kelmarsh_WT_static.csv from the v31 raw directory and the sealed datasets/upstream_observations/sealed/kelmarsh/Kelmarsh_SCADA_2024_5962.zip (MD5 e9e3318f5b393d8596ff1801f8da0414) into datasets/wind_public_v32/resampled_hourly_scada/kelmarsh_multiyear/raw",
+      "command": "python scripts/prepare_kelmarsh_multiyear_normalized.py prepare --protocol configs/kelmarsh_upstream_protocol_v32.json --preparation-key v32_preparation",
+      "label_audit": "python scripts/prepare_kelmarsh_multiyear_normalized.py audit --protocol configs/kelmarsh_upstream_protocol_v32.json --preparation-key v32_preparation --output outputs/audits/upstream_v32/preparation_label_audit.json (reuses the frozen v31 independent power audit); before S1 no test metric, model or selection",
+      "rule": "prepared only after v32 is frozen",
+      "duplicate_normalization": "existing_dominating_row_v1",
+      "normalization_source": "scripts/prepare_kelmarsh_multiyear_v31.canonical_ticks (frozen, unchanged); turbine ids recorded from the preparer's own unit loop"
+    }
+  },
+  "cohorts": {
+    "all": "every common window with original labels (deployment accuracy)",
+    "normal": "all four target hours are normal-operation hours (ex-post conditional cohort, secondary)",
+    "primary": "all",
+    "selection_cohort": "all",
+    "training_cohort": "all",
+    "reporting": "every table reports BOTH cohorts; all is primary; abnormal operation is flagged in the data and never deleted"
+  },
+  "arms": {
+    "PersistenceHour": {
+      "family": "Persistence",
+      "anchor": "last hourly mean power",
+      "fit": false
+    },
+    "PersistenceLast10": {
+      "family": "Persistence",
+      "anchor": "last observed 10-minute power at issue",
+      "fit": false
+    },
+    "TSMixer_last10_all": {
+      "family": "TSMixerBasicSmall",
+      "channels": "last10",
+      "train_cohort": "all",
+      "training_overrides": {}
+    },
+    "TSMixer_upstream_all": {
+      "family": "TSMixerBasicSmall",
+      "channels": "upstream",
+      "train_cohort": "all",
+      "training_overrides": {}
+    },
+    "TSMixer_upstream_all_balanced": {
+      "family": "TSMixerBasicSmall",
+      "channels": "upstream",
+      "train_cohort": "all",
+      "training_overrides": {
+        "loss_mae_weight": 0.5,
+        "loss_mse_weight": 0.5
+      }
+    }
+  },
+  "families": {
+    "TSMixerBasicSmall": {
+      "factory": "models.TSMixerBasicSmall.Model",
+      "args": {
+        "blocks": 2,
+        "ff_dim": 32,
+        "dropout": 0.1,
+        "norm_eps": 0.001
+      },
+      "parameters": {
+        "last10": 4262,
+        "upstream": 8126
+      }
+    }
+  },
+  "seeds": [
+    2024,
+    2025,
+    2026
+  ],
+  "training": {
+    "optimizer": "AdamW",
+    "learning_rate": 0.001,
+    "weight_decay": 0.0001,
+    "batch_size": 64,
+    "eval_batch_size": 512,
+    "max_epochs": 20,
+    "patience": 5,
+    "grad_clip_norm": 1,
+    "scheduler": "CosineAnnealingLR",
+    "scheduler_t_max": 20,
+    "scheduler_eta_min": 0,
+    "loss_space": "standardized power",
+    "loss_mae_weight": 0.8,
+    "loss_mse_weight": 0.2,
+    "loss_leads": "uniform",
+    "selection_cohort": "all",
+    "selection_metric": "per fit: validation original-scale MAE on the 2023 ALL cohort (unchanged v28 fit_config)",
+    "epoch0_included": true,
+    "tie_policy": "strictly lower MAE updates; ties keep the earlier epoch",
+    "refit_after_selection": false,
+    "dtype": "float32",
+    "amp": false,
+    "tf32": false,
+    "num_workers": 0,
+    "shuffle": "torch.Generator().manual_seed(seed + epoch)",
+    "same_recipe_as": "v29 TSMixer_last10_all (scripts/train_kelmarsh_multiyear_benchmark.fit_config, unchanged); only the balanced arm overrides the two loss weights"
+  },
+  "budget": {
+    "fits": 9,
+    "new_fits_max": 9,
+    "new_epochs_max": 180,
+    "additional_seeds": false,
+    "additional_arms": false,
+    "hyperparameter_search": false
+  },
+  "stages": [
+    {
+      "id": "D0",
+      "name": "data identity",
+      "fits": 0,
+      "test_access": false,
+      "checks": "v32 preparation metadata (years 2016-2024, curve 2016-2019, CSV hash, explicit per-turbine normalization evidence, preparer hashes); registered v31 CSV/metadata hashes; every 2016-2023 row equal to the v31 CSV; identical power curves; every development station file present with the manifest SHA256; series without the test year"
+    },
+    {
+      "id": "T1",
+      "name": "fit 3 TSMixer configurations x 3 seeds",
+      "fits": 9,
+      "test_access": false
+    },
+    {
+      "id": "S1",
+      "name": "selection freeze",
+      "fits": 0,
+      "test_access": false,
+      "freeze": "selected states, validation metrics and the joint-score choice, written before any test file or window is opened"
+    },
+    {
+      "id": "E1",
+      "name": "single test evaluation",
+      "fits": 0,
+      "test_access": true,
+      "content": "open the 2024 station files (SHA256 against the manifest), rebuild the series with the test year, verify that every development input, label and the scaler are unchanged, predict every arm on both cohorts"
+    },
+    {
+      "id": "P1",
+      "name": "post-test manifest",
+      "fits": 0,
+      "test_access": "registered arrays only"
+    },
+    {
+      "id": "R1",
+      "name": "independent recomputation and report",
+      "fits": 0,
+      "test_access": "registered predictions only"
+    }
+  ],
+  "comparisons": {
+    "C1": {
+      "candidate": "TSMixer_upstream_all",
+      "reference": "TSMixer_last10_all",
+      "question": "Q1"
+    },
+    "C2": {
+      "candidate": "TSMixer_upstream_all_balanced",
+      "reference": "TSMixer_upstream_all",
+      "question": "Q2"
+    },
+    "C3": {
+      "candidate": "VALIDATION_CHOSEN",
+      "reference": "PersistenceLast10",
+      "question": "Q3"
+    }
+  },
+  "validation_choice": "among the three TSMixer arms: lowest joint score = seed-mean validation MAE / reference MAE + seed-mean validation RMSE / reference RMSE (reference TSMixer_last10_all, score 2); ties: fewer parameters, then protocol order",
+  "statistics": {
+    "cohort": "computed separately on test all and test normal",
+    "seed_handling": "losses averaged over the 3 seeds on identical windows",
+    "cluster": "issue time across turbines",
+    "block_length": 8,
+    "replicates": 5000,
+    "seed": 2024,
+    "hac_max_lag": 7,
+    "multiple_testing": "Holm over the C1-C3 MAE Newey-West p-values within each cohort; raw p retained",
+    "rmse": "issue-time block bootstrap of squared-error sums; separate from the MAE CI"
+  },
+  "diagnostics": {
+    "farm": "farm-total (six-turbine sum) RMSE and MAE per lead on issue times with all six turbines in the ALL cohort, normalized by 6 x rated power; accuracy = 100% - normalized RMSE (descriptive; reference only to the NEA 2011 15% real-time guideline, which uses 15-minute resolution and opening capacity)",
+    "anchor_bins_frac_rated": [
+      0.02,
+      0.1,
+      0.3,
+      0.6,
+      0.9
+    ],
+    "ensemble": "3-seed mean forecast of the validation-chosen arm (descriptive)",
+    "use": "descriptive only; no decision rule"
+  },
+  "rules": {
+    "non_inferiority_margin_kw": 2,
+    "upstream_information_supported": "C1 on test all: MAE gain CI95 lower > 0 and Holm p <= 0.05 AND RMSE gain CI95 lower > 0; AND C1 on test normal: MAE gain CI95 lower > -non_inferiority_margin_kw",
+    "balanced_loss_supported": "C2 on test all: RMSE gain CI95 lower > 0 AND MAE gain CI95 lower > -non_inferiority_margin_kw",
+    "beats_naive": "C3 on test all AND test normal: MAE gain CI95 lower > 0 and Holm p <= 0.05; AND on test all RMSE gain CI95 lower > 0",
+    "attribution_limits": "C1 adds twelve channels and 3864 parameters (4262 -> 8126); the upstream features are archival observations used with an assumed 1 h availability lag; C2 changes only the loss weights. No Wiki contribution or causal attribution is established.",
+    "next_round": "after v32 no sealed Kelmarsh year remains: any further Kelmarsh change is development evidence only; external validation (Penmanshiel with its own stations, SDWPF SCADA-only with disclosed KDD exposure) needs a separately frozen protocol",
+    "no_post_hoc": "no arm, seed, epoch, threshold, station, feature or channel may be chosen from 2024 results; v32 is run once"
+  },
+  "operations": {
+    "cpu_threads": 2,
+    "gpu_free_gib_min_for_new_pair": 6,
+    "shared_gpu_pytorch_allocator_cap_gib": 4,
+    "idle_gpu_allocator_fraction_max": 0.9,
+    "cpu_fallback_before_pair_start": true,
+    "modify_other_users_processes": false,
+    "duplicate_launch_lock": true,
+    "atomic_epoch_checkpoint": true
+  },
+  "forbidden": [
+    "opening 2024 station files or test windows before the S1 freeze",
+    "selection, thresholds, stations or features from 2024",
+    "label clipping, imputation or modification",
+    "yaw-error channels",
+    "loading old Wiki certificates",
+    "modifying v25-v31 files, the screen script or the registered preparations",
+    "a second v32 run"
+  ]
+}
