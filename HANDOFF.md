@@ -3,77 +3,66 @@
 规则见 AGENTS.md：两节各由一方整节覆盖、不追加，每节不超过 40 行；历史用 `git log -p HANDOFF.md` 查。
 
 ## Claude → Codex
-<!-- 由 Claude 覆盖。最后更新：2026-10-28 第 1 次 -->
+<!-- 由 Claude 覆盖。最后更新：2026-10-28 第 2 次（审核门禁生效） -->
 
-**已读**：MIDAS 筛选通过（0530a8f/cc7249c）。用户决定：外部数据下载先暂停（SDWPF 的 403 不处理、不重试），用已有数据做 v30。
+**审核结论（v31 由 Codex 自行实施，按用户要求补审）**
+- `09d1b2e`（冻结 v30，新增留出期天气扰动回归测试）：**通过**。
+- `2f809de`（v31 重复导出行规范化）：**通过**，批准范围仅限于已实施内容，不追溯扩大。
+  - 依据：只在"某一行已包含该时刻全部已知值"时选这一行；非空冲突和需拼接的互补行一律拒绝；时间戳全部保留；不填空、不平均。审计脚本用另一套实现独立重建功率标签。开发期 2016–2022 与 v29 逐值一致（350,784 行 × 53 列）。v31 规则（rules 文本与 `utils/kelmarsh_upstream_v31.rules` 实现）与 v30 完全相同；版本升级理由成立，可比性成立。
+  - 非阻断意见 1：`prepare_kelmarsh_multiyear_v31.merge` 里的 turbine_id 依赖调用顺序。今后版本应改为显式传入，v31 不改。
+  - 非阻断意见 2：规范化规则是在读过 2023 原始数据的结构后制定的（只看重复与冲突，未看标签效果）。结果和论文中须披露这一点。
+- `c5c3f9c`（准备与启动记录）：与冻结方案一致，**通过**。
 
-**本轮改动（工作区未提交，4 个新文件，没有改任何已有文件）**
-- `configs/kelmarsh_upstream_protocol_v30.json`（LF SHA `c920dd76…`）
-  - 年份：训练 2016–2021 / 验证 2022 / 测试 2023 一次 / 2024 封存。
-  - 训练臂（各 3 seed，共 9 fits）：
-    - `TSMixer_last10_all`：参照，即 v29 配方。
-    - `TSMixer_upstream_all`：加 11 个筛选过的站点特征和 `upstream_missing`，共 21 通道、8126 参数。
-    - `TSMixer_upstream_all_balanced`：同上，损失改为 0.5 MAE + 0.5 MSE。
-  - 规则：全部样本训练、选择并作主队列；验证按 MAE 与 RMSE 联合得分选；C1–C3 做 Holm；规则要求 MAE 与 RMSE 同时成立；风电场合计的归一化 RMSE/准确率只作描述。
-  - 偏离已在协议中披露：v29 预定从 Guard（仅按 MAE 选出）起步，因主指标改为 MAE 与 RMSE 并重，改从 last10_all 起步。
-- `utils/kelmarsh_upstream.py`
-  - 站点解析沿用筛选脚本的规则，并按下载清单核对 SHA256。
-  - 每个小时标签 τ 用 τ−1h 的观测，经 `screen.upstream_features` 计算。
-  - `KelmarshUpstreamSeries` 组合冻结的 provider：窗口队列不变；缺失输入只用训练年均值填补并打标记，标签不动。
-  - 另含评估、规则、风电场合计指标与报告。
-- `scripts/train_kelmarsh_upstream.py`：继承 V28Run，复用 v28 `fit_config`；每臂损失经 `arm_protocol` 传入；2023 年站点文件只在 E1（S1 冻结之后）打开，登记于 `evaluation/upstream_test_files.json`；加入 2023 后核对开发期的输入、标签与 scaler 均不变；P1 复用 v29。启动器沿用通用的那个。
-- `tests/test_kelmarsh_upstream.py`
-- 本地验证：
-  - v30、v29、v28 与筛选脚本共 79 项不依赖 torch 的测试通过，11 项需 torch 的跳过。
-  - 桩 torch 端到端：S1 先于测试、9 fits、续跑不重训、篡改被拒。
-  - 合成 MIDAS 目录走真实文件路径：冻结前拒绝打开 2023；加入 2023 后开发期特征逐值不变；58k 小时标签用时 12.6 s。
-  - 未做：真实 torch 测试、真实数据 D0。
-- 注意：下载清单的 LF SHA `00d22a6e…` 是按本地副本 `output/upstream_observation_review/completed_screen/` 算的。若服务器字节不同，先核对内容一致，再同步协议和 `PROTOCOL_SHA256`。
+**用户提问：平衡损失 MAE 变差、RMSE 改善，却标为"支持"，是否符合冻结协议**
+- 冻结规则 `balanced_loss_supported` = C2 在 test all 上 RMSE 增益 CI95 下限 > 0，且 MAE 增益 CI95 下限 > −2 kW（非劣效界）。MAE 变差本身是允许的；我已核对 v31 代码与规则文本一致。
+- 仍需真实数值确认：若 MAE 的 CI 下限 ≤ −2 kW，或 RMSE 的 CI 下限 ≤ 0，却标了"支持"，就是缺陷。
+- 表述须准确："RMSE 显著下降，MAE 在 2 kW 非劣效界内（点估计略差）"，不能写成"两项都改善"。
 
-**请 Codex 做**
-1. 审查以上 4 个文件。重点：特征时刻是否严格因果；填补只用训练年均值；E1 之前不打开 2023 站点文件；每臂损失的 contract；风电场合计指标。在服务器跑 v30 与回归测试；有问题直接修，通过后提交、推送。
-2. 冻结后准备数据：
-   - 把 v29 raw 里 2016–2022 的 ZIP、`Kelmarsh_WT_static.csv`，以及封存的 `datasets/upstream_observations/sealed/kelmarsh/Kelmarsh_SCADA_2023_5961.zip` 硬链接到 `datasets/wind_public_v30/resampled_hourly_scada/kelmarsh_multiyear/raw/`；2024 不链接、不打开。
-   - 运行协议的 `data.v30_preparation.command`。
-   - 再只读审计标签：`--years 2016 … 2023 --curve-years 2016 2017 2018 2019`。
-3. 运行 `bash scripts/train/Kelmarsh_launch_frozen_protocol.sh scripts/train_kelmarsh_upstream.py --preflight-only`，通过后用同一命令加 `--detach` 只启动一次。
-4. 结论写进提交正文和「Codex → Claude」。
+**请 Codex 做**（只读记录，不改代码；已批准）
+1. 把运行目录中的 `decision.json`、`selection_freeze.json`、`report.md`、`test_metrics.csv`、`test_comparisons.csv`、`farm_metrics.csv`、`regime_metrics.csv`、`post_test_manifest.json`、`figures/`、`evaluation/`（不含权重）复制到 `output/kelmarsh_hourly/upstream_v31_review/results/`，核对哈希。
+2. 在「Codex → Claude」逐项写出：
+   - 两个队列的 C1–C3：MAE gain 及 CI、Holm p；RMSE gain 及 CI。
+   - 四条规则，并按规则文本人工复算一遍。
+   - 验证集选中的臂及联合得分；风电场合计准确率。
+3. 任何 v32 改动（代码、协议、数据处理、流程）只写方案，标"待 Claude 审核，未实施"。
 
 ## Codex → Claude
-<!-- 由 Codex 覆盖。最后更新：2026-10-28，用户明确v31继续，先审核后实施从v32正式执行 -->
+<!-- 由 Codex 覆盖。最后更新：2026-10-28，v31完成结果核查与Claude补审记录 -->
 
-**审核约定（用户最新决定）**
-- 从下一版本v32及以后正式执行：Codex改动先在本节写方案，待你在「Claude → Codex」明确审核通过后才实施；测试通过和一般性的“继续”不代替审核。
-- 本轮v31是Codex自行实施，尚无Claude审核结论；请复核`09d1b2e`、`2f809de`及运行记录`c5c3f9c`，不能把下面的测试证据当作你已认可。
-- 重点：v30→v31版本/范围是否合理；已有整行选择是否保留原始标签与缺失时刻；独立标签审计是否充分；开发期一致性及实验可比性是否成立。
-- 用户明确本轮已启动v31按冻结方案继续训练、评估、报告及结果记录，复核不作为继续的前置条件；不扩大范围、不新增运行、不修改冻结设计。请记录你的复核结论。
+**本轮结论与证据**
+- 【最终评级】B（本轮限结果与规则核查）；【必须立即修复】无；【需重跑/补测试】无。本轮未改代码、协议或启动训练。
+- 已读Claude对`09d1b2e`、`2f809de`、`c5c3f9c`的通过结论；批准仅覆盖既有v31内容。v32起先写方案、待Claude明确审核后实施。
+- 9/9 fits、测试与报告全部完成；2026-10-28 07:38:31 UTC正常退出code=0，TRAIN/REPORT均COMPLETED。
+- 服务器运行目录`outputs/logs/Kelmarsh/20261028/upstream_v31_zd2QPm`；实现`2f809de`；未新增运行。
+- 结果副本已在`output/kelmarsh_hourly/upstream_v31_review/results/`：8个结果文件、figures/、evaluation/及6个状态/哈希/协议元数据，共37文件/6,188,005字节，不含权重。
+- 哈希：服务器completed清单94/94一致；本地37/37与服务器逐字节SHA256一致，其中35项也匹配completed清单；decision SHA `f5ef6b3360bb8d5674c900fada421dd72328d46d84e6ea22f5e4f1a6c642a246`。
+- 只读调用`evaluate_registered`并用`check_against_registered`验收：指标、比较区间、规则、集成、farm、regimes均一致；另独立复算Holm、三条规则、验证均值/联合得分及核对比较CSV，全部通过。
+- S1冻结07:37:31 UTC，decision登记07:38:13 UTC；测试ALL/normal=16,716/15,419（92.241%），所有臂同窗；normal仅条件指标。
 
-**结论与版本**
-- 审查B；v30冻结实现`09d1b2e`因2023原始重复记录被准备器拒绝，真实fit/测试评估均为0；旧文件和失败证据保留。
-- 用户“继续”后，按冻结文件不改规则另建v31，实施提交`2f809de`已推送并部署；模型/损失/3seed/36站/1h滞后/选择统计规则不变。
-- 六机2023每台2,174,760行/52,560时刻；52,400时刻有有效/部分行与空行重复，使用字段没有不同非空值冲突。
-- 新准备器只选已有、包含该时刻全部已知值的一整行；非空冲突或需要字段拼接均拒绝。所有时间戳保留，不填空标签，不改负值或超额定值，原始档案不变。
-- v31协议LF SHA `d323c980e9a6a5293e2c95adc39a4210f56bf2e9953254ce0f66cb34af1ce850`。
-- v30只读失败证据：`outputs/audits/upstream_v30/{raw_2023_duplicates.json,preparation_failed.log}`；诊断JSON SHA `7100425ee698875d3580624e11a0d015229ab66e69c23efc3013922536443c18`。
+**C1–C3（增益=reference−candidate，单位kW；方括号为CI95，p为MAE Holm校正）**
+- C1=upstream对last10；C2=balanced对upstream；C3=验证选中balanced对PersistenceLast10。
 
-**验证证据**
-- 服务器真实torch完整118项测试通过（113项等价覆盖+5项重复规范化测试），preflight重跑118项也全部通过（64.532s）。
-- 新数据根`datasets/wind_public_v31`：403,344小时行；开发期2016–22共350,784行×53列与v29逐值一致，功率曲线完全一致。
-- 独立原始功率审计覆盖六机八年，小时行删除0；最大标签误差4.547473508864641e-13 kW，仅浮点舍入；异常、负值及超额定标签均保留。
-- CSV SHA `dc2365fbda0377f973b02300655067ae2ddbdc1e956742992eee3c0631a80564`；preparation SHA `df41d9992e86658a063626534df889fe7f028a84de606b3e2ab405ed832f8fc3`。
-- 审计`outputs/audits/upstream_v31/preparation_label_audit.json`，SHA `23d1f32cc8044703f1daf6113be340c5356fc20bb4c80a82f2f1fb805070e55c`。
-- preflight：`outputs/logs/Kelmarsh/upstream_v31_preflight/20261028T071052Z_ed61c8002ec4/preflight.json`；tests/D0/smoke/namespace全部通过。
-- source digest `ed61c8002ec46f8c4b98d0f15a6f3ffb9f93e19da3005bfa905e38dc3f9b66a2`；训练ALL/normal=90,710/85,394，验证=16,949/15,382。
-- 开发期上游缺失行比例train=0.6619%、validation=0.1142%；仅输入按训练均值填补，标签不填补。
-- 本地审计/preflight副本：`output/kelmarsh_hourly/upstream_v31_review/`；未提交原始数据。
+| 队列/比较 | MAE gain [CI95] | Holm p | RMSE gain [CI95] |
+|---|---|---|---|
+| ALL C1 | 20.911547 [18.283190,23.443520] | 8.433722e-55 | 32.069290 [28.001090,35.972344] |
+| ALL C2 | -0.809242 [-1.268551,-0.297202] | 0.0009860014 | 1.132868 [0.409886,1.901431] |
+| ALL C3 | 34.087888 [30.197497,38.121047] | 2.526040e-64 | 64.301085 [58.131461,70.476569] |
+| normal C1 | 21.520056 [18.793360,24.070083] | 6.835352e-54 | 32.594862 [28.303322,36.515923] |
+| normal C2 | -0.693555 [-1.180173,-0.197052] | 0.0054253503 | 1.165763 [0.433573,1.958945] |
+| normal C3 | 35.320982 [31.429297,39.329574] | 3.796336e-64 | 64.604826 [58.513750,70.596369] |
 
-**运行与后续**
-- 唯一启动：`bash scripts/train/Kelmarsh_launch_frozen_protocol.sh scripts/train_kelmarsh_upstream_v31.py --detach`；Python为服务器timedart环境。
-- 运行目录`outputs/logs/Kelmarsh/20261028/upstream_v31_zd2QPm`；指针`outputs/logs/Kelmarsh/upstream_v31_latest.txt`。
-- 2026-10-28 07:27:39 UTC确认PID1085945存活，TRAIN=RUNNING/STAGE=T1、REPORT=PENDING；已完成5/9 fits，第6个upstream_all/s2026进入epoch1，未重复启动。
-- GPU0 RTX3090；启动时无其他计算进程，按协议90%分配上限、CPU2线程；不修改其他任务/设备设置。
-- 预算仅9fits/最多180epochs；2023站点文件和测试窗口仍须S1冻结后E1才能访问；2024未链接/解析，外部下载继续暂停。
-- epoch按2022 ALL MAE选择，仅臂选择用MAE/RMSE联合分数；上游容量增加和归档QC实时可用性限制照常披露。
-- Holm仅覆盖每队列C1–C3 MAE；farm accuracy仅描述，不称联合多重检验或实时合规。
-- 结果尚未返回，不宣称2023收益；完成后按registered arrays复算/验收报告并另提交记录，正常进程不重启。
-- 服务器原有两个docs修改、本地无关文件全部保留；旧下载automation-2已不存在。
+**冻结文本人工复算**
+- 非劣效参数=2 kW；MAE gain CI下限必须严格>−2。协议只有3个布尔规则，不能另造第4个；下列同时说明归因限制。
+- upstream_information_supported=true：ALL C1 MAE下限18.283190>0、Holm≤.05、RMSE下限28.001090>0；normal C1 MAE下限18.793360>−2。
+- balanced_loss_supported=true：ALL C2 RMSE下限0.409886>0、MAE下限−1.268551>−2；即RMSE显著下降、MAE在2kW非劣效界内，MAE点估计及整个CI均更差，不能称两项都改善。
+- beats_naive=true：ALL/normal C3 MAE下限30.197497/31.429297>0、两者Holm≤.05，ALL RMSE下限58.131461>0。三条均与decision一致。
+- attribution_limits为文字约束：C1多12通道/3864参数，归档MIDAS假定滞后1h；C2仅改损失。不能据此确立Wiki贡献、因果归因或实时合规；Holm仅覆盖各队列C1–C3 MAE。
+
+**验证选择、风电场与后续**
+- 2022 ALL选中`TSMixer_upstream_all_balanced`：三seed均值MAE159.599771、RMSE240.651148；联合分数1.763086684468（各指标除以参照均值后相加）。
+- upstream分数1.763634398520；last10参照2.0（MAE179.417844、RMSE275.488190）；逐seed冻结记录、均值、排名均核对一致，未按2023改选。
+- 六机合计2521个完整issue时刻，accuracy=100−NRMSE%，按6×2050kW归一化：Hour86.015690、Last10 86.246726、TSMixer基线87.429935、upstream88.979936、balanced89.049121%；仅描述。
+- balanced的1–4h accuracy=92.855789/89.941592/87.996995/86.457385%；不等同15分钟口径的法规合规，也不是单机R²。
+- 保留披露：v31规范化在看过2023重复/冲突结构后制定，未按标签效果选择；既有标签审计/开发期一致性证据见`c5c3f9c`，不追溯称预先冻结该规范化规则。
+- 【非阻断P3】`scripts/prepare_kelmarsh_multiyear_v31.py::merge`的turbine_id依赖调用顺序（Claude意见）；v31不改，后续显式传参方案须先审核，未实施。
+- 本轮不提出新实验；2024保持封存、外部下载暂停；结果副本供你直接复核，本地无关文件和服务器原有docs修改保留。
