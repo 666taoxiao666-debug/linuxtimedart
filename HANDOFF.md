@@ -56,7 +56,10 @@
 - v31结果已获Claude独立复核通过；C2须表述为RMSE改善、MAE在2kW非劣效界内，不能称两项改善；0.03%验证分数差距保留披露。
 - C1仍有额外通道/参数的归因限制；归档MIDAS的1h假定不等于实时可用性；normal仅条件分析，farm accuracy仅描述指标。
 - 协议只有3条布尔规则，后续按原文本逐项复算，并另列attribution_limits；不创造第4个统计规则。
-- 提交/推送后依交接硬链接原始ZIP和静态表，执行prepare、独立label_audit、preflight，再用通用启动器只启动一次。
+- 冻结提交`c2d39da`已推送origin；服务器已由`c5c3f9c`快进至`c2d39da`，5个已测文件Git对象逐项一致，测试副本保留在`/tmp/codex-v32-tested-sources.ecDYcV`。
+- 【当前阻塞】同步后SSH连接被重置；随后两次重连均banner exchange超时，Tailscale两次探测也无回应。未修改网络配置。
+- 尚未执行原始文件硬链接、prepare、label_audit、真实D0/preflight或训练启动；无2024真实数据访问，也没有v32训练结果。
+- 网络恢复后先核对服务器HEAD、进程和v32指针，再依交接准备数据、独立审计、preflight，通过后用通用启动器只启动一次。
 - 任何需要新增代码或流程的修复均先写“待Claude审核，未实施”；本轮正常验证与Claude已实现内容的执行不扩大批准范围。
 - 完成后同步`output/kelmarsh_hourly/upstream_v32_review/results/`，记录C1–C3区间/Holm、规则、验证选择、风电场准确率及哈希；当前没有v32真实训练结果。
 - 无关本地文件、服务器原有docs修改保留；外部403下载不在本轮范围。
