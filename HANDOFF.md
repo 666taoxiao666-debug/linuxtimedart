@@ -37,29 +37,39 @@
 4. 完成后：结果副本放到 `output/kelmarsh_hourly/upstream_v32_review/results/`；在「Codex → Claude」逐项写出 C1–C3（MAE/RMSE 增益与 CI、Holm p）、四条规则的复算、验证选择与风电场准确率。
 
 ## Codex → Claude
-<!-- 由 Codex 覆盖。最后更新：2026-10-28，v32审查与冻结 -->
+<!-- 由 Codex 覆盖。最后更新：2026-10-28，v32准备/审计通过并启动 -->
+ 
+**本轮结论与批准范围**
+- 【最终评级】B：实现审查、真实数据审计、D0和preflight通过；真实训练运行中，尚无v32测试结论。
+- 【必须立即修复】无；【需重跑/补测试】无新增要求，等待本次冻结运行自然完成；不另开运行。
+- 按Claude第3次交接执行；5个文件原样采用，Codex未修改代码/测试/数据处理/实验设计，无待审实现。
+- 冻结提交`c2d39da`已推送并部署；上轮网络阻塞记录`95186d1`已推送，本轮SSH重试后恢复，未改网络配置。
+- 协议LF SHA256：`b9fbdce22a83dd0e5128aa3d9a489cbcb725c4f298f2feba6fe15f028f7a3588`。
+- 训练2016–2022、验证2023、一次性测试2024；模型/损失/36站/1h滞后/seed/联合选择/判定规则均沿用v31。
 
-**审查结论**
-- 【最终评级】B：代码审查与测试通过；真实数据准备、D0和preflight尚未执行，最终科学结论等待一次性2024确认。
-- 【必须立即修复】无；【需重跑/补测试】协议指定的真实数据标签审计、D0、preflight仍须通过后才能启动。
-- 本轮按Claude第3次交接执行，5个新文件原样冻结；Codex未修改代码、测试、数据处理或实验设计，没有待审实现。
-- 已复核v32继承v31模型、损失、36站、1h滞后、seed、联合选择和判定规则；仅按批准范围平移年份并使用显式风机编号准备器。
-- 训练2016–2022、验证2023、测试2024；2024站点文件和测试窗口在S1冻结后打开，E1再次逐值核对开发期输入、标签、窗口和缩放器。
-- 新准备器的turbine_id取自原准备器实际循环；冻结v31文件未改，已消除上轮P3的调用顺序依赖。
-- v32协议LF SHA256：`b9fbdce22a83dd0e5128aa3d9a489cbcb725c4f298f2feba6fe15f028f7a3588`。
-- 服务器Python/torch：timedart / 2.6.0+cu124；unittest共143项，87.819秒，全部通过，无跳过。
-- 覆盖v32/v31/v30/v29/v28、重复记录规范化、独立标签审计、模型和筛选回归；真实torch合成端到端检查S1先于测试及完成后复用不重训。
-- 服务器无pytest，已按项目预设unittest路径验证；不是测试失败。测试只用合成样本，尚未准备或打开真实2024数据。
+**准备与独立审计**
+- 已按批准硬链接v31的2016–2023原始ZIP/静态表及已验收2024 ZIP至v32 raw；复用缓存的固定Zenodo记录，未追加下载。
+- prepare正常完成：456,048行，年份2016–2024、曲线拟合2016–2019；6台风机显式ID，时间戳及非空值保留，填补/冲突值均0。
+- CSV SHA256：`96acfcabb8399ddca415a61011b3cf02ca9a675d7fcc31f2ef70db89a3cb37ef`。
+- preparation.json SHA256：`6a5a3061a7008f6a4d56f2eba68eb733472aaeb3ed1659594a98463b9d6d7677`。
+- 独立审计`outputs/audits/upstream_v32/preparation_label_audit.json`：passed=true，输入/源码哈希均匹配，54个质量行及UTC表头通过。
+- 独立原始功率抽核5,880小时，最大差值4.547473508864641e−13 kW；39,756个负值标签、1,798个超额定标签原样保留，未裁剪/插补。
+- 准备/审计日志：`outputs/audits/upstream_v32/{prepare_20261028T1420.log,label_audit_20261028T1426.log}`。
 
-**范围、限制与下一步**
-- 采用Claude记录的用户决定：冻结后释放2024作一次确认，此后Kelmarsh不再有封存年；不能因结果修改方案或新增运行。
-- v31结果已获Claude独立复核通过；C2须表述为RMSE改善、MAE在2kW非劣效界内，不能称两项改善；0.03%验证分数差距保留披露。
-- C1仍有额外通道/参数的归因限制；归档MIDAS的1h假定不等于实时可用性；normal仅条件分析，farm accuracy仅描述指标。
-- 协议只有3条布尔规则，后续按原文本逐项复算，并另列attribution_limits；不创造第4个统计规则。
-- 冻结提交`c2d39da`已推送origin；服务器已由`c5c3f9c`快进至`c2d39da`，5个已测文件Git对象逐项一致，测试副本保留在`/tmp/codex-v32-tested-sources.ecDYcV`。
-- 【当前阻塞】同步后SSH连接被重置；随后两次重连均banner exchange超时，Tailscale两次探测也无回应。未修改网络配置。
-- 尚未执行原始文件硬链接、prepare、label_audit、真实D0/preflight或训练启动；无2024真实数据访问，也没有v32训练结果。
-- 网络恢复后先核对服务器HEAD、进程和v32指针，再依交接准备数据、独立审计、preflight，通过后用通用启动器只启动一次。
-- 任何需要新增代码或流程的修复均先写“待Claude审核，未实施”；本轮正常验证与Claude已实现内容的执行不扩大批准范围。
-- 完成后同步`output/kelmarsh_hourly/upstream_v32_review/results/`，记录C1–C3区间/Holm、规则、验证选择、风电场准确率及哈希；当前没有v32真实训练结果。
-- 无关本地文件、服务器原有docs修改保留；外部403下载不在本轮范围。
+**D0、preflight与启动**
+- 先前扩展回归143项通过；本轮协议要求的preflight回归127项/79.992秒通过；真实D0、namespace、bash语法、真实torch合成smoke均通过。
+- preflight目录：`outputs/logs/Kelmarsh/upstream_v32_preflight/20261028T143148Z_99e4ec27b379`。
+- preflight.json SHA256：`841b482b985fef1fa498eb4e81a41f3aaf9e0ed5fcd5c930a9df749257fa521f`。
+- D0对照v31：403,344行×53列全部一致，功率曲线一致；test_windows_instantiated=false。
+- 开发窗口ALL/normal：train=107,665/100,782；validation=16,716/15,419；未提前读取2024 MIDAS站点或构造测试窗口。
+- 2026-10-28 14:35:15 UTC（北京时间22:35:15）通过通用启动器`scripts/train/Kelmarsh_launch_frozen_protocol.sh scripts/train_kelmarsh_upstream_v32.py --detach`仅启动一次。
+- 运行目录：`outputs/logs/Kelmarsh/20261028/upstream_v32_huL1ai`；source_commit=c2d39da；launcher PID1127684，Python PID1127736（后续以完整命令确认）。
+- 已核实真实Python命令、latest指针及upstream_v32.lock写锁；首个TSMixer_last10_all/s2024已完成epoch1，正常训练中，不是已跑完。
+- 按冻结方案9 fits；S1前只用开发期，S1后由原E1打开2024站点/测试窗口并再次验证开发输入、标签、窗口及缩放器不变。
+
+**待结果返回**
+- 无需Claude再改代码；用户说“GPT好了”时可先复核本记录，最终结果需等待本次运行及报告结束。
+- 完成后同步`output/kelmarsh_hourly/upstream_v32_review/results/`，复算C1–C3 MAE/RMSE区间、MAE Holm、三条布尔规则、验证选择及farm accuracy，另列attribution_limits。
+- 不将C2非劣效称为两项都改善；C1额外通道/参数及归档天气实时可用性限制继续披露，normal/farm指标仅描述。
+- 2024确认后无剩余封存Kelmarsh年份；不按结果改方案或追加运行。后续Codex修复仍须先提案、待Claude明确审核。
+- 无关本地文件和服务器原有docs修改保留；外部403下载未动。
