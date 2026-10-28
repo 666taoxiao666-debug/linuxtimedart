@@ -40,26 +40,34 @@
 4. 结论写进提交正文和「Codex → Claude」。
 
 ## Codex → Claude
-<!-- 由 Codex 覆盖。最后更新：2026-10-28，v30原始重复记录阻塞；用户“继续”后登记v31 -->
+<!-- 由 Codex 覆盖。最后更新：2026-10-28，v31审计/preflight通过，唯一9-fit任务已启动 -->
 
-**范围与审查**
-- v30已冻结/推送`09d1b2e`；真实torch原112测试+新增heldout隔离1测试通过，真实fit=0，2023模型评估=0。
-- v30准备被原脚本`merge_ticks`拒绝：2023每台2,174,760行/52,560时刻，去完全重复后104,960行；52,400时刻含非完全相同行。
-- 六机使用字段均无多个不同非空值；重复是有效/部分行与空行。原ZIP SHA `3321f24015551546dfecc6686fa462571c8d3e717ed135b14aa73fcea494afb7`与验收一致，不是传输损坏。
-- 只读诊断：`outputs/audits/upstream_v30/raw_2023_duplicates.json`，SHA `7100425ee698875d3580624e11a0d015229ab66e69c23efc3013922536443c18`；失败日志同目录`preparation_failed.log`。
-- 用户要求“继续”；按AGENTS冻结文件不改，保留v30及失败证据，另建v31，仅修复原始导出重复记录规范化。
-- 新准备器选取同一时刻已有的完整一行，须包含所有已知字段值；任何非空冲突或需要字段拼接均拒绝。
-- 每个时间戳保留；全空标签仍空，负值/超额定值不改；不补值、不均值化重复行，不覆盖原始档案。
-- 独立v31标签审计从原始功率单独重建，核对六机八年全部小时；准备器/审计器原冻结文件均未改。
-- v31模型、损失、36站/1h滞后、train-only输入填补、3臂×3seed、S1/E1门禁、选择/统计规则均沿用v30。
-- v31协议LF SHA `d323c980e9a6a5293e2c95adc39a4210f56bf2e9953254ce0f66cb34af1ce850`；数据根`datasets/wind_public_v31`。
-- v31服务器真实torch完整118测试通过（61.510s），包含113项同等覆盖+5项重复规则；日志`/tmp/codex-v31-review-tests-complete.log`。
-- 审查B：epoch仍按2022 ALL MAE选，三臂之间联合MAE/RMSE选择；容量增加与归档QC实时可用性限制保留。
-- Holm只覆盖每队列C1–C3 MAE；farm accuracy仅描述；不能称所有指标联合校正或实时合规。
+**结论与版本**
+- 审查B；v30冻结实现`09d1b2e`因2023原始重复记录被准备器拒绝，真实fit/测试评估均为0；旧文件和失败证据保留。
+- 用户“继续”后，按冻结文件不改规则另建v31，实施提交`2f809de`已推送并部署；模型/损失/3seed/36站/1h滞后/选择统计规则不变。
+- 六机2023每台2,174,760行/52,560时刻；52,400时刻有有效/部分行与空行重复，使用字段没有不同非空值冲突。
+- 新准备器只选已有、包含该时刻全部已知值的一整行；非空冲突或需要字段拼接均拒绝。所有时间戳保留，不填空标签，不改负值或超额定值，原始档案不变。
+- v31协议LF SHA `d323c980e9a6a5293e2c95adc39a4210f56bf2e9953254ce0f66cb34af1ce850`。
+- v30只读失败证据：`outputs/audits/upstream_v30/{raw_2023_duplicates.json,preparation_failed.log}`；诊断JSON SHA `7100425ee698875d3580624e11a0d015229ab66e69c23efc3013922536443c18`。
 
-**执行**
-- v31先测试、提交冻结，再准备2016–2023、独立审计、D0/preflight；全部通过才启动唯一9-fit任务。
-- 2023站点文件仅S1后E1打开；2024持续封存；外部下载暂停、403不处理；旧automation-2已不存在。
-- v30只有raw硬链接/元数据缓存，无准备好的CSV、训练指针或fit；不删除失败证据。
-- 服务器两个原有docs修改与本地无关文件保留；测试使用unittest，无需安装pytest。
-- 数据审计/preflight/实际启动结果稍后覆盖本节并另作记录提交。
+**验证证据**
+- 服务器真实torch完整118项测试通过（113项等价覆盖+5项重复规范化测试），preflight重跑118项也全部通过（64.532s）。
+- 新数据根`datasets/wind_public_v31`：403,344小时行；开发期2016–22共350,784行×53列与v29逐值一致，功率曲线完全一致。
+- 独立原始功率审计覆盖六机八年，小时行删除0；最大标签误差4.547473508864641e-13 kW，仅浮点舍入；异常、负值及超额定标签均保留。
+- CSV SHA `dc2365fbda0377f973b02300655067ae2ddbdc1e956742992eee3c0631a80564`；preparation SHA `df41d9992e86658a063626534df889fe7f028a84de606b3e2ab405ed832f8fc3`。
+- 审计`outputs/audits/upstream_v31/preparation_label_audit.json`，SHA `23d1f32cc8044703f1daf6113be340c5356fc20bb4c80a82f2f1fb805070e55c`。
+- preflight：`outputs/logs/Kelmarsh/upstream_v31_preflight/20261028T071052Z_ed61c8002ec4/preflight.json`；tests/D0/smoke/namespace全部通过。
+- source digest `ed61c8002ec46f8c4b98d0f15a6f3ffb9f93e19da3005bfa905e38dc3f9b66a2`；训练ALL/normal=90,710/85,394，验证=16,949/15,382。
+- 开发期上游缺失行比例train=0.6619%、validation=0.1142%；仅输入按训练均值填补，标签不填补。
+- 本地审计/preflight副本：`output/kelmarsh_hourly/upstream_v31_review/`；未提交原始数据。
+
+**运行与后续**
+- 唯一启动：`bash scripts/train/Kelmarsh_launch_frozen_protocol.sh scripts/train_kelmarsh_upstream_v31.py --detach`；Python为服务器timedart环境。
+- 运行目录`outputs/logs/Kelmarsh/20261028/upstream_v31_zd2QPm`；指针`outputs/logs/Kelmarsh/upstream_v31_latest.txt`。
+- 2026-10-28 07:15:33 UTC确认PID1085945持有v31锁，TRAIN=RUNNING/STAGE=T1；首臂s2024完成epoch6，进入7，未重复启动。
+- GPU0 RTX3090；启动时无其他计算进程，按协议90%分配上限、CPU2线程；不修改其他任务/设备设置。
+- 预算仅9fits/最多180epochs；2023站点文件和测试窗口仍须S1冻结后E1才能访问；2024未链接/解析，外部下载继续暂停。
+- epoch按2022 ALL MAE选择，仅臂选择用MAE/RMSE联合分数；上游容量增加和归档QC实时可用性限制照常披露。
+- Holm仅覆盖每队列C1–C3 MAE；farm accuracy仅描述，不称联合多重检验或实时合规。
+- 结果尚未返回，不宣称2023收益；完成后按registered arrays复算/验收报告并另提交记录，正常进程不重启。
+- 服务器原有两个docs修改、本地无关文件全部保留；旧下载automation-2已不存在。
