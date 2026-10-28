@@ -37,39 +37,42 @@
 4. 完成后：结果副本放到 `output/kelmarsh_hourly/upstream_v32_review/results/`；在「Codex → Claude」逐项写出 C1–C3（MAE/RMSE 增益与 CI、Holm p）、四条规则的复算、验证选择与风电场准确率。
 
 ## Codex → Claude
-<!-- 由 Codex 覆盖。最后更新：2026-10-28，v32准备/审计通过并启动 -->
+<!-- 由 Codex 覆盖。最后更新：2026-10-29，v32完成与结果复核 -->
 
-**本轮结论与批准范围**
-- 【最终评级】B：实现审查、真实数据审计、D0和preflight通过；真实训练运行中，尚无v32测试结论。
-- 【必须立即修复】无；【需重跑/补测试】无新增要求，等待本次冻结运行自然完成；不另开运行。
-- 按Claude第3次交接执行；5个文件原样采用，Codex未修改代码/测试/数据处理/实验设计，无待审实现。
-- 冻结提交`c2d39da`已推送并部署；上轮网络阻塞记录`95186d1`已推送，本轮SSH重试后恢复，未改网络配置。
-- 协议LF SHA256：`b9fbdce22a83dd0e5128aa3d9a489cbcb725c4f298f2feba6fe15f028f7a3588`。
-- 训练2016–2022、验证2023、一次性测试2024；模型/损失/36站/1h滞后/seed/联合选择/判定规则均沿用v31。
+**结论与完整性**
+- 【最终评级】B（结果复核）；【必须立即修复】无；【需重跑/补测试】无。本轮仅核查/同步/记录，未改冻结实现或新增训练。
+- v32的9/9 fits、测试及报告全部完成；2026-10-28 15:04:42 UTC（北京时间23:04:42）正常退出code=0，TRAIN/REPORT均COMPLETED。
+- 运行`outputs/logs/Kelmarsh/20261028/upstream_v32_huL1ai`；实现`c2d39da`；准备/审计/preflight及启动证据见`0c9bfda`。
+- 服务器completed清单94/94 SHA256一致；结果副本已放`output/kelmarsh_hourly/upstream_v32_review/results/`，42文件/6,318,474字节，不含模型权重。
+- 传输归档SHA256=`115c642c97cf70d9d959c87ce6020118ea1365e0b8bfee1ac2f48d598ca4dfdf`与服务器一致；其中38项本地文件再与completed清单一致。
+- decision SHA=`461c7ec39d1169109d8abe9ae7e609908aee728f17a47a991ae9b052a4c36a10`；completed SHA=`791435ba6e4a68f8662a98b37b6d5de567ebdff551b8ce7211a3379683f6c563`。
+- 已只读调用evaluate_registered并check_against_registered：指标/比较/规则/集成/farm/regimes一致；另独立重算Holm、三条规则、验证均值及联合得分，全部通过。
+- S1于15:03:21 UTC冻结；15:03:51才登记打开测试series，15:03:54预测，15:04:11登记decision；测试ALL/normal=16,738/15,478（92.472219%）。
+- 复核命令最初误把protocol.json外层记录当协议而报KeyError；改用其中protocol后通过，仅核查命令错误，未修改或重跑实验。
 
-**准备与独立审计**
-- 已按批准硬链接v31的2016–2023原始ZIP/静态表及已验收2024 ZIP至v32 raw；复用缓存的固定Zenodo记录，未追加下载。
-- prepare正常完成：456,048行，年份2016–2024、曲线拟合2016–2019；6台风机显式ID，时间戳及非空值保留，填补/冲突值均0。
-- CSV SHA256：`96acfcabb8399ddca415a61011b3cf02ca9a675d7fcc31f2ef70db89a3cb37ef`。
-- preparation.json SHA256：`6a5a3061a7008f6a4d56f2eba68eb733472aaeb3ed1659594a98463b9d6d7677`。
-- 独立审计`outputs/audits/upstream_v32/preparation_label_audit.json`：passed=true，输入/源码哈希均匹配，54个质量行及UTC表头通过。
-- 独立原始功率抽核5,880小时，最大差值4.547473508864641e−13 kW；39,756个负值标签、1,798个超额定标签原样保留，未裁剪/插补。
-- 准备/审计日志：`outputs/audits/upstream_v32/{prepare_20261028T1420.log,label_audit_20261028T1426.log}`。
+**C1–C3（增益=reference−candidate，kW；CI95；p为MAE Holm）**
+- C1=upstream对last10；C2=balanced对upstream；C3=2023验证选中的balanced对PersistenceLast10。
 
-**D0、preflight与启动**
-- 先前扩展回归143项通过；本轮协议要求的preflight回归127项/79.992秒通过；真实D0、namespace、bash语法、真实torch合成smoke均通过。
-- preflight目录：`outputs/logs/Kelmarsh/upstream_v32_preflight/20261028T143148Z_99e4ec27b379`。
-- preflight.json SHA256：`841b482b985fef1fa498eb4e81a41f3aaf9e0ed5fcd5c930a9df749257fa521f`。
-- D0对照v31：403,344行×53列全部一致，功率曲线一致；test_windows_instantiated=false。
-- 开发窗口ALL/normal：train=107,665/100,782；validation=16,716/15,419；未提前读取2024 MIDAS站点或构造测试窗口。
-- 2026-10-28 14:35:15 UTC（北京时间22:35:15）通过通用启动器`scripts/train/Kelmarsh_launch_frozen_protocol.sh scripts/train_kelmarsh_upstream_v32.py --detach`仅启动一次。
-- 运行目录：`outputs/logs/Kelmarsh/20261028/upstream_v32_huL1ai`；source_commit=c2d39da；launcher PID1127684，Python PID1127736（后续以完整命令确认）。
-- 已核实真实Python命令、latest指针及upstream_v32.lock写锁；首个TSMixer_last10_all/s2024已完成epoch1，正常训练中，不是已跑完。
-- 按冻结方案9 fits；S1前只用开发期，S1后由原E1打开2024站点/测试窗口并再次验证开发输入、标签、窗口及缩放器不变。
+| 队列/比较 | MAE gain [CI95] | Holm p | RMSE gain [CI95] |
+|---|---|---|---|
+| ALL C1 | 18.199788 [15.244327,21.058694] | 7.789603e-35 | 28.272626 [23.619050,32.647175] |
+| ALL C2 | -1.063092 [-1.562083,-0.502714] | 8.832553e-05 | 1.102209 [0.219163,2.055967] |
+| ALL C3 | 34.891917 [30.539004,39.394254] | 2.664343e-55 | 66.965539 [59.911429,73.903027] |
+| normal C1 | 19.008914 [15.940237,21.983406] | 2.332913e-34 | 29.390110 [24.620032,34.024103] |
+| normal C2 | -1.021648 [-1.520220,-0.448805] | 0.000254350 | 0.760646 [-0.030953,1.661553] |
+| normal C3 | 36.407268 [32.049448,40.979328] | 1.452945e-54 | 67.018749 [59.841418,73.821105] |
 
-**待结果返回**
-- 无需Claude再改代码；用户说“GPT好了”时可先复核本记录，最终结果需等待本次运行及报告结束。
-- 完成后同步`output/kelmarsh_hourly/upstream_v32_review/results/`，复算C1–C3 MAE/RMSE区间、MAE Holm、三条布尔规则、验证选择及farm accuracy，另列attribution_limits。
-- 不将C2非劣效称为两项都改善；C1额外通道/参数及归档天气实时可用性限制继续披露，normal/farm指标仅描述。
-- 2024确认后无剩余封存Kelmarsh年份；不按结果改方案或追加运行。后续Codex修复仍须先提案、待Claude明确审核。
-- 无关本地文件和服务器原有docs修改保留；外部403下载未动。
+**冻结规则逐项复算与限制**
+- upstream_information_supported=true：ALL C1 MAE下限15.244327>0、Holm≤.05、RMSE下限23.619050>0；normal C1 MAE下限15.940237>−2。
+- balanced_loss_supported=true：ALL C2 RMSE下限0.219163>0、MAE下限−1.562083>−2；MAE点估计及整个CI均更差，不能称两项都改善。
+- beats_naive=true：ALL/normal C3 MAE下限30.539004/32.049448>0、两者Holm≤.05；ALL RMSE下限59.911429>0；三条与decision一致。
+- 协议只有3个布尔规则；第4项attribution_limits是文字约束：C1多12通道/3864参数，归档天气假定滞后1h，不能建立Wiki贡献、因果归因或实时可用性。
+- normal C2 RMSE的CI跨0，不能称该条件队列RMSE显著改善；normal为事后条件指标。Holm仅覆盖各队列C1–C3 MAE。
+
+**验证选择、风电场与Claude下一步**
+- 2023验证选中balanced：三seed均值MAE166.048789、RMSE247.555292，联合分数1.771990046164；upstream=1.773057905639，差约0.06023%，须披露选择接近。
+- last10验证参照均值MAE186.610977、RMSE280.618461，分数2；独立重算逐seed均值、归一化求和与排序一致，未按2024改选。
+- 六机2627个完整issue时刻、容量12300kW；accuracy=100−NRMSE%：Hour86.393612、Last10 86.255952、TSMixer基线87.708322、upstream88.993900、balanced89.042323%。
+- balanced的1–4h accuracy=92.665184/89.685935/88.161259/86.585590%；仅描述，不等同15分钟法规口径或单机R²。
+- 2024一次性确认支持冻结规则；此后无剩余封存Kelmarsh年，不追加运行。请Claude复核本地副本、结论措辞和记录后再设计下一轮；新改动仍先审核。
+- 无关本地文件与服务器原有docs修改保留，外部403下载未动；本轮没有待Claude审核的实现修改。
