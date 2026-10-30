@@ -1,5 +1,33 @@
 # 两项贡献的定向近邻核查
 
+## 第10次交接补核：D1+D2（2026-10-31）
+
+对象：proposal §14.16及继承的§14.13。四篇指定近邻按任务、输入/监督、预训练/适配、下游功率验证逐项核查，并补查公开MM82曲线及天气预训练向风电迁移。来源阅读层级如下；没有复现指标、下载数据/权重或审计全部源码。没有将未发表方案上传检索服务。
+
+检索组：四篇公开题名/arXiv号；`Senvion MM82 power curve`；`weather pretrained wind power foundation model`；`wind power pre-training weather stations`；`wind power zero-shot power curve transfer`。泛检索排除MDPI；第三方聚合页只作线索，不作为下列结论依据。本账本记录截至本次查阅可见版本，不宣称穷尽检索或首次证明。
+
+**R21 — Deep Learning for Day Forecasts from Sparse Observations（MetNet-3）.** [作者正文2306.06079v3](https://arxiv.org/html/2306.06079v3)，预印本。类型：方法，优先级Risk。定向阅读§4.1数据/时空划分、§4.3.1站点遮蔽：监督稀疏站点天气预测，随机遮蔽25%站点，并有空间留出。已读段落未提供本案的站网→风场功率迁移实验。足以否定把25%遮蔽或站点天气预测本身当创新；“token遮蔽”与它的整站遮蔽不能混称相同设置。未逐表复核全部结果。
+
+**R22 — StationPDE: Station-Oriented Surface PDE Learning for Multi-Station Multivariate Weather Forecasting.** [作者正文2609.22123v2](https://arxiv.org/html/2609.22123v2)，2026预印本，未确认正式接受。类型：方法，优先级Risk。定向阅读§3–4.2、§4.5、§5.1：站点到连续场、风驱动平流/扩散与数据分支，监督对象是气象变量；Weather2K/MeteoNet按时间划分。该任务和已读实验没有验证气象表征到不同机型功率的迁移。支持“站网＋物理传播并非空白”，不证明本项目与其全部机制同构。
+
+**R23 — Learning to Factorize Spatio-Temporal Foundation Models（FactoST）.** [NeurIPS 2025正式论文PDF](https://papers.nips.cc/paper_files/paper/2025/file/7fa2a1f2122a4dd76e6b9ac518cfce14-Paper-Conference.pdf)。类型：方法，优先级Risk。读摘要、§4.2泛化比较及相关消融/局限段：时间通用预训练配空间适配，论文在其基准上比较联合时空预训练的迁移不足。这是有条件的实证发现，不是“空间结构总是妨碍迁移”的定理。D1/D2若声称回应它，应固定输入/标签量/任务比较；两个风场的不同预算差距不是反证。未复现作者基准。
+
+**R24 — Local wind speed forecasting at short time horizons based on Numerical Weather Prediction and observations from surrounding stations.** [作者正文2503.18797v2](https://arxiv.org/html/2503.18797v2)。类型：方法，优先级Risk。定向阅读§4.1、§4.4、§5.2.1、§6.2：邻站与NWP输入做局地风速预测，全局模型再作单站微调；风能讨论仍要求验证地面风到轮毂风的扩展。并非已验证的跨机型功率迁移。网页版本头与文内日期不一致，本轮以具体版本和访问日期定位，不据此争论精确首发优先权。
+
+**R25 — Results from a wake-steering experiment at a commercial wind plant: investigating the wind speed dependence of wake-steering performance.** [Wind Energy Science, 2021, DOI 10.5194/wes-6-1427-2021](https://wes.copernicus.org/articles/6/1427/2021/)，[图3原PDF](https://wes.copernicus.org/articles/6/1427/2021/wes-6-1427-2021-f03-high-res.pdf)。类型：工程证据，优先级Core。定向读§2、图3标注及§3曲线说明；SMV的MM82为82m/2050kW，公开保证功率/推力曲线，图注明1.225kg/m³。其入流参照涉及轮毂高度激光雷达，不能直接等同本项目机舱传感器。没有提取曲线数值，也未确认Penmanshiel控制配置相同；应由Claude先审来源/误差再冻结工件。
+
+**R26 — windpowerlib官方OEDB数据表（软件，不是论文）.** [型号目录](https://raw.githubusercontent.com/wind-python/windpowerlib/master/windpowerlib/oedb/turbine_data.csv)，[功率曲线表](https://raw.githubusercontent.com/wind-python/windpowerlib/master/windpowerlib/oedb/power_curves.csv)。本次读取master可变快照：目录存在MM82/2050且曲线标记false；曲线表有MM92/2050、未找到MM82行。故应区分“型号存在”和“附带曲线缺失”。这不是冻结的运行revision，也不支持“所有公开渠道都无MM82曲线”。未安装库、未使用其表替换本项目数据。
+
+**R27 — Integrating Wind Power into Graph-Based Limited-Area Weather Forecasting Models.** [作者会议摘要EGU26-7982](https://meetingorganizer.copernicus.org/EGU26/EGU26-7982.html)，[DOI](https://doi.org/10.5194/egusphere-egu26-7982)，EGU General Assembly 2026。类型：研究方向，优先级Risk。已读完整摘要：基于Anemoi的图天气模型，CERRA天气、ENTSO-E功率，包含天气模型预训练后微调做风电的路线。**阅读层级仅会议摘要**，未获得完整方法/对照结果，不把它当成本案同构或效果已被覆盖的证明。它足以否定广义“天气预训练→风电此前无人做”的说法。
+
+**R28 — DeepWind: A foundation model for zero-shot wind power forecasting.** [Energy正式页](https://www.sciencedirect.com/science/article/pii/S0360544226019006)，DOI 10.1016/j.energy.2026.141793；[作者GitHub](https://github.com/Hexian-2001/DeepWind)，[README](https://raw.githubusercontent.com/Hexian-2001/DeepWind/main/README.md)。类型：方法/软件，优先级Risk。核正式页摘要及官方README“what is”和输入示例：风电领域预训练并做跨场zero-shot，接口仍需要近期功率历史，可带天气。没有完整论文/源码审计或基准复现；没有下载权重。因此不能宣称它已解决无功率历史新场，也不能把本项目“零拟合标签”误当完全无本地观测。
+
+**R29 — Tyan-WP: A Wind Power Foundation Model for Ultra-Short-Term Probabilistic Forecasting.** [作者版本页2606.08630v1](https://arxiv.org/abs/2606.08630v1)，[正文](https://arxiv.org/html/2606.08630v1)，2026预印本。类型：方法，优先级Risk。定向读引言的场景限定、§2.1输入定义、§3结构：功率历史、天气历史、时钟与静态站点元数据；零样本指无目标场训练，仍有近期功率输入。读到功率/气象双分支与跨场动机，没有做其结果表复算，不移植其结果。它增加D2近邻压力，但不直接覆盖无本地功率历史、仅区域地面站的特定方案。
+
+**差异判断。** 指定四篇已完成可访问方法段的定向补查；R27提供更直接的广义天气→功率路线证据。剩余可能差异应具体落在仅地面历史观测、可用性时钟、流向结构、跨观测/机型适配及匹配预算的可证伪假设，不能只拼接已有原语。R17 UniWind的既有定向核查仍适用。Chasing the Wind、DA-Transformer、DPGNet的既有全文缺口本轮没有闭合，不声称排除全部近邻。
+
+---
+
 ## 第8次交接补核（2026-10-30）
 
 当前审查对象为proposal §14.12；以下第7次及更早账本保留其原阅读层级，不代表本轮重新阅读全文或执行实验。仅以公开题名/URL检索，未上传未发表方案或私有数据。
