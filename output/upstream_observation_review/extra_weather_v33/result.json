@@ -1,0 +1,1363 @@
+{
+  "screen_version": "extra_weather_screen_v33_S_r2",
+  "status": "NOT_PASSED",
+  "passed": false,
+  "primary_mean_gain_pct": {
+    "rmse": -0.2389854638597977,
+    "mae": -0.20892732088618748,
+    "early_fit_late_score_forward": {
+      "rmse": -0.15838654584444112,
+      "mae": -0.2887412304336645
+    },
+    "late_fit_early_score_reverse": {
+      "rmse": -0.3181447910666879,
+      "mae": -0.12200215689785465
+    }
+  },
+  "pass_rule": {
+    "year": 2021,
+    "lag_hours": 1,
+    "group": "thermal_cloud",
+    "leads": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "min_rmse_gain_pct": 1.0,
+    "min_mae_gain_pct": 1.0,
+    "min_coverage": 0.8,
+    "definition": "mean over leads 1-4 of the held-out INCREMENTAL gain of control+new over control must reach both thresholds, and the lead-mean gain must be > 0 for both metrics in BOTH half-year directions; coverage below min_coverage gives INSUFFICIENT_COVERAGE (not a pass)"
+  },
+  "scope": "retrospective bidirectional development screen on the D1 validation year; linear/IRLS correction only, no forecaster retraining; incremental over the 11 existing upstream features + night flag; archival qc-version-1 values with an assumed 1 h availability lag",
+  "control_features": [
+    "upwind_ws",
+    "upwind_dws3",
+    "upwind_minus_local",
+    "local_ws",
+    "local_dws3",
+    "regional_ws",
+    "regional_dws3",
+    "local_dp3",
+    "grad_east",
+    "grad_north",
+    "grad_magnitude_change3",
+    "night"
+  ],
+  "new_features": [
+    "upwind_dT3",
+    "local_dT3",
+    "upwind_minus_local_T",
+    "local_dewpoint_depression",
+    "regional_dewpoint_depression",
+    "regional_cloud_oktas",
+    "night_x_regional_cloud"
+  ],
+  "reference_original_screen_2021_lead2_4_gain_pct": {
+    "rmse": 3.1053392869019576,
+    "mae": 3.476935920690242
+  },
+  "groups": {
+    "thermal_cloud": {
+      "coverage": 0.9951530612244898,
+      "eligible_coverage": 0.9951530612244898,
+      "boundary_purged_windows": 0,
+      "leads": [
+        {
+          "lead": 1,
+          "windows": 15604,
+          "rmse_control": 160.29458084665936,
+          "mae_control": 103.06956390238486,
+          "rmse_candidate": 160.77525727114374,
+          "mae_candidate": 103.37887270793011,
+          "rmse_gain_pct": -0.2998706643390525,
+          "mae_gain_pct": -0.30009713230008117,
+          "control_vs_matched": {
+            "rmse_gain_pct": 3.180823856678594,
+            "mae_gain_pct": 3.082370572083293
+          },
+          "directions": {
+            "early_fit_late_score_forward": {
+              "windows": 8221,
+              "rmse_gain_pct": -0.2781978045970579,
+              "mae_gain_pct": -0.4621666871214458
+            },
+            "late_fit_early_score_reverse": {
+              "windows": 7383,
+              "rmse_gain_pct": -0.3241708600725257,
+              "mae_gain_pct": -0.12008281569235724
+            }
+          }
+        },
+        {
+          "lead": 2,
+          "windows": 15604,
+          "rmse_control": 241.52066130483522,
+          "mae_control": 153.61873122704412,
+          "rmse_candidate": 242.25935927850787,
+          "mae_candidate": 154.06917532169794,
+          "rmse_gain_pct": -0.30585291116784763,
+          "mae_gain_pct": -0.29322211624576155,
+          "control_vs_matched": {
+            "rmse_gain_pct": 3.457954393738527,
+            "mae_gain_pct": 3.7504240948416867
+          },
+          "directions": {
+            "early_fit_late_score_forward": {
+              "windows": 8221,
+              "rmse_gain_pct": -0.2002007311787013,
+              "mae_gain_pct": -0.355264971735858
+            },
+            "late_fit_early_score_reverse": {
+              "windows": 7383,
+              "rmse_gain_pct": -0.4029295273956013,
+              "mae_gain_pct": -0.2283620217397031
+            }
+          }
+        },
+        {
+          "lead": 3,
+          "windows": 15604,
+          "rmse_control": 287.26953850064075,
+          "mae_control": 184.24814352251326,
+          "rmse_candidate": 287.74187523905675,
+          "mae_candidate": 184.63192712047615,
+          "rmse_gain_pct": -0.16442284165640864,
+          "mae_gain_pct": -0.20829713158874164,
+          "control_vs_matched": {
+            "rmse_gain_pct": 3.3439017387897896,
+            "mae_gain_pct": 3.604915248743301
+          },
+          "directions": {
+            "early_fit_late_score_forward": {
+              "windows": 8221,
+              "rmse_gain_pct": -0.06977300343751214,
+              "mae_gain_pct": -0.24370392364390092
+            },
+            "late_fit_early_score_reverse": {
+              "windows": 7383,
+              "rmse_gain_pct": -0.25921665937385097,
+              "mae_gain_pct": -0.17044169671154297
+            }
+          }
+        },
+        {
+          "lead": 4,
+          "windows": 15604,
+          "rmse_control": 317.3346583511571,
+          "mae_control": 207.13360531864342,
+          "rmse_candidate": 317.9242516704419,
+          "mae_candidate": 207.2042231786347,
+          "rmse_gain_pct": -0.18579543827588196,
+          "mae_gain_pct": -0.034092903410165576,
+          "control_vs_matched": {
+            "rmse_gain_pct": 2.6378322741116844,
+            "mae_gain_pct": 3.2750318039165838
+          },
+          "directions": {
+            "early_fit_late_score_forward": {
+              "windows": 8221,
+              "rmse_gain_pct": -0.08537464416449314,
+              "mae_gain_pct": -0.09382933923345327
+            },
+            "late_fit_early_score_reverse": {
+              "windows": 7383,
+              "rmse_gain_pct": -0.2862621174247737,
+              "mae_gain_pct": 0.030877906552184697
+            }
+          }
+        }
+      ],
+      "features": [
+        "upwind_dT3",
+        "local_dT3",
+        "upwind_minus_local_T",
+        "local_dewpoint_depression",
+        "regional_dewpoint_depression",
+        "regional_cloud_oktas",
+        "night_x_regional_cloud"
+      ]
+    },
+    "thermal": {
+      "coverage": 0.9951530612244898,
+      "eligible_coverage": 0.9951530612244898,
+      "boundary_purged_windows": 0,
+      "leads": [
+        {
+          "lead": 1,
+          "windows": 15604,
+          "rmse_control": 160.29458084665936,
+          "mae_control": 103.06956390238486,
+          "rmse_candidate": 160.64415538495683,
+          "mae_candidate": 103.13248848354122,
+          "rmse_gain_pct": -0.2180825680138776,
+          "mae_gain_pct": -0.0610505941559536,
+          "control_vs_matched": {
+            "rmse_gain_pct": 3.180823856678594,
+            "mae_gain_pct": 3.082370572083293
+          },
+          "directions": {
+            "early_fit_late_score_forward": {
+              "windows": 8221,
+              "rmse_gain_pct": -0.1604059916044287,
+              "mae_gain_pct": -0.061527899010438425
+            },
+            "late_fit_early_score_reverse": {
+              "windows": 7383,
+              "rmse_gain_pct": -0.2827264638757043,
+              "mae_gain_pct": -0.060520440869127334
+            }
+          }
+        },
+        {
+          "lead": 2,
+          "windows": 15604,
+          "rmse_control": 241.52066130483522,
+          "mae_control": 153.61873122704412,
+          "rmse_candidate": 242.08487685206885,
+          "mae_candidate": 153.95604298350187,
+          "rmse_gain_pct": -0.233609639931176,
+          "mae_gain_pct": -0.2195772310859656,
+          "control_vs_matched": {
+            "rmse_gain_pct": 3.457954393738527,
+            "mae_gain_pct": 3.7504240948416867
+          },
+          "directions": {
+            "early_fit_late_score_forward": {
+              "windows": 8221,
+              "rmse_gain_pct": -0.17581033130722457,
+              "mae_gain_pct": -0.26347866092977235
+            },
+            "late_fit_early_score_reverse": {
+              "windows": 7383,
+              "rmse_gain_pct": -0.2867417877170153,
+              "mae_gain_pct": -0.1736823272146859
+            }
+          }
+        },
+        {
+          "lead": 3,
+          "windows": 15604,
+          "rmse_control": 287.26953850064075,
+          "mae_control": 184.24814352251326,
+          "rmse_candidate": 287.66771430596384,
+          "mae_candidate": 184.40312694553091,
+          "rmse_gain_pct": -0.13860704041275262,
+          "mae_gain_pct": -0.08411668093617486,
+          "control_vs_matched": {
+            "rmse_gain_pct": 3.3439017387897896,
+            "mae_gain_pct": 3.604915248743301
+          },
+          "directions": {
+            "early_fit_late_score_forward": {
+              "windows": 8221,
+              "rmse_gain_pct": -0.07474520887749136,
+              "mae_gain_pct": -0.051970419925573275
+            },
+            "late_fit_early_score_reverse": {
+              "windows": 7383,
+              "rmse_gain_pct": -0.2025856778652635,
+              "mae_gain_pct": -0.11848609481399652
+            }
+          }
+        },
+        {
+          "lead": 4,
+          "windows": 15604,
+          "rmse_control": 317.3346583511571,
+          "mae_control": 207.13360531864342,
+          "rmse_candidate": 317.89251943127914,
+          "mae_candidate": 207.2688098313165,
+          "rmse_gain_pct": -0.17579582483069345,
+          "mae_gain_pct": -0.06527405944829479,
+          "control_vs_matched": {
+            "rmse_gain_pct": 2.6378322741116844,
+            "mae_gain_pct": 3.2750318039165838
+          },
+          "directions": {
+            "early_fit_late_score_forward": {
+              "windows": 8221,
+              "rmse_gain_pct": -0.08199760092040265,
+              "mae_gain_pct": -0.1229042531952107
+            },
+            "late_fit_early_score_reverse": {
+              "windows": 7383,
+              "rmse_gain_pct": -0.26964310085961785,
+              "mae_gain_pct": -0.0025940499294163644
+            }
+          }
+        }
+      ],
+      "features": [
+        "upwind_dT3",
+        "local_dT3",
+        "upwind_minus_local_T",
+        "local_dewpoint_depression",
+        "regional_dewpoint_depression"
+      ]
+    },
+    "cloud": {
+      "coverage": 0.9951530612244898,
+      "eligible_coverage": 0.9951530612244898,
+      "boundary_purged_windows": 0,
+      "leads": [
+        {
+          "lead": 1,
+          "windows": 15604,
+          "rmse_control": 160.29458084665936,
+          "mae_control": 103.06956390238486,
+          "rmse_candidate": 160.5688145894789,
+          "mae_candidate": 103.31839273918882,
+          "rmse_gain_pct": -0.17108110665442489,
+          "mae_gain_pct": -0.2414183463894659,
+          "control_vs_matched": {
+            "rmse_gain_pct": 3.180823856678594,
+            "mae_gain_pct": 3.082370572083293
+          },
+          "directions": {
+            "early_fit_late_score_forward": {
+              "windows": 8221,
+              "rmse_gain_pct": -0.23541135227536092,
+              "mae_gain_pct": -0.4524507663554278
+            },
+            "late_fit_early_score_reverse": {
+              "windows": 7383,
+              "rmse_gain_pct": -0.09888658381638216,
+              "mae_gain_pct": -0.007019869117597111
+            }
+          }
+        },
+        {
+          "lead": 2,
+          "windows": 15604,
+          "rmse_control": 241.52066130483522,
+          "mae_control": 153.61873122704412,
+          "rmse_candidate": 241.64278921638308,
+          "mae_candidate": 153.74338492707426,
+          "rmse_gain_pct": -0.05056623764114754,
+          "mae_gain_pct": -0.08114485716321784,
+          "control_vs_matched": {
+            "rmse_gain_pct": 3.457954393738527,
+            "mae_gain_pct": 3.7504240948416867
+          },
+          "directions": {
+            "early_fit_late_score_forward": {
+              "windows": 8221,
+              "rmse_gain_pct": -0.03491287498991191,
+              "mae_gain_pct": -0.2015082636300125
+            },
+            "late_fit_early_score_reverse": {
+              "windows": 7383,
+              "rmse_gain_pct": -0.06496143039307345,
+              "mae_gain_pct": 0.04468400511012938
+            }
+          }
+        },
+        {
+          "lead": 3,
+          "windows": 15604,
+          "rmse_control": 287.26953850064075,
+          "mae_control": 184.24814352251326,
+          "rmse_candidate": 287.22954177753445,
+          "mae_candidate": 184.40661888154187,
+          "rmse_gain_pct": 0.013923064490251047,
+          "mae_gain_pct": -0.086011916320472,
+          "control_vs_matched": {
+            "rmse_gain_pct": 3.3439017387897896,
+            "mae_gain_pct": 3.604915248743301
+          },
+          "directions": {
+            "early_fit_late_score_forward": {
+              "windows": 8221,
+              "rmse_gain_pct": 0.005819328438583238,
+              "mae_gain_pct": -0.14548212193172816
+            },
+            "late_fit_early_score_reverse": {
+              "windows": 7383,
+              "rmse_gain_pct": 0.022047465764540863,
+              "mae_gain_pct": -0.02242890399499764
+            }
+          }
+        },
+        {
+          "lead": 4,
+          "windows": 15604,
+          "rmse_control": 317.3346583511571,
+          "mae_control": 207.13360531864342,
+          "rmse_candidate": 317.4574458109978,
+          "mae_candidate": 206.94781895528442,
+          "rmse_gain_pct": -0.03869336569748416,
+          "mae_gain_pct": 0.0896939746079295,
+          "control_vs_matched": {
+            "rmse_gain_pct": 2.6378322741116844,
+            "mae_gain_pct": 3.2750318039165838
+          },
+          "directions": {
+            "early_fit_late_score_forward": {
+              "windows": 8221,
+              "rmse_gain_pct": -0.09403092004844904,
+              "mae_gain_pct": 0.07406114585842838
+            },
+            "late_fit_early_score_reverse": {
+              "windows": 7383,
+              "rmse_gain_pct": 0.016755701826931535,
+              "mae_gain_pct": 0.10669662185093243
+            }
+          }
+        }
+      ],
+      "features": [
+        "regional_cloud_oktas",
+        "night_x_regional_cloud"
+      ]
+    }
+  },
+  "input_identity": {
+    "script_sha256": "e79c50e3355d002ec8ac06e164a90bfe718b77c012366f064c4faaf6620206e6",
+    "base_screen_script_sha256": "c68477c52fa9405b12095560c446f7bfaf160743842efeccc276717070aa214b",
+    "screen_json_sha256": "30fdddd2ff7b82148421f27c08d478f04d97eb4de8d736db6f1c5a0d778750f3",
+    "v28_completed_sha256": "3a0f5183642edfe028212b5738c5f198165a30d99a091ddf2a5d2e2270aac190",
+    "wind_pressure_files": 252,
+    "extra_field_files": [
+      {
+        "path": "datasets/upstream_observations/midas_open_v202607/development/16725/midas-open_uk-hourly-weather-obs_dv-202607_lincolnshire_16725_wainfleet-no-2_qcv-1_2020.csv",
+        "sha256": "f1a2d08c925599b673ebefe728ff6722e18bb3e9782aac8d3005e64f68a6f744",
+        "rows_version1": 8783,
+        "temperature_out_of_range": 0,
+        "dewpoint_out_of_range": 0,
+        "dewpoint_above_temperature_plus_1": 0,
+        "cloud_obscured_9": 15,
+        "cloud_invalid_code": 0
+      },
+      {
+        "path": "datasets/upstream_observations/midas_open_v202607/development/16725/midas-open_uk-hourly-weather-obs_dv-202607_lincolnshire_16725_wainfleet-no-2_qcv-1_2021.csv",
+        "sha256": "0aa487161d9c9f1e3cb453ff3fb7dbd30924bb28e93e5d102af187ffd6d84319",
+        "rows_version1": 8083,
+        "temperature_out_of_range": 0,
+        "dewpoint_out_of_range": 0,
+        "dewpoint_above_temperature_plus_1": 0,
+        "cloud_obscured_9": 5,
+        "cloud_invalid_code": 0
+      },
+      {
+        "path": "datasets/upstream_observations/midas_open_v202607/development/19187/midas-open_uk-hourly-weather-obs_dv-202607_warwickshire_19187_coleshill_qcv-1_2020.csv",
+        "sha256": "41a0144dd69d4729600189ca09db0a816029c32e94a392c1753dea2338434219",
+        "rows_version1": 8784,
+        "temperature_out_of_range": 0,
+        "dewpoint_out_of_range": 0,
+        "dewpoint_above_temperature_plus_1": 0,
+        "cloud_obscured_9": 27,
+        "cloud_invalid_code": 0
+      },
+      {
+        "path": "datasets/upstream_observations/midas_open_v202607/development/19187/midas-open_uk-hourly-weather-obs_dv-202607_warwickshire_19187_coleshill_qcv-1_2021.csv",
+        "sha256": "45ed1f2d065f265800c441511d8c18d2ffb436403cfa52a5787aa4bb31526d60",
+        "rows_version1": 8758,
+        "temperature_out_of_range": 0,
+        "dewpoint_out_of_range": 0,
+        "dewpoint_above_temperature_plus_1": 0,
+        "cloud_obscured_9": 21,
+        "cloud_invalid_code": 0
+      },
+      {
+        "path": "datasets/upstream_observations/midas_open_v202607/development/19188/midas-open_uk-hourly-weather-obs_dv-202607_essex_19188_andrewsfield_qcv-1_2020.csv",
+        "sha256": "29d13624a4b115a8ce67ea9d00c4f41faf1f23b3086257b1ac8ce8de6453b694",
+        "rows_version1": 8784,
+        "temperature_out_of_range": 0,
+        "dewpoint_out_of_range": 0,
+        "dewpoint_above_temperature_plus_1": 0,
+        "cloud_obscured_9": 101,
+        "cloud_invalid_code": 0
+      },
+      {
+        "path": "datasets/upstream_observations/midas_open_v202607/development/19188/midas-open_uk-hourly-weather-obs_dv-202607_essex_19188_andrewsfield_qcv-1_2021.csv",
+        "sha256": "fc10a116b4bb5697cb24f54ec5cdd7fbea59e2f1a5ba67b5cfb92115b723b7a6",
+        "rows_version1": 8759,
+        "temperature_out_of_range": 0,
+        "dewpoint_out_of_range": 0,
+        "dewpoint_above_temperature_plus_1": 0,
+        "cloud_obscured_9": 127,
+        "cloud_invalid_code": 0
+      },
+      {
+        "path": "datasets/upstream_observations/midas_open_v202607/development/24102/midas-open_uk-hourly-weather-obs_dv-202607_west-midlands_24102_coventry-coundon_qcv-1_2020.csv",
+        "sha256": "d87df9677a06603f62c37c6e3eddbdc657941abb9d4cfedd82f8a21da392d8ec",
+        "rows_version1": 8783,
+        "temperature_out_of_range": 0,
+        "dewpoint_out_of_range": 0,
+        "dewpoint_above_temperature_plus_1": 0,
+        "cloud_obscured_9": 0,
+        "cloud_invalid_code": 0
+      },
+      {
+        "path": "datasets/upstream_observations/midas_open_v202607/development/24102/midas-open_uk-hourly-weather-obs_dv-202607_west-midlands_24102_coventry-coundon_qcv-1_2021.csv",
+        "sha256": "71f7d5fde26bbc815cb1e585f38c6b65962df3f65c9e98ca6c8c7cdf857d8156",
+        "rows_version1": 8760,
+        "temperature_out_of_range": 0,
+        "dewpoint_out_of_range": 0,
+        "dewpoint_above_temperature_plus_1": 0,
+        "cloud_obscured_9": 0,
+        "cloud_invalid_code": 0
+      },
+      {
+        "path": "datasets/upstream_observations/midas_open_v202607/development/24996/midas-open_uk-hourly-weather-obs_dv-202607_hereford-and-worcester_24996_hereford-credenhill_qcv-1_2020.csv",
+        "sha256": "6d98c6a24ebc94c2b0a05a68b52d51f2817de2e1be2d70c53c87cdd15a3f1ba9",
+        "rows_version1": 8784,
+        "temperature_out_of_range": 0,
+        "dewpoint_out_of_range": 0,
+        "dewpoint_above_temperature_plus_1": 0,
+        "cloud_obscured_9": 47,
+        "cloud_invalid_code": 0
+      },
+      {
+        "path": "datasets/upstream_observations/midas_open_v202607/development/24996/midas-open_uk-hourly-weather-obs_dv-202607_hereford-and-worcester_24996_hereford-credenhill_qcv-1_2021.csv",
+        "sha256": "ad6200f85dd992c47fb619fc7f6434ecba2900c8218c85c7311e9689839b1c29",
+        "rows_version1": 8759,
+        "temperature_out_of_range": 0,
+        "dewpoint_out_of_range": 0,
+        "dewpoint_above_temperature_plus_1": 0,
+        "cloud_obscured_9": 33,
+        "cloud_invalid_code": 0
+      },
+      {
+        "path": "datasets/upstream_observations/midas_open_v202607/development/30620/midas-open_uk-hourly-weather-obs_dv-202607_surrey_30620_charlwood_qcv-1_2020.csv",
+        "sha256": "c59827cc4d81dc2c044fee033749e02d9cf1ccc74fb9dec5f00e7b447e829b0c",
+        "rows_version1": 8430,
+        "temperature_out_of_range": 0,
+        "dewpoint_out_of_range": 0,
+        "dewpoint_above_temperature_plus_1": 0,
+        "cloud_obscured_9": 53,
+        "cloud_invalid_code": 0
+      },
+      {
+        "path": "datasets/upstream_observations/midas_open_v202607/development/30620/midas-open_uk-hourly-weather-obs_dv-202607_surrey_30620_charlwood_qcv-1_2021.csv",
+        "sha256": "74c15b61a11d36852b2c875778f97a51f96d4519515e0bf5d081a6509c454c3d",
+        "rows_version1": 8757,
+        "temperature_out_of_range": 0,
+        "dewpoint_out_of_range": 0,
+        "dewpoint_above_temperature_plus_1": 0,
+        "cloud_obscured_9": 63,
+        "cloud_invalid_code": 0
+      },
+      {
+        "path": "datasets/upstream_observations/midas_open_v202607/development/30690/midas-open_uk-hourly-weather-obs_dv-202607_staffordshire_30690_leek-thorncliffe_qcv-1_2020.csv",
+        "sha256": "f81b27fc627a15c4daf93d1a414644245b78bfd2c357652bd9a849c9eb6ac3a4",
+        "rows_version1": 8784,
+        "temperature_out_of_range": 0,
+        "dewpoint_out_of_range": 0,
+        "dewpoint_above_temperature_plus_1": 0,
+        "cloud_obscured_9": 201,
+        "cloud_invalid_code": 0
+      },
+      {
+        "path": "datasets/upstream_observations/midas_open_v202607/development/30690/midas-open_uk-hourly-weather-obs_dv-202607_staffordshire_30690_leek-thorncliffe_qcv-1_2021.csv",
+        "sha256": "9c5689f8b721c1aee7939ba1fd5f243ef8134564ce463b418e5d27592a82faa2",
+        "rows_version1": 8759,
+        "temperature_out_of_range": 0,
+        "dewpoint_out_of_range": 0,
+        "dewpoint_above_temperature_plus_1": 0,
+        "cloud_obscured_9": 124,
+        "cloud_invalid_code": 0
+      },
+      {
+        "path": "datasets/upstream_observations/midas_open_v202607/development/384/midas-open_uk-hourly-weather-obs_dv-202607_lincolnshire_00384_waddington_qcv-1_2020.csv",
+        "sha256": "b88fcf8ee63363e27743e44a0f7bda4e951180cce83a9b70264f08500890701c",
+        "rows_version1": 8784,
+        "temperature_out_of_range": 0,
+        "dewpoint_out_of_range": 0,
+        "dewpoint_above_temperature_plus_1": 0,
+        "cloud_obscured_9": 108,
+        "cloud_invalid_code": 0
+      },
+      {
+        "path": "datasets/upstream_observations/midas_open_v202607/development/384/midas-open_uk-hourly-weather-obs_dv-202607_lincolnshire_00384_waddington_qcv-1_2021.csv",
+        "sha256": "bdda2ea1bf513267f48ed4c4cac6bfa619a3f514781264c59bc58aa48a9b64fd",
+        "rows_version1": 8755,
+        "temperature_out_of_range": 0,
+        "dewpoint_out_of_range": 0,
+        "dewpoint_above_temperature_plus_1": 0,
+        "cloud_obscured_9": 109,
+        "cloud_invalid_code": 0
+      },
+      {
+        "path": "datasets/upstream_observations/midas_open_v202607/development/386/midas-open_uk-hourly-weather-obs_dv-202607_lincolnshire_00386_cranwell_qcv-1_2020.csv",
+        "sha256": "ceaf585ba135da6abfabd48bf063be686d9ad82877d07381e4ae6d761060a426",
+        "rows_version1": 8784,
+        "temperature_out_of_range": 0,
+        "dewpoint_out_of_range": 0,
+        "dewpoint_above_temperature_plus_1": 0,
+        "cloud_obscured_9": 89,
+        "cloud_invalid_code": 0
+      },
+      {
+        "path": "datasets/upstream_observations/midas_open_v202607/development/386/midas-open_uk-hourly-weather-obs_dv-202607_lincolnshire_00386_cranwell_qcv-1_2021.csv",
+        "sha256": "ce54fffefd5fcd9bdc40aeba5715cb859df29654e3d6a5d97174425f9bba3048",
+        "rows_version1": 8756,
+        "temperature_out_of_range": 0,
+        "dewpoint_out_of_range": 0,
+        "dewpoint_above_temperature_plus_1": 0,
+        "cloud_obscured_9": 41,
+        "cloud_invalid_code": 0
+      },
+      {
+        "path": "datasets/upstream_observations/midas_open_v202607/development/393/midas-open_uk-hourly-weather-obs_dv-202607_lincolnshire_00393_coningsby_qcv-1_2020.csv",
+        "sha256": "b8d29cd5ed3d938305f9ae30bfc58b972b2dd30613559011a35b2a5c3d950984",
+        "rows_version1": 8783,
+        "temperature_out_of_range": 0,
+        "dewpoint_out_of_range": 0,
+        "dewpoint_above_temperature_plus_1": 0,
+        "cloud_obscured_9": 72,
+        "cloud_invalid_code": 0
+      },
+      {
+        "path": "datasets/upstream_observations/midas_open_v202607/development/393/midas-open_uk-hourly-weather-obs_dv-202607_lincolnshire_00393_coningsby_qcv-1_2021.csv",
+        "sha256": "70086198beb33bad4d0f760137bac5dc5ce830f06dd91f4098e0694c9c055681",
+        "rows_version1": 8754,
+        "temperature_out_of_range": 0,
+        "dewpoint_out_of_range": 0,
+        "dewpoint_above_temperature_plus_1": 0,
+        "cloud_obscured_9": 42,
+        "cloud_invalid_code": 0
+      },
+      {
+        "path": "datasets/upstream_observations/midas_open_v202607/development/395/midas-open_uk-hourly-weather-obs_dv-202607_lincolnshire_00395_holbeach-no-2_qcv-1_2020.csv",
+        "sha256": "d174b8d7ce1f1605e06a463b320645ce9c8729b62742edcdf1bf5e6a675f5b58",
+        "rows_version1": 8783,
+        "temperature_out_of_range": 0,
+        "dewpoint_out_of_range": 0,
+        "dewpoint_above_temperature_plus_1": 0,
+        "cloud_obscured_9": 71,
+        "cloud_invalid_code": 0
+      },
+      {
+        "path": "datasets/upstream_observations/midas_open_v202607/development/395/midas-open_uk-hourly-weather-obs_dv-202607_lincolnshire_00395_holbeach-no-2_qcv-1_2021.csv",
+        "sha256": "c95022e75816fa38ac152078d60d9a63e947fff165635e62ad8a0d8613ff3c82",
+        "rows_version1": 8756,
+        "temperature_out_of_range": 0,
+        "dewpoint_out_of_range": 0,
+        "dewpoint_above_temperature_plus_1": 0,
+        "cloud_obscured_9": 48,
+        "cloud_invalid_code": 0
+      },
+      {
+        "path": "datasets/upstream_observations/midas_open_v202607/development/405/midas-open_uk-hourly-weather-obs_dv-202607_lincolnshire_00405_donna-nook-no-2_qcv-1_2020.csv",
+        "sha256": "2a9797935244bc12e23ed4c3aeed56eb0142351c1434a8e81ef3150e30baf5a9",
+        "rows_version1": 8784,
+        "temperature_out_of_range": 0,
+        "dewpoint_out_of_range": 0,
+        "dewpoint_above_temperature_plus_1": 0,
+        "cloud_obscured_9": 62,
+        "cloud_invalid_code": 0
+      },
+      {
+        "path": "datasets/upstream_observations/midas_open_v202607/development/405/midas-open_uk-hourly-weather-obs_dv-202607_lincolnshire_00405_donna-nook-no-2_qcv-1_2021.csv",
+        "sha256": "74247426fd1e4333ced1d1a5040a40a7f17c43665fab22dd4023bcfed671a0fe",
+        "rows_version1": 8759,
+        "temperature_out_of_range": 0,
+        "dewpoint_out_of_range": 0,
+        "dewpoint_above_temperature_plus_1": 0,
+        "cloud_obscured_9": 54,
+        "cloud_invalid_code": 0
+      },
+      {
+        "path": "datasets/upstream_observations/midas_open_v202607/development/409/midas-open_uk-hourly-weather-obs_dv-202607_norfolk_00409_marham_qcv-1_2020.csv",
+        "sha256": "8b2b99c18ee00c8d8fab8220a7ea617dc7a2a44d2eb24a4e3bc3037899c5c210",
+        "rows_version1": 8784,
+        "temperature_out_of_range": 0,
+        "dewpoint_out_of_range": 0,
+        "dewpoint_above_temperature_plus_1": 0,
+        "cloud_obscured_9": 128,
+        "cloud_invalid_code": 0
+      },
+      {
+        "path": "datasets/upstream_observations/midas_open_v202607/development/409/midas-open_uk-hourly-weather-obs_dv-202607_norfolk_00409_marham_qcv-1_2021.csv",
+        "sha256": "9f6bac63af3479b135da3e60c6fae9ac305babffce998158555320ef1b3ab756",
+        "rows_version1": 8742,
+        "temperature_out_of_range": 0,
+        "dewpoint_out_of_range": 0,
+        "dewpoint_above_temperature_plus_1": 0,
+        "cloud_obscured_9": 99,
+        "cloud_invalid_code": 0
+      },
+      {
+        "path": "datasets/upstream_observations/midas_open_v202607/development/440/midas-open_uk-hourly-weather-obs_dv-202607_suffolk_00440_wattisham_qcv-1_2020.csv",
+        "sha256": "1baedec58a8a3550f7cb85ca5123c497d4c91c68da694ec17b0bfbcb5a1e7630",
+        "rows_version1": 8784,
+        "temperature_out_of_range": 0,
+        "dewpoint_out_of_range": 0,
+        "dewpoint_above_temperature_plus_1": 0,
+        "cloud_obscured_9": 112,
+        "cloud_invalid_code": 0
+      },
+      {
+        "path": "datasets/upstream_observations/midas_open_v202607/development/440/midas-open_uk-hourly-weather-obs_dv-202607_suffolk_00440_wattisham_qcv-1_2021.csv",
+        "sha256": "131bba8438016131cdb9b22129140c38f224813aab39b0a9c98e68dd3240b9b8",
+        "rows_version1": 8759,
+        "temperature_out_of_range": 0,
+        "dewpoint_out_of_range": 0,
+        "dewpoint_above_temperature_plus_1": 0,
+        "cloud_obscured_9": 146,
+        "cloud_invalid_code": 0
+      },
+      {
+        "path": "datasets/upstream_observations/midas_open_v202607/development/456/midas-open_uk-hourly-weather-obs_dv-202607_cambridgeshire_00456_monks-wood_qcv-1_2020.csv",
+        "sha256": "e1786f2a67016248a20144993e9c22bc77d64133d9a18e43e181e074986977c2",
+        "rows_version1": 8616,
+        "temperature_out_of_range": 0,
+        "dewpoint_out_of_range": 0,
+        "dewpoint_above_temperature_plus_1": 0,
+        "cloud_obscured_9": 0,
+        "cloud_invalid_code": 0
+      },
+      {
+        "path": "datasets/upstream_observations/midas_open_v202607/development/456/midas-open_uk-hourly-weather-obs_dv-202607_cambridgeshire_00456_monks-wood_qcv-1_2021.csv",
+        "sha256": "52bc45d96dd963065bfa9b31b168206cfe3d3527a12586218364d994863ffe68",
+        "rows_version1": 8760,
+        "temperature_out_of_range": 0,
+        "dewpoint_out_of_range": 0,
+        "dewpoint_above_temperature_plus_1": 0,
+        "cloud_obscured_9": 0,
+        "cloud_invalid_code": 0
+      },
+      {
+        "path": "datasets/upstream_observations/midas_open_v202607/development/461/midas-open_uk-hourly-weather-obs_dv-202607_bedfordshire_00461_bedford_qcv-1_2020.csv",
+        "sha256": "67dfd1fe98d24e5ce00e5bfb4e3ad3bb444f1a1a96c56068138e09fa29e6bbd1",
+        "rows_version1": 8784,
+        "temperature_out_of_range": 0,
+        "dewpoint_out_of_range": 0,
+        "dewpoint_above_temperature_plus_1": 0,
+        "cloud_obscured_9": 113,
+        "cloud_invalid_code": 0
+      },
+      {
+        "path": "datasets/upstream_observations/midas_open_v202607/development/461/midas-open_uk-hourly-weather-obs_dv-202607_bedfordshire_00461_bedford_qcv-1_2021.csv",
+        "sha256": "0fe50658ffe705e9eac968d911edd8ed32f0aa2423f93d1000fcaac69be08c11",
+        "rows_version1": 8752,
+        "temperature_out_of_range": 0,
+        "dewpoint_out_of_range": 0,
+        "dewpoint_above_temperature_plus_1": 0,
+        "cloud_obscured_9": 49,
+        "cloud_invalid_code": 0
+      },
+      {
+        "path": "datasets/upstream_observations/midas_open_v202607/development/556/midas-open_uk-hourly-weather-obs_dv-202607_nottinghamshire_00556_nottingham-watnall_qcv-1_2020.csv",
+        "sha256": "b9869126f6f0cf86f49b0ab1a90b271e78a0b97f1a4126138f780358798d9b04",
+        "rows_version1": 8783,
+        "temperature_out_of_range": 0,
+        "dewpoint_out_of_range": 0,
+        "dewpoint_above_temperature_plus_1": 0,
+        "cloud_obscured_9": 94,
+        "cloud_invalid_code": 0
+      },
+      {
+        "path": "datasets/upstream_observations/midas_open_v202607/development/556/midas-open_uk-hourly-weather-obs_dv-202607_nottinghamshire_00556_nottingham-watnall_qcv-1_2021.csv",
+        "sha256": "a0e0fdc4475ed24ec68a13167d080d37140405ab48475235ac9b739a50bedb10",
+        "rows_version1": 8760,
+        "temperature_out_of_range": 0,
+        "dewpoint_out_of_range": 0,
+        "dewpoint_above_temperature_plus_1": 0,
+        "cloud_obscured_9": 84,
+        "cloud_invalid_code": 0
+      },
+      {
+        "path": "datasets/upstream_observations/midas_open_v202607/development/56958/midas-open_uk-hourly-weather-obs_dv-202607_west-yorkshire_56958_emley-moor-no-2_qcv-1_2020.csv",
+        "sha256": "72660bcdfd7b29a1e24c995af52ee807f64adf8bdd40143b7fff0cc2ebde07a1",
+        "rows_version1": 8783,
+        "temperature_out_of_range": 0,
+        "dewpoint_out_of_range": 0,
+        "dewpoint_above_temperature_plus_1": 0,
+        "cloud_obscured_9": 0,
+        "cloud_invalid_code": 0
+      },
+      {
+        "path": "datasets/upstream_observations/midas_open_v202607/development/56958/midas-open_uk-hourly-weather-obs_dv-202607_west-yorkshire_56958_emley-moor-no-2_qcv-1_2021.csv",
+        "sha256": "0773f2114342eca5f830944643c54d7b2ad2e7ffb1f8fa9a4f3cded7fbb571ac",
+        "rows_version1": 8759,
+        "temperature_out_of_range": 0,
+        "dewpoint_out_of_range": 0,
+        "dewpoint_above_temperature_plus_1": 0,
+        "cloud_obscured_9": 0,
+        "cloud_invalid_code": 0
+      },
+      {
+        "path": "datasets/upstream_observations/midas_open_v202607/development/57199/midas-open_uk-hourly-weather-obs_dv-202607_cheshire_57199_rostherne-no-2_qcv-1_2020.csv",
+        "sha256": "a611eb603f6087ae20dc4844c32e83c6b90510bfb9db03821ccba6d95f7e37e5",
+        "rows_version1": 8778,
+        "temperature_out_of_range": 0,
+        "dewpoint_out_of_range": 0,
+        "dewpoint_above_temperature_plus_1": 0,
+        "cloud_obscured_9": 45,
+        "cloud_invalid_code": 0
+      },
+      {
+        "path": "datasets/upstream_observations/midas_open_v202607/development/57199/midas-open_uk-hourly-weather-obs_dv-202607_cheshire_57199_rostherne-no-2_qcv-1_2021.csv",
+        "sha256": "6a4f484b6594ccae6d1372f8fff50583bca093ee23ccb2022c6f0c6fcf0a6f02",
+        "rows_version1": 8760,
+        "temperature_out_of_range": 0,
+        "dewpoint_out_of_range": 0,
+        "dewpoint_above_temperature_plus_1": 0,
+        "cloud_obscured_9": 44,
+        "cloud_invalid_code": 0
+      },
+      {
+        "path": "datasets/upstream_observations/midas_open_v202607/development/583/midas-open_uk-hourly-weather-obs_dv-202607_cambridgeshire_00583_wittering_qcv-1_2020.csv",
+        "sha256": "85ef24ad9a71266e9a96aae56d59e49e2c171b35849a9e2a9799cde05b964c76",
+        "rows_version1": 8588,
+        "temperature_out_of_range": 0,
+        "dewpoint_out_of_range": 0,
+        "dewpoint_above_temperature_plus_1": 0,
+        "cloud_obscured_9": 92,
+        "cloud_invalid_code": 0
+      },
+      {
+        "path": "datasets/upstream_observations/midas_open_v202607/development/583/midas-open_uk-hourly-weather-obs_dv-202607_cambridgeshire_00583_wittering_qcv-1_2021.csv",
+        "sha256": "e5c5c869b460e58fc6f64d2ed0c2c2b306dee2eda7054476a896b25770f7c398",
+        "rows_version1": 8485,
+        "temperature_out_of_range": 0,
+        "dewpoint_out_of_range": 0,
+        "dewpoint_above_temperature_plus_1": 0,
+        "cloud_obscured_9": 59,
+        "cloud_invalid_code": 0
+      },
+      {
+        "path": "datasets/upstream_observations/midas_open_v202607/development/595/midas-open_uk-hourly-weather-obs_dv-202607_warwickshire_00595_church-lawford_qcv-1_2020.csv",
+        "sha256": "379a31efff6fa9ca3ab9d16e9cd691b298d50bbf156080d9d2216343910fa741",
+        "rows_version1": 8783,
+        "temperature_out_of_range": 0,
+        "dewpoint_out_of_range": 0,
+        "dewpoint_above_temperature_plus_1": 0,
+        "cloud_obscured_9": 55,
+        "cloud_invalid_code": 0
+      },
+      {
+        "path": "datasets/upstream_observations/midas_open_v202607/development/595/midas-open_uk-hourly-weather-obs_dv-202607_warwickshire_00595_church-lawford_qcv-1_2021.csv",
+        "sha256": "c7fcff1b4604a77a984f87d5a7ae4d82b30a3d6a8bfd135ec765647c4ccdde89",
+        "rows_version1": 8759,
+        "temperature_out_of_range": 0,
+        "dewpoint_out_of_range": 0,
+        "dewpoint_above_temperature_plus_1": 0,
+        "cloud_obscured_9": 53,
+        "cloud_invalid_code": 0
+      },
+      {
+        "path": "datasets/upstream_observations/midas_open_v202607/development/605/midas-open_uk-hourly-weather-obs_dv-202607_oxfordshire_00605_brize-norton_qcv-1_2020.csv",
+        "sha256": "429250b36a8df77f4db113f428f8bbbdd2e332b067f352afbfd322913d2979e4",
+        "rows_version1": 8784,
+        "temperature_out_of_range": 0,
+        "dewpoint_out_of_range": 0,
+        "dewpoint_above_temperature_plus_1": 0,
+        "cloud_obscured_9": 50,
+        "cloud_invalid_code": 0
+      },
+      {
+        "path": "datasets/upstream_observations/midas_open_v202607/development/605/midas-open_uk-hourly-weather-obs_dv-202607_oxfordshire_00605_brize-norton_qcv-1_2021.csv",
+        "sha256": "a97c819219f1bd5e97be8541cb226022030d37dfefe327aae7e378ec1ae03202",
+        "rows_version1": 8754,
+        "temperature_out_of_range": 0,
+        "dewpoint_out_of_range": 0,
+        "dewpoint_above_temperature_plus_1": 0,
+        "cloud_obscured_9": 43,
+        "cloud_invalid_code": 0
+      },
+      {
+        "path": "datasets/upstream_observations/midas_open_v202607/development/613/midas-open_uk-hourly-weather-obs_dv-202607_oxfordshire_00613_benson_qcv-1_2020.csv",
+        "sha256": "09de034289eb4293e4cc01e689898c170e4b55df12f92be472e86ef3d3b58966",
+        "rows_version1": 8526,
+        "temperature_out_of_range": 0,
+        "dewpoint_out_of_range": 0,
+        "dewpoint_above_temperature_plus_1": 0,
+        "cloud_obscured_9": 80,
+        "cloud_invalid_code": 0
+      },
+      {
+        "path": "datasets/upstream_observations/midas_open_v202607/development/613/midas-open_uk-hourly-weather-obs_dv-202607_oxfordshire_00613_benson_qcv-1_2021.csv",
+        "sha256": "efe93acc2369d54bda728ca84097c815120adef523bbf1b8cb8ff5ab9b3cede1",
+        "rows_version1": 8757,
+        "temperature_out_of_range": 0,
+        "dewpoint_out_of_range": 0,
+        "dewpoint_above_temperature_plus_1": 0,
+        "cloud_obscured_9": 62,
+        "cloud_invalid_code": 0
+      },
+      {
+        "path": "datasets/upstream_observations/midas_open_v202607/development/643/midas-open_uk-hourly-weather-obs_dv-202607_shropshire_00643_shawbury_qcv-1_2020.csv",
+        "sha256": "80bc5b2ca33dcb795eac70f29d27dda060d901cc9286c0c3ca7307fd9206c77e",
+        "rows_version1": 8784,
+        "temperature_out_of_range": 0,
+        "dewpoint_out_of_range": 0,
+        "dewpoint_above_temperature_plus_1": 0,
+        "cloud_obscured_9": 39,
+        "cloud_invalid_code": 0
+      },
+      {
+        "path": "datasets/upstream_observations/midas_open_v202607/development/643/midas-open_uk-hourly-weather-obs_dv-202607_shropshire_00643_shawbury_qcv-1_2021.csv",
+        "sha256": "05d73a63fb3001fdd0c6b098efb106487626a779a969012ccb8591e490952651",
+        "rows_version1": 8756,
+        "temperature_out_of_range": 0,
+        "dewpoint_out_of_range": 0,
+        "dewpoint_above_temperature_plus_1": 0,
+        "cloud_obscured_9": 55,
+        "cloud_invalid_code": 0
+      },
+      {
+        "path": "datasets/upstream_observations/midas_open_v202607/development/657/midas-open_uk-hourly-weather-obs_dv-202607_hereford-and-worcester_00657_pershore_qcv-1_2020.csv",
+        "sha256": "343d9c98c6505d3bbbb3a6d1b4fb61ff8722da800ff485a43024f3cba3a64a43",
+        "rows_version1": 8782,
+        "temperature_out_of_range": 0,
+        "dewpoint_out_of_range": 0,
+        "dewpoint_above_temperature_plus_1": 0,
+        "cloud_obscured_9": 73,
+        "cloud_invalid_code": 0
+      },
+      {
+        "path": "datasets/upstream_observations/midas_open_v202607/development/657/midas-open_uk-hourly-weather-obs_dv-202607_hereford-and-worcester_00657_pershore_qcv-1_2021.csv",
+        "sha256": "340c57dd1811383dd6f41685a8edd3f8e91be5c23be70331529fdfed337cce70",
+        "rows_version1": 8760,
+        "temperature_out_of_range": 0,
+        "dewpoint_out_of_range": 0,
+        "dewpoint_above_temperature_plus_1": 0,
+        "cloud_obscured_9": 35,
+        "cloud_invalid_code": 0
+      },
+      {
+        "path": "datasets/upstream_observations/midas_open_v202607/development/669/midas-open_uk-hourly-weather-obs_dv-202607_hereford-and-worcester_00669_shobdon-airfield_qcv-1_2020.csv",
+        "sha256": "74b593e5a876634b360f357f6b5fd40f63787ed7e91c1f30f21051f6565e3ae5",
+        "rows_version1": 8766,
+        "temperature_out_of_range": 0,
+        "dewpoint_out_of_range": 0,
+        "dewpoint_above_temperature_plus_1": 0,
+        "cloud_obscured_9": 25,
+        "cloud_invalid_code": 0
+      },
+      {
+        "path": "datasets/upstream_observations/midas_open_v202607/development/669/midas-open_uk-hourly-weather-obs_dv-202607_hereford-and-worcester_00669_shobdon-airfield_qcv-1_2021.csv",
+        "sha256": "da9c578a876d45fa692255dbb5b1fc0b8dd60323c7cb24a01c7e0bba7ac281ad",
+        "rows_version1": 8759,
+        "temperature_out_of_range": 0,
+        "dewpoint_out_of_range": 0,
+        "dewpoint_above_temperature_plus_1": 0,
+        "cloud_obscured_9": 10,
+        "cloud_invalid_code": 0
+      },
+      {
+        "path": "datasets/upstream_observations/midas_open_v202607/development/692/midas-open_uk-hourly-weather-obs_dv-202607_gloucestershire_00692_little-rissington_qcv-1_2020.csv",
+        "sha256": "ff48db8460f61f2360508af529a51b22d1a5c49f4603db045ef3cd7e6ff9a5df",
+        "rows_version1": 8782,
+        "temperature_out_of_range": 0,
+        "dewpoint_out_of_range": 0,
+        "dewpoint_above_temperature_plus_1": 0,
+        "cloud_obscured_9": 166,
+        "cloud_invalid_code": 0
+      },
+      {
+        "path": "datasets/upstream_observations/midas_open_v202607/development/692/midas-open_uk-hourly-weather-obs_dv-202607_gloucestershire_00692_little-rissington_qcv-1_2021.csv",
+        "sha256": "ae2604f75e94d422557176baf9378d6f6945576ca7dc796f6c977264cc46573c",
+        "rows_version1": 8759,
+        "temperature_out_of_range": 0,
+        "dewpoint_out_of_range": 0,
+        "dewpoint_above_temperature_plus_1": 0,
+        "cloud_obscured_9": 106,
+        "cloud_invalid_code": 0
+      },
+      {
+        "path": "datasets/upstream_observations/midas_open_v202607/development/708/midas-open_uk-hourly-weather-obs_dv-202607_greater-london_00708_heathrow_qcv-1_2020.csv",
+        "sha256": "8f6799e22f624f873ab47c4c10a2aefba3463ffb232b54e12977175a71a8d0bf",
+        "rows_version1": 8776,
+        "temperature_out_of_range": 0,
+        "dewpoint_out_of_range": 0,
+        "dewpoint_above_temperature_plus_1": 0,
+        "cloud_obscured_9": 21,
+        "cloud_invalid_code": 0
+      },
+      {
+        "path": "datasets/upstream_observations/midas_open_v202607/development/708/midas-open_uk-hourly-weather-obs_dv-202607_greater-london_00708_heathrow_qcv-1_2021.csv",
+        "sha256": "13c0180cf9eb4f099398fe80d28d405b32fc7b2264c800142683eb70f5ce4b1c",
+        "rows_version1": 8760,
+        "temperature_out_of_range": 0,
+        "dewpoint_out_of_range": 0,
+        "dewpoint_above_temperature_plus_1": 0,
+        "cloud_obscured_9": 13,
+        "cloud_invalid_code": 0
+      },
+      {
+        "path": "datasets/upstream_observations/midas_open_v202607/development/709/midas-open_uk-hourly-weather-obs_dv-202607_greater-london_00709_northolt_qcv-1_2020.csv",
+        "sha256": "f0f5dabd64cb216fce52e0db26133a00305793c50c8222059ab73b62930618a7",
+        "rows_version1": 8784,
+        "temperature_out_of_range": 0,
+        "dewpoint_out_of_range": 0,
+        "dewpoint_above_temperature_plus_1": 0,
+        "cloud_obscured_9": 39,
+        "cloud_invalid_code": 0
+      },
+      {
+        "path": "datasets/upstream_observations/midas_open_v202607/development/709/midas-open_uk-hourly-weather-obs_dv-202607_greater-london_00709_northolt_qcv-1_2021.csv",
+        "sha256": "8e5ec15c59a3dbe16f7ddb5715f34eeccfaccfdb652949a0248d15b13a85fbf7",
+        "rows_version1": 8750,
+        "temperature_out_of_range": 0,
+        "dewpoint_out_of_range": 0,
+        "dewpoint_above_temperature_plus_1": 0,
+        "cloud_obscured_9": 19,
+        "cloud_invalid_code": 0
+      },
+      {
+        "path": "datasets/upstream_observations/midas_open_v202607/development/719/midas-open_uk-hourly-weather-obs_dv-202607_surrey_00719_wisley_qcv-1_2020.csv",
+        "sha256": "502cf8ee28749ffbe142801826edd2e7b21a56bb25c0849c130e6f365bc07c9c",
+        "rows_version1": 8780,
+        "temperature_out_of_range": 0,
+        "dewpoint_out_of_range": 0,
+        "dewpoint_above_temperature_plus_1": 0,
+        "cloud_obscured_9": 0,
+        "cloud_invalid_code": 0
+      },
+      {
+        "path": "datasets/upstream_observations/midas_open_v202607/development/719/midas-open_uk-hourly-weather-obs_dv-202607_surrey_00719_wisley_qcv-1_2021.csv",
+        "sha256": "21910d9ecb07a3b1113e3b7608f6d0da75e750b06e3a1447be2475595ae37015",
+        "rows_version1": 8740,
+        "temperature_out_of_range": 0,
+        "dewpoint_out_of_range": 0,
+        "dewpoint_above_temperature_plus_1": 0,
+        "cloud_obscured_9": 0,
+        "cloud_invalid_code": 0
+      },
+      {
+        "path": "datasets/upstream_observations/midas_open_v202607/development/723/midas-open_uk-hourly-weather-obs_dv-202607_greater-london_00723_kew-gardens_qcv-1_2020.csv",
+        "sha256": "059d239f2d0130190bc1fab4d56dd3a0d25bf10978ea6fd3d812fef929d2c02f",
+        "rows_version1": 8766,
+        "temperature_out_of_range": 0,
+        "dewpoint_out_of_range": 0,
+        "dewpoint_above_temperature_plus_1": 0,
+        "cloud_obscured_9": 0,
+        "cloud_invalid_code": 0
+      },
+      {
+        "path": "datasets/upstream_observations/midas_open_v202607/development/723/midas-open_uk-hourly-weather-obs_dv-202607_greater-london_00723_kew-gardens_qcv-1_2021.csv",
+        "sha256": "55441ea0a637f0a651e44296bca72a7e15c0b1a52124b5034cf9f83258db0c77",
+        "rows_version1": 8562,
+        "temperature_out_of_range": 0,
+        "dewpoint_out_of_range": 0,
+        "dewpoint_above_temperature_plus_1": 0,
+        "cloud_obscured_9": 0,
+        "cloud_invalid_code": 0
+      },
+      {
+        "path": "datasets/upstream_observations/midas_open_v202607/development/726/midas-open_uk-hourly-weather-obs_dv-202607_greater-london_00726_kenley-airfield_qcv-1_2020.csv",
+        "sha256": "16a7af8b275c8cd31ecae6b2753ba1d92f7661a66b37a37e2c5cf3852f7e2d3d",
+        "rows_version1": 8784,
+        "temperature_out_of_range": 0,
+        "dewpoint_out_of_range": 0,
+        "dewpoint_above_temperature_plus_1": 0,
+        "cloud_obscured_9": 86,
+        "cloud_invalid_code": 0
+      },
+      {
+        "path": "datasets/upstream_observations/midas_open_v202607/development/726/midas-open_uk-hourly-weather-obs_dv-202607_greater-london_00726_kenley-airfield_qcv-1_2021.csv",
+        "sha256": "195c5863f48a14ee01d237938da8b998486e504686c2bcdb2ade83e1d6c84840",
+        "rows_version1": 8759,
+        "temperature_out_of_range": 0,
+        "dewpoint_out_of_range": 0,
+        "dewpoint_above_temperature_plus_1": 0,
+        "cloud_obscured_9": 171,
+        "cloud_invalid_code": 0
+      },
+      {
+        "path": "datasets/upstream_observations/midas_open_v202607/development/847/midas-open_uk-hourly-weather-obs_dv-202607_hampshire_00847_middle-wallop_qcv-1_2020.csv",
+        "sha256": "4900e47f83127cc6eff7bafdf4543bee143d5463947751e6c418d1ecf6c93bd2",
+        "rows_version1": 8783,
+        "temperature_out_of_range": 0,
+        "dewpoint_out_of_range": 0,
+        "dewpoint_above_temperature_plus_1": 0,
+        "cloud_obscured_9": 72,
+        "cloud_invalid_code": 0
+      },
+      {
+        "path": "datasets/upstream_observations/midas_open_v202607/development/847/midas-open_uk-hourly-weather-obs_dv-202607_hampshire_00847_middle-wallop_qcv-1_2021.csv",
+        "sha256": "445987ed58570d37a5a7e74d6564175e3f2f2263954d161aaf36417aa39175a3",
+        "rows_version1": 8758,
+        "temperature_out_of_range": 0,
+        "dewpoint_out_of_range": 0,
+        "dewpoint_above_temperature_plus_1": 0,
+        "cloud_obscured_9": 84,
+        "cloud_invalid_code": 0
+      },
+      {
+        "path": "datasets/upstream_observations/midas_open_v202607/development/862/midas-open_uk-hourly-weather-obs_dv-202607_hampshire_00862_odiham_qcv-1_2020.csv",
+        "sha256": "74ed7d1f39a423d29543f1a429024c534ea2df81ad39e0643804769046fa3f56",
+        "rows_version1": 8783,
+        "temperature_out_of_range": 0,
+        "dewpoint_out_of_range": 0,
+        "dewpoint_above_temperature_plus_1": 0,
+        "cloud_obscured_9": 82,
+        "cloud_invalid_code": 0
+      },
+      {
+        "path": "datasets/upstream_observations/midas_open_v202607/development/862/midas-open_uk-hourly-weather-obs_dv-202607_hampshire_00862_odiham_qcv-1_2021.csv",
+        "sha256": "23ee4098b1ea6954b05c96240e242d6cda7e757fb9dfc1ecefb9a77345de9bb0",
+        "rows_version1": 8753,
+        "temperature_out_of_range": 0,
+        "dewpoint_out_of_range": 0,
+        "dewpoint_above_temperature_plus_1": 0,
+        "cloud_obscured_9": 91,
+        "cloud_invalid_code": 0
+      },
+      {
+        "path": "datasets/upstream_observations/midas_open_v202607/development/888/midas-open_uk-hourly-weather-obs_dv-202607_wiltshire_00888_larkhill_qcv-1_2020.csv",
+        "sha256": "0b7107b891e202b5e33c15f3c3bb5bd414e0d7dd0f5a43574a9ae711ee103d75",
+        "rows_version1": 8784,
+        "temperature_out_of_range": 0,
+        "dewpoint_out_of_range": 0,
+        "dewpoint_above_temperature_plus_1": 0,
+        "cloud_obscured_9": 89,
+        "cloud_invalid_code": 0
+      },
+      {
+        "path": "datasets/upstream_observations/midas_open_v202607/development/888/midas-open_uk-hourly-weather-obs_dv-202607_wiltshire_00888_larkhill_qcv-1_2021.csv",
+        "sha256": "a11b584a53d967aca5afa5b61cb1324d014127ee4598f9d7056aa21ca42724dc",
+        "rows_version1": 8746,
+        "temperature_out_of_range": 0,
+        "dewpoint_out_of_range": 0,
+        "dewpoint_above_temperature_plus_1": 0,
+        "cloud_obscured_9": 97,
+        "cloud_invalid_code": 0
+      },
+      {
+        "path": "datasets/upstream_observations/midas_open_v202607/development/889/midas-open_uk-hourly-weather-obs_dv-202607_wiltshire_00889_boscombe-down_qcv-1_2020.csv",
+        "sha256": "563118fb96acda519e66b6ba458a4bc6280243e26e8149d23eef9d3583bba30c",
+        "rows_version1": 8783,
+        "temperature_out_of_range": 0,
+        "dewpoint_out_of_range": 0,
+        "dewpoint_above_temperature_plus_1": 0,
+        "cloud_obscured_9": 76,
+        "cloud_invalid_code": 0
+      },
+      {
+        "path": "datasets/upstream_observations/midas_open_v202607/development/889/midas-open_uk-hourly-weather-obs_dv-202607_wiltshire_00889_boscombe-down_qcv-1_2021.csv",
+        "sha256": "41db74e312b8ad982cc350bbb0618b09e2448fdaf40c0e6617c8e1013f6f1fc9",
+        "rows_version1": 8753,
+        "temperature_out_of_range": 0,
+        "dewpoint_out_of_range": 0,
+        "dewpoint_above_temperature_plus_1": 0,
+        "cloud_obscured_9": 98,
+        "cloud_invalid_code": 0
+      }
+    ]
+  },
+  "stations": [
+    {
+      "src_id": 595,
+      "name": "CHURCH LAWFORD",
+      "distance_km": 26.765776252586885,
+      "bearing_deg": 260.0326613304533
+    },
+    {
+      "src_id": 461,
+      "name": "BEDFORD",
+      "distance_km": 37.822432949728096,
+      "bearing_deg": 120.63637678121532
+    },
+    {
+      "src_id": 583,
+      "name": "WITTERING",
+      "distance_km": 39.76869438739783,
+      "bearing_deg": 53.716945146639006
+    },
+    {
+      "src_id": 24102,
+      "name": "COVENTRY, COUNDON",
+      "distance_km": 40.31312719857759,
+      "bearing_deg": 273.8247990594367
+    },
+    {
+      "src_id": 456,
+      "name": "MONKS WOOD",
+      "distance_km": 47.883116522735094,
+      "bearing_deg": 89.62725776190842
+    },
+    {
+      "src_id": 19187,
+      "name": "COLESHILL",
+      "distance_km": 51.46411305491311,
+      "bearing_deg": 280.0866128757329
+    },
+    {
+      "src_id": 556,
+      "name": "NOTTINGHAM, WATNALL",
+      "distance_km": 70.37291424946544,
+      "bearing_deg": 342.96017531957403
+    },
+    {
+      "src_id": 386,
+      "name": "CRANWELL",
+      "distance_km": 76.00171767926973,
+      "bearing_deg": 22.71124390043549
+    },
+    {
+      "src_id": 692,
+      "name": "LITTLE RISSINGTON",
+      "distance_km": 78.93953019435924,
+      "bearing_deg": 220.7386336825939
+    },
+    {
+      "src_id": 657,
+      "name": "PERSHORE",
+      "distance_km": 79.85023729385557,
+      "bearing_deg": 249.78072379789208
+    },
+    {
+      "src_id": 605,
+      "name": "BRIZE NORTON",
+      "distance_km": 83.67111013257937,
+      "bearing_deg": 211.50145895384702
+    },
+    {
+      "src_id": 613,
+      "name": "BENSON",
+      "distance_km": 87.53183828395733,
+      "bearing_deg": 187.0769177057319
+    },
+    {
+      "src_id": 395,
+      "name": "HOLBEACH NO 2",
+      "distance_km": 89.88735977404542,
+      "bearing_deg": 53.87351950115582
+    },
+    {
+      "src_id": 384,
+      "name": "WADDINGTON",
+      "distance_km": 90.54438504406001,
+      "bearing_deg": 17.99963030882136
+    },
+    {
+      "src_id": 393,
+      "name": "CONINGSBY",
+      "distance_km": 92.82962657075961,
+      "bearing_deg": 33.62296924418133
+    },
+    {
+      "src_id": 709,
+      "name": "NORTHOLT",
+      "distance_km": 101.38337550128018,
+      "bearing_deg": 158.98459310642315
+    },
+    {
+      "src_id": 409,
+      "name": "MARHAM",
+      "distance_km": 105.77838847569089,
+      "bearing_deg": 74.18481570589465
+    },
+    {
+      "src_id": 30690,
+      "name": "LEEK, THORNCLIFFE",
+      "distance_km": 106.81050725236464,
+      "bearing_deg": 319.5701471838381
+    },
+    {
+      "src_id": 708,
+      "name": "HEATHROW",
+      "distance_km": 107.91074118103101,
+      "bearing_deg": 161.67882815742755
+    },
+    {
+      "src_id": 19188,
+      "name": "ANDREWSFIELD",
+      "distance_km": 110.45530309008284,
+      "bearing_deg": 120.02370044708756
+    },
+    {
+      "src_id": 723,
+      "name": "KEW GARDENS",
+      "distance_km": 111.47592282553686,
+      "bearing_deg": 156.2316090627205
+    },
+    {
+      "src_id": 16725,
+      "name": "WAINFLEET NO 2",
+      "distance_km": 111.82856474518361,
+      "bearing_deg": 46.45601835560125
+    },
+    {
+      "src_id": 643,
+      "name": "SHAWBURY",
+      "distance_km": 124.27878181316713,
+      "bearing_deg": 291.3070568038287
+    },
+    {
+      "src_id": 719,
+      "name": "WISLEY",
+      "distance_km": 125.40223036345348,
+      "bearing_deg": 165.0041681129031
+    },
+    {
+      "src_id": 862,
+      "name": "ODIHAM",
+      "distance_km": 129.2419516806994,
+      "bearing_deg": 180.06790187583235
+    },
+    {
+      "src_id": 24996,
+      "name": "HEREFORD, CREDENHILL",
+      "distance_km": 131.53310965575412,
+      "bearing_deg": 254.97617471754387
+    },
+    {
+      "src_id": 440,
+      "name": "WATTISHAM",
+      "distance_km": 132.9144441663377,
+      "bearing_deg": 102.66117617876583
+    },
+    {
+      "src_id": 669,
+      "name": "SHOBDON AIRFIELD",
+      "distance_km": 133.23264298518367,
+      "bearing_deg": 263.178089961497
+    },
+    {
+      "src_id": 726,
+      "name": "KENLEY AIRFIELD",
+      "distance_km": 135.2833116061147,
+      "bearing_deg": 154.07363956447426
+    },
+    {
+      "src_id": 405,
+      "name": "DONNA NOOK NO 2",
+      "distance_km": 140.16247123913143,
+      "bearing_deg": 31.15882543499178
+    },
+    {
+      "src_id": 56958,
+      "name": "EMLEY MOOR NO 2",
+      "distance_km": 143.09911220746045,
+      "bearing_deg": 340.4685097190477
+    },
+    {
+      "src_id": 57199,
+      "name": "ROSTHERNE NO 2",
+      "distance_km": 143.8376580603248,
+      "bearing_deg": 318.39730885975183
+    },
+    {
+      "src_id": 847,
+      "name": "MIDDLE WALLOP",
+      "distance_km": 145.67461307602588,
+      "bearing_deg": 197.47749068844618
+    },
+    {
+      "src_id": 888,
+      "name": "LARKHILL",
+      "distance_km": 145.9658960152481,
+      "bearing_deg": 204.33313078012497
+    },
+    {
+      "src_id": 30620,
+      "name": "CHARLWOOD",
+      "distance_km": 148.17924588942682,
+      "bearing_deg": 160.36272388682312
+    },
+    {
+      "src_id": 889,
+      "name": "BOSCOMBE DOWN",
+      "distance_km": 148.69743902184373,
+      "bearing_deg": 202.38995352161976
+    }
+  ],
+  "windows": 15680
+}

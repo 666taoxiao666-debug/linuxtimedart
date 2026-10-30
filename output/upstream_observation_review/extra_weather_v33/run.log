@@ -1,0 +1,19 @@
+{
+  "status": "NOT_PASSED",
+  "passed": false,
+  "primary_mean_gain_pct": {
+    "rmse": -0.2389854638597977,
+    "mae": -0.20892732088618748,
+    "early_fit_late_score_forward": {
+      "rmse": -0.15838654584444112,
+      "mae": -0.2887412304336645
+    },
+    "late_fit_early_score_reverse": {
+      "rmse": -0.3181447910666879,
+      "mae": -0.12200215689785465
+    }
+  }
+}
+thermal_cloud  coverage 0.995 | h1 RMSE -0.30% MAE -0.30% | h2 RMSE -0.31% MAE -0.29% | h3 RMSE -0.16% MAE -0.21% | h4 RMSE -0.19% MAE -0.03%
+thermal        coverage 0.995 | h1 RMSE -0.22% MAE -0.06% | h2 RMSE -0.23% MAE -0.22% | h3 RMSE -0.14% MAE -0.08% | h4 RMSE -0.18% MAE -0.07%
+cloud          coverage 0.995 | h1 RMSE -0.17% MAE -0.24% | h2 RMSE -0.05% MAE -0.08% | h3 RMSE +0.01% MAE -0.09% | h4 RMSE -0.04% MAE +0.09%

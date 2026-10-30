@@ -1,5 +1,15 @@
 # 创新方案的精简证据卡
 
+## 最新状态（2026-10-30，第7次交接审查）
+
+- 当前方案是§14.11的C1/C2；下面A/B/A*/Wiki内容属于历史，不作为执行依据。
+- 五问结论：Q1–Q4需修改；Q5阶段划分与审核节点通过，但架构整体尚未放行。完整证据见`two-contribution-review.md`最新节。
+- S已按原SHA完成一次，NOT_PASSED：h1–4平均增益RMSE −0.238985%、MAE −0.208927%，覆盖99.5153%；不进入L，不改门槛重跑。详见`output/upstream_observation_review/extra_weather_v33/README.md`。
+- 补核AirDDE方法正文、UniWind跨场段落及TSFM协变量基准；新来源R16–R18见`two-contribution-sources.md`。Chasing the Wind仍遇验证页，全文差异未闭合。
+- C1暂定6–6.5；C2独立7分论证不足，当前更接近6–6.5的泛化/应用贡献。分数不是录用概率；新增对照、预处理适配、投影定义仍待Claude审议，未改模型或训练流程。
+
+---
+
 2026-10-29。文献细节和核查层级见同目录 `papers.md`；设计见 `docs/UPSTREAM_INNOVATION_PROPOSAL.md`。状态：方案依据，不是实验结果。
 
 ## 直接有依据的前提
