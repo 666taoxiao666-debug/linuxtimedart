@@ -1,12 +1,13 @@
 # 创新方案的精简证据卡
 
-## 最新状态（2026-10-30，第7次交接审查）
+## 最新状态（2026-10-30，第8次交接审查）
 
-- 当前方案是§14.11的C1/C2；下面A/B/A*/Wiki内容属于历史，不作为执行依据。
-- 五问结论：Q1–Q4需修改；Q5阶段划分与审核节点通过，但架构整体尚未放行。完整证据见`two-contribution-review.md`最新节。
+- 当前方案是§14.12及未被替换的§14.11条款；下面A/B/A*/Wiki内容属于历史，不作为执行依据。
+- 四项结论：第1–3条需修改；第4条定位、阶段与门禁通过，架构整体尚未放行。A1存在未覆盖分支，scaler/无标签预算不一致，预测协变量缺逐变量掩码与完整回退。完整证据见`two-contribution-review.md`最新节；两个A1反例仅为虚构数值的逻辑核查。
+- D1一次选择全局固定κ可接受，主张限定为相对该固定策略；Fhead/FB2-head/Z2对照方向通过，不再要求新增臂。95次C1上限和10次A1上限算术正确。
 - S已按原SHA完成一次，NOT_PASSED：h1–4平均增益RMSE −0.238985%、MAE −0.208927%，覆盖99.5153%；不进入L，不改门槛重跑。详见`output/upstream_observation_review/extra_weather_v33/README.md`。
-- 补核AirDDE方法正文、UniWind跨场段落及TSFM协变量基准；新来源R16–R18见`two-contribution-sources.md`。Chasing the Wind仍遇验证页，全文差异未闭合。
-- C1暂定6–6.5；C2独立7分论证不足，当前更接近6–6.5的泛化/应用贡献。分数不是录用概率；新增对照、预处理适配、投影定义仍待Claude审议，未改模型或训练流程。
+- 本轮核ChronosX正式页/摘要与Chronos-2接口；R19/R20及全文访问缺口见`two-contribution-sources.md`。Chasing the Wind、DA-Transformer、DPGNet全文仍未闭合；AirDDE/UniWind方法证据承接R16/R17，不宣称与本案完全同构。
+- 接受Claude谨慎定位：C1约5.5–6、C2约6，均是暂定内部概念判断，不是客观分数或录用概率。不承诺两个独立高创新方法；剩余协议修订待Claude审核，未改模型、数据流程或启动训练。
 
 ---
 

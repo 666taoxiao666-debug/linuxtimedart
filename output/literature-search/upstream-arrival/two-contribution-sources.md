@@ -1,8 +1,22 @@
 # 两项贡献的定向近邻核查
 
+## 第8次交接补核（2026-10-30）
+
+当前审查对象为proposal §14.12；以下第7次及更早账本保留其原阅读层级，不代表本轮重新阅读全文或执行实验。仅以公开题名/URL检索，未上传未发表方案或私有数据。
+
+**R19 — ChronosX: Adapting Pretrained Time Series Models with Exogenous Variables.** [PMLR正式发表页](https://proceedings.mlr.press/v258/arango25a.html)，AISTATS 2025，PMLR 258:2242–2250。类型：方法；优先级Risk。本轮核到官方题名、作者、卷页及摘要：通过模块注入过去/未来协变量，可不修改预训练主体。足以否定“给预训练时序模型接入协变量本身新颖”，不证明与本项目物理到达代理同构。PMLR所链GitHub PDF未被浏览工具解析为PDF，Amazon托管PDF也未返回可读正文，故**阅读深度仅为正式页/摘要**，不宣称已审计冻结策略、完整训练机制或复现指标。
+
+**R20 — Chronos-2官方接口契约（软件来源，不是新论文）.** [官方pipeline.py](https://raw.githubusercontent.com/amazon-science/chronos-forecasting/main/src/chronos/chronos2/pipeline.py)，2026-10-30读取主分支的predict说明第455–466行：future_covariates键须属于past_covariates，二者分别匹配预测长度和历史长度；批内schema须一致。这要求阶段5定义预测代理及其历史/缺失标记通道。该可变分支仅作本轮接口诊断证据，不是已冻结的运行revision；实际权重、软件版本、许可证与信息预算仍另审。未安装或运行模型。
+
+**指定近邻的可读全文仍未取得：** Chasing the Wind的[PDF入口](https://openreview.net/pdf?id=7WG3XbHV3V)、DA-Transformer的[PDF入口](https://openreview.net/pdf?id=PLO1gjCMk5)本轮仍返回验证页；针对Chasing的公开作者稿/GitHub检索没有获得可核验全文。DPGNet的[DOI入口](https://doi.org/10.1016/j.epsr.2026.113951)本轮工具不可访问。维持“全文未闭合”，不把访问失败解释为不存在重叠，也不绕过访问控制。
+
+AirDDE方法、UniWind v2跨场段落承接R16/R17已有定向核查。AirDDE的风/距离相关延迟与本案学习标量κ应区分；UniWind涉及Penmanshiel不等于其未来NWP输入与本案历史观测输入一致。此次没有把它们的实验数字当成本项目证据。
+
+---
+
 ## 第7次交接补核（检索2026-10-29，记录完成2026-10-30）
 
-最新设计为proposal §14.11的C1/C2；原A*/K*已放弃，以下历史账本不代表执行授权。
+第7次审查对象为proposal §14.11的C1/C2；原A*/K*已放弃，以下历史账本不代表执行授权。
 
 **R16 — AirDDE: Multifactor Neural Delay Differential Equations for Air Quality Forecasting.** [AAAI正式页面](https://ojs.aaai.org/index.php/AAAI/article/view/38627)，2026-03-14，40(19):15941–15949，DOI 10.1609/aaai.v40i19.38627；[正文](https://ojs.aaai.org/index.php/AAAI/article/view/38627/42589)。类型：方法；优先级Risk。定向阅读正文方法页15942–15944，公式(4)–(10)：风向/速度/距离构造延迟邻接，历史邻居注意力，延迟平流演化。不能泛称这些组合是本项目首创；尚不证明其等同本项目的小时功率剩余到达窗与κ参数。
 
