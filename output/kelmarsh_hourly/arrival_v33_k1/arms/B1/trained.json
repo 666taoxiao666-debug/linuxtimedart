@@ -1,0 +1,34 @@
+{
+  "contract": {
+    "arm": "B1",
+    "spec": {
+      "tokens": "base input rows (21 channels x 24 steps)",
+      "prior": "none"
+    },
+    "seed": 2024,
+    "code": {
+      "scripts/train_kelmarsh_arrival_v33.py": "dd7e03247394f8a1d4cc27259f82659c33ce56219492727c234457bfc3643462",
+      "models/UpstreamArrivalResidual.py": "976176a0fec396cf1c1638c054cd08553c86864a9fa47e431876086357bc3217",
+      "utils/kelmarsh_station_history_v33.py": "6da5805829c27cb82597ba869d1ce045d550c07003f41fe47236e3ff0531995b",
+      "configs/kelmarsh_arrival_v33_k1.json": "318038be8813f73fd6f72b53bc8bceca664ede42cc6b0e842ced42249a1384d6"
+    },
+    "base_state_sha256": "f464887318015f712a15e030bb96516ab446c82a12ed6bcf32c45dfeba4aeed1"
+  },
+  "arm": "B1",
+  "best_epoch": 0,
+  "validation_J": 2.0,
+  "validation": {
+    "mae": 151.2517992707652,
+    "rmse": 237.47915941864474,
+    "r2": 0.8511056337986938
+  },
+  "development_eval": {
+    "mae": 160.91191483569617,
+    "rmse": 241.6503088612171,
+    "r2": 0.8260118359813935
+  },
+  "trainable_parameters": 10674,
+  "kappa": null,
+  "support_rate_eval_by_h": null,
+  "completed_utc": "2026-10-31T06:15:43.817302+00:00"
+}

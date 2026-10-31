@@ -1,0 +1,56 @@
+{
+  "identity": {
+    "synthetic": true
+  },
+  "bank_stats": {
+    "ws_mean": 5.9378912177117735,
+    "ws_std": 1.0302210381925538,
+    "p_station_mean": [
+      1010.2705868744849,
+      1011.5095232803217,
+      1008.5524387423727,
+      1004.8825511420072,
+      1013.9217101237899,
+      1013.9065958740102,
+      1011.2899953524952,
+      1013.8081140316687,
+      1010.2794973572408,
+      1009.4821366370854,
+      1012.7908741654102,
+      1013.7676568341521
+    ],
+    "p_anom_std": 1.8073905264423502,
+    "dp3_std": 0.34191278631243405,
+    "fit_hours": 364,
+    "radius_km": 50,
+    "reference_flag_share": {
+      "0": 0.9539837852949399,
+      "1": 0.04601621470506011,
+      "2": 0.0
+    }
+  },
+  "windows": {
+    "train": 618,
+    "validation": 618,
+    "development_eval": 618
+  },
+  "code": {
+    "scripts/train_kelmarsh_arrival_v33.py": "dd7e03247394f8a1d4cc27259f82659c33ce56219492727c234457bfc3643462",
+    "models/UpstreamArrivalResidual.py": "976176a0fec396cf1c1638c054cd08553c86864a9fa47e431876086357bc3217",
+    "utils/kelmarsh_station_history_v33.py": "6da5805829c27cb82597ba869d1ce045d550c07003f41fe47236e3ff0531995b",
+    "configs/kelmarsh_arrival_v33_k1.json": "318038be8813f73fd6f72b53bc8bceca664ede42cc6b0e842ced42249a1384d6"
+  },
+  "smoke": true,
+  "utc": "2026-10-31T06:10:37.027008+00:00",
+  "determinism": {
+    "dtype": "float32",
+    "amp": false,
+    "cudnn_benchmark": false,
+    "cudnn_deterministic": true,
+    "matmul_allow_tf32": false,
+    "cudnn_allow_tf32": false,
+    "deterministic_algorithms": true,
+    "torch_threads": 2,
+    "num_workers": 0
+  }
+}

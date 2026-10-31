@@ -1,0 +1,70 @@
+[EPOCH] v33_k1_20261031T060631Z/B0 epoch=1 train_loss=0.436909 validation_mae=166.9001 best_epoch=1
+[EPOCH] v33_k1_20261031T060631Z/B0 epoch=2 train_loss=0.262928 validation_mae=159.0965 best_epoch=2
+[EPOCH] v33_k1_20261031T060631Z/B0 epoch=3 train_loss=0.251251 validation_mae=159.4896 best_epoch=2
+[EPOCH] v33_k1_20261031T060631Z/B0 epoch=4 train_loss=0.244427 validation_mae=156.2028 best_epoch=4
+[EPOCH] v33_k1_20261031T060631Z/B0 epoch=5 train_loss=0.240414 validation_mae=153.5697 best_epoch=5
+[EPOCH] v33_k1_20261031T060631Z/B0 epoch=6 train_loss=0.236600 validation_mae=152.5541 best_epoch=6
+[EPOCH] v33_k1_20261031T060631Z/B0 epoch=7 train_loss=0.234043 validation_mae=152.1347 best_epoch=7
+[EPOCH] v33_k1_20261031T060631Z/B0 epoch=8 train_loss=0.231465 validation_mae=153.0170 best_epoch=7
+[EPOCH] v33_k1_20261031T060631Z/B0 epoch=9 train_loss=0.230425 validation_mae=152.4443 best_epoch=7
+[EPOCH] v33_k1_20261031T060631Z/B0 epoch=10 train_loss=0.228826 validation_mae=152.0592 best_epoch=10
+[EPOCH] v33_k1_20261031T060631Z/B0 epoch=11 train_loss=0.227632 validation_mae=151.2518 best_epoch=11
+[EPOCH] v33_k1_20261031T060631Z/B0 epoch=12 train_loss=0.226355 validation_mae=151.4887 best_epoch=11
+[EPOCH] v33_k1_20261031T060631Z/B0 epoch=13 train_loss=0.225192 validation_mae=151.7502 best_epoch=11
+[EPOCH] v33_k1_20261031T060631Z/B0 epoch=14 train_loss=0.224342 validation_mae=152.9448 best_epoch=11
+[EPOCH] v33_k1_20261031T060631Z/B0 epoch=15 train_loss=0.223474 validation_mae=151.8398 best_epoch=11
+[EPOCH] v33_k1_20261031T060631Z/B0 epoch=16 train_loss=0.223162 validation_mae=152.1437 best_epoch=11
+[EPOCH] B1 epoch=1 J=2.00562 val_MAE=152.428 val_RMSE=236.968
+[EPOCH] B1 epoch=2 J=2.01523 val_MAE=152.733 val_RMSE=238.771
+[EPOCH] B1 epoch=3 J=2.02812 val_MAE=154.412 val_RMSE=239.195
+[EPOCH] B1 epoch=4 J=2.03906 val_MAE=154.668 val_RMSE=241.392
+[EPOCH] B1 epoch=5 J=2.03148 val_MAE=154.193 val_RMSE=240.338
+[EPOCH] B2 epoch=1 J=2.00553 val_MAE=151.798 val_RMSE=237.935
+[EPOCH] B2 epoch=2 J=2.00752 val_MAE=152.076 val_RMSE=237.972
+[EPOCH] B2 epoch=3 J=2.01476 val_MAE=152.520 val_RMSE=238.994
+[EPOCH] B2 epoch=4 J=2.02680 val_MAE=153.339 val_RMSE=240.565
+[EPOCH] B2 epoch=5 J=2.04403 val_MAE=154.704 val_RMSE=242.516
+[EPOCH] A epoch=1 J=1.99969 val_MAE=151.450 val_RMSE=237.096
+[EPOCH] A epoch=2 J=2.00885 val_MAE=152.292 val_RMSE=237.947
+[EPOCH] A epoch=3 J=2.03449 val_MAE=154.375 val_RMSE=240.767
+[EPOCH] A epoch=4 J=2.05108 val_MAE=154.995 val_RMSE=243.731
+[EPOCH] A epoch=5 J=2.06804 val_MAE=156.851 val_RMSE=244.846
+[EPOCH] A epoch=6 J=2.07294 val_MAE=156.888 val_RMSE=245.952
+[EPOCH] K0.5 epoch=1 J=2.00590 val_MAE=152.252 val_RMSE=237.310
+[EPOCH] K0.5 epoch=2 J=2.00259 val_MAE=151.730 val_RMSE=237.344
+[EPOCH] K0.5 epoch=3 J=2.03692 val_MAE=154.979 val_RMSE=240.396
+[EPOCH] K0.5 epoch=4 J=2.03736 val_MAE=154.073 val_RMSE=241.923
+[EPOCH] K0.5 epoch=5 J=2.02879 val_MAE=153.960 val_RMSE=240.065
+[EPOCH] K1 epoch=1 J=2.00242 val_MAE=151.836 val_RMSE=237.137
+[EPOCH] K1 epoch=2 J=2.00408 val_MAE=151.667 val_RMSE=237.796
+[EPOCH] K1 epoch=3 J=2.02859 val_MAE=154.175 val_RMSE=239.680
+[EPOCH] K1 epoch=4 J=2.03878 val_MAE=154.200 val_RMSE=242.059
+[EPOCH] K1 epoch=5 J=2.03600 val_MAE=154.750 val_RMSE=240.537
+[EPOCH] K2 epoch=1 J=2.01352 val_MAE=152.528 val_RMSE=238.685
+[EPOCH] K2 epoch=2 J=2.00841 val_MAE=152.153 val_RMSE=238.061
+[EPOCH] K2 epoch=3 J=2.02682 val_MAE=153.621 val_RMSE=240.128
+[EPOCH] K2 epoch=4 J=2.04032 val_MAE=154.562 val_RMSE=241.856
+[EPOCH] K2 epoch=5 J=2.03548 val_MAE=154.052 val_RMSE=241.509
+[EPOCH] K3 epoch=1 J=2.00580 val_MAE=151.839 val_RMSE=237.934
+[EPOCH] K3 epoch=2 J=2.00249 val_MAE=151.652 val_RMSE=237.442
+[EPOCH] K3 epoch=3 J=2.01550 val_MAE=152.895 val_RMSE=238.580
+[EPOCH] K3 epoch=4 J=2.03209 val_MAE=153.723 val_RMSE=241.220
+[EPOCH] K3 epoch=5 J=2.04636 val_MAE=155.849 val_RMSE=241.271
+[EPOCH] K4 epoch=1 J=2.00517 val_MAE=152.170 val_RMSE=237.266
+[EPOCH] K4 epoch=2 J=2.00465 val_MAE=152.087 val_RMSE=237.271
+[EPOCH] K4 epoch=3 J=2.02902 val_MAE=153.892 val_RMSE=240.226
+[EPOCH] K4 epoch=4 J=2.03464 val_MAE=154.221 val_RMSE=241.044
+[EPOCH] K4 epoch=5 J=2.04583 val_MAE=155.139 val_RMSE=242.258
+{
+  "decision": {
+    "branch": "D3",
+    "dR_A_B2_pct": 0.1608213354644019,
+    "dM_A_B2_kw": 0.006289887753439416,
+    "dR_A_B0_pct": 0.1608213354644019,
+    "dM_A_B0_kw": 0.006289887753439416,
+    "dR_B2_B0_pct": 0.0,
+    "dM_B2_B0_kw": 0.0
+  },
+  "kappa_star": 1.0,
+  "learned_kappa": 1.010328769683838
+}

@@ -1,0 +1,37 @@
+........./home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/matplotlib/_fontconfig_pattern.py:64: PyparsingDeprecationWarning: 'oneOf' deprecated - use 'one_of'
+  prop = Group((name + Suppress("=") + comma_separated(value)) | oneOf(_CONSTANTS))
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/matplotlib/_fontconfig_pattern.py:85: PyparsingDeprecationWarning: 'parseString' deprecated - use 'parse_string'
+  parse = parser.parseString(pattern)
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/matplotlib/_fontconfig_pattern.py:89: PyparsingDeprecationWarning: 'resetCache' deprecated - use 'reset_cache'
+  parser.resetCache()
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/matplotlib/_mathtext.py:45: PyparsingDeprecationWarning: 'enablePackrat' deprecated - use 'enable_packrat'
+  ParserElement.enablePackrat()
+In /home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/matplotlib/mpl-data/stylelib/classic.mplstyle: 'parseString' deprecated - use 'parse_string'
+In /home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/matplotlib/mpl-data/stylelib/classic.mplstyle: 'resetCache' deprecated - use 'reset_cache'
+....[EPOCH] tmpou5aa5qr/B0 epoch=1 train_loss=6.452913 validation_mae=1112.2954 best_epoch=1
+[EPOCH] B1 epoch=1 J=1.99115 val_MAE=1107.417 val_RMSE=1379.618
+[EPOCH] B2 epoch=1 J=1.99204 val_MAE=1107.940 val_RMSE=1380.192
+[EPOCH] A epoch=1 J=1.99199 val_MAE=1107.917 val_RMSE=1380.159
+[EPOCH] K0.5 epoch=1 J=1.99198 val_MAE=1107.910 val_RMSE=1380.148
+[EPOCH] K1 epoch=1 J=1.99199 val_MAE=1107.917 val_RMSE=1380.159
+[EPOCH] K2 epoch=1 J=1.99203 val_MAE=1107.934 val_RMSE=1380.182
+[EPOCH] K3 epoch=1 J=1.99203 val_MAE=1107.937 val_RMSE=1380.186
+[EPOCH] K4 epoch=1 J=1.99203 val_MAE=1107.936 val_RMSE=1380.186
+{
+  "decision": {
+    "branch": "D3",
+    "dR_A_B2_pct": -0.00044975928469281786,
+    "dM_A_B2_kw": -0.016871659752041523,
+    "dR_A_B0_pct": 0.40093565996747443,
+    "dM_A_B0_kw": 4.340530724480232,
+    "dR_B2_B0_pct": 0.4013836139920961,
+    "dM_B2_B0_kw": 4.357402384232273
+  },
+  "kappa_star": 1.0,
+  "learned_kappa": 0.9993318915367126
+}
+.
+----------------------------------------------------------------------
+Ran 14 tests in 5.584s
+
+OK

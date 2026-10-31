@@ -1,0 +1,22 @@
+[EPOCH] smoke_final/B0 epoch=1 train_loss=6.676839 validation_mae=1111.7191 best_epoch=1
+[EPOCH] B1 epoch=1 J=1.99093 val_MAE=1106.750 val_RMSE=1379.969
+[EPOCH] B2 epoch=1 J=1.99202 val_MAE=1107.382 val_RMSE=1380.690
+[EPOCH] A epoch=1 J=1.99198 val_MAE=1107.365 val_RMSE=1380.666
+[EPOCH] K0.5 epoch=1 J=1.99197 val_MAE=1107.357 val_RMSE=1380.652
+[EPOCH] K1 epoch=1 J=1.99198 val_MAE=1107.365 val_RMSE=1380.666
+[EPOCH] K2 epoch=1 J=1.99200 val_MAE=1107.375 val_RMSE=1380.679
+[EPOCH] K3 epoch=1 J=1.99201 val_MAE=1107.378 val_RMSE=1380.685
+[EPOCH] K4 epoch=1 J=1.99201 val_MAE=1107.377 val_RMSE=1380.684
+{
+  "decision": {
+    "branch": "D3",
+    "dR_A_B2_pct": -0.0010194316385210283,
+    "dM_A_B2_kw": -0.02128948677727749,
+    "dR_A_B0_pct": 0.40169652439632314,
+    "dM_A_B0_kw": 4.260835205887361,
+    "dR_B2_B0_pct": 0.40271185066282644,
+    "dM_B2_B0_kw": 4.282124692664638
+  },
+  "kappa_star": 1.0,
+  "learned_kappa": 0.9993701577186584
+}

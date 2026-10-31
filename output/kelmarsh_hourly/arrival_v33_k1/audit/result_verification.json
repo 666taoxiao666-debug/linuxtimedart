@@ -1,0 +1,224 @@
+{
+  "passed": true,
+  "utc": "2026-10-31T11:02:39.282985+00:00",
+  "training_restarted": false,
+  "real_fits": 9,
+  "method": "NumPy absolute/squared error recomputation on saved branch predictions, B0 selected-checkpoint inference replay; no training",
+  "scope": "validation 2021 and development evaluation 2022, ALL h1-4",
+  "identity_matches_preflight": true,
+  "complete_finite_cohort": true,
+  "windows": {
+    "train": 75024,
+    "validation": 15680,
+    "development_eval": 16949
+  },
+  "selected_epochs": {
+    "B0": {
+      "best_epoch": 11,
+      "epochs_completed": 16
+    },
+    "B1": {
+      "best_epoch": 0,
+      "epochs_completed": 5,
+      "validation_J": 2,
+      "kappa": null
+    },
+    "B2": {
+      "best_epoch": 0,
+      "epochs_completed": 5,
+      "validation_J": 2,
+      "kappa": null
+    },
+    "A": {
+      "best_epoch": 1,
+      "epochs_completed": 6,
+      "validation_J": 1.999694403474615,
+      "kappa": 1.010328769683838
+    },
+    "K0.5": {
+      "best_epoch": 0,
+      "epochs_completed": 5,
+      "validation_J": 2,
+      "kappa": 0.5
+    },
+    "K1": {
+      "best_epoch": 0,
+      "epochs_completed": 5,
+      "validation_J": 2,
+      "kappa": 1
+    },
+    "K2": {
+      "best_epoch": 0,
+      "epochs_completed": 5,
+      "validation_J": 2,
+      "kappa": 2
+    },
+    "K3": {
+      "best_epoch": 0,
+      "epochs_completed": 5,
+      "validation_J": 2,
+      "kappa": 3
+    },
+    "K4": {
+      "best_epoch": 0,
+      "epochs_completed": 5,
+      "validation_J": 2,
+      "kappa": 4
+    }
+  },
+  "all_branch_base_states_unchanged": {
+    "B1": true,
+    "B2": true,
+    "A": true,
+    "K0.5": true,
+    "K1": true,
+    "K2": true,
+    "K3": true,
+    "K4": true
+  },
+  "parameters": {
+    "B1": 10674,
+    "B2": 10514,
+    "A": 10515,
+    "K0.5": 10514,
+    "K1": 10514,
+    "K2": 10514,
+    "K3": 10514,
+    "K4": 10514
+  },
+  "metrics": {
+    "B0": {
+      "validation": {
+        "mae": 151.2517992707652,
+        "rmse": 237.47915941864474
+      },
+      "development_eval": {
+        "mae": 160.91191483569617,
+        "rmse": 241.6503088612171
+      }
+    },
+    "B1": {
+      "validation": {
+        "mae": 151.2517992707652,
+        "rmse": 237.47915941864474
+      },
+      "development_eval": {
+        "mae": 160.91191483569617,
+        "rmse": 241.6503088612171
+      }
+    },
+    "B2": {
+      "validation": {
+        "mae": 151.2517992707652,
+        "rmse": 237.47915941864474
+      },
+      "development_eval": {
+        "mae": 160.91191483569617,
+        "rmse": 241.6503088612171
+      }
+    },
+    "A": {
+      "validation": {
+        "mae": 151.449876933137,
+        "rmse": 237.0955865651618
+      },
+      "development_eval": {
+        "mae": 160.90562494794273,
+        "rmse": 241.26168360735264
+      }
+    },
+    "K0.5": {
+      "validation": {
+        "mae": 151.2517992707652,
+        "rmse": 237.47915941864474
+      },
+      "development_eval": {
+        "mae": 160.91191483569617,
+        "rmse": 241.6503088612171
+      }
+    },
+    "K1": {
+      "validation": {
+        "mae": 151.2517992707652,
+        "rmse": 237.47915941864474
+      },
+      "development_eval": {
+        "mae": 160.91191483569617,
+        "rmse": 241.6503088612171
+      }
+    },
+    "K2": {
+      "validation": {
+        "mae": 151.2517992707652,
+        "rmse": 237.47915941864474
+      },
+      "development_eval": {
+        "mae": 160.91191483569617,
+        "rmse": 241.6503088612171
+      }
+    },
+    "K3": {
+      "validation": {
+        "mae": 151.2517992707652,
+        "rmse": 237.47915941864474
+      },
+      "development_eval": {
+        "mae": 160.91191483569617,
+        "rmse": 241.6503088612171
+      }
+    },
+    "K4": {
+      "validation": {
+        "mae": 151.2517992707652,
+        "rmse": 237.47915941864474
+      },
+      "development_eval": {
+        "mae": 160.91191483569617,
+        "rmse": 241.6503088612171
+      }
+    }
+  },
+  "kappa_star": 1,
+  "learned_kappa": 1.010328769683838,
+  "decision": "D3",
+  "result_file_sha256": {
+    "k1_decision.json": "836cbdbca1132fcfc87d6f69983d22a158ee8209b23bf7935d6d81fae755356f",
+    "k1_summary.md": "21249f669b055bad673a620430ed9ad55090b172cba1f98bdf9e2720089cfe78",
+    "data_manifest.json": "c162742e1599af35a3d04f284d2a6236b75f2bd6138e2a36197916e9e95c7409",
+    "B0/trained.json": "4e6e46573d42c79f8daac2fc2ed8a1ed6119968a73ab04d365c30c6f584a9a81",
+    "B0/training_history.json": "f16aabb25bf4477567037ca56ff2b559e4fbc63d6bb59fb09892cdb475ce55aa",
+    "arms/B1/trained.json": "a163238fea19e4c4d7270e11d9e6435a9b64441c2ef2f7406b946a7e8765a4d5",
+    "arms/B1/history.json": "891d45247faac10f067e363978706936e3a7a10df68579bfa57c0aed292ced66",
+    "arms/B2/trained.json": "6594ca2680ab950789968f836a03b81f7e824711d4250ba4059d22fef4bf83bf",
+    "arms/B2/history.json": "ad7738faa75af0e2777917456ad8ec75e28665a957606ada25df4b5712f6e6db",
+    "arms/A/trained.json": "781602c9c18f756ad3a0ff348c3278c7739fe31b164eb0fa6d6a250948ec7ddd",
+    "arms/A/history.json": "65154d5c6486ce1794d02d54ac365eee40866dffeb87f3a3b2fbf2185c7d7a7f",
+    "arms/K0.5/trained.json": "508f003abe682a58201b7f536d5747f9c8b75313de5b73940c594eaf695cbf40",
+    "arms/K0.5/history.json": "c6f87d1ac84cf7a2c7b8e47e6e8fc4a0ec43a4530d651b08834f5f7ee542d9af",
+    "arms/K1/trained.json": "12f02a54301e834e271b7d4a15a08bd6782ca1045b2fba93e01cae5f16677bfb",
+    "arms/K1/history.json": "2a955dfa0ab1806b7cf757110236279d5280126510089f54425f5805c2ced10d",
+    "arms/K2/trained.json": "e6e39abbf70f91f83eae95a9631055562449f611aa669be0cbc439c129c05827",
+    "arms/K2/history.json": "a8159e32259d81092e6f514413064b9855293bcc34d40fd54a1171508e420655",
+    "arms/K3/trained.json": "c303dfd040571f0492e349241653b67872aec2b896840c4d0e24f3c270fa3c18",
+    "arms/K3/history.json": "8161dccd4b461ce2602ce24e663f052d1052427833d01bad13450d87598f0505",
+    "arms/K4/trained.json": "122bdcda2cadd65d544b4cbe1764d959c1e3fe727921c6f8bed972cc8ad7b3b9",
+    "arms/K4/history.json": "ed64c5aadeea402e57210863e55bcf36005804f3e49ca97abc0bd87e7ceabe45"
+  },
+  "branch_prediction_sha256": {
+    "B1": "4c101efcd1f67741d50fcadd1546a9ef200fb1730fcbdd310cf3f9f8250cfee5",
+    "B2": "4c101efcd1f67741d50fcadd1546a9ef200fb1730fcbdd310cf3f9f8250cfee5",
+    "A": "da97fb3d512e7c155699a829bb2e7151fbd4f0d63892a34f339b187d6cd8fbd5",
+    "K0.5": "4c101efcd1f67741d50fcadd1546a9ef200fb1730fcbdd310cf3f9f8250cfee5",
+    "K1": "4c101efcd1f67741d50fcadd1546a9ef200fb1730fcbdd310cf3f9f8250cfee5",
+    "K2": "4c101efcd1f67741d50fcadd1546a9ef200fb1730fcbdd310cf3f9f8250cfee5",
+    "K3": "4c101efcd1f67741d50fcadd1546a9ef200fb1730fcbdd310cf3f9f8250cfee5",
+    "K4": "4c101efcd1f67741d50fcadd1546a9ef200fb1730fcbdd310cf3f9f8250cfee5"
+  },
+  "base_checkpoint_sha256": "b77098a058a244e4a8adb75babb191d3126682a2177c370a48007d16e1e9e116",
+  "source_code": {
+    "scripts/train_kelmarsh_arrival_v33.py": "dd7e03247394f8a1d4cc27259f82659c33ce56219492727c234457bfc3643462",
+    "models/UpstreamArrivalResidual.py": "976176a0fec396cf1c1638c054cd08553c86864a9fa47e431876086357bc3217",
+    "utils/kelmarsh_station_history_v33.py": "6da5805829c27cb82597ba869d1ce045d550c07003f41fe47236e3ff0531995b",
+    "configs/kelmarsh_arrival_v33_k1.json": "318038be8813f73fd6f72b53bc8bceca664ede42cc6b0e842ced42249a1384d6"
+  }
+}
