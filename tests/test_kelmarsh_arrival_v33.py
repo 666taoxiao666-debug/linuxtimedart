@@ -227,5 +227,77 @@ class TorchTests(unittest.TestCase):
                 ctl.scores(pred, target, 2050.)
 
 
+@unittest.skipUnless(HAS_TORCH, "torch not installed")
+class K1bTests(unittest.TestCase):
+    """K1b (joint training): pre-registered decision branches, joint gradients reach the base, smoke run."""
+
+    @staticmethod
+    def metrics(**over):
+        m = {a: {"rmse": 100.0, "mae": 60.0} for a in ("T9", "T21", "T9+B2", "T9+A", "T21+B2", "T21+A")}
+        for k, v in over.items():
+            m[k.replace("_", "+")] = {"rmse": v[0], "mae": v[1]}
+        return m
+
+    def test_decision_branches(self):
+        from scripts import train_kelmarsh_arrival_v33_k1b as k1b
+        self.assertEqual(k1b.k1b_decision(self.metrics())["branch"], "E3")
+        e1 = k1b.k1b_decision(self.metrics(T9_A=(97.0, 59.0), T9_B2=(99.0, 60.0)))
+        self.assertEqual(e1["branch"], "E1")
+        self.assertEqual(e1["prior_supported_on"], ["T9"])
+        e2 = k1b.k1b_decision(self.metrics(T21_B2=(98.5, 59.5), T21_A=(98.4, 59.4)))
+        self.assertEqual(e2["branch"], "E2")
+        bad = self.metrics(T9_A=(97.0, 62.0))                 # RMSE better but MAE worse than its base
+        self.assertEqual(k1b.k1b_decision(bad)["branch"], "E3")
+        missing = self.metrics()
+        del missing["T21+A"]
+        self.assertEqual(k1b.k1b_decision(missing)["branch"], "E0")
+
+    def test_joint_gradients_reach_the_base(self):
+        from scripts import train_kelmarsh_arrival_v33_k1b as k1b
+        from models.TSMixerBasicSmall import Model as TSMixer
+        base = TSMixer(seq_len=24, channels=9, pred_len=4, blocks=2, ff_dim=32, dropout=.1, norm_eps=1e-3, target_slot=8)
+        model = k1b.JointArrival(base, tokens="stations", prior="arrival", kappa="learned")
+        x = torch.randn(4, 24, 9)
+        content = torch.randn(4, 30, 12)
+        phys = torch.zeros(4, 30, 6)
+        valid = torch.ones(4, 30, dtype=torch.bool)
+        model(x, content, phys, valid).sum().backward()
+        self.assertTrue(all(p.requires_grad for p in model.base.parameters()))
+        self.assertTrue(any(p.grad is not None and p.grad.abs().sum() > 0 for p in model.base.parameters()))
+
+    def test_smoke_end_to_end(self):
+        from scripts import train_kelmarsh_arrival_v33_k1b as k1b
+        with tempfile.TemporaryDirectory() as tmp:
+            report = k1b.run(Path(tmp), smoke=True, device="cpu")
+            self.assertIn(report["decision"]["branch"], ("E0", "E1", "E2", "E3"))
+            self.assertTrue((Path(tmp) / "k1b_summary.md").exists())
+            histories = {p: p.read_bytes() for p in Path(tmp).glob("arms/*/history.json")}
+            repeated = k1b.run(Path(tmp), smoke=True, device="cpu")
+            self.assertEqual(report["metrics"], repeated["metrics"])
+            self.assertTrue(all(p.read_bytes() == data for p, data in histories.items()))
+            manifest = (Path(tmp) / "data_manifest.json").read_bytes()
+            load_smoke = k1b.k1.load_smoke
+
+            def changed_identity(cfg):
+                p, series, obs, stations, _ = load_smoke(cfg)
+                return p, series, obs, stations, {"synthetic": True, "changed": True}
+
+            def changed_training(cfg):
+                cfg["training"]["max_epochs"] += 1
+                return load_smoke(cfg)
+
+            cases = ((False, "load_real", load_smoke),
+                     (True, "load_smoke", changed_identity),
+                     (True, "load_smoke", changed_training))
+            for smoke, loader, replacement in cases:
+                with self.subTest(smoke=smoke, loader=replacement.__name__):
+                    with patch.object(k1b.k1, loader, side_effect=replacement), patch.object(k1b, "fit_joint") as fit:
+                        with self.assertRaisesRegex(ValueError, "different run contract"):
+                            k1b.run(Path(tmp), smoke=smoke, device="cpu")
+                        fit.assert_not_called()
+                    self.assertEqual((Path(tmp) / "data_manifest.json").read_bytes(), manifest)
+                    self.assertTrue(all(p.read_bytes() == data for p, data in histories.items()))
+
+
 if __name__ == "__main__":
     unittest.main()
