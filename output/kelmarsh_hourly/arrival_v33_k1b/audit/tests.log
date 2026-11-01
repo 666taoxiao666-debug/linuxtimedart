@@ -1,0 +1,76 @@
+test_codex_counterexample_and_branches (test_kelmarsh_arrival_v33.DecisionTests) ... ok
+test_kappa_star_ties (test_kelmarsh_arrival_v33.DecisionTests) ... ok
+test_content_invariant_under_global_rotation (test_kelmarsh_arrival_v33.GeometryTests) ... ok
+test_upwind_and_signed_cross_distance_mirror (test_kelmarsh_arrival_v33.GeometryTests) ... ok
+test_decision_branches (test_kelmarsh_arrival_v33.K1bTests) ... /home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/matplotlib/_fontconfig_pattern.py:64: PyparsingDeprecationWarning: 'oneOf' deprecated - use 'one_of'
+  prop = Group((name + Suppress("=") + comma_separated(value)) | oneOf(_CONSTANTS))
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/matplotlib/_fontconfig_pattern.py:85: PyparsingDeprecationWarning: 'parseString' deprecated - use 'parse_string'
+  parse = parser.parseString(pattern)
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/matplotlib/_fontconfig_pattern.py:89: PyparsingDeprecationWarning: 'resetCache' deprecated - use 'reset_cache'
+  parser.resetCache()
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/matplotlib/_mathtext.py:45: PyparsingDeprecationWarning: 'enablePackrat' deprecated - use 'enable_packrat'
+  ParserElement.enablePackrat()
+In /home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/matplotlib/mpl-data/stylelib/classic.mplstyle: 'parseString' deprecated - use 'parse_string'
+In /home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/matplotlib/mpl-data/stylelib/classic.mplstyle: 'resetCache' deprecated - use 'reset_cache'
+ok
+test_joint_gradients_reach_the_base (test_kelmarsh_arrival_v33.K1bTests) ... ok
+test_smoke_end_to_end (test_kelmarsh_arrival_v33.K1bTests) ... [EPOCH] T9 epoch=1 J_p=6.79323 val_MAE=566.641 val_RMSE=689.564
+[EPOCH] T21 epoch=1 J_p=13.47042 val_MAE=1110.629 val_RMSE=1384.544
+[EPOCH] T9+B2 epoch=1 J_p=6.68395 val_MAE=555.965 val_RMSE=680.539
+[EPOCH] T9+A epoch=1 J_p=6.68502 val_MAE=556.064 val_RMSE=680.635
+[EPOCH] T21+B2 epoch=1 J_p=13.40026 val_MAE=1104.783 val_RMSE=1377.413
+[EPOCH] T21+A epoch=1 J_p=13.40032 val_MAE=1104.789 val_RMSE=1377.419
+ok
+test_arrival_support_exists_for_reachable_station (test_kelmarsh_arrival_v33.MaskAndPriorTests) ... ok
+test_filled_speed_never_opens_the_prior (test_kelmarsh_arrival_v33.MaskAndPriorTests) ... ok
+test_no_support_gives_b2_weights (test_kelmarsh_arrival_v33.MaskAndPriorTests) ... ok
+test_regional_direction_fallback_uses_raw_valid_observations_only (test_kelmarsh_arrival_v33.MaskAndPriorTests) ... ok
+test_token_rows_are_strictly_past (test_kelmarsh_arrival_v33.MaskAndPriorTests) ... ok
+test_epoch0_identity_permutation_and_parity (test_kelmarsh_arrival_v33.TorchTests) ... ok
+test_prior_matches_numpy (test_kelmarsh_arrival_v33.TorchTests) ... ok
+test_real_loader_supplies_parser_year_without_opening_data (test_kelmarsh_arrival_v33.TorchTests) ... ok
+test_scores_reject_dropped_or_misaligned_all_cohort (test_kelmarsh_arrival_v33.TorchTests) ... ok
+test_smoke_end_to_end (test_kelmarsh_arrival_v33.TorchTests) ... {
+  "decision": "E2",
+  "prior_supported_on": [],
+  "branch_gains_on": [
+    "T9+B2",
+    "T9+A"
+  ]
+}
+{
+  "decision": "E2",
+  "prior_supported_on": [],
+  "branch_gains_on": [
+    "T9+B2",
+    "T9+A"
+  ]
+}
+[EPOCH] tmprdlpl6v1/B0 epoch=1 train_loss=6.452913 validation_mae=1112.2954 best_epoch=1
+[EPOCH] B1 epoch=1 J=1.99115 val_MAE=1107.417 val_RMSE=1379.618
+[EPOCH] B2 epoch=1 J=1.99204 val_MAE=1107.940 val_RMSE=1380.192
+[EPOCH] A epoch=1 J=1.99199 val_MAE=1107.917 val_RMSE=1380.159
+[EPOCH] K0.5 epoch=1 J=1.99198 val_MAE=1107.910 val_RMSE=1380.148
+[EPOCH] K1 epoch=1 J=1.99199 val_MAE=1107.917 val_RMSE=1380.159
+[EPOCH] K2 epoch=1 J=1.99203 val_MAE=1107.934 val_RMSE=1380.182
+[EPOCH] K3 epoch=1 J=1.99203 val_MAE=1107.937 val_RMSE=1380.186
+[EPOCH] K4 epoch=1 J=1.99203 val_MAE=1107.936 val_RMSE=1380.186
+ok
+
+----------------------------------------------------------------------
+Ran 17 tests in 15.318s
+
+OK
+{
+  "decision": {
+    "branch": "D3",
+    "dR_A_B2_pct": -0.00044975928469281786,
+    "dM_A_B2_kw": -0.016871659752041523,
+    "dR_A_B0_pct": 0.40093565996747443,
+    "dM_A_B0_kw": 4.340530724480232,
+    "dR_B2_B0_pct": 0.4013836139920961,
+    "dM_B2_B0_kw": 4.357402384232273
+  },
+  "kappa_star": 1.0,
+  "learned_kappa": 0.9993318915367126
+}
