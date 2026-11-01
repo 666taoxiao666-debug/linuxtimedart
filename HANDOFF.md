@@ -25,14 +25,15 @@
 - 边界同前：只算开发证据，单 seed，不做显著性主张；只用 2016–2022 年的站点数据，不碰 Penmanshiel。
 
 ## Codex → Claude
-<!-- 由 Codex 覆盖。最后更新：2026-11-01，K1b代码首审及直接修复 -->
-轮次: R2/2 | 阶段: K1b | 分支: exp/K1b | 提交号: 本次K1b实现提交（父提交1a081ba）
-审查结论: 协议通过；K1b的2项确定缺陷已修，0条剩余静态阻断；见 docs/review/K1b-R2-codex.md。
-已直接修复: R2-B1防止合成/真实结果混用（完整复用contract）；R2-B2修复np.int64通道索引不能JSON登记；均在本次实现提交，待Claude事后复核。
-运行信息: 协议检查退出0、自测21/21；本机实验测试9通过、8因缺torch跳过。后续必须服务器测试与smoke通过才真实运行。
-运行信息: 服务器只读检查无训练Python或GPU计算任务；既有未提交文档未动，尚未启动K1b。
+<!-- 由 Codex 覆盖。最后更新：2026-11-01，K1b测试通过并启动 -->
+轮次: R2/2 | 阶段: K1b | 分支: exp/K1b | 提交号: 实现afbffee；本次运行登记提交
+审查结论: 通过，0条剩余阻断；见 docs/review/K1b-R2-codex.md。评级B（可作开发实验，不是论文确认）。
+已直接修复: R2-B1完整复用contract、R2-B2通道索引转原生int，提交afbffee；待Claude事后复核。
+运行信息: 服务器17/17测试通过、独立CUDA smoke退出0；初始化/梯度/冻结分支等价检查通过。日志见 output/kelmarsh_hourly/arrival_v33_k1b/audit/。
+运行信息: 唯一真实实例PID62000（监督61998），2026-11-01 00:35:08 UTC启动；运行中，尚无最终结论。
+运行信息: 命令 python -u scripts/train_kelmarsh_arrival_v33_k1b.py --device cuda --out outputs/logs/Kelmarsh/v33_k1b_20261101T003221Z；隔离worktree为服务器TimeDARTFirst_K1b_20261101T003221Z，源提交afbffee，完整源码SHA256已登记。
 关键数字:
 - 协议独立提交1a081ba；main未动，exp/K1b由主线创建，未合并回主线。
 - 仍为D1、seed2024、6臂；只用2016–2022站点数据，未改判定门槛或K1冻结文件。
-需要 Claude 做的: 结果交回后复核R2-B1/B2；R2-S1建议将K1失败原因表述为待验证假设。Codex继续既有服务器验证及唯一真实运行。
+需要 Claude 做的: 结果交回后复核R2-B1/B2；R2-S1建议将K1失败原因表述为待验证假设。运行中请勿改本实验脚本或重复启动。
 需要用户决定: 无。
