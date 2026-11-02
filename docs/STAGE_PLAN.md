@@ -1,91 +1,105 @@
 # STAGE_PLAN — 只写下一个阶段
 
 作者：Claude（Codex 只提意见，不改本文件）。上限 150 行：要加新内容时，先删旧内容。
-内容只从现有代码和结果中提取；拿不准的地方标「待确认」。
+内容只从现有代码和结果中提取；拿不准的地方标「待确认」；事先设定的阈值标「事先设定」。
 长方案 `docs/UPSTREAM_INNOVATION_PROPOSAL.md` 已改为存档，只按章节号引用，不再整份送审。
 
 ## 阶段名
 
-v33 K1b：底座与站点分支联合训练（复测 K1）。
+v34 D2-0：迁移可行性闸门，分两部分。
+
+- A 部分：清点 Penmanshiel 数据。
+- B 部分：在 Kelmarsh 上诊断功率曲线这一步的误差上限。
+
+本阶段只读、不训练。
+
+背景：K1b 的判定是 E2，到达时间先验已停止（见上一阶段的结果）。用户 2026-11-01 选定 D2 精简版：
+
+- 保留：分解式迁移（天气 → 风速，曲线 → 功率）和冷启动，即原来的 H2、H4。
+- 删掉：依赖 κ 和站点编码器的 H1、H3。
 
 ## 目标
 
-1. 联合训练下，检验到达时间物理先验 A 是否同时胜过通用注意力 B2 和纯底座。底座为 T9 或 T21，在 2022 开发评估年上比较。
-2. 修正 K1 暴露的设计缺陷。冻结底座后，残差分支会拟合样本内残差；包括不含任何新信息的 B1，也是从第 1 个 epoch 起验证集变差。
-3. 顺带描述：站点编码器能否替代 11 个手工上游特征（只比较 T9+A、T9+B2 与 T21，不作判定）。
+1. 确认 Penmanshiel 的数据够不够做分解式迁移：SCADA 有哪些年份、哪些通道、几台风机，当地 MIDAS 站够不够算出 11 个上游特征。
+2. 在 Kelmarsh 上量出"风速 → 功率曲线"这一步本身的误差上限，判断分解式值不值得做。
+3. 在读取任何内容之前，先登记 Penmanshiel 的测试年。测试年的内容一律不看。
 
 ## 假设与判定标准
 
-- 假设：底座和分支一起训练后，对至少一个底座 b，b+A 同时优于 b+B2 和 b。
-- 指标：2022 年 ALL 队列，h1–4 合并的 MAE 和 RMSE（kW）。单 seed（2024），只看点估计，不做显著性检验。
-- 记号：ΔRMSE% = 100·(RMSE_参照 − RMSE_臂)/RMSE_参照，ΔMAE = MAE_参照 − MAE_臂。两者都是正值表示更好。
-- 判定（写在 `scripts/train_kelmarsh_arrival_v33_k1b.py` 文件头，互斥）：
+**A 部分：Penmanshiel 清点（在服务器上只读，只看已下载的文件，不下载）**
 
-| 分支 | 条件 | 继续 / 停止 |
+- **测试年**：在解析任何文件之前，只按文件名登记，取最新一个完整日历年（文件覆盖 1–12 月）。
+  - 测试年的 SCADA 和站点文件只记录文件名、大小、SHA256 和表头列名，不解析任何数值或时间戳。
+- **非测试年**：可以统计时间戳覆盖率和各列缺测率。
+  - 功率、风速等数值的分布一律不统计（均值、分位数都不算），这样冷启动设计不会被 Penmanshiel 的标签影响。
+- **MIDAS**：
+  - 筛站：Penmanshiel 150 km 内，沿用 Kelmarsh 的规则，即每个非测试年的小时风速完整率 ≥85%。
+  - 记录：合格站数、其中有海平面气压的站数、合格站分布在几个方位象限。
+- **继续条件（三条都满足）**：
+  - **A1**：非测试年里至少有 1 个完整年（时间戳覆盖 ≥90%，事先设定），可作开发和少样本来源；测试年 12 个月的文件齐全。
+  - **A2**：T21 需要的 SCADA 输入在 Penmanshiel 表头里都有对应列，列名对照表由 Codex 给出。
+    - 需要的输入：Wspd、Etmp、机舱方向、Pab_mean、rotor_speed、功率，以及 10 分钟末值 power_last10 / wind_last10。
+    - 风机台数和机型（MM82，额定 2050 kW）与元数据一致。
+  - **A3**：合格站 ≥8 个（事先设定），其中有气压的 ≥5 个（梯度特征的代码要求 ≥5 个）；合格站分布在 ≥3 个方位象限（事先设定）。
+- **不满足**：停止 D2 迁移，交用户决定。缺数据时，写清缺什么，不自行下载。
+
+**B 部分：Kelmarsh 功率曲线上限（只用已开放的开发数据）**
+
+- 曲线：直接用 v32 准备数据里已登记的逐台风机经验曲线（2016–2019 年拟合，即 `fit_power_curve` / `expected_power` 的结果），不重新拟合。
+- 评估队列：与 K1b 相同，即 D1 折的 2022 年开发评估，ALL 队列，h1–4 合并，共 16949 个窗口，标签不改。
+- 对比的几种做法：
+
+| 名称 | 做法 | 含义 |
 |---|---|---|
-| E0 无效 | 缺臂，或某个指标不是有限值 | 技术故障：修好后重跑，不下结论 |
-| E1 先验成立 | 至少一个 b 同时满足两条：b+A 对 b+B2，ΔRMSE% ≥ 1 且 ΔMAE ≥ −1 kW；b+A 对 b，ΔRMSE% ≥ 1 且 ΔMAE ≥ 0 | **继续**：进入多 seed 确认（下一阶段，具体设计待确认） |
-| E2 只有融合收益 | 不满足 E1，但某个 b+B2 或 b+A 对 b 满足 ΔRMSE% ≥ 1 且 ΔMAE ≥ 0 | **停止**物理先验这一主张；站点分支的收益另行记录，后续待确认 |
-| E3 无收益 | 其余情形 | **停止**站点分支和物理先验这条线（C1）；下一步交用户决定 |
+| O-curve | 把实际未来机舱风速 Wspd(t+h) 代入该风机的曲线 | 风速预测完美时，分解式能达到的误差下限 |
+| P-curve | 把起报时最近一小时的机舱风速代入曲线 | 风速持续法 + 曲线，即 Kelmarsh 上的物理基线 |
+| 持续法 | 已有结果：193.87 / 301.87 | 参照 |
+| T21 | 已有结果（K1b）：161.09 / 241.32 | 直接预测功率的最好底座 |
+
+- **B1（判定）**：O-curve 的 RMSE ≤ 0.75 × T21 的 RMSE（约 181 kW，0.75 为事先设定）就继续分解式路线。
+  - 否则，曲线这一步本身就吃掉了大部分误差空间，分解式路线停止，交用户决定是否改成"直接迁移 + 少样本"。
+- **B2（只描述）**：P-curve 与功率持续法的差距，用来判断"风速持续 + 曲线"能不能当一个合理的物理基线。
 
 ## 实验配置表
 
-公共设置（来自 `configs/kelmarsh_arrival_v33_k1.json` 和 K1b 脚本，K1b 不改这份配置）：
-
-- 数据与折：D1 折，2016–2020 拟合，2021 验证，2022 开发评估。seed 2024，滞后 1 h，站点文件只用 2016–2022。
-- 底座：TSMixerBasicSmall。同一通道组的各臂共用相同的底座初始化（构建前先设 seed）。
-- 损失：标准化功率上的 0.5·MAE + 0.5·MSE。
-- 优化器：AdamW，lr 1e-3，wd 1e-4，batch 64；最多 20 个 epoch，patience 5；cosine 调度（T_max 20），梯度裁剪 1。
-- checkpoint 选择：按验证集 J_p = MAE/MAE_持续 + RMSE/RMSE_持续 选，epoch 0 也参与，同分时取更早的 epoch。持续法 = 上一小时功率。
-- 分支：沿用 K1 模块，不改。宽度 16，query 16，lead 16，score clamp 8。κ 的边界为 [0.5, 4]，初值 1；u_ref 用 50 km 半径。
-
-| 臂 | 底座输入 | 站点分支 | 先验 | 训练方式 |
+| 部分 | 内容 | 输入 | 输出 | 预算 |
 |---|---|---|---|---|
-| T9 | 9 个通道（v28 的 `last10` 集合，索引 0–7 和 20） | 无 | — | 只训底座 |
-| T21 | 21 个通道（9 个 + 11 个手工上游特征 + 缺测标志） | 无 | — | 只训底座 |
-| T9+B2 | 同 T9 | K1 站点分支 | 通用注意力（q̃ = 1） | 联合训练 |
-| T9+A | 同 T9 | K1 站点分支 | 到达时间先验，学习 κ | 联合训练 |
-| T21+B2 | 同 T21 | K1 站点分支 | 通用注意力（q̃ = 1） | 联合训练 |
-| T21+A | 同 T21 | K1 站点分支 | 到达时间先验，学习 κ | 联合训练 |
+| A | Penmanshiel SCADA 与 MIDAS 清点 | 服务器上已有的文件 | 文件清单与 SHA256、列名对照、覆盖率与缺测率、测试年登记、合格站表 | ≤30 分钟 |
+| B | 曲线上限诊断 | v32 准备数据、已登记曲线、K1b 的评估队列 | O-curve、P-curve 的 2022 MAE / RMSE，分 h1–4 和合并 | ≤10 分钟 |
 
-- 预算：6 次拟合，只跑一个真实实例。不追加臂，不改阈值。
-- 用时：待确认。参考 K1：A 臂在冻结底座下约 21 秒/epoch，9 次拟合共 19 分钟；联合训练会更慢。
-- 命令：
-  - `python scripts/train_kelmarsh_arrival_v33_k1b.py --smoke --out /tmp/v33_k1b_smoke`
-  - `python scripts/train_kelmarsh_arrival_v33_k1b.py --out outputs/logs/Kelmarsh/v33_k1b_<tag>`
-- 产出：`k1b_decision.json`、`k1b_summary.md`、`data_manifest.json`，以及各臂的 `trained.json` 和 `history.json`。
-  - 拷回 `output/kelmarsh_hourly/arrival_v33_k1b/`，不拷 `best.pt` 和预测数组。
+- 不训练，不用 GPU，不设 seed。只运行一个实例。
+- 审计脚本由 Codex 写（只读）。计算口径以本节为准；口径有歧义时，按"更保守、不接触 Penmanshiel 数值"的一边处理，并在报告里写明。
 
 ## 改动文件清单（= HANDOFF「允许改动」）
 
-- `scripts/train_kelmarsh_arrival_v33_k1b.py`：新文件，Claude 写。
-- `tests/test_kelmarsh_arrival_v33.py`：新增 `K1bTests`，共 3 项，需要 torch。
-- `output/kelmarsh_hourly/arrival_v33_k1b/**`：Codex 拷回的结果。
-- 本轮另含协作协议 v2 的文件：`AGENTS.md`、`tools/collab_check.py`、`docs/review/DECISIONS.md`。这些只在本轮出现。
-- 只读不改（K1 的审计文件 `audit/launch.json` 登记了它们的哈希，检查脚本会核对）：
-  - `scripts/train_kelmarsh_arrival_v33.py`
-  - `models/UpstreamArrivalResidual.py`
-  - `utils/kelmarsh_station_history_v33.py`
-  - `configs/kelmarsh_arrival_v33_k1.json`
+- `scripts/audit_d2_feasibility_v34.py`：新文件，Codex 写，只读审计 A + B，不写数据集。
+- `tests/test_audit_d2_feasibility_v34.py`：可选，Codex 写。
+- `output/kelmarsh_hourly/d2_feasibility_v34/**`：Codex 拷回的清点与诊断结果。
+- `AGENTS.md`：本轮只在「分支」小节补了一条说明，即有效负结果也合回主线。
+- 只读不改：v32 的准备数据与曲线、所有冻结协议，以及 K1 和 K1b 已登记的源码（检查脚本会核对哈希）。
 
 ## 本阶段不做什么
 
-- 不改 K1 的代码、配置、阈值和结果；K1 照原样记为 D3（冻结残差设计）。
-- 不追加臂，不跑多 seed，不调阈值或超参数。
-- 不读 2023/2024 年的站点数据，不碰 Penmanshiel，不下载新数据。
-- 不做 D2（Penmanshiel 迁移）、K2–K5、MM82 功率曲线等后续阶段。§14.18 的相关部分暂缓。
-- 不作显著性或 SOTA 主张；K1b 只算开发证据。
+- 不训练任何模型，不建 Penmanshiel 适配层，不定 MM82 曲线。
+- 不读 Penmanshiel 任何年份的功率或风速数值；测试年只记哈希和表头。
+- 不下载新数据，只清点服务器上已有的；缺什么就报告，交用户。
+- 不改 Kelmarsh 的冻结协议、v32 曲线和标签。
+- 不再做到达先验、κ 或站点编码器（K1、K1b 已结题）。
 
 ## 风险（≤5 条）
 
-1. 联合训练时底座本身也在变，b+A 相对 b 的差异混入了"多出的容量和正则化"。缓解：B2 是同等容量的对照，E1 要求 A 同时胜过 B2。
-2. 单 seed 下，1% 的差距可能落在 seed 噪声以内（v26 的经验：残差改进与 seed 噪声相当）。E1 只作开发证据，确认需要多 seed。
-3. T21 的输入已经含手工上游特征，T21+A 的提升空间可能很小。只在 T9 上成立也算 E1。
-4. 2022 已在 K1 中作为开发评估年看过一次，K1b 再看同一年，不能当独立测试。
-5. 联合训练的用时和显存都还没测过（待确认），先跑 smoke。
+1. Penmanshiel 公开数据可能只到 2021 年左右（待确认），可用年份不够时 A1 不过。
+2. Penmanshiel 在苏格兰东南沿海，东侧是海，150 km 内的陆上站可能偏少，A3 的象限条件可能不过。
+3. O-curve 用的是机舱风速，它受尾流和风机自身影响，和站点外推的风不是一回事。B1 只说明曲线这一步的上限，不代表分解式一定有用。
+4. MM82 没有公开的厂商曲线（windpowerlib 只收录了 MM92），冷启动只能用面积缩放或 WES 2021 图 3（见 §14.18）。这一步的误差在 D2-0 量不到。
+5. 如果解析文件时不得不碰到 Penmanshiel 的数值列，要在报告里如实写明碰到了什么，不能事后补救。
 
 ## 存档引用
 
-- 方案：`docs/UPSTREAM_INNOVATION_PROPOSAL.md`。§14.16 是 D1+D2 正式方案；§14.17 修订了 D1 的先验公式、mask 和 κ 范围；§14.18 写了 raw-valid q、统计方法族和预算。
-- K1 的结果与审查：`output/kelmarsh_hourly/arrival_v33_k1/`（`k1_decision.json`、`review.md`、`audit/launch.json`），提交 db9a833。
-- K1b 的预登记：`scripts/train_kelmarsh_arrival_v33_k1b.py` 文件头的 docstring。
+- D2 原设计（H1–H4、MM82 曲线来源）：§14.16 第 3 小节；MM82 规则和统计方法族：§14.18。
+- K1b 结果：`output/kelmarsh_hourly/arrival_v33_k1b/`（判定 E2，复核记录见 DECISIONS.md 的 K1b 一节）。
+- 曲线代码：`utils/kelmarsh_enrichment.py` 的 `fit_power_curve` / `expected_power`；11 个上游特征的定义：`scripts/screen_kelmarsh_upstream_observations.py` 的 `upstream_features`。
+- 后续方向（细节暂缓，到时再写）：
+  - D2-1：在 Kelmarsh 上训练风速头（T21 输入，目标为 1–4 h 机舱风速），与直接预测功率对比；
+  - D2-2：冻结设计后，在 Penmanshiel 上做一次性冷启动测试（S1 / S2）；
+  - D2-3：少样本适配。
