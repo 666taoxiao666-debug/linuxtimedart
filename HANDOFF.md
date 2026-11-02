@@ -3,25 +3,25 @@
 规则见 AGENTS.md：两节各由一方整节覆盖、不追加，每节不超过 40 行；历史用 `git log -p HANDOFF.md` 查。
 
 ## Claude → Codex
-<!-- 由 Claude 覆盖。最后更新：2026-11-02 第 18 次（D2-0 第 2 轮：修复与补跑授权） -->
-轮次: R2/2 | 阶段: D2-0 | 分支: exp/D2-0 | 基线提交: 331069b
-请求: 审方案（STAGE_PLAN 第 2 轮补充）+ 实现并运行只读审计 r2
+<!-- 由 Claude 覆盖。最后更新：2026-11-02 第 19 次（D2-0 结题 + P1 首轮） -->
+轮次: R1/2 | 阶段: P1 | 分支: exp/P1 | 基线提交: 98d39bf
+请求: 审方案（P1 STAGE_PLAN）+ 实现并运行数据准备（不训练）
 待审范围: git diff HEAD -- docs/STAGE_PLAN.md docs/review/DECISIONS.md
-允许改动: scripts/audit_d2_feasibility_v34_r2.py, tests/test_audit_d2_feasibility_v34_r2.py, output/kelmarsh_hourly/d2_feasibility_v34_r2/**
-审查文件: docs/review/D2-0-R2-codex.md
-本轮决议: 采纳 5 / 反驳 0 / 暂缓 0 / 转实验 0（R1-S1、R1-B1、R1-B2、R1-P1、R1-P2，见 DECISIONS.md）
+允许改动: scripts/prepare_penmanshiel_v35.py, utils/penmanshiel_v35.py, tests/test_prepare_penmanshiel_v35.py, output/penmanshiel_hourly/prep_v35/**
+审查文件: docs/review/P1-R1-codex.md
+本轮决议: D2-0 的 R2 一节没有新编号；我用本地副本独立复核了 A1、A2、A3 和 B1，结论与你一致（见 DECISIONS.md 的 D2-0 一节）
 
 需要你做的:
-1. **审改动**：只看 STAGE_PLAN 中 B 部分新增的"缺未来风速的格子"、三档的 B1、"补跑授权"这三处，以及 DECISIONS.md 的 D2-0 一节。没有阻断就按下面实施。
-2. **实现与补跑**：新建 r2 脚本和测试，修改范围只有两处：R1-P1 只过滤整行全空的元数据行；R1-P2 对缺风速的 5 格按冻结曲线的输出范围取误差上下界，B1 分三档，阈值 180.98952 kW。其余口径与 v34 一致；v34 原脚本、测试和结果都不改。测试年沿用已登记的 2022，核对哈希后直接用，不重新登记。在服务器跑测试，再跑 1 个真实实例。如果又遇到解析类的确定缺陷，可以在 r2 里修好后再跑 1 次，最多 2 个实例；两次都失败就停下交回。
-3. **结果**：拷到 `output/kelmarsh_hourly/d2_feasibility_v34_r2/`，核对 SHA256。审计的 launch.json 里写好 `source_code`。跑 `--codex` 后，按 v2 覆盖你那一节，写明：A1、A2、A3、B1 各自的结论；O-curve 的 MAE、RMSE 上下界和 P-curve 的 MAE、RMSE；合格站数、有气压的站数和象限数。
+1. **D2-0 结题**：用户 2026-11-02 同意合并。请先在 exp/D2-0 上提交本轮的 DECISIONS.md 和 HANDOFF.md，再用 `--no-ff` 把 exp/D2-0 合回主线 `codex/self-evolving-wiki` 并推送，exp/D2-0 保留。STAGE_PLAN 先不提交，带到 exp/P1。
+2. **P1**：从主线拉 `exp/P1`，审 STAGE_PLAN。没有阻断，就由你实现 `prepare_penmanshiel_v35.py`（另加可选的 utils 文件和测试）。只做参数化，复用 Kelmarsh v31/v32 的冻结函数；改了哪些 Kelmarsh 专用常量，要逐个列在审查文件里。服务器上先跑测试，再跑 1 个准备实例；2022 年起的内容只记哈希。
+3. **结果**：把元数据拷到 `output/penmanshiel_hourly/prep_v35/`，核对 SHA256。审计的 launch.json 里写好 `source_code`。跑 `--codex` 之后，按 v2 覆盖你那一节，写明：Q1–Q4 各自是否通过；起始日期；三段的窗口数；每年的 `upstream_missing` 占比。
 
-需要用户决定: 无（这一轮的修复和补跑由用户 2026-11-02 交我审核授权，限于上面的范围）
+需要用户决定: 无（"第二风场复现"方向和合并 D2-0 已由用户 2026-11-02 选定）
 
 说明:
-- 这是 D2-0 的第 2 轮，也是最后一轮。补跑后如果还有阻断，或者 B1 落在"无法判定"，就交用户裁决，不进入第 3 轮。
-- 第 1 次运行是技术失败，不算科学结论。阶段结束时，按 AGENTS「分支」的规则，只把有效结果合回主线。
-- 边界不变：不训练，不下载，不重新拟合曲线，不改标签；Penmanshiel 任何年份的功率、风速数值都不统计；测试年 2022（以及受保护的 2023、2024）只记哈希和表头。
+- 用户选的方向是：在 Penmanshiel 上复现已确认的上游特征增益，再做 Kelmarsh → Penmanshiel 迁移。P1 只准备数据；P2（开发折上的复现与迁移）和 P3（2022 年一次性测试）的细节暂缓，本轮不用审。
+- 如果准备过程中出现解析类的确定缺陷，你可以在允许改动的文件里直接修，修完后再跑 1 次，最多 2 个实例；两次都失败就停下交回。
+- 边界：不训练，不下载，不改 Kelmarsh 的任何冻结代码或数据；Penmanshiel 和站点 2022 年起的内容一律不解析。
 
 ## Codex → Claude
 <!-- 由 Codex 覆盖。最后更新：2026-11-02，D2-0 r2完成，数据闸门通过、曲线闸门未通过 -->
