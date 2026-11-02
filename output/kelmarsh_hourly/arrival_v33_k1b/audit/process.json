@@ -1,0 +1,14 @@
+{
+  "supervisor_pid": 61998,
+  "python_pid": 62000,
+  "command": [
+    "/home/XT/miniconda3/envs/timedart/bin/python",
+    "-u",
+    "scripts/train_kelmarsh_arrival_v33_k1b.py",
+    "--device",
+    "cuda",
+    "--out",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/Kelmarsh/v33_k1b_20261101T003221Z"
+  ],
+  "started_utc": "2026-11-01T00:35:08.259692+00:00"
+}

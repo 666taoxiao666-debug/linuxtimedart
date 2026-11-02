@@ -1,0 +1,14 @@
+[EPOCH] T9 epoch=1 J_p=6.82067 val_MAE=568.217 val_RMSE=693.295
+[EPOCH] T21 epoch=1 J_p=13.49455 val_MAE=1112.674 val_RMSE=1386.951
+[EPOCH] T9+B2 epoch=1 J_p=6.72652 val_MAE=559.802 val_RMSE=684.481
+[EPOCH] T9+A epoch=1 J_p=6.72774 val_MAE=559.913 val_RMSE=684.594
+[EPOCH] T21+B2 epoch=1 J_p=13.43007 val_MAE=1107.535 val_RMSE=1380.087
+[EPOCH] T21+A epoch=1 J_p=13.43022 val_MAE=1107.545 val_RMSE=1380.106
+{
+  "decision": "E2",
+  "prior_supported_on": [],
+  "branch_gains_on": [
+    "T9+B2",
+    "T9+A"
+  ]
+}

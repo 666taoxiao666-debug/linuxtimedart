@@ -1,0 +1,13 @@
+{
+  "passed": true,
+  "source_commit": "afbffeeab3f2862d70ace4ad644f6523fd16951a",
+  "branch": "exp/K1b",
+  "files_verified": 26,
+  "bytes_verified": 720219,
+  "mismatches": [],
+  "export_sha256_json_sha256": "c6bdb2440547573a474e42dafc8260d55de6a612f59a5d5aed403ceb9b44c693",
+  "method": "Each copied file's raw byte length and SHA256 compared with server audit/export_sha256.json; all 26 match.",
+  "server_verification": "audit/verification.json: 339 source hashes, 252 station files, labels/windows, saved predictions, checkpoint selection and E2 recomputed.",
+  "excluded_from_copy": ["best.pt", "predictions.npz"],
+  "scope": "Single real instance; six arms; seed 2024; 2022 development evidence only."
+}
