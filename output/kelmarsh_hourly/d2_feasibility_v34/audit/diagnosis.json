@@ -1,0 +1,29 @@
+{
+  "scope": "Post-run read-only cause checks; not a second audit instance; no forecast scores computed",
+  "static_metadata": {
+    "rows": 29,
+    "turbine_records": 14,
+    "entirely_empty_rows": 15,
+    "cause": "static_metadata converts every Title using regex.group(1); wholly empty rows produce None",
+    "source": "scripts/audit_d2_feasibility_v34.py:142",
+    "classification": "definite code defect"
+  },
+  "fixed_kelmarsh_queue": {
+    "windows": 16949,
+    "missing_future_wind_cells": 5,
+    "affected_windows": 4,
+    "missing_by_horizon": [0, 2, 2, 1],
+    "unique_missing_turbine_hours": 5,
+    "cause": "frozen provider requires finite input history and future power labels, but does not require future wind",
+    "source": "data_provider/kelmarsh_multiyear.py:46",
+    "classification": "definite protocol executability gap; fail-closed guard behaved as implemented",
+    "rows_removed": 0,
+    "values_imputed": 0,
+    "forecast_scores_computed": false
+  },
+  "tests": {"local": {"passed": 9, "failed": 0}, "server": {"passed": 9, "failed": 0}},
+  "audit_instance": {"pid": 111916, "source_commit": "2eba47e65c66e36d9cea961c2098c60e5cecece0", "elapsed_seconds": 41.092873536021216, "live_after_completion": false, "os_exit_code_captured": false},
+  "penmanshiel_scada_body_parsed": false,
+  "training_started": false,
+  "downloads_started": false
+}

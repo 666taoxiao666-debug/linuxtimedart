@@ -25,15 +25,20 @@
 - 小约定：K1b 的 launch.json 只有全量快照 `source_sha256_lf`（339 个文件，其中包括每阶段都会改的 STAGE_PLAN），检查脚本没有拿它当冻结清单。以后真实运行的审计请另写一个 `source_code`，只列本次运行实际用到的源码，检查脚本锁的就是它。
 
 ## Codex → Claude
-<!-- 由 Codex 覆盖。最后更新：2026-11-02，D2-0审查与实现完成，待服务器唯一实例 -->
-轮次: R1/2 | 阶段: D2-0 | 分支: exp/D2-0 | 提交号: 本次源码提交（父038c5b1）
-审查结论: 通过，0条阻断，评级B；docs/review/D2-0-R1-codex.md；R1-S1为非阻断建议。
-已直接修复: 无；新审计与测试按Claude第17次交接明确授权实现，未改冻结源码/协议。
-运行信息: K1b结题95dd54c经no-ff合入主线038c5b1并推送；exp/K1b保留，main未动。
-运行信息: 本地9/9合成测试通过；python tools/collab_check.py --codex通过（0失败）；真实审计尚未启动，先在服务器跑相同测试再执行一次。
-运行信息: 入口scripts/audit_d2_feasibility_v34.py；无训练、下载、GPU、曲线重新拟合；只写独立结果目录和锁。
-关键数字: 文件名显示全场最新完整年为2022，实际审计先落盘登记；2022及以后SCADA只取哈希/表头。
-关键数字: B固定K1b 2022 ALL 16949窗口；复算T21与持续法核对标签/队列，B1仍为0.75×T21 RMSE。
-关键数字: A1/A2/A3/B1及O/P-curve指标待唯一真实实例；未声称通过。
-需要 Claude 做的: 完成后复核审计实现、结果与R1-S1：O-curve为非因果诊断，不是所有分解模型的严格数学下限。
-需要用户决定: 暂无；若缺数据或闸门未通过将停止本阶段并交接，不自行下载或训练。
+<!-- 由 Codex 覆盖。最后更新：2026-11-02，D2-0唯一实例技术失败，待R2决议 -->
+轮次: R1/2 | 阶段: D2-0 | 分支: exp/D2-0 | 提交号: 源码2eba47e；结果为本次提交（父2eba47e）
+审查结论: 运行前方案/代码通过；真实执行后2条阻断，评级C；docs/review/D2-0-R1-codex.md（R1-B1/B2）。不构成路线科学负结果。
+已直接修复: 无；源码运行后按哈希保留；R1-P1/P2为待Claude审核、未实施的新版本修复/判定提案。
+运行信息: K1b结题95dd54c已no-ff合入并推送主线038c5b1；exp/K1b保留。D2-0技术失败不合主线，main未动。
+运行信息: 本地及服务器各9/9合成测试通过，未覆盖真实静态CSV的15行全空行；真实运行失败优先于测试通过。
+运行信息: 唯一真实PID111916，01:42:03 UTC启动，耗时41.093秒后退出；A/B均UNASSESSABLE。未捕获OS退出码，不声称退出码0；无训练/下载/GPU/重拟合/重跑。
+运行信息: 命令python -u scripts/audit_d2_feasibility_v34.py --data-root /home/XT/nuist/pythoncode/TimeDARTFirst --out outputs/logs/Kelmarsh/d2_feasibility_v34_20261102T014029Z --k1b-predictions outputs/logs/Kelmarsh/v33_k1b_20261101T003221Z/arms/T21/predictions.npz；完整绝对参数在结果audit/*.process.json。
+运行信息: 服务器隔离工作区TimeDARTFirst_D2_20261102T014029Z；结果output/kelmarsh_hourly/d2_feasibility_v34/，回传8文件64122字节逐个SHA256一致，5项登记源码哈希未变。
+关键数字: A1/A2/A3均无法判定：A在静态元数据29行（14设备+15全空行）解析时中断；Penmanshiel SCADA表头/正文与当地MIDAS均未打开，不能声称当地站不足。
+关键数字: B1无法判定：16949固定窗口中4窗口/5个风机小时缺未来风速，h1–4为0/2/2/1；无删行或插补。O/P-curve MAE/RMSE均未产出，不填估计值。
+关键数字: B触发缺风速保护前，已核对K1b starts及复算T21/持续法参照；T21既有MAE/RMSE仍161.091480/241.319360 kW。
+关键数字: 测试年2022先按14台风机文件名落盘登记；2022/23/24保护；test_year_registration.json为登记，input_hashes.json为输入SHA清单，audit/launch.json仅锁源码。
+关键数字: continue_D2=false仅表示无法验收，不表示分解路线已被证伪；详见summary.md和audit/diagnosis.json。
+需要 Claude 做的: 按R2逐条决议R1-B1/B2、R1-P1/P2；明确新v34_r2文件允许范围及补跑授权。建议只剔除全空元数据行；B保原队列以冻结曲线输出范围计算5格缺风速误差上下界，不改标签或插补，界跨阈值则仍无法判定。
+运行信息: 交接前python tools/collab_check.py --codex退出0：0失败、2警告（待Claude决议、待审diff空）；原运行日志及失败记录保留。
+需要用户决定: 新判定口径/补跑须下一轮批准；本轮一次实例已用，不擅自扩大执行范围或启动D2-1。

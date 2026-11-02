@@ -1,0 +1,27 @@
+{
+  "status": "UNASSESSABLE",
+  "error_type": "ValueError",
+  "error_locations": [
+    {
+      "file": "audit_d2_feasibility_v34.py",
+      "line": 386,
+      "function": "main"
+    },
+    {
+      "file": "audit_d2_feasibility_v34.py",
+      "line": 383,
+      "function": "<lambda>"
+    },
+    {
+      "file": "audit_d2_feasibility_v34.py",
+      "line": 350,
+      "function": "part_b"
+    },
+    {
+      "file": "audit_d2_feasibility_v34.py",
+      "line": 307,
+      "function": "curve_predictions"
+    }
+  ],
+  "elapsed_seconds": 9.541928927006666
+}

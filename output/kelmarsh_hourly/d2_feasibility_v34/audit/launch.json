@@ -1,0 +1,19 @@
+{
+  "utc": "2026-11-02T01:42:03.939316+00:00",
+  "argv": [
+    "scripts/audit_d2_feasibility_v34.py",
+    "--data-root",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst",
+    "--out",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/Kelmarsh/d2_feasibility_v34_20261102T014029Z",
+    "--k1b-predictions",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/Kelmarsh/v33_k1b_20261101T003221Z/arms/T21/predictions.npz"
+  ],
+  "source_code": {
+    "scripts/audit_d2_feasibility_v34.py": "a7dd52b00e79f1d030a4812782a7b4b7d085b593030b78746a2b30cac928468f",
+    "data_provider/kelmarsh_multiyear.py": "bbf838888b77bae6865d4b2e2443bf42ce898f41dadc027641c149acd868d558",
+    "utils/kelmarsh_enrichment.py": "6a05295abb1bbe7217dcb43c57ca2501d7b7ad3173431f60a94fba61b2094872",
+    "utils/kelmarsh_upstream_v31.py": "66dd2a86694040347c53298be4fd6fc0b18ff2782cece2bcd92f980328a23fcd",
+    "scripts/screen_kelmarsh_upstream_observations.py": "c68477c52fa9405b12095560c446f7bfaf160743842efeccc276717070aa214b"
+  }
+}
