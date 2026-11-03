@@ -256,12 +256,17 @@ def synthetic_data():
     # Fixed synthetic October-December spans make both few-shot budgets nonempty.
     frames = []
     for year in range(2019, 2025):
-        f = trainer.synthetic_prepared_frame(years=(year,), days=92)
-        dates = pd.to_datetime(f.timestamp_hour_end_utc, utc=True)
-        offset = pd.Timestamp(f"{year}-10-01", tz="UTC") - dates.min().floor("D")
-        f.timestamp_hour_end_utc = dates + offset
-        f.label_year = (pd.to_datetime(f.timestamp_hour_end_utc) - pd.Timedelta(hours=1)).dt.year
-        frames.append(f)
+        template = trainer.synthetic_prepared_frame(years=(year,), days=31)
+        dates = pd.to_datetime(template.timestamp_hour_end_utc, utc=True)
+        base = pd.Timestamp(f"{year}-12-01", tz="UTC")
+        for month in (10, 11, 12):
+            start = pd.Timestamp(year=year, month=month, day=1, tz="UTC")
+            end = start + pd.offsets.MonthBegin(1)
+            mask = dates <= base + (end - start)
+            f = template.loc[mask].copy()
+            f.timestamp_hour_end_utc = dates[mask] + (start - base)
+            f.label_year = (pd.to_datetime(f.timestamp_hour_end_utc) - pd.Timedelta(hours=1)).dt.year
+            frames.append(f)
     frame = pd.concat(frames, ignore_index=True)
     labels = pd.DatetimeIndex(pd.to_datetime(frame.timestamp_hour_end_utc, utc=True).dt.tz_localize(None).unique()).sort_values()
     rng = np.random.default_rng(2024)
