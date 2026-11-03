@@ -1,0 +1,137 @@
+{
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/audits/external_validation_download/inventory.json": {
+    "bytes": 16417,
+    "sha256": "0753917c1b8519d013f64ba954deca858d2033640ca1d0b2f4beb5de71a0031d",
+    "md5": "f6d91bc62890565789bd5c72feb83ef6"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2016_WT01-10_3107.zip": {
+    "bytes": 128926241,
+    "sha256": "e9cac766a7e57807971a67d0a66f83976dce481d860857d675a00789ca24d58d",
+    "md5": "3819e1b2168b84da195b64e1e9d78b03"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2016_WT11-15_3107.zip": {
+    "bytes": 55917173,
+    "sha256": "1d1f36873afe0cbd9ffaee3c2b8fd92d44905fd1282c1e615bda9e18a63fd30f",
+    "md5": "92c30453d43a38e985af3e2e305eedd4"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2017_WT01-10_3114.zip": {
+    "bytes": 273531678,
+    "sha256": "2c08ee7566a4dc37b8e42e83f8324a543bdf47cbf484a8e40b7ab3eec035fbcb",
+    "md5": "c8279e34a5e33d688e2219aa9abab74e"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2017_WT11-15_3115.zip": {
+    "bytes": 152896438,
+    "sha256": "2da262bbc55aef030cfdcd2fa11b6a664bcaaafdf916364e9c4c26fdd6adfb7c",
+    "md5": "d41874e3d195e88506949492b5758cf6"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2018_WT01-10_3113.zip": {
+    "bytes": 365016408,
+    "sha256": "3661902e57bdae6e3423e81a3b6da7c9b1ee028489fa193676cd3558d2cb0d0b",
+    "md5": "6389e5c4ea59d6565f6712db43a504ce"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2018_WT11-15_3116.zip": {
+    "bytes": 204798983,
+    "sha256": "ffedca4137f6737a82551942a4fa06d874df2a6c6373270efeada8a315e57b42",
+    "md5": "7c40dc00df6d6301427213e15170b927"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2019_WT01-10_3112.zip": {
+    "bytes": 473518587,
+    "sha256": "c611f4d04fa9f42ce093db643dcb11d96a995810ca52a9b5fda76dc8f26281d7",
+    "md5": "78389603cb4ae20a6a9b878f5a84bc7b"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2019_WT11-15_3117.zip": {
+    "bytes": 265354191,
+    "sha256": "54523b9bffe717566f8ef056af0836e91ae2aed3e1a4083533f659a154a60eaf",
+    "md5": "92747a976716c5f35d9ee6462958fd7a"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2020_WT01-10_3109.zip": {
+    "bytes": 694483651,
+    "sha256": "f2bbf7f4efa24c9bdcc98cb987b17830272d77067a43958cd62ee5e6c490efe1",
+    "md5": "46f679f2e4ab3d69c04b31c8dc625106"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2020_WT11-15_3118.zip": {
+    "bytes": 389300869,
+    "sha256": "6c41960df290326831634aab2162c020a340f6ad439ed6eba2daa381ba707f31",
+    "md5": "c73323f21451c08247dbdb5d1a1434a9"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2021_WT01-10_4460.zip": {
+    "bytes": 749666360,
+    "sha256": "aa66084e5d06ee41242ff53c2eae990edf2ae271072ee70c67def448becfb97d",
+    "md5": "7a0839cf3cd5e7044d6ab814fef3c43f"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2021_WT11-15_4461.zip": {
+    "bytes": 418617876,
+    "sha256": "7896dd7d314963efe4db589b6294a129d38a35773fc7b83c44ee23de73802cf6",
+    "md5": "f5804b90089ce4d50dc5117fda6f675c"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2022_WT01-10_4462.zip": {
+    "bytes": 710776645,
+    "sha256": "94df920978c8eded7f3c6e300943108b27454312b3172639053c0ba21a7dafcd",
+    "md5": "91351469cdeb3ca95be1a0414dcfec8f"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2022_WT11-15_4463.zip": {
+    "bytes": 396724464,
+    "sha256": "d88e0e9d2af2409e23ef1c7a6de893f3bde53520068dcf36a92f402422ee03ad",
+    "md5": "5f4743133a9cf65ad33de139b43f96b4"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2023_02_WT_01-10_5981.zip": {
+    "bytes": 63977489,
+    "sha256": "8068087be360e624da3fbdb2dfd2f17112534b81adc3895d2498d550a3c83ee9",
+    "md5": "05ac6e90b516fa30db05dfe6361099a7"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2023_03_WT_01-10_5982.zip": {
+    "bytes": 68784330,
+    "sha256": "1e29fe042c9f759aead844a6249aba5f085b425b68819c34ed84f9684e8adeb4",
+    "md5": "6fae49a3603dd2a503126e5e518eaf55"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2023_Q2_WT_01-10_5977.zip": {
+    "bytes": 205040452,
+    "sha256": "32856aef64815064ca44624f83d548cffa31b36024a3ff31eb4153726c0fb2f3",
+    "md5": "7ed1d095183469e399054695b8c4fb5e"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2023_Q3 Q4_WT_01-10_5973.zip": {
+    "bytes": 452196453,
+    "sha256": "4277f8791fae1070c8f0a57e9a61f4dc17c4c25384d5976cf09b7fc936889d6f",
+    "md5": "f201240d4072dd4a5a8492725eb49787"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2023_WT_11-15_5964.zip": {
+    "bytes": 633272988,
+    "sha256": "a59df330d85357da1ec1a6450c1f12c8a4e62c2f7527ba4da8bc6fcac783ffe6",
+    "md5": "813ad4635cf50b9d96b253ee53175086"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2024_WT_11-15_5966.zip": {
+    "bytes": 653879317,
+    "sha256": "454ec5bb516e060f1d308ddf472a051511147aa415a4a2c3241ac9c7ebfe29d2",
+    "md5": "e0a700cad1d45f4130272feaef244b12"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_WT_static.csv": {
+    "bytes": 2029,
+    "sha256": "2a742dfd5c8486bf54c1afb647bd803954f4c56aea31635e5aa93828f56ebd7b",
+    "md5": "c4cd4191234c1a67a391fe5d2978256b"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst_D2_20261102T014029Z/configs/kelmarsh_arrival_v33_k1.json": {
+    "bytes": 3479,
+    "sha256": "318038be8813f73fd6f72b53bc8bceca664ede42cc6b0e842ced42249a1384d6",
+    "md5": "d66d0eb298234ce33cc49ad8e7e40b68"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst_D2_20261102T014029Z/configs/kelmarsh_upstream_protocol_v32.json": {
+    "bytes": 24563,
+    "sha256": "b9fbdce22a83dd0e5128aa3d9a489cbcb725c4f298f2feba6fe15f028f7a3588",
+    "md5": "9b3424a39f8ed6b7e9f6a61b0b3d9948"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/wind_public_v32/resampled_hourly_scada/kelmarsh_multiyear/hourly/kelmarsh_multiyear_hourly_enriched.csv": {
+    "bytes": 234861334,
+    "sha256": "96acfcabb8399ddca415a61011b3cf02ca9a675d7fcc31f2ef70db89a3cb37ef",
+    "md5": "807353ab7fe66115f0f0636b3c626055"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/wind_public_v32/resampled_hourly_scada/kelmarsh_multiyear/metadata/preparation.json": {
+    "bytes": 48058,
+    "sha256": "6a5a3061a7008f6a4d56f2eba68eb733472aaeb3ed1659594a98463b9d6d7677",
+    "md5": "7510cdcda249c1bb583ed2aa83ad5059"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/Kelmarsh/v33_k1b_20261101T003221Z/arms/T21/predictions.npz": {
+    "bytes": 1037673,
+    "sha256": "b09d188bc1ca99adc13a0bef8583f938d843e1cac7b3ca9d96ceb2f6906e9896",
+    "md5": "b7cb1ff8e4af486f5d0129d37957d444"
+  }
+}

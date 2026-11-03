@@ -1,0 +1,22 @@
+{
+  "pid": 132283,
+  "supervisor_pid": 132282,
+  "started_utc": "2026-11-02T07:48:42.359451+00:00",
+  "command": [
+    "/home/XT/miniconda3/envs/timedart/bin/python",
+    "-u",
+    "scripts/audit_d2_feasibility_v34_r2.py",
+    "--data-root",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst",
+    "--out",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/Kelmarsh/d2_feasibility_v34_r2_daa3429",
+    "--k1b-predictions",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/Kelmarsh/v33_k1b_20261101T003221Z/arms/T21/predictions.npz"
+  ],
+  "cwd": "/home/XT/nuist/pythoncode/TimeDARTFirst_D2_20261102T014029Z",
+  "source_commit": "daa3429",
+  "threads": 2,
+  "cuda_visible_devices": "",
+  "exit_code": 0,
+  "finished_utc": "2026-11-02T07:53:50.951127+00:00"
+}

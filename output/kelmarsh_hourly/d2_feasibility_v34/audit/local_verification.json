@@ -1,0 +1,15 @@
+{
+  "verification": "PowerShell Get-FileHash SHA256 and file lengths against server export_sha256.json",
+  "files": 8,
+  "bytes": 64122,
+  "all_match": true,
+  "source_files_checked_on_server": 5,
+  "all_registered_source_hashes_unchanged": true,
+  "test_year": 2022,
+  "turbines_from_filenames": 14,
+  "complete_calendar_years_from_filenames": [2017, 2018, 2019, 2020, 2021, 2022],
+  "protected_years": [2022, 2023, 2024],
+  "scada_members_registered_from_names_only": 144,
+  "scientific_result_valid": false,
+  "reason": "A static metadata parser defect and B missing future wind; all feasibility gates unassessable, no O/P scores produced"
+}

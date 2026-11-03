@@ -1,0 +1,43 @@
+{
+  "sources_unchanged": {
+    "scripts/audit_d2_feasibility_v34.py": true,
+    "data_provider/kelmarsh_multiyear.py": true,
+    "utils/kelmarsh_enrichment.py": true,
+    "utils/kelmarsh_upstream_v31.py": true,
+    "scripts/screen_kelmarsh_upstream_observations.py": true
+  },
+  "files": {
+    "result.json": {
+      "bytes": 1572,
+      "sha256": "a477d99e184cb44dc30eeaebe1cb9ad5ec0b8838b2d19e2103d7b3d31101d656"
+    },
+    "input_hashes.json": {
+      "bytes": 7986,
+      "sha256": "f9d3e58b7c4cd4c8a9b8f13e46873a2329e7546f7c1040221ec3f35822184ed8"
+    },
+    "part_A.json": {
+      "bytes": 666,
+      "sha256": "f2787bdd30e75213dcb62b692062bd415964afc022ace1d8a5942d2a1b7db10c"
+    },
+    "test_year_registration.json": {
+      "bytes": 51411,
+      "sha256": "0622d055799e99c0cda17d3c1ec67755706773856007e0182614466757faf180"
+    },
+    "part_B.json": {
+      "bytes": 555,
+      "sha256": "071e7ae5922578ceb2232fb20b27ced9cb181bc929ef09c718416dd532b5a22c"
+    },
+    "audit/launch.json": {
+      "bytes": 1014,
+      "sha256": "7d6cf642f5b2e9f064f29964c1f541aabec7774584ff7ef8c0125e9e9bdb45e1"
+    },
+    "audit/d2_feasibility_v34_20261102T014029Z.log": {
+      "bytes": 114,
+      "sha256": "8a8d82e7be9f7baf0b83f9863751a6fc21cff1ea2063fa6ef287988b10212367"
+    },
+    "audit/d2_feasibility_v34_20261102T014029Z.process.json": {
+      "bytes": 804,
+      "sha256": "e282c28488c058f2be1a5ec6966087f31130702a4aff3885d68bee37e1a1997d"
+    }
+  }
+}

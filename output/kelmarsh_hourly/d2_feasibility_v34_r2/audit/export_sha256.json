@@ -1,0 +1,77 @@
+{
+  "sources_unchanged": {
+    "scripts/audit_d2_feasibility_v34_r2.py": true,
+    "data_provider/kelmarsh_multiyear.py": true,
+    "utils/kelmarsh_enrichment.py": true,
+    "utils/kelmarsh_upstream_v31.py": true,
+    "scripts/screen_kelmarsh_upstream_observations.py": true
+  },
+  "files": {
+    "a_static_metadata.json": {
+      "bytes": 980,
+      "sha256": "e9f7c63d6e2a2e5e66d898bf2a8f47691381ed4584851b0794c33ac6dc265719"
+    },
+    "result.json": {
+      "bytes": 4723099,
+      "sha256": "ba1361e647b6895847963803d8181d5a1f8b5777afe6c4bb1a3d8bb24be56b68"
+    },
+    "input_hashes.json": {
+      "bytes": 156532,
+      "sha256": "331061575f151ff1d47365bdb624ad745c32d53632fe72112a887e9e5684ab07"
+    },
+    "part_A.json": {
+      "bytes": 4517959,
+      "sha256": "f68db4f1812bd2d13f9e497f1ab98c4ded3839d686099a887ab42f010a4e9cf4"
+    },
+    "test_year_registration.json": {
+      "bytes": 51411,
+      "sha256": "0622d055799e99c0cda17d3c1ec67755706773856007e0182614466757faf180"
+    },
+    "part_B.json": {
+      "bytes": 2780,
+      "sha256": "b50f74df2c21eddb5f44ad937b0ca030f9408d253ba89cb81a91e1dcaea46c03"
+    },
+    "a_scada_coverage.json": {
+      "bytes": 3809063,
+      "sha256": "5678c69046bb8e9270a0ee189d6022c2fdc91dc5716c070f1c476ca706b0e8c6"
+    },
+    "audit/launch.json": {
+      "bytes": 1014,
+      "sha256": "83892d542e1f7a144095b71b43ca7cef15b4a8d15dc46d9a086a0c05b0c03559"
+    },
+    "audit/d2_feasibility_v34_r2_daa3429.log": {
+      "bytes": 10262,
+      "sha256": "489868ff49388a6142a33fd453ff1351074413daf6bb65b3cc63fa077ecedb50"
+    },
+    "audit/d2_feasibility_v34_r2_daa3429.process.json": {
+      "bytes": 697,
+      "sha256": "c0ed9851ec469a5e04ab80245105944ffb636dfeb0e3eb71a94f439b4a6d2b94"
+    },
+    "audit/d2_feasibility_v34_r2_daa3429.process.completed.json": {
+      "bytes": 769,
+      "sha256": "2106ff95fd565594edcd4e7edbf213d5fed894a3e73387f38b0ecea3dc4d555d"
+    }
+  },
+  "process": {
+    "pid": 132283,
+    "supervisor_pid": 132282,
+    "started_utc": "2026-11-02T07:48:42.359451+00:00",
+    "command": [
+      "/home/XT/miniconda3/envs/timedart/bin/python",
+      "-u",
+      "scripts/audit_d2_feasibility_v34_r2.py",
+      "--data-root",
+      "/home/XT/nuist/pythoncode/TimeDARTFirst",
+      "--out",
+      "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/Kelmarsh/d2_feasibility_v34_r2_daa3429",
+      "--k1b-predictions",
+      "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/Kelmarsh/v33_k1b_20261101T003221Z/arms/T21/predictions.npz"
+    ],
+    "cwd": "/home/XT/nuist/pythoncode/TimeDARTFirst_D2_20261102T014029Z",
+    "source_commit": "daa3429",
+    "threads": 2,
+    "cuda_visible_devices": "",
+    "exit_code": 0,
+    "finished_utc": "2026-11-02T07:53:50.951127+00:00"
+  }
+}

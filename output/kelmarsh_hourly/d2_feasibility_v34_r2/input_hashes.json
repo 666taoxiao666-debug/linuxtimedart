@@ -1,0 +1,2212 @@
+{
+  "/home/XT/nuist/pythoncode/TimeDARTFirst_D2_20261102T014029Z/output/kelmarsh_hourly/d2_feasibility_v34/test_year_registration.json": {
+    "bytes": 51411,
+    "sha256": "0622d055799e99c0cda17d3c1ec67755706773856007e0182614466757faf180",
+    "md5": "749fcc796e3edef205a2ecb7d1c52c06"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst_D2_20261102T014029Z/output/kelmarsh_hourly/d2_feasibility_v34/input_hashes.json": {
+    "bytes": 7986,
+    "sha256": "f9d3e58b7c4cd4c8a9b8f13e46873a2329e7546f7c1040221ec3f35822184ed8",
+    "md5": "ca8801232c1b599f553e494e70b09afd"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/audits/external_validation_download/inventory.json": {
+    "bytes": 16417,
+    "sha256": "0753917c1b8519d013f64ba954deca858d2033640ca1d0b2f4beb5de71a0031d",
+    "md5": "f6d91bc62890565789bd5c72feb83ef6"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2016_WT01-10_3107.zip": {
+    "bytes": 128926241,
+    "sha256": "e9cac766a7e57807971a67d0a66f83976dce481d860857d675a00789ca24d58d",
+    "md5": "3819e1b2168b84da195b64e1e9d78b03"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2016_WT11-15_3107.zip": {
+    "bytes": 55917173,
+    "sha256": "1d1f36873afe0cbd9ffaee3c2b8fd92d44905fd1282c1e615bda9e18a63fd30f",
+    "md5": "92c30453d43a38e985af3e2e305eedd4"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2017_WT01-10_3114.zip": {
+    "bytes": 273531678,
+    "sha256": "2c08ee7566a4dc37b8e42e83f8324a543bdf47cbf484a8e40b7ab3eec035fbcb",
+    "md5": "c8279e34a5e33d688e2219aa9abab74e"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2017_WT11-15_3115.zip": {
+    "bytes": 152896438,
+    "sha256": "2da262bbc55aef030cfdcd2fa11b6a664bcaaafdf916364e9c4c26fdd6adfb7c",
+    "md5": "d41874e3d195e88506949492b5758cf6"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2018_WT01-10_3113.zip": {
+    "bytes": 365016408,
+    "sha256": "3661902e57bdae6e3423e81a3b6da7c9b1ee028489fa193676cd3558d2cb0d0b",
+    "md5": "6389e5c4ea59d6565f6712db43a504ce"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2018_WT11-15_3116.zip": {
+    "bytes": 204798983,
+    "sha256": "ffedca4137f6737a82551942a4fa06d874df2a6c6373270efeada8a315e57b42",
+    "md5": "7c40dc00df6d6301427213e15170b927"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2019_WT01-10_3112.zip": {
+    "bytes": 473518587,
+    "sha256": "c611f4d04fa9f42ce093db643dcb11d96a995810ca52a9b5fda76dc8f26281d7",
+    "md5": "78389603cb4ae20a6a9b878f5a84bc7b"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2019_WT11-15_3117.zip": {
+    "bytes": 265354191,
+    "sha256": "54523b9bffe717566f8ef056af0836e91ae2aed3e1a4083533f659a154a60eaf",
+    "md5": "92747a976716c5f35d9ee6462958fd7a"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2020_WT01-10_3109.zip": {
+    "bytes": 694483651,
+    "sha256": "f2bbf7f4efa24c9bdcc98cb987b17830272d77067a43958cd62ee5e6c490efe1",
+    "md5": "46f679f2e4ab3d69c04b31c8dc625106"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2020_WT11-15_3118.zip": {
+    "bytes": 389300869,
+    "sha256": "6c41960df290326831634aab2162c020a340f6ad439ed6eba2daa381ba707f31",
+    "md5": "c73323f21451c08247dbdb5d1a1434a9"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2021_WT01-10_4460.zip": {
+    "bytes": 749666360,
+    "sha256": "aa66084e5d06ee41242ff53c2eae990edf2ae271072ee70c67def448becfb97d",
+    "md5": "7a0839cf3cd5e7044d6ab814fef3c43f"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2021_WT11-15_4461.zip": {
+    "bytes": 418617876,
+    "sha256": "7896dd7d314963efe4db589b6294a129d38a35773fc7b83c44ee23de73802cf6",
+    "md5": "f5804b90089ce4d50dc5117fda6f675c"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2022_WT01-10_4462.zip": {
+    "bytes": 710776645,
+    "sha256": "94df920978c8eded7f3c6e300943108b27454312b3172639053c0ba21a7dafcd",
+    "md5": "91351469cdeb3ca95be1a0414dcfec8f"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2022_WT11-15_4463.zip": {
+    "bytes": 396724464,
+    "sha256": "d88e0e9d2af2409e23ef1c7a6de893f3bde53520068dcf36a92f402422ee03ad",
+    "md5": "5f4743133a9cf65ad33de139b43f96b4"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2023_02_WT_01-10_5981.zip": {
+    "bytes": 63977489,
+    "sha256": "8068087be360e624da3fbdb2dfd2f17112534b81adc3895d2498d550a3c83ee9",
+    "md5": "05ac6e90b516fa30db05dfe6361099a7"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2023_03_WT_01-10_5982.zip": {
+    "bytes": 68784330,
+    "sha256": "1e29fe042c9f759aead844a6249aba5f085b425b68819c34ed84f9684e8adeb4",
+    "md5": "6fae49a3603dd2a503126e5e518eaf55"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2023_Q2_WT_01-10_5977.zip": {
+    "bytes": 205040452,
+    "sha256": "32856aef64815064ca44624f83d548cffa31b36024a3ff31eb4153726c0fb2f3",
+    "md5": "7ed1d095183469e399054695b8c4fb5e"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2023_Q3 Q4_WT_01-10_5973.zip": {
+    "bytes": 452196453,
+    "sha256": "4277f8791fae1070c8f0a57e9a61f4dc17c4c25384d5976cf09b7fc936889d6f",
+    "md5": "f201240d4072dd4a5a8492725eb49787"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2023_WT_11-15_5964.zip": {
+    "bytes": 633272988,
+    "sha256": "a59df330d85357da1ec1a6450c1f12c8a4e62c2f7527ba4da8bc6fcac783ffe6",
+    "md5": "813ad4635cf50b9d96b253ee53175086"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2024_WT_11-15_5966.zip": {
+    "bytes": 653879317,
+    "sha256": "454ec5bb516e060f1d308ddf472a051511147aa415a4a2c3241ac9c7ebfe29d2",
+    "md5": "e0a700cad1d45f4130272feaef244b12"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_WT_static.csv": {
+    "bytes": 2029,
+    "sha256": "2a742dfd5c8486bf54c1afb647bd803954f4c56aea31635e5aa93828f56ebd7b",
+    "md5": "c4cd4191234c1a67a391fe5d2978256b"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/midas-open_uk-hourly-weather-obs_dv-202607_station-metadata.csv": {
+    "bytes": 134123,
+    "sha256": "3c98d20c4b9a8aba3270280c8692b72a54d66df05d178c5fed27eb70e6fd3acc",
+    "md5": "2956950b65832a239692e48b46d5547c"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/145/midas-open_uk-hourly-weather-obs_dv-202607_aberdeenshire_00145_cairnwell_qcv-1_2022.csv": {
+    "bytes": 2475432,
+    "sha256": "614c480bf0c035896dee7447b906899a0be6402a70ccbcf5603469b552050fd1",
+    "md5": "04b0b295cf3b99d4a37af8c5bc4ed17e"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/145/midas-open_uk-hourly-weather-obs_dv-202607_aberdeenshire_00145_cairnwell_qcv-1_2023.csv": {
+    "bytes": 3137652,
+    "sha256": "596fb4fda6bf5d4d93c7eefdbb9b786a0700dcfd09a134c4fadd7a21b9db05f1",
+    "md5": "7573595b35628adebe5f6ad4f5ae7bde"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/145/midas-open_uk-hourly-weather-obs_dv-202607_aberdeenshire_00145_cairnwell_qcv-1_2024.csv": {
+    "bytes": 3167674,
+    "sha256": "3896cea89d7a8b78a62f4a4cd463e92de603801fd6ec04f31ebba9d58f70b78b",
+    "md5": "c03a69465fe0a3516f5a25723664942d"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/145/midas-open_uk-hourly-weather-obs_dv-202607_aberdeenshire_00145_cairnwell_qcv-1_2016.csv": {
+    "bytes": 2645789,
+    "sha256": "d824eb0a4608ec46a07860fca04574fac70f921325916a1d6ad7a45e23a1c9aa",
+    "md5": "a7f8f286f3e16c6a81c360095700f425"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/145/midas-open_uk-hourly-weather-obs_dv-202607_aberdeenshire_00145_cairnwell_qcv-1_2017.csv": {
+    "bytes": 2884308,
+    "sha256": "eafba0c334832729729841d43bad2d972aa0b12ee7915116e2246af9d60acfa3",
+    "md5": "adf5b4621fc85099d95938aaae8b845d"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/145/midas-open_uk-hourly-weather-obs_dv-202607_aberdeenshire_00145_cairnwell_qcv-1_2018.csv": {
+    "bytes": 2957768,
+    "sha256": "7fa25006b2951d01b87856911f2094d9751151c69dd096e654662f96728bbae0",
+    "md5": "bf267c107b5e917ef87a8ca48c0d2d27"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/145/midas-open_uk-hourly-weather-obs_dv-202607_aberdeenshire_00145_cairnwell_qcv-1_2019.csv": {
+    "bytes": 1732446,
+    "sha256": "0c0b2b3220c32a14f95d930eb1a4e2a9019fb53d1d135c062ea91b01122d2455",
+    "md5": "2b3ddf580c7c40551249aee5c3e67825"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/145/midas-open_uk-hourly-weather-obs_dv-202607_aberdeenshire_00145_cairnwell_qcv-1_2020.csv": {
+    "bytes": 3140713,
+    "sha256": "b05fc660880b865d0d0743f413b10e1321083625f8b982ae1f35467cf5743bf6",
+    "md5": "3ff698643044f593ce67c9e1b81d62ca"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/145/midas-open_uk-hourly-weather-obs_dv-202607_aberdeenshire_00145_cairnwell_qcv-1_2021.csv": {
+    "bytes": 3070860,
+    "sha256": "d72d4a39a8463bf1f4ac2d1847991419efc5427d2eb7f1c60c284561f1c6145f",
+    "md5": "b0fe9f8eef88a50d5549df4c4f9c144c"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/148/midas-open_uk-hourly-weather-obs_dv-202607_aberdeenshire_00148_balmoral_qcv-1_2022.csv": {
+    "bytes": 3144316,
+    "sha256": "6057d7fbe4dba96d04f61c1d096e15098f3c93d82b1801a9dca5b3f48a294378",
+    "md5": "8880ed48149401b42492fdf8714951bf"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/148/midas-open_uk-hourly-weather-obs_dv-202607_aberdeenshire_00148_balmoral_qcv-1_2023.csv": {
+    "bytes": 3149454,
+    "sha256": "2414183efc2c9786242d85df995b4c48f7d806f151a840acfb33abd6951929e6",
+    "md5": "c365f2732b7573856eeea94d93c43f75"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/148/midas-open_uk-hourly-weather-obs_dv-202607_aberdeenshire_00148_balmoral_qcv-1_2024.csv": {
+    "bytes": 3158054,
+    "sha256": "b68314fa99e62380c14f62d91b1e96d7324bec63acb55424cc78fc347a4fac1c",
+    "md5": "04d5bfd2e4b4f46a90a70bf1c7becd06"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/148/midas-open_uk-hourly-weather-obs_dv-202607_aberdeenshire_00148_balmoral_qcv-1_2016.csv": {
+    "bytes": 3151357,
+    "sha256": "150da38f65ec54c695981ea0a2ddb888cda3a6e69e4e903503a71dafa25c1ce7",
+    "md5": "2e924f44f66087775059ac2f4f107192"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/148/midas-open_uk-hourly-weather-obs_dv-202607_aberdeenshire_00148_balmoral_qcv-1_2017.csv": {
+    "bytes": 3141238,
+    "sha256": "2964e329bcf1cf76b4abef2e9d11a6f69a2cbf26c58ff20f0099989f104847e0",
+    "md5": "795f9e900322716a0911c366d308524b"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/148/midas-open_uk-hourly-weather-obs_dv-202607_aberdeenshire_00148_balmoral_qcv-1_2018.csv": {
+    "bytes": 3142998,
+    "sha256": "39723add666db1bcf87e2536d7e8c442715a0c9a9d81d0b80afe290cb57ec622",
+    "md5": "0864fc57f11887285e992c2abc056895"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/148/midas-open_uk-hourly-weather-obs_dv-202607_aberdeenshire_00148_balmoral_qcv-1_2019.csv": {
+    "bytes": 3141954,
+    "sha256": "cf01278e527228d9770b3d0e60dcc8ec11be79001881e8bd8f422df7b17ee4e7",
+    "md5": "4f8846091a6c2721638f483a37382746"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/148/midas-open_uk-hourly-weather-obs_dv-202607_aberdeenshire_00148_balmoral_qcv-1_2020.csv": {
+    "bytes": 3150142,
+    "sha256": "52e1ded5e8b5835e69b79f20a0565ec2b495e1cfc9253dcc7bb00d9720acb713",
+    "md5": "e05f880443be8e29203293b5dbba49ef"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/148/midas-open_uk-hourly-weather-obs_dv-202607_aberdeenshire_00148_balmoral_qcv-1_2021.csv": {
+    "bytes": 3145334,
+    "sha256": "80a336e4f1cf43814eeea8eea02989f1c6bdd66a8252601af3105b39b77c5761",
+    "md5": "afaa585c0c95a713210e832dd70ac55d"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/150/midas-open_uk-hourly-weather-obs_dv-202607_aberdeenshire_00150_aboyne-no-2_qcv-1_2022.csv": {
+    "bytes": 3211119,
+    "sha256": "27eb9c15e6203d4ba83336884d36634c21a3b27fc7c06389b825a129349a616e",
+    "md5": "3791dfb960d862391626f7d9f4b8f6d2"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/150/midas-open_uk-hourly-weather-obs_dv-202607_aberdeenshire_00150_aboyne-no-2_qcv-1_2023.csv": {
+    "bytes": 3207823,
+    "sha256": "4427fb83eaaf886b42bedcc54ab22e4cf7637b67e45325441375faac13f5af54",
+    "md5": "f8e5a1e2f2f18b4812d73022bfd0da13"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/150/midas-open_uk-hourly-weather-obs_dv-202607_aberdeenshire_00150_aboyne-no-2_qcv-1_2024.csv": {
+    "bytes": 3215488,
+    "sha256": "2151e1df87cdd52375356592300d2b9d0199e53d7bbe02ee0a6f7c459ba27157",
+    "md5": "133429a22182f4b5cb9c1c4b4374654c"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/150/midas-open_uk-hourly-weather-obs_dv-202607_aberdeenshire_00150_aboyne-no-2_qcv-1_2016.csv": {
+    "bytes": 3090065,
+    "sha256": "635519dbff8449c967547aca2b10687fd798264fe6bb1abb88d2106987a0004a",
+    "md5": "6ce2ebcf68a47ecd2a0b53d492d91b95"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/150/midas-open_uk-hourly-weather-obs_dv-202607_aberdeenshire_00150_aboyne-no-2_qcv-1_2017.csv": {
+    "bytes": 3204649,
+    "sha256": "e819b48aa051545d21c0bee9dc4ab3c487cfaa99535e0e24c50dbea322c972ed",
+    "md5": "ddd056c22b8a310a24d185538b4e6413"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/150/midas-open_uk-hourly-weather-obs_dv-202607_aberdeenshire_00150_aboyne-no-2_qcv-1_2018.csv": {
+    "bytes": 3204821,
+    "sha256": "5bac97290e9e2089383dd7723e33f92ef0a39bab15eb1c09d9801d01622aebe3",
+    "md5": "75ea4c68a58f29662bd22798cfb5ec03"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/150/midas-open_uk-hourly-weather-obs_dv-202607_aberdeenshire_00150_aboyne-no-2_qcv-1_2019.csv": {
+    "bytes": 3200766,
+    "sha256": "78f0dfe3322da4c5542863121aac2f80c378623822984d5c9955758247448469",
+    "md5": "1c8b9f1fb071de8bb0e58740a47278d9"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/150/midas-open_uk-hourly-weather-obs_dv-202607_aberdeenshire_00150_aboyne-no-2_qcv-1_2020.csv": {
+    "bytes": 3211134,
+    "sha256": "24bc7cd373e00fb811d55d4b883ffee88c06f99f578b041452cd1cbf4e3cf612",
+    "md5": "9cc99e6cc5e8b0b786bf2daf2ff95bb3"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/150/midas-open_uk-hourly-weather-obs_dv-202607_aberdeenshire_00150_aboyne-no-2_qcv-1_2021.csv": {
+    "bytes": 3184593,
+    "sha256": "4fcb19b640a59ecbf8eb21dc8d720979354335b277d43104cb75a11254f59db6",
+    "md5": "66ffbc0a8341da6e61437007f279e0e9"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/160/midas-open_uk-hourly-weather-obs_dv-202607_aberdeenshire_00160_craibstone_qcv-1_2016.csv": {
+    "bytes": 3150281,
+    "sha256": "1ec954749e0f6c153f86d8c9ff3e138ac9a210927d5e0150aebb71203c50bdd8",
+    "md5": "37bfb2283a68977645fcf5369ede587d"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/160/midas-open_uk-hourly-weather-obs_dv-202607_aberdeenshire_00160_craibstone_qcv-1_2017.csv": {
+    "bytes": 3142977,
+    "sha256": "3376975aabd6bc50c2f4afaa548922e4a20629bab67381a14e5f451afdb0f46f",
+    "md5": "887715f47b44d0d4c729f33df8689907"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/160/midas-open_uk-hourly-weather-obs_dv-202607_aberdeenshire_00160_craibstone_qcv-1_2018.csv": {
+    "bytes": 3117661,
+    "sha256": "0b9d48c7fd280590f533656a1c12182a121eb286f5baedd6eb9615e011e6558c",
+    "md5": "05500cf157d94c41656e9c5205861ffc"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/160/midas-open_uk-hourly-weather-obs_dv-202607_aberdeenshire_00160_craibstone_qcv-1_2019.csv": {
+    "bytes": 3140793,
+    "sha256": "9e9710840eae66644959ea07642593303344a51b6b44a9adcd0b05ae22c91e69",
+    "md5": "2e2af0df772a0f8c24c9e22985ad6f53"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/160/midas-open_uk-hourly-weather-obs_dv-202607_aberdeenshire_00160_craibstone_qcv-1_2020.csv": {
+    "bytes": 3149807,
+    "sha256": "6a155693d58a9d71bcc6bc8e7c38b50baef7bd307a8f74f50324de1d222529a3",
+    "md5": "f342a146aae65a0ae90bdb99eaa64837"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/160/midas-open_uk-hourly-weather-obs_dv-202607_aberdeenshire_00160_craibstone_qcv-1_2021.csv": {
+    "bytes": 2032651,
+    "sha256": "cfe2c2427d40dbd2438a7ec28ccc4623582c9b433c238df56c7db9b03e923f5d",
+    "md5": "250fd2670d2c4fd4d0297324567f7f1f"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/161/midas-open_uk-hourly-weather-obs_dv-202607_aberdeenshire_00161_dyce_qcv-1_2022.csv": {
+    "bytes": 3212683,
+    "sha256": "e696d1f6664950991e03283ee68b00bf9257a1cf31d8b1b8c849b62c83f796d7",
+    "md5": "94df522fa3f31ce5c84c795de22378b5"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/161/midas-open_uk-hourly-weather-obs_dv-202607_aberdeenshire_00161_dyce_qcv-1_2023.csv": {
+    "bytes": 3222716,
+    "sha256": "c91f7666cb5211fca612c67201e61215bce7ab8cacbaddd1fa7836c3189ddb9c",
+    "md5": "6efab3149f0be3845ccbc8f40e33514e"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/161/midas-open_uk-hourly-weather-obs_dv-202607_aberdeenshire_00161_dyce_qcv-1_2024.csv": {
+    "bytes": 3221922,
+    "sha256": "cfd64ec395e06c454bd7345b48e30b18cbf526c4699d58374359545afdfd78bd",
+    "md5": "829f0e280f432d0a63be6b9907f48306"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/161/midas-open_uk-hourly-weather-obs_dv-202607_aberdeenshire_00161_dyce_qcv-1_2016.csv": {
+    "bytes": 3229665,
+    "sha256": "798cc1ed5305bbf1c9614ec5b7bf8fdf76799b2ba0d3bf2ead0cf861d4f61f5b",
+    "md5": "2b3c1bfb0817b962b71af076a85baeb6"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/161/midas-open_uk-hourly-weather-obs_dv-202607_aberdeenshire_00161_dyce_qcv-1_2017.csv": {
+    "bytes": 3186000,
+    "sha256": "d54064179a3176abd8cf78eb1d33222966f02e228c3d670defc0d60b133ebcd9",
+    "md5": "dde6ecf218f49a535c10bf52d77e7a32"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/161/midas-open_uk-hourly-weather-obs_dv-202607_aberdeenshire_00161_dyce_qcv-1_2018.csv": {
+    "bytes": 3098791,
+    "sha256": "9a13640248850100f08170ccfa122dce89d6fad9ac16881b79fb29d430079671",
+    "md5": "c81f2eaecfae11b311beb9c013af2565"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/161/midas-open_uk-hourly-weather-obs_dv-202607_aberdeenshire_00161_dyce_qcv-1_2019.csv": {
+    "bytes": 3195203,
+    "sha256": "281e1b759f85a1ad7ef873d97fde658d585dfc3a8b040d4634fb3e3539a962f2",
+    "md5": "de1679b0cdf5f1f468e2c4f7d0b547e7"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/161/midas-open_uk-hourly-weather-obs_dv-202607_aberdeenshire_00161_dyce_qcv-1_2020.csv": {
+    "bytes": 3212440,
+    "sha256": "30250de89ae4317e6286d2570c5a46cdd51351ed745950a156493e93806694ae",
+    "md5": "fe962e10cfaff762158f5ae81b973108"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/161/midas-open_uk-hourly-weather-obs_dv-202607_aberdeenshire_00161_dyce_qcv-1_2021.csv": {
+    "bytes": 3188677,
+    "sha256": "2bdd8f1482c42fe3677b2b5e904da94b44c66429e817d925130af22c908f9987",
+    "md5": "67397d9f1b192aa10d9f96afae670ac5"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/176/midas-open_uk-hourly-weather-obs_dv-202607_kincardineshire_00176_durris_qcv-1_2022.csv": {
+    "bytes": 144220,
+    "sha256": "68a2535835df7d759cf0b787be0fc07b99d841b61d0e0703472d8226421f2f61",
+    "md5": "38585001159b0703e145e5a72b2123fc"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/176/midas-open_uk-hourly-weather-obs_dv-202607_kincardineshire_00176_durris_qcv-1_2023.csv": {
+    "bytes": 143409,
+    "sha256": "c6044c3f357b6a8659fd343f5b314e04cf1877e2960c52bd1d669c48acb9d320",
+    "md5": "41f025eded990ecb0a0e7ac0a093ae30"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/176/midas-open_uk-hourly-weather-obs_dv-202607_kincardineshire_00176_durris_qcv-1_2024.csv": {
+    "bytes": 144959,
+    "sha256": "d780ed3267698bc33c171eaef0d3dea4348f81c1ff92eb6e918ec986c618851b",
+    "md5": "50f82aa51af10bd9b487b8f9159dd7ae"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/176/midas-open_uk-hourly-weather-obs_dv-202607_kincardineshire_00176_durris_qcv-1_2016.csv": {
+    "bytes": 144447,
+    "sha256": "29a31c841ed8da9ce101b0bc4c66950e1734e226129941243d2eaac6f30648a5",
+    "md5": "ec2c37826216478641b29ac26c958fea"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/176/midas-open_uk-hourly-weather-obs_dv-202607_kincardineshire_00176_durris_qcv-1_2017.csv": {
+    "bytes": 144012,
+    "sha256": "c95edffe1e9ca2d72e20a05486ef7b6401d1c3da3a498efcab1f8da43dcef203",
+    "md5": "37e24b99482dd69b26d73e529fef4777"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/176/midas-open_uk-hourly-weather-obs_dv-202607_kincardineshire_00176_durris_qcv-1_2018.csv": {
+    "bytes": 144817,
+    "sha256": "cd06391b9cfb7bac98dc4f6480edb62e04ac60caa649f4344708884874c7afd4",
+    "md5": "4b18dace0d559fb9cbe7e429c0b9b2d2"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/176/midas-open_uk-hourly-weather-obs_dv-202607_kincardineshire_00176_durris_qcv-1_2019.csv": {
+    "bytes": 144820,
+    "sha256": "c0f3332c11b9147fbea6eb04b1911305af6f8d8f1e057afa1a3b45e57ce044f9",
+    "md5": "2eabca973a1a8ae8e9410b809ba5cf50"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/176/midas-open_uk-hourly-weather-obs_dv-202607_kincardineshire_00176_durris_qcv-1_2020.csv": {
+    "bytes": 145160,
+    "sha256": "d4ee0f95b06b7d093df69001a11ae2bf46cf3d21e020240c704bbfc8d3c1abfb",
+    "md5": "955d4cb31ecf2a98ad0e4aaf8cdbdf54"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/176/midas-open_uk-hourly-weather-obs_dv-202607_kincardineshire_00176_durris_qcv-1_2021.csv": {
+    "bytes": 144518,
+    "sha256": "48e9c68afac3dd47a5a104103c29a67af952035793a0e0a844bfb5c4fb9046fe",
+    "md5": "b6170a05de72d4c456a30f5985bc8ccd"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/177/midas-open_uk-hourly-weather-obs_dv-202607_kincardineshire_00177_inverbervie-no-2_qcv-1_2022.csv": {
+    "bytes": 3213562,
+    "sha256": "499a36ad88adf79bffbc542be7d28c5fac1bf251500f8ed080237a7f8fba11a6",
+    "md5": "6b9c916e0a126a0f9e10b5a57e9ecf02"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/177/midas-open_uk-hourly-weather-obs_dv-202607_kincardineshire_00177_inverbervie-no-2_qcv-1_2023.csv": {
+    "bytes": 3208617,
+    "sha256": "db8df25d9274bd47b023ea2c7d2a1cb560f136c5233f9c604206d148122157ae",
+    "md5": "70ee39cde02826b1ea4bbd1f6b5ac94f"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/177/midas-open_uk-hourly-weather-obs_dv-202607_kincardineshire_00177_inverbervie-no-2_qcv-1_2024.csv": {
+    "bytes": 3217862,
+    "sha256": "31a44e4b712e049f85a497a1f397920814ffb720b596a3088815f598776b746d",
+    "md5": "c848891b0b383929bdab21edca88005a"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/177/midas-open_uk-hourly-weather-obs_dv-202607_kincardineshire_00177_inverbervie-no-2_qcv-1_2016.csv": {
+    "bytes": 3212094,
+    "sha256": "21476da1bb41add56100f4fc1a13900150c22457ba74fd162538cd6680859c5d",
+    "md5": "8b8ad6858aaa8d7ecb3a599499882841"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/177/midas-open_uk-hourly-weather-obs_dv-202607_kincardineshire_00177_inverbervie-no-2_qcv-1_2017.csv": {
+    "bytes": 3204879,
+    "sha256": "0549e2d6519eba690f244b6b58cb0ddeee36b37b32b092a1bc2dc8dff4017855",
+    "md5": "a71da20857dc63a6104dcc73f0219220"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/177/midas-open_uk-hourly-weather-obs_dv-202607_kincardineshire_00177_inverbervie-no-2_qcv-1_2018.csv": {
+    "bytes": 3202573,
+    "sha256": "713261dcc61b6a397380365f8506742e72a8c5f6dda4a72bc31a09e3bf6054a2",
+    "md5": "60a2ec51c9b553e4b94ff75304739cef"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/177/midas-open_uk-hourly-weather-obs_dv-202607_kincardineshire_00177_inverbervie-no-2_qcv-1_2019.csv": {
+    "bytes": 3199704,
+    "sha256": "9e27d45cb97fc7ef268f3a75f788c20b6bb6927bea6697dee08703435d1714f8",
+    "md5": "3fae19d9d0c4f4c9a0080df4b28980a0"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/177/midas-open_uk-hourly-weather-obs_dv-202607_kincardineshire_00177_inverbervie-no-2_qcv-1_2020.csv": {
+    "bytes": 3208355,
+    "sha256": "145bc5d836bb2a53bbe9f9d361030628a08a88c9ac8578688baebaad5cb661f4",
+    "md5": "e2c29837f5efd9c31b2f198cd75b0b0c"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/177/midas-open_uk-hourly-weather-obs_dv-202607_kincardineshire_00177_inverbervie-no-2_qcv-1_2021.csv": {
+    "bytes": 3149383,
+    "sha256": "dfa3d0ecb9ab5a0262cc3dae29888712a480fb88560c877603365ec679cc5348",
+    "md5": "3710b50dcdcc64937e39fc59ed99fd52"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/181/midas-open_uk-hourly-weather-obs_dv-202607_angus_00181_mylnefield_qcv-1_2022.csv": {
+    "bytes": 143827,
+    "sha256": "0497176aded3ca8f5d05dfc9c63fbd81a33b0450a6a15a86e67f1cb61cec5dd9",
+    "md5": "c6bc338c286293027169f5f282969bc3"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/181/midas-open_uk-hourly-weather-obs_dv-202607_angus_00181_mylnefield_qcv-1_2023.csv": {
+    "bytes": 140594,
+    "sha256": "66382a4be20abf8f354bee9cb971cfa87eb943af5bef8f8236724a64d497c648",
+    "md5": "f07a30ebd1ed3e966b441d7113c8e1b7"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/181/midas-open_uk-hourly-weather-obs_dv-202607_angus_00181_mylnefield_qcv-1_2024.csv": {
+    "bytes": 144617,
+    "sha256": "7889f06408f7f0c7bf97083d960e5df70e0ca3ab1b9788fa88de3a50cae109ae",
+    "md5": "6c72a4bff1d1755b120c9a03815c6dcf"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/181/midas-open_uk-hourly-weather-obs_dv-202607_angus_00181_mylnefield_qcv-1_2016.csv": {
+    "bytes": 141625,
+    "sha256": "aa63a581b8317f486cdd7751f58d768c7c097dffd1d27cb272abc35012b4ed61",
+    "md5": "3238a41e92ec696a649d8e8c2ccdcd38"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/181/midas-open_uk-hourly-weather-obs_dv-202607_angus_00181_mylnefield_qcv-1_2017.csv": {
+    "bytes": 144820,
+    "sha256": "0af16cc32b5d12c32c05ddd20bfb732c535db59c9da4d758f7381c7dedcc3ea1",
+    "md5": "ad52b89dfb3a1b49f610c2950274d51c"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/181/midas-open_uk-hourly-weather-obs_dv-202607_angus_00181_mylnefield_qcv-1_2018.csv": {
+    "bytes": 143822,
+    "sha256": "60c0948362ae0165aad71f8838723952a34d1612ff8a5af28af6462735665430",
+    "md5": "b9fab1de1d08819a348592e75b56becd"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/181/midas-open_uk-hourly-weather-obs_dv-202607_angus_00181_mylnefield_qcv-1_2019.csv": {
+    "bytes": 144092,
+    "sha256": "d7915a21702d6b89561bdfbccca4e57b75fa205aaff930a0b468806597071017",
+    "md5": "20af8967564fd7e90c13da0c81a82b22"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/181/midas-open_uk-hourly-weather-obs_dv-202607_angus_00181_mylnefield_qcv-1_2020.csv": {
+    "bytes": 144061,
+    "sha256": "61902ebb23dd2a3009de25e3ada7a80e4703594c97cab4b1235a8883a69e347b",
+    "md5": "43300185005bbc0ad807c6a78adc6609"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/181/midas-open_uk-hourly-weather-obs_dv-202607_angus_00181_mylnefield_qcv-1_2021.csv": {
+    "bytes": 144231,
+    "sha256": "d60d54df2da0d2bf7dad7d906bd61e268370854471d5d91c79c559f5720b3ff6",
+    "md5": "3fd6f19d1268d61f787be2e107dc345d"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/232/midas-open_uk-hourly-weather-obs_dv-202607_fife_00232_cupar-elmwood-ag-college_qcv-1_2016.csv": {
+    "bytes": 29768,
+    "sha256": "6a21de576cdcddb404fc228a4df94fc862bd5a107618768c645920b45d198e36",
+    "md5": "5ca9903aa85fe222506b033012ef285c"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/232/midas-open_uk-hourly-weather-obs_dv-202607_fife_00232_cupar-elmwood-ag-college_qcv-1_2018.csv": {
+    "bytes": 15420,
+    "sha256": "82ff31020281d268ab3773640e2883bd932e242445fccdd205739c9618f631d1",
+    "md5": "e33a23fff26335b1046516a5fbc4ff74"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/235/midas-open_uk-hourly-weather-obs_dv-202607_fife_00235_leuchars_qcv-1_2022.csv": {
+    "bytes": 3220096,
+    "sha256": "74deb29550bfb2accd19dcefcdb54297dadd3d35be3c585ad1698d8f48b21882",
+    "md5": "625a8c9509d4ad6e2ab5842f920927f7"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/235/midas-open_uk-hourly-weather-obs_dv-202607_fife_00235_leuchars_qcv-1_2023.csv": {
+    "bytes": 3216661,
+    "sha256": "9891f3bed4de7434a804546593358d2f62d24132012bc398ab9d4a8f36ef84ec",
+    "md5": "0f5e15827f7d69c06c2969814f13f0ed"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/235/midas-open_uk-hourly-weather-obs_dv-202607_fife_00235_leuchars_qcv-1_2024.csv": {
+    "bytes": 3226100,
+    "sha256": "e83cd431b96d63a1ba7e3a608fd8d77311c588a99ac8ba74ac6dd937e9eb7608",
+    "md5": "0cefde738c83836f98e9bfee75db07ae"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/235/midas-open_uk-hourly-weather-obs_dv-202607_fife_00235_leuchars_qcv-1_2016.csv": {
+    "bytes": 3234668,
+    "sha256": "aa5957b09488e5451e39460588a0a008316dd139a6996d40e9fce719e599c8bc",
+    "md5": "50ab832dde572d7ff49db3c4012096e7"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/235/midas-open_uk-hourly-weather-obs_dv-202607_fife_00235_leuchars_qcv-1_2017.csv": {
+    "bytes": 3228520,
+    "sha256": "1fd7ce8cbcceed0d808c66db1953ad305f0a8f886a0d4077102dc94369bc977b",
+    "md5": "39b1d56c6f5215b726bd0d22678957c2"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/235/midas-open_uk-hourly-weather-obs_dv-202607_fife_00235_leuchars_qcv-1_2018.csv": {
+    "bytes": 3215034,
+    "sha256": "88ddcd08cec75429b7427ca6d0b789a80241879e7d37c2894117ba0436362e5e",
+    "md5": "a58cba50ed59aab96bb9e256e051786c"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/235/midas-open_uk-hourly-weather-obs_dv-202607_fife_00235_leuchars_qcv-1_2019.csv": {
+    "bytes": 3207992,
+    "sha256": "c2d1f3c61efc48701e56778bebfb0ec5793545d28da90caec48ae034d1f1daee",
+    "md5": "4570c0f482454500754015ca31ff65bd"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/235/midas-open_uk-hourly-weather-obs_dv-202607_fife_00235_leuchars_qcv-1_2020.csv": {
+    "bytes": 3217498,
+    "sha256": "b316728e8a859a7c7bd17aa946159784a7b79c260f24d6cc21da294f04707db2",
+    "md5": "97cfe13449eccf22cbec40a4401173f1"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/235/midas-open_uk-hourly-weather-obs_dv-202607_fife_00235_leuchars_qcv-1_2021.csv": {
+    "bytes": 3208440,
+    "sha256": "153d726c9b44169141cfe4f911d837e4d137c94751efc08b66a3ae86435a22c2",
+    "md5": "b84a91fd7f668132ed13d7c934a1caae"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/237/midas-open_uk-hourly-weather-obs_dv-202607_fife_00237_belliston_qcv-1_2016.csv": {
+    "bytes": 144546,
+    "sha256": "be02111d5e1a67863d876733465f956d1a6e5eed9aa1084d55a526b4f821ac7c",
+    "md5": "ba3374e0d8aafa3eee275f403bfd8bd6"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/267/midas-open_uk-hourly-weather-obs_dv-202607_berwickshire_00267_blythe_qcv-1_2016.csv": {
+    "bytes": 129059,
+    "sha256": "63659ed923acaff2678b8f8a09174d6fadd17fc6445c137faf3233603cba073d",
+    "md5": "d0a5c754fc2c7e79e27cd299d92ec9b1"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/267/midas-open_uk-hourly-weather-obs_dv-202607_berwickshire_00267_blythe_qcv-1_2017.csv": {
+    "bytes": 109077,
+    "sha256": "5df74289e3fed59e176783c8b240dc56d0f867a1b95bff642dcf9ed18901b6d3",
+    "md5": "25d4cce7b4eb8ea257e26fe763c81dc6"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/267/midas-open_uk-hourly-weather-obs_dv-202607_berwickshire_00267_blythe_qcv-1_2018.csv": {
+    "bytes": 101216,
+    "sha256": "ea90ef3703e057d5e294b9036b905f663a4c108d1013044c87d4a6afb2ab1fcc",
+    "md5": "d3e7d890590782ff6cc90b371256eb68"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/267/midas-open_uk-hourly-weather-obs_dv-202607_berwickshire_00267_blythe_qcv-1_2019.csv": {
+    "bytes": 87964,
+    "sha256": "629b6a4da0ec25722caf12ba9101ae79e7b1c0539d790dc4e770d719703d6d88",
+    "md5": "3c024281745fcb18eed112c2bf7b89ba"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/267/midas-open_uk-hourly-weather-obs_dv-202607_berwickshire_00267_blythe_qcv-1_2020.csv": {
+    "bytes": 41483,
+    "sha256": "d3ddd47d0d2c2a5b8edacb94c8a093e7d005e00cac62097fefb233832bedb8c3",
+    "md5": "6730fdf95bf316f2f9b4fae702c51e5a"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/268/midas-open_uk-hourly-weather-obs_dv-202607_berwickshire_00268_charterhall_qcv-1_2023.csv": {
+    "bytes": 3134057,
+    "sha256": "b46930d7c419fae031ed9a3bb93fcafcb967f8693f800d4c8d84e49666279f53",
+    "md5": "42a8ccb75f2e6a7ae923d6d747e3beeb"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/268/midas-open_uk-hourly-weather-obs_dv-202607_berwickshire_00268_charterhall_qcv-1_2024.csv": {
+    "bytes": 3218527,
+    "sha256": "9b626f406047283994280e7a0f6d26cfb4c7e20001042589029d02a49669cd09",
+    "md5": "51723b1d7328089cd64240d32472e024"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/279/midas-open_uk-hourly-weather-obs_dv-202607_selkirkshire_00279_bowhill_qcv-1_2022.csv": {
+    "bytes": 144950,
+    "sha256": "2f6f02f95b8231578e0e45074b437ebe320d178a15bae7c635f5baf7b73c4077",
+    "md5": "3197a37a1e0d34a0ca58fe728d591658"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/279/midas-open_uk-hourly-weather-obs_dv-202607_selkirkshire_00279_bowhill_qcv-1_2023.csv": {
+    "bytes": 143166,
+    "sha256": "9591a4973e411098369c4e930b24f806f21ab0edab0d3014300e4ddf62613a11",
+    "md5": "beb4f1eacbe396b8ee4a1ae3d1b45597"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/279/midas-open_uk-hourly-weather-obs_dv-202607_selkirkshire_00279_bowhill_qcv-1_2024.csv": {
+    "bytes": 147332,
+    "sha256": "dfc77120a0d698f8f58596ac45b4350d0d23fb63a8c565684e4ef5d7e155989a",
+    "md5": "5646bf5b90a660b519f6cc8abba53c47"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/279/midas-open_uk-hourly-weather-obs_dv-202607_selkirkshire_00279_bowhill_qcv-1_2016.csv": {
+    "bytes": 143022,
+    "sha256": "b3409fce01df16dd2e942f446950cc42594fdff6c1382a4ff44b41a30cf9acf8",
+    "md5": "8bdb5b0d528e8e0faf1ce23dcafa382c"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/279/midas-open_uk-hourly-weather-obs_dv-202607_selkirkshire_00279_bowhill_qcv-1_2017.csv": {
+    "bytes": 144527,
+    "sha256": "73dd084c6225454dcf5e6c22e7e25370b9f79fe6fae503d90e6cde7ace17dbdf",
+    "md5": "a6d8b32fc975cbd294efd3a2b6416128"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/279/midas-open_uk-hourly-weather-obs_dv-202607_selkirkshire_00279_bowhill_qcv-1_2018.csv": {
+    "bytes": 144856,
+    "sha256": "a5a7279ad63ccae4dee2b3ffa88959343e53e725d01998b70bbc867b8357f1cb",
+    "md5": "cfa0268687615a575355572142904171"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/279/midas-open_uk-hourly-weather-obs_dv-202607_selkirkshire_00279_bowhill_qcv-1_2019.csv": {
+    "bytes": 144478,
+    "sha256": "d8d0ca898f781ac1a11d4a67ebd51a48d4754416000abbf0645ea25f154e5814",
+    "md5": "6b219e1893d4765323f7e228c2c5952b"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/279/midas-open_uk-hourly-weather-obs_dv-202607_selkirkshire_00279_bowhill_qcv-1_2020.csv": {
+    "bytes": 145276,
+    "sha256": "642bc7684de18b5c3006f664be2d3154fee8b3638036749b09f2b3a421445206",
+    "md5": "cba2a4233971e0ba15a55428fc53a331"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/279/midas-open_uk-hourly-weather-obs_dv-202607_selkirkshire_00279_bowhill_qcv-1_2021.csv": {
+    "bytes": 143863,
+    "sha256": "7fd99f484ec35ae8adcfc145e8fe8bb10dfc85c2e9c4a757f6f013a57e316e0d",
+    "md5": "b8cdf9517518c9d45f93ef0ab9e1f18f"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/285/midas-open_uk-hourly-weather-obs_dv-202607_roxburghshire_00285_carterhouse_qcv-1_2016.csv": {
+    "bytes": 3151308,
+    "sha256": "562becd9122f9b6f40d1ae5955f36ba97873c1ce5d24110de6459399c22a1cf0",
+    "md5": "e96c095493b79a2b419cb2292e04d4e5"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/285/midas-open_uk-hourly-weather-obs_dv-202607_roxburghshire_00285_carterhouse_qcv-1_2017.csv": {
+    "bytes": 3142058,
+    "sha256": "ecf610d9ee71454715eaa95b393e220f3d583054f66c3a671caafeb827360a11",
+    "md5": "d0df70bc0105a895c7a1258a09b7146c"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/285/midas-open_uk-hourly-weather-obs_dv-202607_roxburghshire_00285_carterhouse_qcv-1_2018.csv": {
+    "bytes": 1578479,
+    "sha256": "6f03240c547b4baa068180d381ad2a9bf660e25cddeb630d206663ccb75bb35d",
+    "md5": "11d332a948f61d0d4fb0ca50bb252003"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/286/midas-open_uk-hourly-weather-obs_dv-202607_roxburghshire_00286_floors-castle_qcv-1_2022.csv": {
+    "bytes": 140924,
+    "sha256": "b473564b0a6e66b446dbb3b841003faf953a23dd50be1e047a8dbdcdf7a8093b",
+    "md5": "c6abc36b7927c0eab34201dc560359f7"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/286/midas-open_uk-hourly-weather-obs_dv-202607_roxburghshire_00286_floors-castle_qcv-1_2023.csv": {
+    "bytes": 138691,
+    "sha256": "256ec26491d3b68271e94f5603021df9d8abcaa18ebf90f1d91a4808bab4ca05",
+    "md5": "dc540855bfe9982175fdac5e67116805"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/286/midas-open_uk-hourly-weather-obs_dv-202607_roxburghshire_00286_floors-castle_qcv-1_2024.csv": {
+    "bytes": 143719,
+    "sha256": "002e9a0c7b97be14206b35f1608f337110e43b6c17f9ad3a1720880e862d5b7c",
+    "md5": "5607efb7a5e05acbec8c76184ff25eab"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/286/midas-open_uk-hourly-weather-obs_dv-202607_roxburghshire_00286_floors-castle_qcv-1_2016.csv": {
+    "bytes": 142625,
+    "sha256": "99e895353e87ce1074fc764993291de186eed5a65a40bff8ba8e5a5e0a7cd0bc",
+    "md5": "47499237f7a2a0dfd15299adfbd06377"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/286/midas-open_uk-hourly-weather-obs_dv-202607_roxburghshire_00286_floors-castle_qcv-1_2017.csv": {
+    "bytes": 143754,
+    "sha256": "9e4dd5ccbadf6ec1d8875d7a1c55e949566bb4a6dd0ceb1af65b1eb43970efd0",
+    "md5": "52396718e1752dd865118fb8a8adc86e"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/286/midas-open_uk-hourly-weather-obs_dv-202607_roxburghshire_00286_floors-castle_qcv-1_2018.csv": {
+    "bytes": 143803,
+    "sha256": "00095d78e56c3dd993d731460489cc50774a4f4b07161728c3300f11ef55ad2c",
+    "md5": "31023425d4baab85746c716a227d18ae"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/286/midas-open_uk-hourly-weather-obs_dv-202607_roxburghshire_00286_floors-castle_qcv-1_2019.csv": {
+    "bytes": 143797,
+    "sha256": "9497fb7466ce54c12770dd66053dd59d4f49ecc05464f2a9008c8c4234395a36",
+    "md5": "4c9518e221ffb72378ea3c06957f98cf"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/286/midas-open_uk-hourly-weather-obs_dv-202607_roxburghshire_00286_floors-castle_qcv-1_2020.csv": {
+    "bytes": 142782,
+    "sha256": "dfd932aa4b0bcb13e31669779ebdeb30c23369fcd5b383f22d99c712cf0116ce",
+    "md5": "7755ca657d5dae5d92edd328767203dc"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/286/midas-open_uk-hourly-weather-obs_dv-202607_roxburghshire_00286_floors-castle_qcv-1_2021.csv": {
+    "bytes": 142705,
+    "sha256": "5075170beac92d1f847a085211f6040771aaeb566bbc09736e7287f33a6b2f6d",
+    "md5": "bf5816f92beffbec4559286b8f195b20"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/289/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_00289_kielder-castle_qcv-1_2022.csv": {
+    "bytes": 3142377,
+    "sha256": "bb757833ef4f0f31955a0f704d38b0cdb8855337305ce5a006fc9a37cf9c5ab7",
+    "md5": "c548a7928b8eca2653bcc933d0a4afb7"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/289/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_00289_kielder-castle_qcv-1_2023.csv": {
+    "bytes": 660860,
+    "sha256": "79a7dbaa7e0877c70f71fe89f30eea0ce29e94c0194a22d9a5e6c1151f385b02",
+    "md5": "5b68abd19ae583ba4f227c2251623690"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/289/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_00289_kielder-castle_qcv-1_2016.csv": {
+    "bytes": 3147879,
+    "sha256": "769c29b5b2c914c3ad4d6d85e08c18e861fd8c109ac5ce93dd41c563cd369689",
+    "md5": "a102550d29ddef4e00555b9bc67d868c"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/289/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_00289_kielder-castle_qcv-1_2017.csv": {
+    "bytes": 3124483,
+    "sha256": "27fb95ae83dc965d6bf7d2a41fb680554f8d5c1459805468fc9feff49bf3f999",
+    "md5": "dc235a2e1213c65cb7067df5b9a8bbd3"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/289/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_00289_kielder-castle_qcv-1_2018.csv": {
+    "bytes": 3087988,
+    "sha256": "d0e76c743dd45cffcef7b6fde42b6d1ef95715e114e5072c9f8f3c158b74353b",
+    "md5": "e491d48669b2969d6d0731950e8d7d49"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/289/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_00289_kielder-castle_qcv-1_2019.csv": {
+    "bytes": 3141746,
+    "sha256": "bd6c370ce126c49a6a0e74d353f07b8e7fc13f82a086b18937a22f8c8fa9f6f8",
+    "md5": "221cda3e462f03671f3e2c6789a3e8d4"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/289/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_00289_kielder-castle_qcv-1_2020.csv": {
+    "bytes": 3149819,
+    "sha256": "cd81fc0c6b053c5cce05b90c1ca7834ed1ffdfe0abda1bf3ad8e8ab54546c2dc",
+    "md5": "02f7b62c630cddddfa33258efcdd1d4b"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/289/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_00289_kielder-castle_qcv-1_2021.csv": {
+    "bytes": 3144911,
+    "sha256": "f162bd4c96550419b8f6f9f9a87984564727d1ce25851bbae75cc690383e0adb",
+    "md5": "aadcbba0f2a630488f0265928bd18cce"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/300/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_00300_wallington_qcv-1_2022.csv": {
+    "bytes": 141313,
+    "sha256": "b4954e0f4420656ee29a0fc273e4af77193680dcf26145aa3a7743ad49e3e763",
+    "md5": "82866e3dcfaaaa8940d5ab25636e6a73"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/300/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_00300_wallington_qcv-1_2023.csv": {
+    "bytes": 138555,
+    "sha256": "9dd63005508cc443ab60da39a57915543c4432efd5c1afc2deeef8d6d9752309",
+    "md5": "3ef01d19af9e07e59cc494bb153d0ec2"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/300/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_00300_wallington_qcv-1_2024.csv": {
+    "bytes": 141149,
+    "sha256": "9c50ac7c4f60f83c8e037f22b9b751e110978071e3180f70df398344114d140f",
+    "md5": "d9c2cf320cca5536ab1fef95c8cdd827"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/300/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_00300_wallington_qcv-1_2016.csv": {
+    "bytes": 142815,
+    "sha256": "85985baa0f1c2413dd794ce18c0f6b22a6e161931a777bcd95f9b0b45596d8be",
+    "md5": "0ebc4007730d7c13a1fc912bab17d7ee"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/300/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_00300_wallington_qcv-1_2017.csv": {
+    "bytes": 139962,
+    "sha256": "14ed14e9458819c0815bd4a660980ff6878c3aa46898cb114dee0f35d9e6e6e6",
+    "md5": "90a76cb6db7c2c26954e99768f32719a"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/300/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_00300_wallington_qcv-1_2018.csv": {
+    "bytes": 139218,
+    "sha256": "8f8daa75f97dc3dfcca25f2278cf54a4021ccc25f7818f44fb0b5af6c1565efa",
+    "md5": "687e1f0768159b304eb5a169a4a6baf7"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/300/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_00300_wallington_qcv-1_2019.csv": {
+    "bytes": 142728,
+    "sha256": "9cdbd82d94900e17809142247c8cd4863b323415e4fd07d347b8306615c5b1de",
+    "md5": "4ec45196c95b5ced3cd78feed2b7ecab"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/300/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_00300_wallington_qcv-1_2020.csv": {
+    "bytes": 143384,
+    "sha256": "da073efe9ed486936239819ca4f817e8af4aa1860f2532dc31cf156a3b09785d",
+    "md5": "de3159216ec9dd9c004b59382263fb64"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/300/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_00300_wallington_qcv-1_2021.csv": {
+    "bytes": 139172,
+    "sha256": "7ed0a7a26ab9ec4356999f071495a0606e9fa571a894856606f8eea6fa819e41",
+    "md5": "408e3461d0f692af77fc73beb123cb82"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/310/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_00310_morpeth-cockle-park_qcv-1_2022.csv": {
+    "bytes": 3151896,
+    "sha256": "745fae3f5edefc6c7d2aa2b742f563491f79095f5710c5e3103019d932959244",
+    "md5": "64e01bbb0a04f2bab31a1e651a6692ce"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/310/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_00310_morpeth-cockle-park_qcv-1_2023.csv": {
+    "bytes": 3151389,
+    "sha256": "b58e97674c8e06e4313396225a69ffd3e621e2631af351aaef17b56347821dce",
+    "md5": "2e44fd502122ba681efd0860fb6f8e77"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/310/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_00310_morpeth-cockle-park_qcv-1_2024.csv": {
+    "bytes": 3160911,
+    "sha256": "07184d7bdfa10000ae06b0e412cbafbf17d20efdcac05f07d007663e0797e0ec",
+    "md5": "d1d91e467d1dff067d6c67d980c7f616"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/310/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_00310_morpeth-cockle-park_qcv-1_2016.csv": {
+    "bytes": 3151006,
+    "sha256": "dfe68e39b5ed9b3173c609a07e378cc6340cf6862888387321c62cfbb4721135",
+    "md5": "74ba5c89de28b2c8c978ca2d3e100e4f"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/310/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_00310_morpeth-cockle-park_qcv-1_2017.csv": {
+    "bytes": 3140832,
+    "sha256": "9ff9b48e839c4c982a0025786c07d3c9af7ac8cabd4ba47a71671df3fb73d6a9",
+    "md5": "b7676c47cf71d5d883b80cf5851cdf8a"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/310/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_00310_morpeth-cockle-park_qcv-1_2018.csv": {
+    "bytes": 3142278,
+    "sha256": "6012a93f91827a13bd676b4585c7a35b7e2c435d0fe5aadca976e4f84125facd",
+    "md5": "729a1befe031e180a79d747f5366361b"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/310/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_00310_morpeth-cockle-park_qcv-1_2019.csv": {
+    "bytes": 3140996,
+    "sha256": "68818c2f2c2111359d71afe865fdc3514923be498183011650219728dc3d0615",
+    "md5": "5b6a65c1cf660b896eccf46fa90703f5"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/310/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_00310_morpeth-cockle-park_qcv-1_2020.csv": {
+    "bytes": 3150194,
+    "sha256": "ccc446ca81219d8b7e6ef6af3ff99850b263a2ae1a74350bb85449dca15d382c",
+    "md5": "e02f27904583a0cf34f097d079e1289e"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/310/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_00310_morpeth-cockle-park_qcv-1_2021.csv": {
+    "bytes": 3144679,
+    "sha256": "a82f16e3b91f3ca0e1d967d906879cbd4ee357350392434c96cc2a937e8c188a",
+    "md5": "052a5679978a9b6e5bfc5d9a756135d3"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/315/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_00315_boulmer_qcv-1_2022.csv": {
+    "bytes": 3170871,
+    "sha256": "40abbd06391b807b48be4932c3875f8d0f1fc51f244e117d5ba72953be2c155b",
+    "md5": "1c7094263327f7684dc60a30862cbb40"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/315/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_00315_boulmer_qcv-1_2023.csv": {
+    "bytes": 3237421,
+    "sha256": "1b79d36bd26c7360a1afd2e92301b8aa2642935feede6ca22aa3526b8594478b",
+    "md5": "28cb4914a3cfec25809e9fb66b68c4e0"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/315/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_00315_boulmer_qcv-1_2024.csv": {
+    "bytes": 3255865,
+    "sha256": "3a5f004817ebebc9b439080f4fd8a0fcef6161bbcc3607f31dd9e46018d385ea",
+    "md5": "d3f6af4cec024810012d84499356304f"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/315/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_00315_boulmer_qcv-1_2016.csv": {
+    "bytes": 3232083,
+    "sha256": "0b8b3109f801215c75ae3c1b621847d75fee913114049abc1f0cfdf33708b8d9",
+    "md5": "fb8699b923c9cbda54a67ee0d56f7fce"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/315/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_00315_boulmer_qcv-1_2017.csv": {
+    "bytes": 3217488,
+    "sha256": "ab59115ef8fa7e32039f8481f086463a454627ed54a450e0df2da7dad002104e",
+    "md5": "5cfff2f2eb9893061bd40b3b224343fd"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/315/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_00315_boulmer_qcv-1_2018.csv": {
+    "bytes": 3209256,
+    "sha256": "f9a751d1d156827eb0bc276b7d9e58be7d2238626e7988f3d2d08f7ea52b2317",
+    "md5": "178cb55a28ae7bd51ca6b20fa043047c"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/315/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_00315_boulmer_qcv-1_2019.csv": {
+    "bytes": 2420051,
+    "sha256": "7b3438bd9d356f5cfbd378eba77e00527da68c13595d1649e4c7573f7e0d7d1c",
+    "md5": "b7c610a76099ec2673844c629683894c"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/315/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_00315_boulmer_qcv-1_2020.csv": {
+    "bytes": 3213771,
+    "sha256": "53e558578f79b0f93b4ad1526cac938a6aa06ba7002c7e2f49510ff5864436a6",
+    "md5": "f63d6a7ccf2638875ecced4bb93275c3"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/315/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_00315_boulmer_qcv-1_2021.csv": {
+    "bytes": 3202138,
+    "sha256": "b8e4740d38d4d4404013b1a10146a0d3ba58c739a52cc5a794d55a48c1669496",
+    "md5": "84d607a6b1d3f0db22bf79761b1223c1"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/326/midas-open_uk-hourly-weather-obs_dv-202607_durham_00326_durham_qcv-1_2022.csv": {
+    "bytes": 3153616,
+    "sha256": "e338de2e27ea6547c71b398c7be53adcec0ae84cfe983f6f5a1e392aa268ce81",
+    "md5": "8a789a519af805ea997f2af693062ba5"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/326/midas-open_uk-hourly-weather-obs_dv-202607_durham_00326_durham_qcv-1_2023.csv": {
+    "bytes": 3152454,
+    "sha256": "a4a266945591e2be7f3fb38ebc8ca77ffb5a9865fcf0cf124c75874b927b81fd",
+    "md5": "c44db6d4fa486a2a7a335f9a0ee03a3f"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/326/midas-open_uk-hourly-weather-obs_dv-202607_durham_00326_durham_qcv-1_2024.csv": {
+    "bytes": 3160860,
+    "sha256": "e0dc6e43ba33ee59665c84a7e943c575b65f0b71bdd6066c9c60e1f1f879de4e",
+    "md5": "ece3c844c93e67f51ca3ccb0c2467b6b"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/326/midas-open_uk-hourly-weather-obs_dv-202607_durham_00326_durham_qcv-1_2016.csv": {
+    "bytes": 3132008,
+    "sha256": "7e720719c7618c47fd6b1387d98b48b9888d9e56c2c8260ec92d592ce1e13c6e",
+    "md5": "373ed894b022615d6b04eac8ba6a63e7"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/326/midas-open_uk-hourly-weather-obs_dv-202607_durham_00326_durham_qcv-1_2017.csv": {
+    "bytes": 3082128,
+    "sha256": "87e00699e5366e736e9f6bdab3d80f7884ec489dafc91973d69b09bb0281841a",
+    "md5": "62d9f3cb70ae669eeaf12b73ab5afaef"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/326/midas-open_uk-hourly-weather-obs_dv-202607_durham_00326_durham_qcv-1_2018.csv": {
+    "bytes": 2802171,
+    "sha256": "bb17d35ddeb9c6a0fdf58505e472fee572cf87bf1c0b83fc72efad6736cf395e",
+    "md5": "bf46b7b5ac76f617e4458e353bb0c73b"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/326/midas-open_uk-hourly-weather-obs_dv-202607_durham_00326_durham_qcv-1_2019.csv": {
+    "bytes": 3141494,
+    "sha256": "2f60cef6bf691f38b57d942a62eb1e65757e1d62128cadd77bdcd4432184a790",
+    "md5": "5212e18ec30e4803a0140b2f59e6d5a2"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/326/midas-open_uk-hourly-weather-obs_dv-202607_durham_00326_durham_qcv-1_2020.csv": {
+    "bytes": 3140541,
+    "sha256": "04c74964a03d8c2e5168ba74027f0615dd22ee5391a147080489e73aa3195289",
+    "md5": "4fb69c50f7bfb29d1c586454c6e94d98"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/326/midas-open_uk-hourly-weather-obs_dv-202607_durham_00326_durham_qcv-1_2021.csv": {
+    "bytes": 3145417,
+    "sha256": "6aaa821541b100260843666475abe08b4663dafde3a419eadcf34f778abee6a6",
+    "md5": "0a348a030c712ce55b0c4ea1dfcf1967"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/949/midas-open_uk-hourly-weather-obs_dv-202607_dunbartonshire_00949_gartocharn-portnellan-farm_qcv-1_2022.csv": {
+    "bytes": 144659,
+    "sha256": "9640b3a6f5505acedc978f4d8422cee6c855bdca24f23aa0eae7acb158ffcfbb",
+    "md5": "021179b27975d37b11097e5e4d1092df"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/949/midas-open_uk-hourly-weather-obs_dv-202607_dunbartonshire_00949_gartocharn-portnellan-farm_qcv-1_2023.csv": {
+    "bytes": 144207,
+    "sha256": "7339ebbe9203876625b0512495ee44d1f8a749874278795dd51fc6cc9c979070",
+    "md5": "3777a842a18c42b2330bab27c93f2ff6"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/949/midas-open_uk-hourly-weather-obs_dv-202607_dunbartonshire_00949_gartocharn-portnellan-farm_qcv-1_2024.csv": {
+    "bytes": 145346,
+    "sha256": "72e72720773da423b2b32d22995fd56fa775249913c6e775f4b23b2ba31019db",
+    "md5": "fcc4ee7b8464dacb76460b403a1a7da1"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/949/midas-open_uk-hourly-weather-obs_dv-202607_dunbartonshire_00949_gartocharn-portnellan-farm_qcv-1_2016.csv": {
+    "bytes": 143797,
+    "sha256": "b4dfc395c8b722ba60701589ead33d2db8bfee7b7aba70bd9681839db60954a5",
+    "md5": "a171b249de95db44a3170f5ab57fbabf"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/949/midas-open_uk-hourly-weather-obs_dv-202607_dunbartonshire_00949_gartocharn-portnellan-farm_qcv-1_2017.csv": {
+    "bytes": 144851,
+    "sha256": "af2f2519aa8105a9eece944cf51bc6ffeff7d0a98d9e39746eeea3c8db011c30",
+    "md5": "cf30c76ec9736c9d00c287af0cfa7b2f"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/949/midas-open_uk-hourly-weather-obs_dv-202607_dunbartonshire_00949_gartocharn-portnellan-farm_qcv-1_2018.csv": {
+    "bytes": 144514,
+    "sha256": "6e5fbb6a57de112bef6bb4514ba4eaa4b52b9c5a8eabfb7e217fb6394e39b41a",
+    "md5": "107e5a112c8dc547ce4ca19531aa724c"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/949/midas-open_uk-hourly-weather-obs_dv-202607_dunbartonshire_00949_gartocharn-portnellan-farm_qcv-1_2019.csv": {
+    "bytes": 144504,
+    "sha256": "785ba3ad1710fe1e500dd413069a7aad0658bf9dfb43c8fe04675b621882b317",
+    "md5": "9b753130ea5e4192dab80c92c61e3501"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/949/midas-open_uk-hourly-weather-obs_dv-202607_dunbartonshire_00949_gartocharn-portnellan-farm_qcv-1_2020.csv": {
+    "bytes": 144912,
+    "sha256": "cec1c2f1863037fb111ff0ded7f65383f1c0b23fe7d4c23b8ef9b750ad4172b7",
+    "md5": "1419a414c9620e407e1106fe7d703c31"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/949/midas-open_uk-hourly-weather-obs_dv-202607_dunbartonshire_00949_gartocharn-portnellan-farm_qcv-1_2021.csv": {
+    "bytes": 143835,
+    "sha256": "a666f94d6cb99718948e9965c2e59a8a4bcaf69cffbb153705109fde567eb822",
+    "md5": "8eeadf006685e1c7e94f8809e2618f5d"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/972/midas-open_uk-hourly-weather-obs_dv-202607_renfrewshire_00972_pollok-country-park_qcv-1_2022.csv": {
+    "bytes": 34080,
+    "sha256": "2ed01e3425e523acde0ccebd83848584abaa1af518d37ab57244b160a825259e",
+    "md5": "85a8964c2091623ae2ae4a1bd2383d20"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/972/midas-open_uk-hourly-weather-obs_dv-202607_renfrewshire_00972_pollok-country-park_qcv-1_2023.csv": {
+    "bytes": 46872,
+    "sha256": "479b5c3779c8963f9cbbab1291fbbe6501b540b9e50c617470d201cca95b8ee1",
+    "md5": "1868bc20ad846f028459b726d19fe3b7"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/972/midas-open_uk-hourly-weather-obs_dv-202607_renfrewshire_00972_pollok-country-park_qcv-1_2024.csv": {
+    "bytes": 47317,
+    "sha256": "c369bd39e03e0553af2c37ada7b5265a67af3ad08b4698b829c8f18dcf0f21e5",
+    "md5": "657494616beacf82d4163ca58aaa9f3b"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/972/midas-open_uk-hourly-weather-obs_dv-202607_renfrewshire_00972_pollok-country-park_qcv-1_2016.csv": {
+    "bytes": 102308,
+    "sha256": "4573340707d94c5aacc17498672e6eb77fa4015f4a9f0212337643db95af9e1b",
+    "md5": "08fc833da0d13a725c81862427833ecc"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/972/midas-open_uk-hourly-weather-obs_dv-202607_renfrewshire_00972_pollok-country-park_qcv-1_2017.csv": {
+    "bytes": 13978,
+    "sha256": "f452e81258c825b9fa385bb92bbf90d96ff4fb332eb7adc10457f17c715f963c",
+    "md5": "4fe07d9854f4520f67786a117f209f04"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/980/midas-open_uk-hourly-weather-obs_dv-202607_lanarkshire_00980_motherwell-strathclyde-park_qcv-1_2022.csv": {
+    "bytes": 57735,
+    "sha256": "a601c4931735e46731e8bf9049cedda5d5f560e11729f256fc39889664aef79c",
+    "md5": "93fd945db492f2a7c13d8fc02b144fd7"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/980/midas-open_uk-hourly-weather-obs_dv-202607_lanarkshire_00980_motherwell-strathclyde-park_qcv-1_2023.csv": {
+    "bytes": 117824,
+    "sha256": "9a7ec4cd5c00ca88efb84c264d892d897e55a0920437d0cdb2e67fee54d6027e",
+    "md5": "e1e83cecd6ccbc11be97c3112a65232e"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/980/midas-open_uk-hourly-weather-obs_dv-202607_lanarkshire_00980_motherwell-strathclyde-park_qcv-1_2024.csv": {
+    "bytes": 118458,
+    "sha256": "ad6400c3cb568e5fd53ba7597d32e04e6034aadf1cca9854de94923bd6f89338",
+    "md5": "08295ed5e66284e14ccdcc568d4a0a08"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/980/midas-open_uk-hourly-weather-obs_dv-202607_lanarkshire_00980_motherwell-strathclyde-park_qcv-1_2016.csv": {
+    "bytes": 126937,
+    "sha256": "67928ae80eeab9f3b0a04b83fa5e63fa865a20a4deb981ab977849d8f169bf98",
+    "md5": "ac964d5d35ad73782e6d8ac14379357d"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/980/midas-open_uk-hourly-weather-obs_dv-202607_lanarkshire_00980_motherwell-strathclyde-park_qcv-1_2017.csv": {
+    "bytes": 95212,
+    "sha256": "19c1c41c9f8ac2fc1a893cf24468ea7eb1ace23ea13b79549cc637498c1252ba",
+    "md5": "99ced84b88bd5922dfbaafd8730a92d8"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/980/midas-open_uk-hourly-weather-obs_dv-202607_lanarkshire_00980_motherwell-strathclyde-park_qcv-1_2018.csv": {
+    "bytes": 123967,
+    "sha256": "2cf44b52a7fcb2644197f4b6310db10d066bcc8a02dc9f7cc8582961978a0377",
+    "md5": "242f951a9921276a3b965215788a03a0"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/980/midas-open_uk-hourly-weather-obs_dv-202607_lanarkshire_00980_motherwell-strathclyde-park_qcv-1_2019.csv": {
+    "bytes": 115823,
+    "sha256": "3a53e1959e625a0b2c10aa6ef51ff38fe86f0a49f9ee760bd1db88ea188d55ac",
+    "md5": "c419b2d0ea4fcfc76b83d89e39286fa3"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/980/midas-open_uk-hourly-weather-obs_dv-202607_lanarkshire_00980_motherwell-strathclyde-park_qcv-1_2020.csv": {
+    "bytes": 35421,
+    "sha256": "c2ff47d46c4b95bb47b17cbbf535696d18c859f1b4eb81b5b4c041ca3c0281b0",
+    "md5": "f8297be8ef62321b6e13f65d27f260d6"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/982/midas-open_uk-hourly-weather-obs_dv-202607_lanarkshire_00982_salsburgh_qcv-1_2022.csv": {
+    "bytes": 3170948,
+    "sha256": "e1b648029dc2d706addbcf92d5396c133e5185542d5f9054467318f5ef64f558",
+    "md5": "70f296fbf65e9a25f1e4bbd2fd8f3e1a"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/982/midas-open_uk-hourly-weather-obs_dv-202607_lanarkshire_00982_salsburgh_qcv-1_2023.csv": {
+    "bytes": 3156625,
+    "sha256": "d0851683e0ee62a26d0acbea1e4c08f2fc86a4d1494eb7781a588e0ffffcd93d",
+    "md5": "fbbd4a1b240474266e8f38c604a05bb2"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/982/midas-open_uk-hourly-weather-obs_dv-202607_lanarkshire_00982_salsburgh_qcv-1_2024.csv": {
+    "bytes": 3180857,
+    "sha256": "97172d46083b281b278dbc7514c277991ac4a794be7cec14cab04cdd21a04cf0",
+    "md5": "3c91f6374ae2f2f826d01f1097806075"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/982/midas-open_uk-hourly-weather-obs_dv-202607_lanarkshire_00982_salsburgh_qcv-1_2016.csv": {
+    "bytes": 3172434,
+    "sha256": "5fb5a8a7de136323bd6a7d18194907ca243667ad1b96a9a32055beecad9e22cc",
+    "md5": "47efca1e61dbb1c32755ccadf3c1d1ab"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/982/midas-open_uk-hourly-weather-obs_dv-202607_lanarkshire_00982_salsburgh_qcv-1_2017.csv": {
+    "bytes": 3158967,
+    "sha256": "3f30006c799dc3c5e6caaf8ca7c61659659085e7ecd3a4d2561116ea4dfd9e59",
+    "md5": "5cada9f84e10a77f73c71977cf2dcd94"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/982/midas-open_uk-hourly-weather-obs_dv-202607_lanarkshire_00982_salsburgh_qcv-1_2018.csv": {
+    "bytes": 3164645,
+    "sha256": "d9ce8a6a39e0960ce148e493d14c91fbba4d125d9c0501e984cb209cdaad1bc2",
+    "md5": "184a3926c607b0d321979d4de2403950"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/982/midas-open_uk-hourly-weather-obs_dv-202607_lanarkshire_00982_salsburgh_qcv-1_2019.csv": {
+    "bytes": 3159739,
+    "sha256": "a912876465d4269f31476933258fd2a5b0469379583679041382ecd6890b09f7",
+    "md5": "eb7dc676f732859c277cc93613fa0a21"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/982/midas-open_uk-hourly-weather-obs_dv-202607_lanarkshire_00982_salsburgh_qcv-1_2020.csv": {
+    "bytes": 3171674,
+    "sha256": "ca9cc2e99410c85baae5716a69a59acfabb237bffee7f1c9654e1f17cbabe351",
+    "md5": "0bf4ab1b11aa4524912e5b46b66e5b21"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/982/midas-open_uk-hourly-weather-obs_dv-202607_lanarkshire_00982_salsburgh_qcv-1_2021.csv": {
+    "bytes": 3167489,
+    "sha256": "d0a94d474bb102275c2c568ff6e4f0687d26db9af684ca0bc1c37a40629ef38e",
+    "md5": "e2dd7e36e0012e46fe4ec3478cdd40a4"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/983/midas-open_uk-hourly-weather-obs_dv-202607_lanarkshire_00983_leadhills_qcv-1_2016.csv": {
+    "bytes": 145358,
+    "sha256": "5080b2d6d0a438ccd2b3ae6b40f42cbb68bdaaf7d1f833cc4fabbe6db27bb93a",
+    "md5": "e40a7214a2717ab2707629e43255fbf5"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/983/midas-open_uk-hourly-weather-obs_dv-202607_lanarkshire_00983_leadhills_qcv-1_2017.csv": {
+    "bytes": 144911,
+    "sha256": "62a70bf327cdc43baf4a7eb4b5ddec4301454d514629d42670cab2ff53edf788",
+    "md5": "fdc6b506ee47f2f5b4127c49d38c6e09"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/983/midas-open_uk-hourly-weather-obs_dv-202607_lanarkshire_00983_leadhills_qcv-1_2018.csv": {
+    "bytes": 122590,
+    "sha256": "f433e014a448dfb7a84c17d6eaf5f7e2ea86f4090d94d7fc83492d0e827ff6bb",
+    "md5": "8fb3f3d34f96123217afa0e7a2203067"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/983/midas-open_uk-hourly-weather-obs_dv-202607_lanarkshire_00983_leadhills_qcv-1_2019.csv": {
+    "bytes": 16471,
+    "sha256": "2cc4c654cbd5636b73914eb9166b1f6119a572e178087777b6ac58873a8c3a50",
+    "md5": "8f97c0482c9cd0ff999893e7870e1b05"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/987/midas-open_uk-hourly-weather-obs_dv-202607_lanarkshire_00987_drumalbin_qcv-1_2022.csv": {
+    "bytes": 3210696,
+    "sha256": "664c253330e42c66110a894d28799a4e6f6a8a282123aa571ff3a33db764c0e2",
+    "md5": "39cf0e2d38f254ded499c7e0412bcb04"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/987/midas-open_uk-hourly-weather-obs_dv-202607_lanarkshire_00987_drumalbin_qcv-1_2023.csv": {
+    "bytes": 3206711,
+    "sha256": "c352d7e3e39d85ae880df92fefb7fc9ed0a6112e29187d35ec1be664025f78a2",
+    "md5": "02d98787c3497d029f59d2aaf5453ea9"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/987/midas-open_uk-hourly-weather-obs_dv-202607_lanarkshire_00987_drumalbin_qcv-1_2024.csv": {
+    "bytes": 3205508,
+    "sha256": "94dd43efda34337312fda7f0c1b480ef97e5c6aba2baa7719394adee9665d968",
+    "md5": "371e1c2374251e016cd524b8dac5d313"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/987/midas-open_uk-hourly-weather-obs_dv-202607_lanarkshire_00987_drumalbin_qcv-1_2016.csv": {
+    "bytes": 3208555,
+    "sha256": "dbe7500efa262e0d6106f49322b05dcb1b5735ffbca3a658fd96bffd6166dd75",
+    "md5": "b711a71e6224faf0ecc81932312c7fce"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/987/midas-open_uk-hourly-weather-obs_dv-202607_lanarkshire_00987_drumalbin_qcv-1_2017.csv": {
+    "bytes": 3189630,
+    "sha256": "8ff10e463e2d34b82442ba066a2879bb823ccd8f62f5cea392deabebfb8aaa77",
+    "md5": "fbcd4c9b048caa4519f4b3c422d0a98c"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/987/midas-open_uk-hourly-weather-obs_dv-202607_lanarkshire_00987_drumalbin_qcv-1_2018.csv": {
+    "bytes": 3200045,
+    "sha256": "da4428cd9a1c2a73384ce42586f3b0ee18872a603e5639cdb9c53d8409fd1d96",
+    "md5": "cc5e8096fe52d885877ad36ecc9414b9"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/987/midas-open_uk-hourly-weather-obs_dv-202607_lanarkshire_00987_drumalbin_qcv-1_2019.csv": {
+    "bytes": 3198140,
+    "sha256": "f4d22e6cc6bab3b3eaf131b8b12ee09963fbbf70a82964ca844d8e977dab5503",
+    "md5": "a1ab471e1b0e7aeaf18c2bb8a283ee20"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/987/midas-open_uk-hourly-weather-obs_dv-202607_lanarkshire_00987_drumalbin_qcv-1_2020.csv": {
+    "bytes": 3207664,
+    "sha256": "fc0c682fa7cb7c1eced8e082c49aa711f88b27fbbe99b95f28ff376f667b5ced",
+    "md5": "adcd9618e7a6e741580f8247a1fad5d4"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/987/midas-open_uk-hourly-weather-obs_dv-202607_lanarkshire_00987_drumalbin_qcv-1_2021.csv": {
+    "bytes": 3203713,
+    "sha256": "053b80873f58df84de562d6e1ae774bf90e64474c3eeec92c9b4b8468f31c962",
+    "md5": "de7be9e3195fa6a9cc154080bb2a49eb"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/1023/midas-open_uk-hourly-weather-obs_dv-202607_dumfriesshire_01023_eskdalemuir_qcv-1_2022.csv": {
+    "bytes": 3197081,
+    "sha256": "0415cb007ae18abfbd22cc01e820e97640c7061291e4391e8cd140a3a7362485",
+    "md5": "c4031f6ba201612951b4af1ecf0632bc"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/1023/midas-open_uk-hourly-weather-obs_dv-202607_dumfriesshire_01023_eskdalemuir_qcv-1_2023.csv": {
+    "bytes": 3208120,
+    "sha256": "1d3fd5a592ec85b325d534afc7681edeeee91d5907355b70f87d0162aea8bef5",
+    "md5": "49287762a37d8bc98a35e4cb5b23b82b"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/1023/midas-open_uk-hourly-weather-obs_dv-202607_dumfriesshire_01023_eskdalemuir_qcv-1_2024.csv": {
+    "bytes": 3217083,
+    "sha256": "c8963d7b04016898da0accf3f858603046379217f29ba4260f9b8c80d6d1606d",
+    "md5": "283cc0dd58d3a4d84d28ca6258de68f0"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/1023/midas-open_uk-hourly-weather-obs_dv-202607_dumfriesshire_01023_eskdalemuir_qcv-1_2016.csv": {
+    "bytes": 3142975,
+    "sha256": "e6175cac89679c580f06c10876f03dfc5d01caed5d0e5cc9daf426622c36eeb0",
+    "md5": "2735c3df1c03c5fc613a1fbb44644503"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/1023/midas-open_uk-hourly-weather-obs_dv-202607_dumfriesshire_01023_eskdalemuir_qcv-1_2017.csv": {
+    "bytes": 3123762,
+    "sha256": "90d1c39801d9caeba4bff38552b8db2e6ac83b32a7483f27b393dd69bc501196",
+    "md5": "d865cdec1f60fdc266770cd6df652fed"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/1023/midas-open_uk-hourly-weather-obs_dv-202607_dumfriesshire_01023_eskdalemuir_qcv-1_2018.csv": {
+    "bytes": 3172116,
+    "sha256": "533568dd477739b72d93c9b014236f193acf7d2f1c9bcef65e084d6b3a4cdb84",
+    "md5": "e4d55d55396cbc3f085a9653d9a91cc5"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/1023/midas-open_uk-hourly-weather-obs_dv-202607_dumfriesshire_01023_eskdalemuir_qcv-1_2019.csv": {
+    "bytes": 3173033,
+    "sha256": "32b7d7425e78afe61285b461f7cc3392fd2cec0a00cd86973944a85bc8e0509e",
+    "md5": "fb3a58b0df2c2ec5f3924097f17be733"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/1023/midas-open_uk-hourly-weather-obs_dv-202607_dumfriesshire_01023_eskdalemuir_qcv-1_2020.csv": {
+    "bytes": 3116155,
+    "sha256": "5da7c22472d48d6cb3d38607a4cd542727bb2815db70f80acd8cf366b4566496",
+    "md5": "77c0c9e1fac1d82a70bed1dd4af1f932"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/1023/midas-open_uk-hourly-weather-obs_dv-202607_dumfriesshire_01023_eskdalemuir_qcv-1_2021.csv": {
+    "bytes": 3193865,
+    "sha256": "fd136939a6ba24fbb2bb7175459e4fbfa10113c61a67d823708f89a7d0feea40",
+    "md5": "5741f4393b1461e2e170afad2b7ba3c9"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/1066/midas-open_uk-hourly-weather-obs_dv-202607_cumbria_01066_drumburgh_qcv-1_2016.csv": {
+    "bytes": 144277,
+    "sha256": "3668b5c4e697662e50bb08db9841551b28d28e898c4e392d97fe94f83894cac2",
+    "md5": "a226eed0d1e288c77d1c870dd00e6ac0"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/1066/midas-open_uk-hourly-weather-obs_dv-202607_cumbria_01066_drumburgh_qcv-1_2017.csv": {
+    "bytes": 145265,
+    "sha256": "47c64808167f1f9a4ad93a40b82c81395a387081c00bb5dd30dc9617c0a8f77e",
+    "md5": "76062cf88acd1052937e0da5cf69dc12"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/1066/midas-open_uk-hourly-weather-obs_dv-202607_cumbria_01066_drumburgh_qcv-1_2018.csv": {
+    "bytes": 144914,
+    "sha256": "f3ee2d56799ddd942ccc089ad20e3b4909cd3d3c0c9810aa211792bcb7eb4cb8",
+    "md5": "e3183717e65e7a0987ced5a62e75623f"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/1066/midas-open_uk-hourly-weather-obs_dv-202607_cumbria_01066_drumburgh_qcv-1_2019.csv": {
+    "bytes": 87518,
+    "sha256": "caedd4dd448ddb718b8a437b33eed23f8b84cc480a34f027a063e5862517f033",
+    "md5": "87e339c5e0dae5f615ac63e492bc6c0f"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/1070/midas-open_uk-hourly-weather-obs_dv-202607_cumbria_01070_carlisle_qcv-1_2022.csv": {
+    "bytes": 3210265,
+    "sha256": "3486ff656f07bf49d63140165551226dbb61eebb5f253beedf2aa2a0a3b309aa",
+    "md5": "1a3feb4d9010744b03db4ceafac156c2"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/1070/midas-open_uk-hourly-weather-obs_dv-202607_cumbria_01070_carlisle_qcv-1_2023.csv": {
+    "bytes": 3205859,
+    "sha256": "d0dd129dfee2eb9782ac7a838514a128ae00864c5f0b599d1899d0a174b34e85",
+    "md5": "7f6b061ff9d44918f00d32226ea700b4"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/1070/midas-open_uk-hourly-weather-obs_dv-202607_cumbria_01070_carlisle_qcv-1_2024.csv": {
+    "bytes": 3213065,
+    "sha256": "21936a3e3be508bb4b4356f45c06292d882396ba93103d8db9f0b54e55339ead",
+    "md5": "7efbe781fb6569a7f283c52b014843e3"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/1070/midas-open_uk-hourly-weather-obs_dv-202607_cumbria_01070_carlisle_qcv-1_2016.csv": {
+    "bytes": 3207738,
+    "sha256": "015f323b0bb27501624d64eab5b2b1508f31c07137279cea3db22f7db70d9af0",
+    "md5": "1d1b769d3b196ab3d0f866a2c61c56ee"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/1070/midas-open_uk-hourly-weather-obs_dv-202607_cumbria_01070_carlisle_qcv-1_2017.csv": {
+    "bytes": 3200519,
+    "sha256": "8f91ac5258604194470c45ebbbcc604a6c8ce4dbcc01f6e425674898fbcdba74",
+    "md5": "77e1e6795793142c810c59db9212d914"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/1070/midas-open_uk-hourly-weather-obs_dv-202607_cumbria_01070_carlisle_qcv-1_2018.csv": {
+    "bytes": 3200276,
+    "sha256": "d61a0de2124eb667a81bfb26ac8ddd7f1ed5b77c8e92fd1bbf6ea67ed81f62d2",
+    "md5": "23a66ece2a4caf8d27b34bac6a06aeeb"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/1070/midas-open_uk-hourly-weather-obs_dv-202607_cumbria_01070_carlisle_qcv-1_2019.csv": {
+    "bytes": 3197453,
+    "sha256": "60447a22712d8f92c66d038c2e6501e60a4bc38566dadf4b15f578b4d2b20ccd",
+    "md5": "58024dcca83fcf8d283eecb6d3e50833"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/1070/midas-open_uk-hourly-weather-obs_dv-202607_cumbria_01070_carlisle_qcv-1_2020.csv": {
+    "bytes": 3206494,
+    "sha256": "a94ba45a9c18a44d871faafed109bda12837037720b9cd4b005a685a03c76107",
+    "md5": "39e166fd6f87c4e3fc0d508a3c790aa5"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/1070/midas-open_uk-hourly-weather-obs_dv-202607_cumbria_01070_carlisle_qcv-1_2021.csv": {
+    "bytes": 3201548,
+    "sha256": "83a883e7282a06fc5978a1deb6724dcb7933cbf6bbabbab4dcede7d0090f75b4",
+    "md5": "8545c867c1b91e7b03aaf9ea46c4b23f"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/1073/midas-open_uk-hourly-weather-obs_dv-202607_cumbria_01073_newton-rigg_qcv-1_2016.csv": {
+    "bytes": 3137351,
+    "sha256": "3068e69449274750f3acbc527d62e91615946eaa9b4507662bb5c1f72b628cfd",
+    "md5": "66cdc61a4129720e579e7c5c39be1444"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/1073/midas-open_uk-hourly-weather-obs_dv-202607_cumbria_01073_newton-rigg_qcv-1_2017.csv": {
+    "bytes": 3152315,
+    "sha256": "f64c3c25d7aa6db5f08554c093e7e6d73c39d156a7bff51584e6fec7f45d4d2b",
+    "md5": "476655d56d33f27ec270d8a954d89d2c"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/1073/midas-open_uk-hourly-weather-obs_dv-202607_cumbria_01073_newton-rigg_qcv-1_2018.csv": {
+    "bytes": 3152544,
+    "sha256": "8db34d37bfad6c416709046a9e4c500e23e7457c7daa4066ee4b8c17cca22683",
+    "md5": "a37b942ea036ed024a56999ec08285f1"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/1073/midas-open_uk-hourly-weather-obs_dv-202607_cumbria_01073_newton-rigg_qcv-1_2019.csv": {
+    "bytes": 3149278,
+    "sha256": "c5017f277091a777079df88227bdafd9aa8873229f19ef1c75204db7de356da4",
+    "md5": "c51dac4525fe88bb8744ac6fd47a2f43"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/1073/midas-open_uk-hourly-weather-obs_dv-202607_cumbria_01073_newton-rigg_qcv-1_2020.csv": {
+    "bytes": 3159132,
+    "sha256": "9bab7a51ae4295eebed18d84ef36f4299adb826178133da8f5ae7dbd2dcb9110",
+    "md5": "f503df18b0e8837f46740ceb606a7a3e"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/1073/midas-open_uk-hourly-weather-obs_dv-202607_cumbria_01073_newton-rigg_qcv-1_2021.csv": {
+    "bytes": 1728735,
+    "sha256": "5cf6b95daada787ae04203240a9c2c7f30b15fc058e68ae90551048e9c282824",
+    "md5": "87524579e68a132b93e96cfd6eaea87c"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/1074/midas-open_uk-hourly-weather-obs_dv-202607_cumbria_01074_warcop-range_qcv-1_2022.csv": {
+    "bytes": 3214794,
+    "sha256": "3ccef2ce39c79988c468b89aac228abbf33b3bd3d310b49bcd4480db270c972b",
+    "md5": "f6a72115d7e75cb2414a2911efe9f2d2"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/1074/midas-open_uk-hourly-weather-obs_dv-202607_cumbria_01074_warcop-range_qcv-1_2023.csv": {
+    "bytes": 3205015,
+    "sha256": "12239010b8fff2a4c83660e7aa0b784a1d12308e8449bc97cd2e6d3e62f6a88c",
+    "md5": "1755de958c557b1f653c5c6f7519e951"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/1074/midas-open_uk-hourly-weather-obs_dv-202607_cumbria_01074_warcop-range_qcv-1_2024.csv": {
+    "bytes": 3220606,
+    "sha256": "3b0633c500da23efd2c0d78cf3b1bfc6e49ed41635cb5108e0e755a229e87ee4",
+    "md5": "ee3f76f52510ed1f046775f80d604e0d"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/1074/midas-open_uk-hourly-weather-obs_dv-202607_cumbria_01074_warcop-range_qcv-1_2016.csv": {
+    "bytes": 3124669,
+    "sha256": "742d75c595a27681121208d1100603f55ff977df185dbd710c062c5996c1cb78",
+    "md5": "17301d31049edb10304b6ab8afd37de3"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/1074/midas-open_uk-hourly-weather-obs_dv-202607_cumbria_01074_warcop-range_qcv-1_2017.csv": {
+    "bytes": 3196182,
+    "sha256": "585a8eb7cf5f75159be7f8016f6cb0c810628b030e22def117543dbd8da78a09",
+    "md5": "51147f73897d45f0b451fa5f48eb8fe2"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/1074/midas-open_uk-hourly-weather-obs_dv-202607_cumbria_01074_warcop-range_qcv-1_2018.csv": {
+    "bytes": 3202528,
+    "sha256": "1fba4877e61167944477acef8e3e1917a5a9da618d2dcce9650af166b9bbf755",
+    "md5": "d1a233bd6bd43d8ba13c4595fd65a942"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/1074/midas-open_uk-hourly-weather-obs_dv-202607_cumbria_01074_warcop-range_qcv-1_2019.csv": {
+    "bytes": 3203567,
+    "sha256": "76486cf37e13e8850ffcf9a0e156c6704015e898f3cf468c50933542e0ee7e21",
+    "md5": "c7e97d1a873530415e9be67f598e99b9"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/1074/midas-open_uk-hourly-weather-obs_dv-202607_cumbria_01074_warcop-range_qcv-1_2020.csv": {
+    "bytes": 3213858,
+    "sha256": "f090bb72a16f39d6105b97aaba914d31f6665f9d4704983eb43eefaf7f433d28",
+    "md5": "f73522db77996be733fd7431c889aee0"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/1074/midas-open_uk-hourly-weather-obs_dv-202607_cumbria_01074_warcop-range_qcv-1_2021.csv": {
+    "bytes": 3211547,
+    "sha256": "0aef60666bc108da1a7df448321a89d22951466d0b291d9e22b6ee6c82fa8259",
+    "md5": "20628e362a9890cda6459d6f91e882c2"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/1076/midas-open_uk-hourly-weather-obs_dv-202607_cumbria_01076_spadeadam-no-2_qcv-1_2022.csv": {
+    "bytes": 3071707,
+    "sha256": "73b2766e847f6ee92c0f40a11b23299d0b95eeb190cff77c5d2487232aceb3d3",
+    "md5": "6b17ed9a4b11e108bbb939977065022b"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/1076/midas-open_uk-hourly-weather-obs_dv-202607_cumbria_01076_spadeadam-no-2_qcv-1_2023.csv": {
+    "bytes": 3031417,
+    "sha256": "c8ae4c33c4dd216bb54b075e447e25210b87825ec20808e24886f254c9dba556",
+    "md5": "6d2f54d3b909f29a503872f0e3f27d02"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/1076/midas-open_uk-hourly-weather-obs_dv-202607_cumbria_01076_spadeadam-no-2_qcv-1_2024.csv": {
+    "bytes": 2923574,
+    "sha256": "931f9a2b0c8920fa49d66d4774423875e3ccc7603d1c5448f62d2a5878168487",
+    "md5": "0b700263e2535296a31897c66baed677"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/1076/midas-open_uk-hourly-weather-obs_dv-202607_cumbria_01076_spadeadam-no-2_qcv-1_2016.csv": {
+    "bytes": 3201415,
+    "sha256": "0653d9b45dd87c9a9e639978167063210bbb52d7e7d67ab05c00628b289c4837",
+    "md5": "e4587d8aa367452de0bfb97a6c629fd6"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/1076/midas-open_uk-hourly-weather-obs_dv-202607_cumbria_01076_spadeadam-no-2_qcv-1_2017.csv": {
+    "bytes": 3197150,
+    "sha256": "c1fe2d43f9d83089b6e95c2641e76db4207a138d1149abadfe7c13b2c162d56d",
+    "md5": "3c28cc96ed0d47032b590210a49f4e97"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/1076/midas-open_uk-hourly-weather-obs_dv-202607_cumbria_01076_spadeadam-no-2_qcv-1_2018.csv": {
+    "bytes": 3208282,
+    "sha256": "d68c8427fd9a9d3e606e5b7aec0dfb752bc2b3e58f8bacdecf43e5be8165e1c5",
+    "md5": "e0e4157c7b9409646de87eb798d5371d"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/1076/midas-open_uk-hourly-weather-obs_dv-202607_cumbria_01076_spadeadam-no-2_qcv-1_2019.csv": {
+    "bytes": 3198885,
+    "sha256": "1afdb43715f17426374e24982afb1060890c23b6308dc4f3550871e8da3d22ec",
+    "md5": "8424672655eb9d4c74cb9a46d7120ce7"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/1076/midas-open_uk-hourly-weather-obs_dv-202607_cumbria_01076_spadeadam-no-2_qcv-1_2020.csv": {
+    "bytes": 3206707,
+    "sha256": "891d5fae3077f204e6e5d7dace24823c1fd1e3de03b529c67718327b28a850dd",
+    "md5": "6b319afbce28b03f8456f426229eb931"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/1076/midas-open_uk-hourly-weather-obs_dv-202607_cumbria_01076_spadeadam-no-2_qcv-1_2021.csv": {
+    "bytes": 2733107,
+    "sha256": "a276cb33487ad358b6704788236f87d1c6fd922555b31d68b83d2ca30e9f0751",
+    "md5": "23a35565408354fa15f0e3d30531cef9"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/1085/midas-open_uk-hourly-weather-obs_dv-202607_cumbria_01085_great-dun-fell-no-2_qcv-1_2022.csv": {
+    "bytes": 3145694,
+    "sha256": "3e987a3cd71ba120e23b6c2496f31e080426b68d9e7c884416338ecd3067ce05",
+    "md5": "1d5110730925c289f9d0e197459cb77c"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/1085/midas-open_uk-hourly-weather-obs_dv-202607_cumbria_01085_great-dun-fell-no-2_qcv-1_2023.csv": {
+    "bytes": 2531629,
+    "sha256": "343358b0ee9c5a02f78923b3f35ef8e6b151c2bd5c897d43d3adbaafccdbcc2b",
+    "md5": "ff8578a98b3ab84fddf51ac18659c98a"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/1085/midas-open_uk-hourly-weather-obs_dv-202607_cumbria_01085_great-dun-fell-no-2_qcv-1_2024.csv": {
+    "bytes": 3125954,
+    "sha256": "26e21bcc6c3d3009ac8aff54b667b7597bab37b74eb015f577b70bd0b9d981a2",
+    "md5": "e52e439f9eb5ed5e5e70daeafa5dfa80"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/1085/midas-open_uk-hourly-weather-obs_dv-202607_cumbria_01085_great-dun-fell-no-2_qcv-1_2016.csv": {
+    "bytes": 3152213,
+    "sha256": "e535a2bd2ae822cd31cdd5ce8215dc0aa88714e8b1b6423a505702dff3d71859",
+    "md5": "300fdd7e468085c21d15f4c8dba076bd"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/1085/midas-open_uk-hourly-weather-obs_dv-202607_cumbria_01085_great-dun-fell-no-2_qcv-1_2017.csv": {
+    "bytes": 3159346,
+    "sha256": "3f6a755a4ec405aaa78f6d7f4e23013c5b188549d1be73af2958987c2132529d",
+    "md5": "4a1999104232aa68983aebe0cc6bec1a"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/1085/midas-open_uk-hourly-weather-obs_dv-202607_cumbria_01085_great-dun-fell-no-2_qcv-1_2018.csv": {
+    "bytes": 3160003,
+    "sha256": "3151735f7a0f592eada29cff5f557bb7f306b752bee210940dacc6d532701e05",
+    "md5": "459fb1bf456560c28e2234ddf5e70701"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/1085/midas-open_uk-hourly-weather-obs_dv-202607_cumbria_01085_great-dun-fell-no-2_qcv-1_2019.csv": {
+    "bytes": 3158886,
+    "sha256": "5d91c1fa0c73a95c76c5453d5353935b713ae6b5824ce1a32ea533d3d10a1b85",
+    "md5": "bcc9d0903fff994fbd6797ea8cc56542"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/1085/midas-open_uk-hourly-weather-obs_dv-202607_cumbria_01085_great-dun-fell-no-2_qcv-1_2020.csv": {
+    "bytes": 3162777,
+    "sha256": "7d64adb24728cdf00ae7d1b8ce565c4ceb7e53283b856d1771cf435adca8c2a2",
+    "md5": "11868b1ea9939b3559199cb18577d916"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/1085/midas-open_uk-hourly-weather-obs_dv-202607_cumbria_01085_great-dun-fell-no-2_qcv-1_2021.csv": {
+    "bytes": 3056471,
+    "sha256": "0bf8252b6f6c4481d05668cc3cb88642c30bbe8f77fcdc84e4ae41472b9b2667",
+    "md5": "61644fa305f8a5f62ebe860ecf1afde0"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/13298/midas-open_uk-hourly-weather-obs_dv-202607_kirkcudbrightshire_13298_barwhillanty-house_qcv-1_2022.csv": {
+    "bytes": 145320,
+    "sha256": "a6276a2038bb5966d9359753f36d058c78e5915d6a024d0d928aba229933ddca",
+    "md5": "b7ada270a3aec0a77716d60f9906a566"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/13298/midas-open_uk-hourly-weather-obs_dv-202607_kirkcudbrightshire_13298_barwhillanty-house_qcv-1_2023.csv": {
+    "bytes": 145934,
+    "sha256": "926fd9a8b1d035c24c15ffc7cfdb5795d97a886f5753c2692e8a91d1072c68cf",
+    "md5": "8fd10db909923b73f9356b5b49f01d7a"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/13298/midas-open_uk-hourly-weather-obs_dv-202607_kirkcudbrightshire_13298_barwhillanty-house_qcv-1_2024.csv": {
+    "bytes": 136888,
+    "sha256": "6369ca0f38324ff7880e010af283379ead69fb62ccda7ce144857576a8fd4e05",
+    "md5": "58038fad4840c7babf1a3ab6aee6bcc1"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/13298/midas-open_uk-hourly-weather-obs_dv-202607_kirkcudbrightshire_13298_barwhillanty-house_qcv-1_2016.csv": {
+    "bytes": 141220,
+    "sha256": "c7131abd6b19e1a2249e3cd3e5bceceea60ef53aabbcc6b39d5d32e38c9defcf",
+    "md5": "8e11f1dec985714a5606362311784c4f"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/13298/midas-open_uk-hourly-weather-obs_dv-202607_kirkcudbrightshire_13298_barwhillanty-house_qcv-1_2017.csv": {
+    "bytes": 144467,
+    "sha256": "72faf35d145d9e4c3017234e476c75bf10a7a0b8d1c6880519aa9deaae7c5d58",
+    "md5": "bc7808460f7d14f469023a335ff9f62b"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/13298/midas-open_uk-hourly-weather-obs_dv-202607_kirkcudbrightshire_13298_barwhillanty-house_qcv-1_2018.csv": {
+    "bytes": 144482,
+    "sha256": "0a3e646c148fce70c7b5b0a61a232c06c467aff987e6c46709411961556fa0ef",
+    "md5": "a7c896ffa5bb2e38e8d77e7e730ae3f0"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/13298/midas-open_uk-hourly-weather-obs_dv-202607_kirkcudbrightshire_13298_barwhillanty-house_qcv-1_2019.csv": {
+    "bytes": 144484,
+    "sha256": "169e92ba63fee8eab1f95687b1dca705db6904eeb896e730824177004f8634a8",
+    "md5": "24d172dc08c0647a6bcbaf42ee04cb3c"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/13298/midas-open_uk-hourly-weather-obs_dv-202607_kirkcudbrightshire_13298_barwhillanty-house_qcv-1_2020.csv": {
+    "bytes": 143844,
+    "sha256": "c337dffea17b0e7649232b660d4768e5411210c54fa67ca5ea417485dde18a40",
+    "md5": "87549a08b6ebf981efffbc3ad87b4bbe"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/13298/midas-open_uk-hourly-weather-obs_dv-202607_kirkcudbrightshire_13298_barwhillanty-house_qcv-1_2021.csv": {
+    "bytes": 144886,
+    "sha256": "f6094251da270cfac16e3c71f305339af88500d80497f418c9e2ff4b64705fe1",
+    "md5": "050941ec4dbba86eff3f65b0f49cf4e7"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/15045/midas-open_uk-hourly-weather-obs_dv-202607_angus_15045_crombie-country-park_qcv-1_2016.csv": {
+    "bytes": 143216,
+    "sha256": "07c59f37603a8ab39c307e2e2e2d962425743d7ed1c0a743a6ba258afcd6cd36",
+    "md5": "809d3c162196b7ed02a6a8efd7b35ae4"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/15045/midas-open_uk-hourly-weather-obs_dv-202607_angus_15045_crombie-country-park_qcv-1_2017.csv": {
+    "bytes": 142348,
+    "sha256": "f9896080abcd888c4b5d83d6fe71a03cb5a9fe45b43010272d79578ac36da0fa",
+    "md5": "fcfd97f2afbf75bcb319e393a1774e88"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/15045/midas-open_uk-hourly-weather-obs_dv-202607_angus_15045_crombie-country-park_qcv-1_2018.csv": {
+    "bytes": 142358,
+    "sha256": "f5b57644eb0301cf6d53b3743380d28adc04d2a5965ecfebd90ff9076a03fe20",
+    "md5": "e74bb6e21f48d337c13e6d74842a0c1b"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/15045/midas-open_uk-hourly-weather-obs_dv-202607_angus_15045_crombie-country-park_qcv-1_2019.csv": {
+    "bytes": 107239,
+    "sha256": "7ff7f6350c89da314d70051c22a10ef780071f07cb8bd24136c4b5d2910a71cd",
+    "md5": "d75518eac06b7fc8ce829aa342eb9186"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/15381/midas-open_uk-hourly-weather-obs_dv-202607_fife_15381_auchtermuchty-rossie_qcv-1_2022.csv": {
+    "bytes": 145122,
+    "sha256": "a113a5ae7dc51281c718ef82d2faf7d5273d711c8f10cc15b93b999a37f45ef5",
+    "md5": "bc8d5a8e13022dc7400edab27e2e4faf"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/15381/midas-open_uk-hourly-weather-obs_dv-202607_fife_15381_auchtermuchty-rossie_qcv-1_2023.csv": {
+    "bytes": 145130,
+    "sha256": "edd0e04da1d9ae239d0f42126e305c289a131af8dc668319d7723e52481403f2",
+    "md5": "c9094fd5edfa6e928e9f21e51f6a54db"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/15381/midas-open_uk-hourly-weather-obs_dv-202607_fife_15381_auchtermuchty-rossie_qcv-1_2024.csv": {
+    "bytes": 145508,
+    "sha256": "2cbe5b34ea802e13f47a7778d4a20461490c169c7c1e538e89ab83c67f913c9e",
+    "md5": "0b694899942b6325dff1d5cb2eef5b92"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/15381/midas-open_uk-hourly-weather-obs_dv-202607_fife_15381_auchtermuchty-rossie_qcv-1_2016.csv": {
+    "bytes": 131267,
+    "sha256": "16357cbc0eb0461458335816a5b9f27a281176fd336783c5df2b647cc9c444fc",
+    "md5": "98d185465d1acc4a89249e3bc9eeba13"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/15381/midas-open_uk-hourly-weather-obs_dv-202607_fife_15381_auchtermuchty-rossie_qcv-1_2017.csv": {
+    "bytes": 144795,
+    "sha256": "d2b7463870613e55698e45dbf288aa4ede70281e419d2b78132c167860d6276d",
+    "md5": "41ea3ff4cc8fb4664a3f95e80d52eac3"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/15381/midas-open_uk-hourly-weather-obs_dv-202607_fife_15381_auchtermuchty-rossie_qcv-1_2018.csv": {
+    "bytes": 144428,
+    "sha256": "d63ad4c3686db10e4846690cd83228c6656be5b938be50baf8cc856bacb85761",
+    "md5": "d43db1a5e6e8b1d9ed33b4619db9d606"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/15381/midas-open_uk-hourly-weather-obs_dv-202607_fife_15381_auchtermuchty-rossie_qcv-1_2019.csv": {
+    "bytes": 145071,
+    "sha256": "a2c1ca27a6dae21adab45c9ffc6960198d8c13f00711f2d311f8b63dfbef6e60",
+    "md5": "d0d1d06e19394d41eda92e4cb93c43f2"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/15381/midas-open_uk-hourly-weather-obs_dv-202607_fife_15381_auchtermuchty-rossie_qcv-1_2020.csv": {
+    "bytes": 145099,
+    "sha256": "832b2e900a4ac23a88dde079d7ae83c1ec50ad945b873123a1c3d59b31c346e8",
+    "md5": "1ee369df0e1d2c6efb16cf91fa36e13e"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/15381/midas-open_uk-hourly-weather-obs_dv-202607_fife_15381_auchtermuchty-rossie_qcv-1_2021.csv": {
+    "bytes": 144058,
+    "sha256": "66f2d9a9f70476b208d084c30a64c436e42fc233e01d9af5fd9e17d0fbd868b0",
+    "md5": "8ae571320173ff53a93d4b6ff9b708ec"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/16031/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_16031_chillingham-barns_qcv-1_2022.csv": {
+    "bytes": 3162051,
+    "sha256": "0ca2ec5eab187131f2272c0420280f2108c5ffcd0831aa553ef5e671b637c593",
+    "md5": "aad8a02031bcfc909ec7d235471f4090"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/16031/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_16031_chillingham-barns_qcv-1_2023.csv": {
+    "bytes": 3168047,
+    "sha256": "632a46d1e2d070e2a71cc0e2929b7bdcd9673d49e57d60f193f1a0c63e3bed38",
+    "md5": "5cdc7e4cf62c5558d6d044d0b5dfa6fc"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/16031/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_16031_chillingham-barns_qcv-1_2024.csv": {
+    "bytes": 3177060,
+    "sha256": "06b639b6b7bcd642d8fb8986c1831b034d8b904dc04d0bc38af22fc7efa41cf8",
+    "md5": "5e5c16c3e6c6e7f5e7a6f3c7b994646e"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/16031/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_16031_chillingham-barns_qcv-1_2016.csv": {
+    "bytes": 3169069,
+    "sha256": "e5b631a70a1c9b9325147b95d09cca4ed0dc329e143ac029ed7128cd3f329430",
+    "md5": "0895e3d75a40e69907c597ef139a4eb8"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/16031/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_16031_chillingham-barns_qcv-1_2017.csv": {
+    "bytes": 3161787,
+    "sha256": "e658461406468c0ddb3fb87946baf6b93c40f1b6653de5f67eb29a120eeedfe0",
+    "md5": "b4581fd83d41206deec47a8dc2c3023d"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/16031/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_16031_chillingham-barns_qcv-1_2018.csv": {
+    "bytes": 3159245,
+    "sha256": "8e57e22066c5467c10d255647af265ca4f988c96aeea32387d15b789e8b9934a",
+    "md5": "0f998d959eb74b7a6a7f2d16d004eb61"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/16031/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_16031_chillingham-barns_qcv-1_2019.csv": {
+    "bytes": 3121559,
+    "sha256": "60611de0598990ecdd6f1f3243519956861173cd3d56c0ea17973ca39501a345",
+    "md5": "2275525647b31c779e55769febfdafd0"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/16031/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_16031_chillingham-barns_qcv-1_2020.csv": {
+    "bytes": 3166646,
+    "sha256": "31839707fb65b98a3cfc7a90e4b37c7a9da6cc617998a6d76f0a22cc121b2664",
+    "md5": "897aa4fae24b8c9bcd29907519b329ab"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/16031/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_16031_chillingham-barns_qcv-1_2021.csv": {
+    "bytes": 3164041,
+    "sha256": "f5e69cadb6feab0e3d779b8dfd22286dd410e87d058c0fb3aa634ffb619c2a42",
+    "md5": "86844e7c1347d2a445c258b8c5cb31eb"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/16589/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_16589_redesdale-camp_qcv-1_2022.csv": {
+    "bytes": 3225421,
+    "sha256": "0b5d34b68dcbcf6117ed12d92c85703f4506035489f4c65efde8dd7530c96810",
+    "md5": "a36543074460ee97ccfb2372455f6caf"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/16589/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_16589_redesdale-camp_qcv-1_2023.csv": {
+    "bytes": 3223744,
+    "sha256": "06662ce91cae81670957dc95061ebe95db543a2e5dc6225fdf1d20efd04e05c9",
+    "md5": "992dcc8252cea5d40d16610023aa3c56"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/16589/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_16589_redesdale-camp_qcv-1_2024.csv": {
+    "bytes": 3228804,
+    "sha256": "8135d726fdf05c53aaa2f3a1651ee5081a54386db965c40f1a63c7a62a2c9cec",
+    "md5": "4d2e2d235df4b921f2fabd05494b703f"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/16589/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_16589_redesdale-camp_qcv-1_2016.csv": {
+    "bytes": 3225138,
+    "sha256": "8a82fe08b7c0a12f8f0ef1175affdf255dc7580378753b0967b989d5f056ea9e",
+    "md5": "4bccf5b2569b9a143f42bba4f34cab45"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/16589/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_16589_redesdale-camp_qcv-1_2017.csv": {
+    "bytes": 3214354,
+    "sha256": "0f3574ceb46dd0d29bb8416f6f6c777a9ad91a2993fa88e0b3852e2d58e46881",
+    "md5": "e79fff39faf7f325f4a7740fff468686"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/16589/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_16589_redesdale-camp_qcv-1_2018.csv": {
+    "bytes": 3215973,
+    "sha256": "ae88076d1aa3d9416ff95e433e207c257bd87b3760f5b97f79f2adb75ae3efc4",
+    "md5": "267c6317e971a79d4c4cbae5af93f21e"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/16589/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_16589_redesdale-camp_qcv-1_2019.csv": {
+    "bytes": 3215735,
+    "sha256": "b882d279d5736beb5bb6eb80c8c06444c967817bc244a81f902de9ca9181eff8",
+    "md5": "4c01cbbcf427475e47710f0e0b1c146e"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/16589/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_16589_redesdale-camp_qcv-1_2020.csv": {
+    "bytes": 3222873,
+    "sha256": "2ef45cab5e58a7e6b09176520db1619278d5c30952537ce3f91a0f25391437e6",
+    "md5": "eb79d2f9c0bb1d6f98cba61643e6dbca"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/16589/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_16589_redesdale-camp_qcv-1_2021.csv": {
+    "bytes": 3219271,
+    "sha256": "7bf43156d49f9ac7e1633290030fa462837ba2c063451cbb209aa43941cea436",
+    "md5": "32ead72dde6dbb92301f523f0569b4ce"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/17182/midas-open_uk-hourly-weather-obs_dv-202607_durham_17182_copley_qcv-1_2022.csv": {
+    "bytes": 145508,
+    "sha256": "c4a47966c2d733d885e7b63bd18eb9d9531650775eb30c0399014c354c87bb5b",
+    "md5": "1de184659589f82631243dc2f973b91b"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/17182/midas-open_uk-hourly-weather-obs_dv-202607_durham_17182_copley_qcv-1_2023.csv": {
+    "bytes": 145814,
+    "sha256": "f07d460a13332dfc90c7cf223fc013e851b49c98dd4b453a1fdc2e14b4421551",
+    "md5": "044b8a970112f69592d64dfba459ddca"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/17182/midas-open_uk-hourly-weather-obs_dv-202607_durham_17182_copley_qcv-1_2024.csv": {
+    "bytes": 146164,
+    "sha256": "e36fbeac39cc15e32f2133f41badd3419bd055c564f09bbce9c21ad272bd32e6",
+    "md5": "3a400d6e49ceba212bfd7b9b083c1947"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/17182/midas-open_uk-hourly-weather-obs_dv-202607_durham_17182_copley_qcv-1_2016.csv": {
+    "bytes": 146148,
+    "sha256": "0ac09663575bed2ab1e9ccf17e3d43e6128a49e37e85d7235ab71f7ec22e75ba",
+    "md5": "b535a83cc3e2aa293f83e6da51c9357a"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/17182/midas-open_uk-hourly-weather-obs_dv-202607_durham_17182_copley_qcv-1_2017.csv": {
+    "bytes": 145752,
+    "sha256": "4edff601c11cad2a56a4acfb08dcc7f4c90da7c841b71e9bc9f02c433b8ff72a",
+    "md5": "54c0285403e0a27f70b4464a30d38c32"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/17182/midas-open_uk-hourly-weather-obs_dv-202607_durham_17182_copley_qcv-1_2018.csv": {
+    "bytes": 145441,
+    "sha256": "13d5d77f248639fc33813fca52c6e0e0190d8791f797cc391dc4acb420f2e64e",
+    "md5": "f9f8d425643b910df843574430ff5e20"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/17182/midas-open_uk-hourly-weather-obs_dv-202607_durham_17182_copley_qcv-1_2019.csv": {
+    "bytes": 145435,
+    "sha256": "fa23b62104f8458f4969b880e28eedf5ce4a9a6917cde3c38f6d02ad33218d3d",
+    "md5": "19c8a83f7354e48f70bb9fe29bc91247"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/17182/midas-open_uk-hourly-weather-obs_dv-202607_durham_17182_copley_qcv-1_2020.csv": {
+    "bytes": 145062,
+    "sha256": "4eb0398d441864ae822d102cc67ade7fb27a0748fe9936afe36889d71bf8bb6d",
+    "md5": "027952f59226a09300b2fca175cb9a04"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/17182/midas-open_uk-hourly-weather-obs_dv-202607_durham_17182_copley_qcv-1_2021.csv": {
+    "bytes": 145841,
+    "sha256": "5e2c66f66dc9cd2e6749793fd3c352fba9cd5d7005f4351a67822fc172513a76",
+    "md5": "a031d8e5cb7433f4471ee18259c035ec"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/17183/midas-open_uk-hourly-weather-obs_dv-202607_durham_17183_hunt-hall-farm_qcv-1_2022.csv": {
+    "bytes": 145606,
+    "sha256": "a49275790ec301ca94b37904aa52b9f1c073d9e5dc0170eb0403933eb171b9b1",
+    "md5": "b7ac175ed920cd496e1b8d8d25fc666f"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/17183/midas-open_uk-hourly-weather-obs_dv-202607_durham_17183_hunt-hall-farm_qcv-1_2016.csv": {
+    "bytes": 146007,
+    "sha256": "931ac285447f1f3a30073fd339bc429947b5ddaf24d4548af5f85b0c39c897af",
+    "md5": "4adf12866e2d7dcd7657f2089a677794"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/17183/midas-open_uk-hourly-weather-obs_dv-202607_durham_17183_hunt-hall-farm_qcv-1_2017.csv": {
+    "bytes": 145583,
+    "sha256": "ae63c565be4f4879ac8ea4f061345a1f7def7635a16817676109f3468b453e13",
+    "md5": "6d7b994b777995047a9880b3a09ca3e1"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/17183/midas-open_uk-hourly-weather-obs_dv-202607_durham_17183_hunt-hall-farm_qcv-1_2018.csv": {
+    "bytes": 145210,
+    "sha256": "2c05e52ae0dd6aa026b1ad0a61079d28a1df5b1d682af1c31785ee68c1f247c3",
+    "md5": "7153aa6412c33f0335d3f8e63770448a"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/17183/midas-open_uk-hourly-weather-obs_dv-202607_durham_17183_hunt-hall-farm_qcv-1_2019.csv": {
+    "bytes": 145519,
+    "sha256": "71f553e3332b5a5971dab1ee9d8b821a3362b057d92099a90e9faa2db7dced5f",
+    "md5": "fdd280be4fc31fc20d483c39aa3b8615"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/17183/midas-open_uk-hourly-weather-obs_dv-202607_durham_17183_hunt-hall-farm_qcv-1_2020.csv": {
+    "bytes": 145971,
+    "sha256": "e01c6c505fe11ccf844328a74d776ffb7fc5af4744b0788385a62b0868a364e8",
+    "md5": "91793e8f90eeb0d879cc774ae518a2be"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/17183/midas-open_uk-hourly-weather-obs_dv-202607_durham_17183_hunt-hall-farm_qcv-1_2021.csv": {
+    "bytes": 123516,
+    "sha256": "cf5bbe06c467cdcba069f547d487529cb23219bedbc2c715ebef2601b3224cb4",
+    "md5": "caea7077f4ab57266be0e551dd910bce"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/17310/midas-open_uk-hourly-weather-obs_dv-202607_kincardineshire_17310_fettercairn-glensaugh-no-2_qcv-1_2022.csv": {
+    "bytes": 146021,
+    "sha256": "7a5f6a6b944a8791652a29a3b37f5fe71dc16bea9409bc8d1aeea319646ef5ee",
+    "md5": "f56d4c4814a5c40ddf65b83d1b09dce4"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/17310/midas-open_uk-hourly-weather-obs_dv-202607_kincardineshire_17310_fettercairn-glensaugh-no-2_qcv-1_2023.csv": {
+    "bytes": 141924,
+    "sha256": "186614374ef0f294cc4e1ef0515a2fa37b9d27e3789e3ad84e12c5e73b8e1bdd",
+    "md5": "eff56ea41bd2eb2e135dcf91dacd7ace"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/17310/midas-open_uk-hourly-weather-obs_dv-202607_kincardineshire_17310_fettercairn-glensaugh-no-2_qcv-1_2024.csv": {
+    "bytes": 145574,
+    "sha256": "b4421a56e1c092eae618c9adf0dbed760512281f71acd9d8d887a43591886869",
+    "md5": "9722d0aff5665474bef0551a232f8d83"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/17310/midas-open_uk-hourly-weather-obs_dv-202607_kincardineshire_17310_fettercairn-glensaugh-no-2_qcv-1_2016.csv": {
+    "bytes": 131349,
+    "sha256": "83b021729c21f1b569842a378892d6b56addd050a38c9d53cd55da3190b324c1",
+    "md5": "4d012654d19498179d8a808189b563b7"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/17310/midas-open_uk-hourly-weather-obs_dv-202607_kincardineshire_17310_fettercairn-glensaugh-no-2_qcv-1_2017.csv": {
+    "bytes": 145732,
+    "sha256": "67bd958378cc94649b59e5a88137b41983d01406fcc76a6d116de8609c361a3c",
+    "md5": "24970f6ccdf377f5905fce83833f309b"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/17310/midas-open_uk-hourly-weather-obs_dv-202607_kincardineshire_17310_fettercairn-glensaugh-no-2_qcv-1_2018.csv": {
+    "bytes": 144767,
+    "sha256": "0f6f7571608e48c681a531790e5eb2e20536b7310b162da932c6f0668b7296ae",
+    "md5": "a22c3fe6cecc0f78774bc6525a295205"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/17310/midas-open_uk-hourly-weather-obs_dv-202607_kincardineshire_17310_fettercairn-glensaugh-no-2_qcv-1_2019.csv": {
+    "bytes": 145483,
+    "sha256": "d7689e6b53c77d2a2f6d4df76bd5181cdea24c7b54fea00936946476be88fb0a",
+    "md5": "8d1ffd0bdac1276a961dd0d77e735d0f"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/17310/midas-open_uk-hourly-weather-obs_dv-202607_kincardineshire_17310_fettercairn-glensaugh-no-2_qcv-1_2020.csv": {
+    "bytes": 145951,
+    "sha256": "6ed0fc8119018a8ab5473e4f1b0320acd717a2eb6bdf64db06d0fb8a1e838335",
+    "md5": "5099a4ce7f558d8032ef53c65a054123"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/17310/midas-open_uk-hourly-weather-obs_dv-202607_kincardineshire_17310_fettercairn-glensaugh-no-2_qcv-1_2021.csv": {
+    "bytes": 144869,
+    "sha256": "3d17522871ee38a3a9bdc37b74f115a9b015e34c0365ce4d9a25240de5fb4397",
+    "md5": "dde7fe01273710499129e4e53459fed9"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/19259/midas-open_uk-hourly-weather-obs_dv-202607_dumfriesshire_19259_dumfries-crichton-royal-no-2_qcv-1_2022.csv": {
+    "bytes": 67946,
+    "sha256": "26b281c1923f0d6b7c902bf76fd5a2df359e0633bbb3384c5c358807203f7abd",
+    "md5": "87e05e59ed4888a28994c80122af3df1"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/19259/midas-open_uk-hourly-weather-obs_dv-202607_dumfriesshire_19259_dumfries-crichton-royal-no-2_qcv-1_2023.csv": {
+    "bytes": 144149,
+    "sha256": "a9a9a350d4f9aa8abebfbb47acee361b39075c7626818fb03bc0fca93ed48314",
+    "md5": "49ee84e43e0350d054f1a953467e075c"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/19259/midas-open_uk-hourly-weather-obs_dv-202607_dumfriesshire_19259_dumfries-crichton-royal-no-2_qcv-1_2024.csv": {
+    "bytes": 56614,
+    "sha256": "e2bac806dc2fb212cc7100cecb0b4cf8816fbd752f737d9cd73d0d7cfee47821",
+    "md5": "a4bb9f726dd945878b4a334b3da3d381"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/19259/midas-open_uk-hourly-weather-obs_dv-202607_dumfriesshire_19259_dumfries-crichton-royal-no-2_qcv-1_2016.csv": {
+    "bytes": 144650,
+    "sha256": "551772f5e4d41c1cc23f7b3c6d1d9364d1c6711877a8588511e5b5bcf0bdbf6c",
+    "md5": "bd4953062f1ddfbf7c17739d99423b97"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/19259/midas-open_uk-hourly-weather-obs_dv-202607_dumfriesshire_19259_dumfries-crichton-royal-no-2_qcv-1_2017.csv": {
+    "bytes": 143976,
+    "sha256": "6eb973f9c3fccd7c57efcf45bb4671f7310b3bd01cfab411f1ce5b310474f3e4",
+    "md5": "0ad9a7c750029cffc1474d98043cde13"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/19259/midas-open_uk-hourly-weather-obs_dv-202607_dumfriesshire_19259_dumfries-crichton-royal-no-2_qcv-1_2018.csv": {
+    "bytes": 145072,
+    "sha256": "8d69da3727d83bff566049730068f6f9fe42a0fa0c18b4ec2731bbdd4ef0839e",
+    "md5": "af35f86481c563da63f62a1a658fcf35"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/19259/midas-open_uk-hourly-weather-obs_dv-202607_dumfriesshire_19259_dumfries-crichton-royal-no-2_qcv-1_2019.csv": {
+    "bytes": 144371,
+    "sha256": "f3ec947970c6f598fc038f08357ae5147c19dd47392f5a309ca18b58d93ad354",
+    "md5": "dc2b9e4578082e44333fd2729b75d600"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/19259/midas-open_uk-hourly-weather-obs_dv-202607_dumfriesshire_19259_dumfries-crichton-royal-no-2_qcv-1_2020.csv": {
+    "bytes": 144748,
+    "sha256": "b68abf3ca9b4b02e974edad7cee0b7006094b8e3e1de8e546f598d7c5dfdbe2d",
+    "md5": "534f1a0314fcd19c23b694215b8d0df7"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/19259/midas-open_uk-hourly-weather-obs_dv-202607_dumfriesshire_19259_dumfries-crichton-royal-no-2_qcv-1_2021.csv": {
+    "bytes": 145099,
+    "sha256": "4355d11e047784b3b3eb41bf63ba3e521d47972be445ac4d5b1317174db46ea9",
+    "md5": "fdcc1f4a4e282a07a83fe1170d276be8"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/24125/midas-open_uk-hourly-weather-obs_dv-202607_renfrewshire_24125_glasgow-bishopton_qcv-1_2022.csv": {
+    "bytes": 3230219,
+    "sha256": "d538095a365fa69e9864b86a17437f9572c53848928e37f59245fd575877ec82",
+    "md5": "4062405120f29bc2796a4751a5e509de"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/24125/midas-open_uk-hourly-weather-obs_dv-202607_renfrewshire_24125_glasgow-bishopton_qcv-1_2023.csv": {
+    "bytes": 3209055,
+    "sha256": "d12fc3563cc4c84dc73f0eaa111c5c4faf3927f75b9a38e4397b22f1355aaa8f",
+    "md5": "d66578a4785ecb7b75230506f8643cc7"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/24125/midas-open_uk-hourly-weather-obs_dv-202607_renfrewshire_24125_glasgow-bishopton_qcv-1_2024.csv": {
+    "bytes": 3235444,
+    "sha256": "3ee3751894204f408aa26ae1a11bf8dccac690b34a162ba146e19953baefeb99",
+    "md5": "bdcd2ad330d0e3d499709d974a0550c9"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/24125/midas-open_uk-hourly-weather-obs_dv-202607_renfrewshire_24125_glasgow-bishopton_qcv-1_2016.csv": {
+    "bytes": 3156543,
+    "sha256": "8a566ee5fb4f6b5fe35c5057000be45a14efbbad67ef5b55852cd77ef47b7024",
+    "md5": "31cc31cfd7b9ca1ced10c278b9d41ecd"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/24125/midas-open_uk-hourly-weather-obs_dv-202607_renfrewshire_24125_glasgow-bishopton_qcv-1_2017.csv": {
+    "bytes": 3220692,
+    "sha256": "4116ee5d3e1735c5236305e4f8572e0a46c6d8a5005043891816b294272bde05",
+    "md5": "326b8b83491c713aaf0cd704a6e6d40c"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/24125/midas-open_uk-hourly-weather-obs_dv-202607_renfrewshire_24125_glasgow-bishopton_qcv-1_2018.csv": {
+    "bytes": 3220968,
+    "sha256": "a8e4888259f87f14660ae6657be58ebf2452ded5ea0c0a312e9fc796405d1285",
+    "md5": "1c398d9642ee53215dd3b06ec4bc44de"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/24125/midas-open_uk-hourly-weather-obs_dv-202607_renfrewshire_24125_glasgow-bishopton_qcv-1_2019.csv": {
+    "bytes": 3219901,
+    "sha256": "20b370d4d3ff7066aad11b88be12af1efcc0394d70a7a93ea402284e5b3c1c15",
+    "md5": "cb8f7fc6ba42fc4801650997a6e7d0d1"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/24125/midas-open_uk-hourly-weather-obs_dv-202607_renfrewshire_24125_glasgow-bishopton_qcv-1_2020.csv": {
+    "bytes": 3228124,
+    "sha256": "85aca99491d7b253dc1d2189eb2bc0c59f3d302c26d402fca29744ebace74552",
+    "md5": "327d9b0506c768d01b0c34ad0a75658c"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/24125/midas-open_uk-hourly-weather-obs_dv-202607_renfrewshire_24125_glasgow-bishopton_qcv-1_2021.csv": {
+    "bytes": 3221229,
+    "sha256": "3ad8394f684206cc9ea55f91db72afca858ad8b3e1855de55c0bced3e7932fdf",
+    "md5": "0d727397a88d31888997d477e9210f7f"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/24793/midas-open_uk-hourly-weather-obs_dv-202607_cumbria_24793_alston-springhouse-park_qcv-1_2016.csv": {
+    "bytes": 143871,
+    "sha256": "a2e4666d1a9e953d74cd064b45c8e716243a35bdd552ad7ec0e385e15a32b580",
+    "md5": "c80fd8cdc2eeb4feed383032af430c02"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/24793/midas-open_uk-hourly-weather-obs_dv-202607_cumbria_24793_alston-springhouse-park_qcv-1_2017.csv": {
+    "bytes": 143078,
+    "sha256": "3fa5859367e245df636033ee32d359e9654b266881e0899a4594320ce46d54a2",
+    "md5": "09b2cae54c710ace6de1a83b04c71bbd"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/24793/midas-open_uk-hourly-weather-obs_dv-202607_cumbria_24793_alston-springhouse-park_qcv-1_2018.csv": {
+    "bytes": 144496,
+    "sha256": "6c5a12d4ad70e9979ab44c758357ad3b36eb48b79ab07c44cedbe8e92a3338a3",
+    "md5": "3e6bb9810ddd13224057b082d1823e1c"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/24793/midas-open_uk-hourly-weather-obs_dv-202607_cumbria_24793_alston-springhouse-park_qcv-1_2019.csv": {
+    "bytes": 64422,
+    "sha256": "ff1362afd564ccf297df84e791f6b780f2cd83fa62ec78aea7da64fbf10ec685",
+    "md5": "7b487ad71f2d07e87b7b8af9efc86b4d"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/25618/midas-open_uk-hourly-weather-obs_dv-202607_cumbria_25618_brampton-no-3_qcv-1_2022.csv": {
+    "bytes": 145079,
+    "sha256": "f6eb18e9d2d2d728a8367df9e654213dca178aec4678d7b1a7f565d35f102f41",
+    "md5": "a3fa089aa36f351410380c1f91e46358"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/25618/midas-open_uk-hourly-weather-obs_dv-202607_cumbria_25618_brampton-no-3_qcv-1_2023.csv": {
+    "bytes": 145039,
+    "sha256": "dc1aea8f0cab9e946c87eddae081d28243839ce16ed6227ed3e1576598f3f7d4",
+    "md5": "72cc76a0a9f0752a00d8b1a305b208d4"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/25618/midas-open_uk-hourly-weather-obs_dv-202607_cumbria_25618_brampton-no-3_qcv-1_2024.csv": {
+    "bytes": 145426,
+    "sha256": "ae3af3bdf6423e96328c097c077c2985ad7bc7e9636c6e210f5d00918f3dbe18",
+    "md5": "8f3b308618407c4d4421c4a7366d1195"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/25618/midas-open_uk-hourly-weather-obs_dv-202607_cumbria_25618_brampton-no-3_qcv-1_2016.csv": {
+    "bytes": 142818,
+    "sha256": "b5c9c53067e7cc66ba77ac3e39a54e368eb68d5dd988c1d162955509b63a3e47",
+    "md5": "96e385c15c2658b042c2aee6d85a1dd5"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/25618/midas-open_uk-hourly-weather-obs_dv-202607_cumbria_25618_brampton-no-3_qcv-1_2017.csv": {
+    "bytes": 144985,
+    "sha256": "f5eac352ba4fe7fb4a0f4d6b16bc5398b118ca1c68218223e7d689c4e8388831",
+    "md5": "8ef1d3330ed6f227e5f38a92b9b02668"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/25618/midas-open_uk-hourly-weather-obs_dv-202607_cumbria_25618_brampton-no-3_qcv-1_2018.csv": {
+    "bytes": 144985,
+    "sha256": "8f18da26e011f4bf3a8c90cf3445235c2a4808aa3d02454b3f330e832da34b10",
+    "md5": "7401462b45cbd6e25877be15fe5fc60b"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/25618/midas-open_uk-hourly-weather-obs_dv-202607_cumbria_25618_brampton-no-3_qcv-1_2019.csv": {
+    "bytes": 145000,
+    "sha256": "0d8e0ff20688385caedee873e669421f5608d5451355759f1918eb10df288498",
+    "md5": "bcc66790947ea3b004270cff8c72389c"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/25618/midas-open_uk-hourly-weather-obs_dv-202607_cumbria_25618_brampton-no-3_qcv-1_2020.csv": {
+    "bytes": 145335,
+    "sha256": "ab35f48c9d3b8557c2b2114d0082edec566854037854ef5b03c19520cfb6b50c",
+    "md5": "5c6573e03fc9dafe62c8421d0e79a65a"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/25618/midas-open_uk-hourly-weather-obs_dv-202607_cumbria_25618_brampton-no-3_qcv-1_2021.csv": {
+    "bytes": 145019,
+    "sha256": "3b75905fc386cd1cf6e87b32d712d99e1a41f5c5666cc2968ff6b874c9ecfd01",
+    "md5": "59c775c7c21215fa32fafdad9ff8b92f"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/30523/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_30523_albemarle_qcv-1_2022.csv": {
+    "bytes": 3227246,
+    "sha256": "718e5decca52abd481003a5e2c72d3ab03be71204adca09bdccd5aeab8343822",
+    "md5": "e021e7bb4e4b2822ecb9fff604027bd9"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/30523/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_30523_albemarle_qcv-1_2023.csv": {
+    "bytes": 3255764,
+    "sha256": "042abb5ab78ccac6d8ca26fc516d07adccd2e002409f522ae0c959007dd47aff",
+    "md5": "6bfe1411d8cb309902735c4e90f898d9"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/30523/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_30523_albemarle_qcv-1_2024.csv": {
+    "bytes": 3266709,
+    "sha256": "df03a6d800ea27e385db34604932fe464262ad4cce19d242ab29aa81ec9d74ae",
+    "md5": "cfbacfceaac2c112960194148bc68c7e"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/30523/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_30523_albemarle_qcv-1_2016.csv": {
+    "bytes": 3224819,
+    "sha256": "480ec144bd40ed9f754aa5aed3fe69b1c1e9f75822bab6b222f6b27ac9066c48",
+    "md5": "1a22f1f242273ef79e13e1cbe37d77dc"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/30523/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_30523_albemarle_qcv-1_2017.csv": {
+    "bytes": 3219352,
+    "sha256": "a8c0a083f2bfc88e473a27ec6f985dbae7f16dce3a4ee84409d88f4515a59068",
+    "md5": "b7b8807fb308dfbf40638ee1bf74cac9"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/30523/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_30523_albemarle_qcv-1_2018.csv": {
+    "bytes": 3217380,
+    "sha256": "d400cf61aacbb5cd246bd6e4136f7e0f5ec6d45800a748dd0a71cb58ba29a870",
+    "md5": "1b5c9f7d48da9173804e42493563285c"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/30523/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_30523_albemarle_qcv-1_2019.csv": {
+    "bytes": 3216085,
+    "sha256": "2203188008de152a01c268203ef10bb337523887e588e735c2bbf43643a74174",
+    "md5": "b64b3fa4c0718c08b77a0fcfe6406c0d"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/30523/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_30523_albemarle_qcv-1_2020.csv": {
+    "bytes": 3225032,
+    "sha256": "2c9f795c364ca1468ced2a7b7c81a550109ba0ebf8ceee80c2e34eda74ec1046",
+    "md5": "72550710d4201eac7f15ea1d6078bbf4"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/30523/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_30523_albemarle_qcv-1_2021.csv": {
+    "bytes": 3218947,
+    "sha256": "4b46bfdaa1a96a0dab37c576fd266c8cff1732019e9c4fe369a1bfc3a29d87ae",
+    "md5": "73d817ce243d7151c3c40f414971b6e8"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/30747/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_30747_berwick-upon-tweed-murton-farm_qcv-1_2016.csv": {
+    "bytes": 134320,
+    "sha256": "364d2b2de87c46ba785f596bde12f06c26ac75f17d32aeb62e31d63814c46dfe",
+    "md5": "a92d198c15ce0f74b805edbe42f9d719"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/30747/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_30747_berwick-upon-tweed-murton-farm_qcv-1_2017.csv": {
+    "bytes": 26901,
+    "sha256": "1f16fa28b71f347a9516d975628bce37bcb2f3e9a4bd8665607cd872f3f096d9",
+    "md5": "d58f0b44831429433af1daa2bc7491c0"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/55827/midas-open_uk-hourly-weather-obs_dv-202607_aberdeenshire_55827_braemar-no-2_qcv-1_2022.csv": {
+    "bytes": 3166473,
+    "sha256": "f9cf4db92ee63c4b7b74be5d8d31b7e599aa64467a7a5218815560f449e81861",
+    "md5": "e6459779cb046024b1d1179d04369c3c"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/55827/midas-open_uk-hourly-weather-obs_dv-202607_aberdeenshire_55827_braemar-no-2_qcv-1_2023.csv": {
+    "bytes": 3067526,
+    "sha256": "bc27bdbbfb5f4934ced3152d6302524d7b54ccd253aace86a1fe8b8320207545",
+    "md5": "6047832f7e0dc24f39361a606dd2d5eb"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/55827/midas-open_uk-hourly-weather-obs_dv-202607_aberdeenshire_55827_braemar-no-2_qcv-1_2024.csv": {
+    "bytes": 3175234,
+    "sha256": "e3405d6fdf57cb80b3769dd80ac2018aff0f8c94baac02bf7a5cda121dd0f22f",
+    "md5": "7694e43363abe72e30d0581ed98d7254"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/55827/midas-open_uk-hourly-weather-obs_dv-202607_aberdeenshire_55827_braemar-no-2_qcv-1_2016.csv": {
+    "bytes": 3168766,
+    "sha256": "f1454a9c349992f1a6dbeeab7328543e15728277194dca6d7ba473c2f421e481",
+    "md5": "f0324083480275e79826c8d8bd456eb1"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/55827/midas-open_uk-hourly-weather-obs_dv-202607_aberdeenshire_55827_braemar-no-2_qcv-1_2017.csv": {
+    "bytes": 3159702,
+    "sha256": "d2a13072c16a74793fc1f4607fc9105e83ee63e4fb1cf52888da22ad858e3442",
+    "md5": "b821e02003aac930ac8151dc503a6719"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/55827/midas-open_uk-hourly-weather-obs_dv-202607_aberdeenshire_55827_braemar-no-2_qcv-1_2018.csv": {
+    "bytes": 3139458,
+    "sha256": "d99c2129b90b32e31cc1ae58fce0931c1465c1c01a619464b524f31e2d66ee7e",
+    "md5": "0b475e46df324337f33b1fc82f991344"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/55827/midas-open_uk-hourly-weather-obs_dv-202607_aberdeenshire_55827_braemar-no-2_qcv-1_2019.csv": {
+    "bytes": 3158772,
+    "sha256": "7ed12aa2ab565bcf95fb2ee476984ecacee3d664befc08121ce4ad7ab707d346",
+    "md5": "844bb859e2262b9a9841f6f243be394d"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/55827/midas-open_uk-hourly-weather-obs_dv-202607_aberdeenshire_55827_braemar-no-2_qcv-1_2020.csv": {
+    "bytes": 3158621,
+    "sha256": "b15c0fed20796ab6c59565c973a209cf6e49e678d7a53cd186584785725da122",
+    "md5": "aa1ab0f3b057ac7f7031b74f45b410ce"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/55827/midas-open_uk-hourly-weather-obs_dv-202607_aberdeenshire_55827_braemar-no-2_qcv-1_2021.csv": {
+    "bytes": 3161517,
+    "sha256": "e4a798ddd614d063cae38d2bab8bfa4eda5a43ab039f20236300d3f66e5268ba",
+    "md5": "940cfb52755370486bc37d058ec0cad9"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/56107/midas-open_uk-hourly-weather-obs_dv-202607_ayrshire_56107_darvel-hillview_qcv-1_2022.csv": {
+    "bytes": 144053,
+    "sha256": "61de9ea66886bd5c295b57402dc2d37f7fda7523c8dfe4d1b78654139ff78fa2",
+    "md5": "a3a57e1dcf92001565d584437f74e1ec"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/56107/midas-open_uk-hourly-weather-obs_dv-202607_ayrshire_56107_darvel-hillview_qcv-1_2023.csv": {
+    "bytes": 144021,
+    "sha256": "d67fe7c5470ead53c1b79efa57e1534e143aa2f90e5e2134a5df56c9cfbe9876",
+    "md5": "f45fb511e49f0ecee1ef933327caf410"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/56107/midas-open_uk-hourly-weather-obs_dv-202607_ayrshire_56107_darvel-hillview_qcv-1_2024.csv": {
+    "bytes": 144925,
+    "sha256": "9ce3e4d6d315292634495d35cbad657fc3775e6e1eb3c43f683f1f1b2e0de6e1",
+    "md5": "cba3bc9c6deca659b172fa794e70ec46"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/56107/midas-open_uk-hourly-weather-obs_dv-202607_ayrshire_56107_darvel-hillview_qcv-1_2018.csv": {
+    "bytes": 130112,
+    "sha256": "60378c1932c6350fe7d420293a09f144a12ecf05cfe9b8bf313711f590b68be0",
+    "md5": "b783482cd98eab307cbc2a54133ea2f6"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/56107/midas-open_uk-hourly-weather-obs_dv-202607_ayrshire_56107_darvel-hillview_qcv-1_2019.csv": {
+    "bytes": 144237,
+    "sha256": "4dec263c848b1ca2ed96751ec08323178ec7a971a58291b885c0595e5ba5ebf7",
+    "md5": "f796a86b021b10885e3dac01da400b45"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/56107/midas-open_uk-hourly-weather-obs_dv-202607_ayrshire_56107_darvel-hillview_qcv-1_2020.csv": {
+    "bytes": 145082,
+    "sha256": "910aabd9d0086a00c50098e2f0c288cebb62a0c5022a379a2c8cd4b136bc2e6b",
+    "md5": "b13afc647b45191dfe53d282d30a8c45"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/56107/midas-open_uk-hourly-weather-obs_dv-202607_ayrshire_56107_darvel-hillview_qcv-1_2021.csv": {
+    "bytes": 144735,
+    "sha256": "008e12623db245fe7e20e450cb2bf19b1b37932c99ce74cb3c690243842cf9e0",
+    "md5": "f09d3a73e9b79b607f25188720a0cff7"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/56130/midas-open_uk-hourly-weather-obs_dv-202607_peebleshire_56130_dawyck-botanic-garden_qcv-1_2022.csv": {
+    "bytes": 143747,
+    "sha256": "46e9bb0d2097c08231ee987f536544650724fca861713976cc5c3383253ef366",
+    "md5": "40de5fa026fce743475518eb726bc6af"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/56130/midas-open_uk-hourly-weather-obs_dv-202607_peebleshire_56130_dawyck-botanic-garden_qcv-1_2023.csv": {
+    "bytes": 143339,
+    "sha256": "aeebaf9a1872e4555b85d68590cf4a1bd45418bf9b59baffd6c500ab5c345fd3",
+    "md5": "38c0d66e006dea52bb30e59ccd64898d"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/56130/midas-open_uk-hourly-weather-obs_dv-202607_peebleshire_56130_dawyck-botanic-garden_qcv-1_2024.csv": {
+    "bytes": 140129,
+    "sha256": "116ee7c3d98be4ac3af04fe7b6d42490595a5a658b902b07d3126fc3627dc702",
+    "md5": "1f6383f061f1b9cbfd285e0ff36d360e"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/56130/midas-open_uk-hourly-weather-obs_dv-202607_peebleshire_56130_dawyck-botanic-garden_qcv-1_2016.csv": {
+    "bytes": 141843,
+    "sha256": "879fd50f94cbc66b4e48092ecf1e7160d2db61fa0306703104473b449c84c1b0",
+    "md5": "7f912c31f8b687610d73eafb8334fb09"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/56130/midas-open_uk-hourly-weather-obs_dv-202607_peebleshire_56130_dawyck-botanic-garden_qcv-1_2017.csv": {
+    "bytes": 143248,
+    "sha256": "7718069a65ddb486bb1ab0bfe90fa6bb38b9ec34f82363e5d9c706a12ca12d13",
+    "md5": "e8663c23ac831a81e070aa4da489254c"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/56130/midas-open_uk-hourly-weather-obs_dv-202607_peebleshire_56130_dawyck-botanic-garden_qcv-1_2018.csv": {
+    "bytes": 143286,
+    "sha256": "0bb225af9bb6c3f2da29aeada1d934e73d67f5f1c0cc2584b3cd746cb92ffef9",
+    "md5": "2510539e6e8f34b87cd7888a94079d1c"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/56130/midas-open_uk-hourly-weather-obs_dv-202607_peebleshire_56130_dawyck-botanic-garden_qcv-1_2019.csv": {
+    "bytes": 143632,
+    "sha256": "7ad1e2f5c44ba996e94a507d8adc133b3fbbf42de5ac27279b5b33b54828ef26",
+    "md5": "a05b12cd8e39b8713434516903dc5165"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/56130/midas-open_uk-hourly-weather-obs_dv-202607_peebleshire_56130_dawyck-botanic-garden_qcv-1_2020.csv": {
+    "bytes": 143615,
+    "sha256": "5c67aa142d755306395d6f594a2a898a6cf761681807160fce2bfe15a57136ce",
+    "md5": "80616bb1d5d527eef7da1d0157ba69dc"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/56130/midas-open_uk-hourly-weather-obs_dv-202607_peebleshire_56130_dawyck-botanic-garden_qcv-1_2021.csv": {
+    "bytes": 143808,
+    "sha256": "590159b0762f3f50d2dd6d4e6765910fb40be573f5da0eef6505e71723c70f1c",
+    "md5": "293cafee899c3570f4b9bedc1cdbcb37"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/61875/midas-open_uk-hourly-weather-obs_dv-202607_cumbria_61875_bewcastle_qcv-1_2022.csv": {
+    "bytes": 144245,
+    "sha256": "256195fdace484857e389656b646ee87986c2551834f67b1c4bf894c57c6c39c",
+    "md5": "e94fc98ceafbcf6ce912d67460f4cbb0"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/61875/midas-open_uk-hourly-weather-obs_dv-202607_cumbria_61875_bewcastle_qcv-1_2023.csv": {
+    "bytes": 143459,
+    "sha256": "bb0b5532a7172f4703a280f04908376600a553b99871eadbf186e96ef6cdcb1e",
+    "md5": "c80a88fa6ffe78476782fd7631865274"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/61875/midas-open_uk-hourly-weather-obs_dv-202607_cumbria_61875_bewcastle_qcv-1_2024.csv": {
+    "bytes": 145244,
+    "sha256": "ab46abfcf314be94c1ca4024225171e447133f1b65ad7def7425398ce1631cdd",
+    "md5": "87dccb38f01e3f9a0d513bbf9e4f76ec"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/61875/midas-open_uk-hourly-weather-obs_dv-202607_cumbria_61875_bewcastle_qcv-1_2016.csv": {
+    "bytes": 145213,
+    "sha256": "aabd3d01c6de15a540b4af82f4eed0617daa8b5cfd95ef060c5850deb499f40c",
+    "md5": "7f93a3e59aa65cb655640ed4ee999f2d"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/61875/midas-open_uk-hourly-weather-obs_dv-202607_cumbria_61875_bewcastle_qcv-1_2017.csv": {
+    "bytes": 142625,
+    "sha256": "43ae8b17dd014ee3946058cd01ad20a05cce315c88069e6c6afe5adc6c7ae119",
+    "md5": "e4af29f30c744a228080352a3b7dcf61"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/61875/midas-open_uk-hourly-weather-obs_dv-202607_cumbria_61875_bewcastle_qcv-1_2018.csv": {
+    "bytes": 144925,
+    "sha256": "c2e78e0008b31d010dc90160eab6b9d32ca61825af4ddf85c94cc22fc6188a05",
+    "md5": "767d15f7346c139aa4143644b3b2a11e"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/61875/midas-open_uk-hourly-weather-obs_dv-202607_cumbria_61875_bewcastle_qcv-1_2019.csv": {
+    "bytes": 144811,
+    "sha256": "57369594d8d6bf8ca043d84833b7551caa4ce4b8899ce10559658cc8009e9a1f",
+    "md5": "52e0cb7c0c44ececfe1446347b771fb7"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/61875/midas-open_uk-hourly-weather-obs_dv-202607_cumbria_61875_bewcastle_qcv-1_2020.csv": {
+    "bytes": 145208,
+    "sha256": "658f1c93437f21c2b6050bad77c28e7316d2e373a91b7deb201928a66aa08742",
+    "md5": "6a2df0a58707a0a2d1bad182f0130b56"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/61875/midas-open_uk-hourly-weather-obs_dv-202607_cumbria_61875_bewcastle_qcv-1_2021.csv": {
+    "bytes": 144925,
+    "sha256": "16755932f08c4dec5baf8145ebb7cd56d37aa43ae00a5fbe0bd556f45e101ac0",
+    "md5": "b088ffcda3698c9c9753ea9d7e6015a3"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/62039/midas-open_uk-hourly-weather-obs_dv-202607_fife_62039_baintown_qcv-1_2022.csv": {
+    "bytes": 142950,
+    "sha256": "7cd9e4c563e5b9c7f786bd3f0c1ac86104fde2519b714d375feaf0548e593366",
+    "md5": "b17434887ae283db6e5d1e7499c9d1d9"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/62039/midas-open_uk-hourly-weather-obs_dv-202607_fife_62039_baintown_qcv-1_2023.csv": {
+    "bytes": 143254,
+    "sha256": "3199a2ba2a9e1a9687981d6a36e4784746aa2247f8e0273baec5c7e68b98c88d",
+    "md5": "6eb041998a1c6870c0dbbb4a16f41a87"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/62039/midas-open_uk-hourly-weather-obs_dv-202607_fife_62039_baintown_qcv-1_2024.csv": {
+    "bytes": 143963,
+    "sha256": "eb0d126d95100f212bd3d1985dec2fee37163e702ced25dc55001d5c272de0fe",
+    "md5": "39b2b2fade37aa08469b8db2ba79ba2e"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/62039/midas-open_uk-hourly-weather-obs_dv-202607_fife_62039_baintown_qcv-1_2016.csv": {
+    "bytes": 142583,
+    "sha256": "c8fc5083eea5df93cece972e91cc6f6332da30499718af9b619b4a893961ed03",
+    "md5": "596551c3b115650f566900284d175514"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/62039/midas-open_uk-hourly-weather-obs_dv-202607_fife_62039_baintown_qcv-1_2017.csv": {
+    "bytes": 143568,
+    "sha256": "feb7d50327309ed1656cc1c090aeb06f04b6b74612e6344258556ab70fbe8bfa",
+    "md5": "bd1df910fb6ffb33fac82c935863b343"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/62039/midas-open_uk-hourly-weather-obs_dv-202607_fife_62039_baintown_qcv-1_2018.csv": {
+    "bytes": 143629,
+    "sha256": "0ced5c1e6e01d2a86aa082733ad1e566edb6b4bba4404714e60989058e8bf562",
+    "md5": "c60768c90eda40c10fa1de3ed958804e"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/62039/midas-open_uk-hourly-weather-obs_dv-202607_fife_62039_baintown_qcv-1_2019.csv": {
+    "bytes": 142875,
+    "sha256": "b973080ec5f53d3554765c550c87a524835c5c607dbe3819981dad5c1616be67",
+    "md5": "7e4474d1721ee36b7d01296953d2de84"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/62039/midas-open_uk-hourly-weather-obs_dv-202607_fife_62039_baintown_qcv-1_2020.csv": {
+    "bytes": 143587,
+    "sha256": "de7da9dd50f3decee5d34b29b6392bd6ac13fd19bcd5705bd33b8aff00d8f8a2",
+    "md5": "4901b5364e72f640680a589a5b052daf"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/62039/midas-open_uk-hourly-weather-obs_dv-202607_fife_62039_baintown_qcv-1_2021.csv": {
+    "bytes": 142933,
+    "sha256": "9640eaae1b0d0efc8982306eb9b8d48cfd7840c61095debb9c0f8dd603453e2b",
+    "md5": "8bd0e8dfb0c934891d62592f851c9f14"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/62213/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_62213_brizlee-wood_qcv-1_2022.csv": {
+    "bytes": 3063812,
+    "sha256": "89e23196da7bf7d1e63e08da276188a44573399a7abec57615ed8f991e7b47aa",
+    "md5": "810051481f8e88e3a834dc62d0d72d29"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/62213/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_62213_brizlee-wood_qcv-1_2023.csv": {
+    "bytes": 3232624,
+    "sha256": "696e3d8d28c643995b2994f79e916083cd608e2debf7a7becbe21791cd03a0c5",
+    "md5": "7c0a834e94bdf09ff959202c4f711bd5"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/62213/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_62213_brizlee-wood_qcv-1_2024.csv": {
+    "bytes": 2766367,
+    "sha256": "e7362aa6ccd35fd99c37ecc362938edafe31d759226533a5a81468aebc2f73ec",
+    "md5": "69acbc228e793e7c63fd97eba201e252"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/62213/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_62213_brizlee-wood_qcv-1_2021.csv": {
+    "bytes": 2085328,
+    "sha256": "8a320553453c3b27522c349a1827464a7f373def33011a538e16fb3c76dca9bb",
+    "md5": "9e4a66302781669d1b81f9854a51e70d"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/62222/midas-open_uk-hourly-weather-obs_dv-202607_aberdeenshire_62222_craibstone-no-2_qcv-1_2022.csv": {
+    "bytes": 3167432,
+    "sha256": "0f5cc31e3bf6ccc4ab44bab3b8099eb588e20cc6139e2ac07467a228dba991c7",
+    "md5": "749de2ffc28bfa41ba1169777a017cde"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/62222/midas-open_uk-hourly-weather-obs_dv-202607_aberdeenshire_62222_craibstone-no-2_qcv-1_2023.csv": {
+    "bytes": 3146121,
+    "sha256": "1e43dcee8df855b3b54723d369664f297eb61793ca259b801e5a6513455bf853",
+    "md5": "be6eefe5506e53ce89517262503dd0dd"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/62222/midas-open_uk-hourly-weather-obs_dv-202607_aberdeenshire_62222_craibstone-no-2_qcv-1_2024.csv": {
+    "bytes": 3110959,
+    "sha256": "4ef363dccf536618aa85d10ec075ff3339eea77141da840f2109841f45088904",
+    "md5": "46b6f6355e41a7b4dacc3a5f63800b51"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/62222/midas-open_uk-hourly-weather-obs_dv-202607_aberdeenshire_62222_craibstone-no-2_qcv-1_2021.csv": {
+    "bytes": 992070,
+    "sha256": "1e84835170ad3293bb7dc7b3dfc5f9614797ca748b96ef70eeeec569cc4746be",
+    "md5": "331a929920cba4c08085d2bf72897b64"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/62279/midas-open_uk-hourly-weather-obs_dv-202607_angus_62279_tealing_qcv-1_2023.csv": {
+    "bytes": 113513,
+    "sha256": "a60a6bb670d372959070025a44430b002094f91c70907b63035b76a896cf5834",
+    "md5": "bb437f4943b22209dcfe480964e27c87"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/62279/midas-open_uk-hourly-weather-obs_dv-202607_angus_62279_tealing_qcv-1_2024.csv": {
+    "bytes": 143278,
+    "sha256": "b1ed60454d7206ed64cd12e781089fc364ed475c268a96b2a06feffc19a87c00",
+    "md5": "226529a5000784bcae8b132ce5209b44"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst_D2_20261102T014029Z/configs/kelmarsh_arrival_v33_k1.json": {
+    "bytes": 3479,
+    "sha256": "318038be8813f73fd6f72b53bc8bceca664ede42cc6b0e842ced42249a1384d6",
+    "md5": "d66d0eb298234ce33cc49ad8e7e40b68"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst_D2_20261102T014029Z/configs/kelmarsh_upstream_protocol_v32.json": {
+    "bytes": 24563,
+    "sha256": "b9fbdce22a83dd0e5128aa3d9a489cbcb725c4f298f2feba6fe15f028f7a3588",
+    "md5": "9b3424a39f8ed6b7e9f6a61b0b3d9948"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/wind_public_v32/resampled_hourly_scada/kelmarsh_multiyear/hourly/kelmarsh_multiyear_hourly_enriched.csv": {
+    "bytes": 234861334,
+    "sha256": "96acfcabb8399ddca415a61011b3cf02ca9a675d7fcc31f2ef70db89a3cb37ef",
+    "md5": "807353ab7fe66115f0f0636b3c626055"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/wind_public_v32/resampled_hourly_scada/kelmarsh_multiyear/metadata/preparation.json": {
+    "bytes": 48058,
+    "sha256": "6a5a3061a7008f6a4d56f2eba68eb733472aaeb3ed1659594a98463b9d6d7677",
+    "md5": "7510cdcda249c1bb583ed2aa83ad5059"
+  },
+  "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/Kelmarsh/v33_k1b_20261101T003221Z/arms/T21/predictions.npz": {
+    "bytes": 1037673,
+    "sha256": "b09d188bc1ca99adc13a0bef8583f938d843e1cac7b3ca9d96ceb2f6906e9896",
+    "md5": "b7cb1ff8e4af486f5d0129d37957d444"
+  }
+}

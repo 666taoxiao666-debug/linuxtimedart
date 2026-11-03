@@ -1,0 +1,26 @@
+{
+  "all_match": true,
+  "files": 11,
+  "bytes": 13274566,
+  "source_files_unchanged": 5,
+  "registration_identical": true,
+  "protected_scada_members_header_only": 60,
+  "A1": true,
+  "A2": true,
+  "A3": true,
+  "B1_status": "FAIL",
+  "continue_D2": false,
+  "checks": {
+    "a_static_metadata.json": true,
+    "result.json": true,
+    "input_hashes.json": true,
+    "part_A.json": true,
+    "test_year_registration.json": true,
+    "part_B.json": true,
+    "a_scada_coverage.json": true,
+    "audit/launch.json": true,
+    "audit/d2_feasibility_v34_r2_daa3429.log": true,
+    "audit/d2_feasibility_v34_r2_daa3429.process.json": true,
+    "audit/d2_feasibility_v34_r2_daa3429.process.completed.json": true
+  }
+}

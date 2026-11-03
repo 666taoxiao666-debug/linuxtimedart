@@ -1,0 +1,118 @@
+{
+  "B1": false,
+  "B1_status": "FAIL",
+  "threshold_rmse": 180.98952,
+  "windows": 16949,
+  "cohort": "2022 development ALL, h1-4 pooled; identical K1b eval_starts",
+  "curve_fit_years": [
+    2016,
+    2017,
+    2018,
+    2019
+  ],
+  "T21": {
+    "mae": 161.09147995949,
+    "rmse": 241.31936046773868
+  },
+  "power_persistence": {
+    "mae": 193.8727237897657,
+    "rmse": 301.86583812646563
+  },
+  "O_curve": {
+    "pooled": {
+      "mae_lower": 69.52839942105457,
+      "mae_upper": 69.67920204274215,
+      "rmse_lower": 203.6958225777457,
+      "rmse_upper": 204.45206111403635
+    },
+    "by_horizon": [
+      {
+        "mae_lower": 69.5221134599141,
+        "mae_upper": 69.5221134599141,
+        "rmse_lower": 203.83214559881245,
+        "rmse_upper": 203.83214559881245
+      },
+      {
+        "mae_lower": 69.6365936212142,
+        "mae_upper": 69.87789347483834,
+        "rmse_lower": 203.80676830238733,
+        "rmse_upper": 205.01488937314016
+      },
+      {
+        "mae_lower": 69.29661662735732,
+        "mae_upper": 69.53789690732644,
+        "rmse_lower": 202.67231670768336,
+        "rmse_upper": 203.88702590457888
+      },
+      {
+        "mae_lower": 69.65827397573268,
+        "mae_upper": 69.77890432888974,
+        "rmse_lower": 204.46794907163275,
+        "rmse_upper": 205.0707521778759
+      }
+    ],
+    "missing_cells": 5,
+    "affected_windows": 4,
+    "missing_by_horizon": [
+      0,
+      2,
+      2,
+      1
+    ],
+    "curve_output_ranges": {
+      "1": [
+        0.0,
+        2044.8956095377605
+      ],
+      "2": [
+        0.0,
+        2045.3220748077695
+      ],
+      "3": [
+        0.0,
+        2044.5488179524739
+      ],
+      "4": [
+        0.0,
+        2044.770208231609
+      ],
+      "5": [
+        0.0,
+        2041.577380371097
+      ],
+      "6": [
+        0.0,
+        2044.56385565864
+      ]
+    }
+  },
+  "P_curve": {
+    "pooled": {
+      "mae": 225.29561401037566,
+      "rmse": 358.9767899841427
+    },
+    "by_horizon": [
+      {
+        "mae": 163.97031505721128,
+        "rmse": 283.9268615295167
+      },
+      {
+        "mae": 214.67034352574052,
+        "rmse": 341.51587232650354
+      },
+      {
+        "mae": 248.78632807304524,
+        "rmse": 384.0823513432724
+      },
+      {
+        "mae": 273.7554693855057,
+        "rmse": 413.1471125724664
+      }
+    ]
+  },
+  "eval_starts_sha256": "84c9f6e9ff5377330ede884b00647677637a864d94b4aeee7327bb13b0ffb79b",
+  "truth_sha256": "07d495f03be285688659aa15f990129167fc45082591784143375c42a1466408",
+  "O_curve_warning": "noncausal diagnostic using actual future nacelle wind; not a deployable forecast or universal lower bound",
+  "P_curve_issue": "last observed hourly nacelle wind, repeated across four future leads",
+  "elapsed_seconds": 3.2354853540018667
+}

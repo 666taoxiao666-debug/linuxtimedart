@@ -1,0 +1,32 @@
+{
+  "status": "UNASSESSABLE",
+  "error_type": "AttributeError",
+  "error_locations": [
+    {
+      "file": "audit_d2_feasibility_v34.py",
+      "line": 386,
+      "function": "main"
+    },
+    {
+      "file": "audit_d2_feasibility_v34.py",
+      "line": 382,
+      "function": "<lambda>"
+    },
+    {
+      "file": "audit_d2_feasibility_v34.py",
+      "line": 262,
+      "function": "part_a"
+    },
+    {
+      "file": "audit_d2_feasibility_v34.py",
+      "line": 142,
+      "function": "static_metadata"
+    },
+    {
+      "file": "audit_d2_feasibility_v34.py",
+      "line": 142,
+      "function": "<listcomp>"
+    }
+  ],
+  "elapsed_seconds": 31.550359968998237
+}

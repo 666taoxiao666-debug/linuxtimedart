@@ -1,0 +1,67 @@
+{
+  "started_utc": "2026-11-02T01:42:03.939593+00:00",
+  "no_training": true,
+  "no_download": true,
+  "A": {
+    "status": "UNASSESSABLE",
+    "error_type": "AttributeError",
+    "error_locations": [
+      {
+        "file": "audit_d2_feasibility_v34.py",
+        "line": 386,
+        "function": "main"
+      },
+      {
+        "file": "audit_d2_feasibility_v34.py",
+        "line": 382,
+        "function": "<lambda>"
+      },
+      {
+        "file": "audit_d2_feasibility_v34.py",
+        "line": 262,
+        "function": "part_a"
+      },
+      {
+        "file": "audit_d2_feasibility_v34.py",
+        "line": 142,
+        "function": "static_metadata"
+      },
+      {
+        "file": "audit_d2_feasibility_v34.py",
+        "line": 142,
+        "function": "<listcomp>"
+      }
+    ],
+    "elapsed_seconds": 31.550359968998237
+  },
+  "B": {
+    "status": "UNASSESSABLE",
+    "error_type": "ValueError",
+    "error_locations": [
+      {
+        "file": "audit_d2_feasibility_v34.py",
+        "line": 386,
+        "function": "main"
+      },
+      {
+        "file": "audit_d2_feasibility_v34.py",
+        "line": 383,
+        "function": "<lambda>"
+      },
+      {
+        "file": "audit_d2_feasibility_v34.py",
+        "line": 350,
+        "function": "part_b"
+      },
+      {
+        "file": "audit_d2_feasibility_v34.py",
+        "line": 307,
+        "function": "curve_predictions"
+      }
+    ],
+    "elapsed_seconds": 9.541928927006666
+  },
+  "finished_utc": "2026-11-02T01:42:45.032172+00:00",
+  "elapsed_seconds": 41.092873536021216,
+  "continue_D2": false
+}
