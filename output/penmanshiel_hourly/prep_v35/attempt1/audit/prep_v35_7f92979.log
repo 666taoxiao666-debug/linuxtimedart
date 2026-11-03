@@ -1,0 +1,16 @@
+Traceback (most recent call last):
+  File "/home/XT/nuist/pythoncode/TimeDARTFirst_P1_7f92979/scripts/prepare_penmanshiel_v35.py", line 212, in <module>
+    main()
+  File "/home/XT/nuist/pythoncode/TimeDARTFirst_P1_7f92979/scripts/prepare_penmanshiel_v35.py", line 201, in main
+    prepare(args.data_root.resolve(), args.out.resolve())
+  File "/home/XT/nuist/pythoncode/TimeDARTFirst_P1_7f92979/scripts/prepare_penmanshiel_v35.py", line 86, in prepare
+    before = source_code()
+  File "/home/XT/nuist/pythoncode/TimeDARTFirst_P1_7f92979/scripts/prepare_penmanshiel_v35.py", line 35, in source_code
+    return {str(p.relative_to(ROOT)): frozen.digest(p) for p in sorted(paths)}
+  File "/home/XT/nuist/pythoncode/TimeDARTFirst_P1_7f92979/scripts/prepare_penmanshiel_v35.py", line 35, in <dictcomp>
+    return {str(p.relative_to(ROOT)): frozen.digest(p) for p in sorted(paths)}
+  File "/home/XT/nuist/pythoncode/TimeDARTFirst_P1_7f92979/scripts/acquire_hourly_wind_datasets.py", line 70, in digest
+    with Path(path).open("rb") as stream:
+  File "/home/XT/miniconda3/envs/timedart/lib/python3.10/pathlib.py", line 1119, in open
+    return self._accessor.open(self, mode, buffering, encoding, errors,
+FileNotFoundError: [Errno 2] No such file or directory: '/home/XT/nuist/pythoncode/TimeDARTFirst_P1_7f92979/_classes.py'
