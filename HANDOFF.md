@@ -29,14 +29,17 @@
 - 这是 P3 的第 1 轮。方案如果有阻断，而且修法不唯一，就先停在第 1 步之前交回，此时这些年份都还没有解封。
 
 ## Codex → Claude
-<!-- 由 Codex 覆盖。最后更新：2026-11-04，三年授权齐全，P3实现待服务器验收 -->
-轮次: R1/2 | 阶段: P3 | 分支: exp/P3 | 提交号: 协议14ec00a；本次为实现提交
-审查结论: 方案/实现静态审查通过，评级B，0条未解决技术阻断；docs/review/P3-R1-codex.md；服务器测试/smoke尚未验收。
-已直接修复: 无冻结代码改动；按Claude明确授权新增协议、准备包装器、runner及测试；S1–S3只落实执行边界，STAGE_PLAN仍由Claude维护。
+<!-- 由 Codex 覆盖。最后更新：2026-11-04，P3已启动，30分钟静默检查 -->
+轮次: R1/2 | 阶段: P3 | 分支: exp/P3 | 提交号: 协议14ec00a；实现83f44f5；运行代码1981921
+审查结论: 通过，评级B，0条未解决技术阻断；docs/review/P3-R1-codex.md；服务器11测试通过，三折smoke完成。
+已直接修复: 合成模板日期/新列赋值两处确定缺陷（1a958de、1981921），仅synthetic_data，不改真实处理/冻结协议；请事后复核。
 运行信息: P2已合主线0e2e939并推送；本分支从该主线建立，main未动。
 运行信息: 用户明确同意2022后又同意2023/2024；协议已先提交推送14ec00a，SHA256(LF)=a99b7ca91910b159088991bdbc680ba95ed240410e02c414f3e68ada22fe8926。
-运行信息: 静态编译/diff检查通过；接下来在独立服务器worktree测试及--smoke，通过后才真实解封/准备/训练；当前未访问真实测试数值。
+运行信息: worktree=/home/XT/nuist/pythoncode/TimeDARTFirst_P3_83f44f5，HEAD=1981921；run=/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/Penmanshiel/p3_v35_1981921_r1；PID289435已确认存活，正在原始校验/准备阶段。
+运行信息: Python=/home/XT/miniconda3/envs/timedart/bin/python -u scripts/train_penmanshiel_p3_v35.py --data-root /home/XT/nuist/pythoncode/TimeDARTFirst --out <run> --device cuda:0；OPENBLAS_NUM_THREADS=2 OMP_NUM_THREADS=2，脱离SSH运行。
+运行信息: 原始校验/准备失败即停并通知；不擅自续跑。test_evaluation_started出现后绝不重启。原服务器工作区两份文档改动保留；运行worktree干净。
+关键数字: 服务器unittest 11/11通过（3.291s）；GPU smoke三折24个单seed小拟合完成（31.099s）；50个源码文件SHA与Git blob及smoke记录一致后才启动正式实例。
 关键数字: T22/T23/T24三折，8臂×3seed×3=72拟合；确认门槛5000；T24及Z1/Z2只描述。
 关键数字: 全72拟合冻结后独占创建最终测试锁；标记出现后不重启、不补跑；之前最多两次进程尝试，完整拟合按哈希复用。
-需要 Claude 做的: 事后复核实现及S1–S3表述；不更改已冻结协议。结果完成后另行交接。
-需要用户决定: 无；按用户最新偏好，正式运行启动后每30分钟检查，只通知完成、失败或需处理事项，不逐拟合汇报。
+需要 Claude 做的: 事后复核实现及S1–S3表述；不更改已冻结协议或部署源码。结果完成后另行交接；当前没有P3最终指标。
+需要用户决定: 无；监控p3-30已ACTIVE，每30分钟只读检查；正常安静，只通知完成/失败/需处理。无需重复测试或逐拟合汇报。
