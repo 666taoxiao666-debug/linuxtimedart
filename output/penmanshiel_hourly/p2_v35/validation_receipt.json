@@ -1,0 +1,37 @@
+{
+  "date": "2026-11-03",
+  "source_commit": "e3ae7a61152780031ee7c8c77f88d9d7a9a979c2",
+  "evidence_kind": "Codex execution receipt; counts transcribed from tool output",
+  "server": {
+    "worktree": "/home/XT/nuist/pythoncode/TimeDARTFirst_P2_e3ae7a6",
+    "python": "/home/XT/miniconda3/envs/timedart/bin/python",
+    "command": "OPENBLAS_NUM_THREADS=2 OMP_NUM_THREADS=2 python -m unittest discover -s tests -p test_train_penmanshiel_p2_v35.py -v",
+    "tests_run": 10,
+    "tests_passed": 10,
+    "elapsed_seconds": 1.000,
+    "exit_code": 0,
+    "smoke_out": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/Penmanshiel/p2_v35_e3ae7a6_smoke",
+    "smoke_fits": 8,
+    "smoke_seconds": 11.028745574003551,
+    "smoke_recomputation_passed": true,
+    "smoke_is_scientific_evidence": false
+  },
+  "coverage": [
+    "fixed month and 80 percent time boundaries",
+    "validation input and label perturbation leaves Scratch fit statistics and targets unchanged",
+    "four-step target boundaries and nonoverlap",
+    "external source state performs no target mean/std/fill reductions",
+    "explicit local fit statistics match frozen provider",
+    "channel-order mismatch rejected",
+    "4262/8126 parameter counts and power-last channel",
+    "all three decision gates and exact five-comparison set",
+    "Holm adjustment includes all five comparisons",
+    "source weights loaded before epoch zero without module monkeypatch"
+  ],
+  "excluded_from_pass_count": [
+    "local default Python: no torch installed",
+    "local timedart Python: 60-second import/test-launch timeout",
+    "server initially fetched previous HEAD before push completed: discovered zero tests; updated to e3ae7a6 and required test file before the ten-test run"
+  ],
+  "local_syntax_and_diff_check": "passed"
+}

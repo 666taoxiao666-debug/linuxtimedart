@@ -25,17 +25,17 @@
 - 边界：不碰 Penmanshiel 2022 年及以后的数据；K-* 只用 Kelmarsh 2016–2020 年训练；不追加臂，不调超参数，不改冻结模块。
 
 ## Codex → Claude
-<!-- 由 Codex 覆盖。最后更新：2026-11-03，P1已合主线，P2首轮方案审查 -->
-轮次: R1/2 | 阶段: P2 | 分支: exp/P2 | 提交号: P1结题0d06336，主线合并882f30c；P2审查见本次提交
-审查结论: 需修改，评级C，1条阻断R1-B1、2条建议；docs/review/P2-R1-codex.md。
-已直接修复: 无；P1检查器修复由Claude编写，经审查及23/23自测后提交0d06336；P2计划未代改。
-运行信息: 用户已明确批准P1合并；--no-ff合入codex/self-evolving-wiki并推送，exp/P1保留并推送，main未动。
-运行信息: exp/P2从主线882f30c创建；只带入Claude的P2计划并审查，未实现训练脚本、未运行服务器测试/smoke/真实训练。
-运行信息: python tools/collab_check.py及--self-test通过；交接前--codex退出0，冻结哈希全部通过，仅警告R1-B1待Claude决议。本轮未重新生成P1数据或重跑原实验。
-关键数字: P1原Q1–Q4全部通过；14台机组、21通道；train/validation/development_eval ALL窗口64771/35603/38147。
-关键数字: P1历史运行源码、输入及回传SHA核验记录保留在output/penmanshiel_hourly/prep_v35/；检查器现在同时识别原始字节和LF规范SHA，实质变更仍拒绝。
-关键数字: R1-B1合成反例：固定训练80行=10，仅将验证20行从10改1010，整段均值10→210、标准差0→400；训练部分均值不变，说明整段统计引入验证信息。
-关键数字: P2尚无MAE/RMSE/R²或R/Z1/Z2/F1/F3判定；24次拟合尚未启动。
-需要 Claude 做的: 在DECISIONS的P2节决议R1-B1，将Scratch scaler/填补统计限定为切分后前80%拟合行，并明确4步目标切分边界；R2只复核这些改动及本编号。
-需要 Claude 做的: R1-S1/S2为不阻塞建议：明确Scratch学习率及配方比较归因，未过门槛表述为“未获得支持”；不追加臂、不调整已冻结模块。
-需要用户决定: 无。按协作协议v2“有阻断：等Claude给出决议后再动手”，等待Claude修改方案后继续P2。
+<!-- 由 Codex 覆盖。最后更新：2026-11-03，P2复审通过并启动第1真实实例 -->
+轮次: R2/2 | 阶段: P2 | 分支: exp/P2 | 提交号: 实现e3ae7a6；启动记录见本次提交
+审查结论: 通过，评级B，0条剩余阻断；docs/review/P2-R2-codex.md，R1-B1/S1/S2全部解除；AGENTS新增提速条款通过。
+已直接修复: 无额外设计变更；按Claude批准范围实现两个新文件，未改冻结模块或STAGE_PLAN。
+运行信息: 服务器timedart环境10/10合成测试通过；smoke八个臂各1seed/1epoch全部完成，11.029秒，保存数组复算一致；smoke不是正式实验指标。
+运行信息: 本地语法检查通过；默认Python缺torch、timedart加载超时，不记作功能测试通过；服务器首次旧HEAD发现0测试也未计入通过证据。
+运行信息: 第1真实实例PID243138，脱离SSH运行；服务器worktree /home/XT/nuist/pythoncode/TimeDARTFirst_P2_e3ae7a6，HEAD e3ae7a6。
+运行信息: python -u scripts/train_penmanshiel_p2_v35.py --device cuda:0 --data-root /home/XT/nuist/pythoncode/TimeDARTFirst --out /home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/Penmanshiel/p2_v35_e3ae7a6_r1。
+运行信息: 启动前核对smoke完成、源码SHA、同类Python和锁；launch.json登记source_code，process.json登记完整命令；保留日志，不重复启动存活进程。
+关键数字: 8个训练臂×3seed=24拟合；参数last10=4262/upstream=8126；未加臂或调整超参数；FT在epoch0前加载同seed的K-upstream最佳权重。
+关键数字: Scratch仅用各N月前80%拟合统计量；零样本/FT直接使用Kelmarsh统计量；10项测试覆盖扰动不变性、目标边界、5比较Holm、模型计数和微调初始状态。
+关键数字: 尚未完成24拟合，无正式2021开发MAE/RMSE/R²或五比较判定；全部checkpoint选定后才评估，不运行P3。
+需要 Claude 做的: 等真实实例完成并回传结果后，复核实现与结果；本阶段未合主线，P1主线仍882f30c，main未动。
+需要用户决定: 无。
