@@ -1,0 +1,85 @@
+{
+  "training": {
+    "optimizer": "AdamW",
+    "learning_rate": 0.001,
+    "weight_decay": 0.0001,
+    "batch_size": 64,
+    "eval_batch_size": 512,
+    "max_epochs": 20,
+    "patience": 5,
+    "grad_clip_norm": 1,
+    "scheduler": "CosineAnnealingLR",
+    "scheduler_t_max": 20,
+    "scheduler_eta_min": 0,
+    "loss_space": "standardized power",
+    "loss_mae_weight": 0.8,
+    "loss_mse_weight": 0.2,
+    "loss_leads": "uniform",
+    "selection_cohort": "all",
+    "selection_metric": "per fit: validation original-scale MAE on the 2023 ALL cohort (unchanged v28 fit_config)",
+    "epoch0_included": true,
+    "tie_policy": "strictly lower MAE updates; ties keep the earlier epoch",
+    "refit_after_selection": false,
+    "dtype": "float32",
+    "amp": false,
+    "tf32": false,
+    "num_workers": 0,
+    "shuffle": "torch.Generator().manual_seed(seed + epoch)",
+    "same_recipe_as": "v29 TSMixer_last10_all (scripts/train_kelmarsh_multiyear_benchmark.fit_config, unchanged); only the balanced arm overrides the two loss weights"
+  },
+  "families": {
+    "TSMixerBasicSmall": {
+      "factory": "models.TSMixerBasicSmall.Model",
+      "args": {
+        "blocks": 2,
+        "ff_dim": 32,
+        "dropout": 0.1,
+        "norm_eps": 0.001
+      },
+      "parameters": {
+        "last10": 4262,
+        "upstream": 8126
+      }
+    }
+  },
+  "seeds": [
+    2024,
+    2025,
+    2026
+  ],
+  "statistics": {
+    "cohort": "computed separately on test all and test normal",
+    "seed_handling": "losses averaged over the 3 seeds on identical windows",
+    "cluster": "issue time across turbines",
+    "block_length": 8,
+    "replicates": 5000,
+    "seed": 2024,
+    "hac_max_lag": 7,
+    "multiple_testing": "Holm over the C1-C3 MAE Newey-West p-values within each cohort; raw p retained",
+    "rmse": "issue-time block bootstrap of squared-error sums; separate from the MAE CI"
+  },
+  "comparisons": {
+    "R": [
+      "P-upstream",
+      "P-last10"
+    ],
+    "Z1": [
+      "K-upstream",
+      "PersistenceHour"
+    ],
+    "Z2": [
+      "K-upstream",
+      "K-last10"
+    ],
+    "F1": [
+      "FT-1",
+      "Scratch-1"
+    ],
+    "F3": [
+      "FT-3",
+      "Scratch-3"
+    ]
+  },
+  "ft_learning_rate": 0.0001,
+  "smoke": false
+}

@@ -25,18 +25,20 @@
 - 边界：不碰 Penmanshiel 2022 年及以后的数据；K-* 只用 Kelmarsh 2016–2020 年训练；不追加臂，不调超参数，不改冻结模块。
 
 ## Codex → Claude
-<!-- 由 Codex 覆盖。最后更新：2026-11-03，P2拟合完成；SSH故障，结果回传核验待完成 -->
-轮次: R2/2 | 阶段: P2 | 分支: exp/P2 | 提交号: 实现e3ae7a6；启动记录aa37091；状态与提速规则见本次提交
-审查结论: 方案通过，评级B，0条剩余阻断；docs/review/P2-R2-codex.md；AGENTS新增提速4行通过并随本次提交，P2最终结果验收待完成。
-已直接修复: 无新增代码改动；本轮R1-B1已获Claude批准，不援引提速例外；未改冻结模块或STAGE_PLAN。
-运行信息: 服务器10/10合成测试通过，smoke八臂各1seed/1epoch完成（11.029秒），保存数组复算一致；凭据见output/penmanshiel_hourly/p2_v35/validation_receipt.json。
-运行信息: 第1真实实例已观察到24拟合完成、audit/completed.json及result.json、日志[COMPLETE]；原PID243138已退出，没有重跑训练。
+<!-- 由 Codex 覆盖。最后更新：2026-11-03，P2结果回传及哈希核验完成 -->
+轮次: R2/2 | 阶段: P2 | 分支: exp/P2 | 提交号: 实现e3ae7a6；启动aa37091；提速规则e3554d5；结果见本次提交
+审查结论: 通过，评级B，0条剩余阻断；docs/review/P2-R2-codex.md；结果技术核验完成，等待Claude复核科学结论。
+已直接修复: 无新增代码改动；未改冻结模块或STAGE_PLAN；本轮不援引提速例外。
+运行信息: 服务器10/10合成测试通过，smoke八臂各1seed/1epoch完成（11.029秒）；唯一真实实例24/24拟合完成，用时1385.350秒；原PID243138退出，无重跑。
 运行信息: worktree=/home/XT/nuist/pythoncode/TimeDARTFirst_P2_e3ae7a6；run=/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/Penmanshiel/p2_v35_e3ae7a6_r1。
-运行信息: python -u scripts/train_penmanshiel_p2_v35.py --device cuda:0 --data-root /home/XT/nuist/pythoncode/TimeDARTFirst --out <上述run>；完整命令见服务器process.json。
-运行信息: 完成后SSH被重置，重试banner超时；Tailscale预热两次无响应。最终源码/输入/检查点/回传SHA核验及完整用时尚未取回，不记作验收通过。
-关键数字: 8臂×3seed=24拟合已完成；last10=4262参数，上游模型=8126参数；2021开发ALL队列38147窗口。
-关键数字: 已读到的程序判定：R/F1/F3获得支持；Z1/Z2本次开发实验未获得支持。最终数值与哈希审计仍待完成。
-关键数字: 各臂MAE/RMSE/R²、增益CI及Holm p尚未成功回传，不填猜测数字；仅开发证据，F1/F3只比较完整迁移/从零配方。
-需要 Claude 做的: 可复核实现及提速规则；暂勿把本条视为完整结果验收。待Codex回传指标及哈希后再复核结果与后续P3方案。
-待续工作: 网络恢复后先查final_verification.json和元数据tar是否已生成，核验后回传output/penmanshiel_hourly/p2_v35/；仅结果处理，不重复训练；完成后再次提交交接。
-需要用户决定: 无方案选择；当前等待SSH恢复。如持续不可达，请检查服务器连接状态。本阶段未合主线（仍882f30c），main未动，P3未启动。
+运行信息: python -u scripts/train_penmanshiel_p2_v35.py --device cuda:0 --data-root /home/XT/nuist/pythoncode/TimeDARTFirst --out <上述run>；完整命令见process.json。
+运行信息: 网络恢复后完成46源码、184输入（1,117,273,762字节）、120训练产物SHA核验，24份trained与freeze一致；25评估数组哈希留档，保存数组复算报告通过。
+运行信息: stdout关闭后刷新清单；83份元数据及清单回传output/penmanshiel_hourly/p2_v35/并逐文件核对大小/SHA256，未回传权重和数组。
+结果说明: 各臂3seed平均MAE/RMSE/R²及全部CI/p见output/penmanshiel_hourly/p2_v35/RESULTS.md和result.json；2021 ALL=38147窗口，h1–4合并，仅开发证据。
+关键数字: R支持：P-last10→P-upstream MAE 195.5209→184.3714，RMSE 319.8619→299.8978，R² .754390→.784086；MAE增益CI [8.5347,13.9389]，Holm p=4.8457e-15。
+关键数字: Z1未获支持：MAE增益3.0885，CI [-3.4426,10.1698]，Holm p=.365129；Z2未获支持：MAE增益-5.2222，CI [-9.9290,-.1436]，Holm p=.069357。
+关键数字: F1支持：Scratch→FT MAE 314.4308→202.9806，RMSE 415.7316→313.9544；MAE增益CI [104.9873,118.2838]，Holm p=2.7009e-245；三个seed均选epoch0，不能称微调本身有效。
+关键数字: F3支持：Scratch→FT MAE 225.7788→189.0949，RMSE 336.7399→302.7313；MAE增益CI [33.6116,39.9990]，Holm p=9.2960e-110；最佳epoch 7/9/11。
+关键数字: RMSE增益CI依次R [15.1965,24.7787]、Z1 [24.6444,44.1513]、Z2 [-1.1158,13.6349]、F1 [96.1005,110.9388]、F3 [29.0518,40.0922]；统计比较用seed平方误差先平均再开方。
+需要 Claude 做的: 复核P2实现、结果及F1 epoch0解释；F1/F3仅完整配方归因；R满足提请P3条件，请按新流程准备下一阶段方案，不将P2写成独立确认。
+需要用户决定: 当前无；Claude复核后再请用户决定合回主线。主线仍882f30c，main未动，P3未启动。
