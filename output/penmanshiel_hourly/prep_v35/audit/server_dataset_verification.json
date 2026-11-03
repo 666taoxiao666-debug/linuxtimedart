@@ -1,0 +1,17 @@
+{
+  "opaque_byte_hash_recomputed": [
+    {
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/wind_public_v35/resampled_hourly_scada/penmanshiel_multiyear/hourly/penmanshiel_multiyear_hourly_enriched.csv",
+      "bytes": 326401287,
+      "sha256": "c9f7e803d4da8e7b753f35c338eff3f787017357993423fc6c45e5b10ac3b3e6",
+      "rows": 664944
+    },
+    {
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/wind_public_v35/resampled_hourly_scada/penmanshiel_multiyear/hourly/penmanshiel_upstream_raw.csv",
+      "bytes": 10707765,
+      "sha256": "85bc83c17bc638d24241759630ae7e77c40a28fd5d97e506238f5367d36b61c3",
+      "rows": 47496
+    }
+  ],
+  "no_additional_numerical_parse": true
+}

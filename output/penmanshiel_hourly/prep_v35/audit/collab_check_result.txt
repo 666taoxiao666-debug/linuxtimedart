@@ -1,0 +1,22 @@
+Command: python tools/collab_check.py --codex
+Observed exit code: 1
+Result: 1 failure, 2 warnings.
+HANDOFF: Claude 20 lines, Codex 18 lines; PASS.
+STAGE_PLAN: 93/150 lines; PASS.
+Review decisions: R1-B1 and R1-P1 await Claude; WARNING.
+Allowed scope, branch exp/P1, high-risk file checks: PASS.
+Frozen protocols: 14 protocol hashes and 4 launch audits scanned; one mismatch.
+Mismatch: data_provider/__init__.py versus prep_v35/audit/launch.json.
+Pending diff: empty after implementation commit; WARNING.
+
+Evidence for false positive:
+Source commit c51baaf Git blob is two bytes CRLF (0d0a).
+Server runtime byte SHA256 and exact Git blob SHA256:
+7eb70257593da06f682a3ddda54a9d260d4fc514f645237f5ca74b08f8da61a6
+Local working-file byte SHA256 is identical.
+The checker's sha_lf normalization changes the two bytes to one LF (0a):
+01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b
+Independent metadata verification compared all 16 runtime source files to exact
+Git blobs and passed. No frozen source or original launch audit was modified.
+R1-P1 proposes the checker correction; tools/collab_check.py is outside this
+stage's permitted implementation scope. Pending Claude review/approval.

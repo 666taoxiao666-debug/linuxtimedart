@@ -1,0 +1,81 @@
+{
+  "status": "PASS",
+  "gates": {
+    "Q1": true,
+    "Q2": true,
+    "Q3": true,
+    "Q4": true
+  },
+  "start": "2016-08-01T00:00:00Z",
+  "windows": {
+    "train": {
+      "all": 64771,
+      "normal": 60744
+    },
+    "validation": {
+      "all": 35603,
+      "normal": 32764
+    },
+    "development_eval": {
+      "all": 38147,
+      "normal": 34878
+    }
+  },
+  "upstream_missing_by_year": {
+    "2016": {
+      "rows": 51408,
+      "missing_rows": 4928,
+      "missing_fraction": 0.09586056644880174
+    },
+    "2017": {
+      "rows": 122640,
+      "missing_rows": 9226,
+      "missing_fraction": 0.07522831050228311
+    },
+    "2018": {
+      "rows": 122640,
+      "missing_rows": 16492,
+      "missing_fraction": 0.13447488584474887
+    },
+    "2019": {
+      "rows": 122640,
+      "missing_rows": 13132,
+      "missing_fraction": 0.10707762557077626
+    },
+    "2020": {
+      "rows": 122976,
+      "missing_rows": 12670,
+      "missing_fraction": 0.10302823315118396
+    },
+    "2021": {
+      "rows": 122640,
+      "missing_rows": 14700,
+      "missing_fraction": 0.11986301369863013
+    }
+  },
+  "elapsed_seconds": 357.87476521299686,
+  "labels_modified": 0,
+  "labels_clipped": 0,
+  "labels_imputed": 0,
+  "source_unchanged": true,
+  "source_code_after": {
+    "data_provider/__init__.py": "7eb70257593da06f682a3ddda54a9d260d4fc514f645237f5ca74b08f8da61a6",
+    "data_provider/kelmarsh_multiyear.py": "bbf838888b77bae6865d4b2e2443bf42ce898f41dadc027641c149acd868d558",
+    "scripts/acquire_hourly_wind_datasets.py": "9deb94c2bb5d678c0b227c868f787445d179e154005d71a2baa054e8489f2bee",
+    "scripts/prepare_kelmarsh_multiyear.py": "c10e62aa34fb7827c79c4f5d853aae3daa093f0b4a8393e9df0456397d425d97",
+    "scripts/prepare_kelmarsh_multiyear_v31.py": "df468d9e1b780fb559aa946d117edf1fedd871e51c9dd92f4a559cf3a988e2fc",
+    "scripts/prepare_penmanshiel_v35.py": "06ce1a25efd396a7b3fbf9d5a469f33681af780923ec720791d9414d14e1cfca",
+    "scripts/screen_kelmarsh_upstream_observations.py": "c68477c52fa9405b12095560c446f7bfaf160743842efeccc276717070aa214b",
+    "tests/test_prepare_penmanshiel_v35.py": "919b2b27fb82e390f38a88c6680a54274276b6300e36763b362681a58fb2b303",
+    "utils/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "utils/kelmarsh_backbone_information.py": "1354a3905c61a2131cb975def1bccb5ef6083b75ff3615e2f115298a535bfe6c",
+    "utils/kelmarsh_enrichment.py": "6a05295abb1bbe7217dcb43c57ca2501d7b7ad3173431f60a94fba61b2094872",
+    "utils/kelmarsh_multiyear_benchmark.py": "313e2102a80abc931bc2a2640dbd78089777b86f55a867bed289400543caed35",
+    "utils/kelmarsh_operating_state.py": "dc8a4d5534e05a7321ad731d4e847a88bdf3a826c8304cc1bc8829740d0df8e0",
+    "utils/kelmarsh_upstream_v31.py": "66dd2a86694040347c53298be4fd6fc0b18ff2782cece2bcd92f980328a23fcd",
+    "utils/paired_forecast_statistics.py": "b6f8613466ed76b53f64699798d3aac2d04dbcb5ae6dfe6bbdc44eb4f16b3248",
+    "utils/penmanshiel_v35.py": "e65c2949e80fcf976494086d72d5300dd6ec0101cf4a2b5b0768b0a2ed9a1daa"
+  },
+  "protected_content_parsed": false,
+  "training": false
+}

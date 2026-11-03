@@ -1,0 +1,61 @@
+{
+  "utc": "2026-11-03T05:45:31.254329+00:00",
+  "verified_files": 16,
+  "verified_bytes": 209990,
+  "source_files_verified_exact_git_blob": 16,
+  "export_manifest_sha256_verified": true,
+  "gates_recomputed": {
+    "Q1": true,
+    "Q2": true,
+    "Q3": true,
+    "Q4": true
+  },
+  "windows": {
+    "train": {
+      "all": 64771,
+      "normal": 60744
+    },
+    "validation": {
+      "all": 35603,
+      "normal": 32764
+    },
+    "development_eval": {
+      "all": 38147,
+      "normal": 34878
+    }
+  },
+  "start": "2016-08-01T00:00:00Z",
+  "upstream_missing_by_year": {
+    "2016": {
+      "rows": 51408,
+      "missing_rows": 4928,
+      "missing_fraction": 0.09586056644880174
+    },
+    "2017": {
+      "rows": 122640,
+      "missing_rows": 9226,
+      "missing_fraction": 0.07522831050228311
+    },
+    "2018": {
+      "rows": 122640,
+      "missing_rows": 16492,
+      "missing_fraction": 0.13447488584474887
+    },
+    "2019": {
+      "rows": 122640,
+      "missing_rows": 13132,
+      "missing_fraction": 0.10707762557077626
+    },
+    "2020": {
+      "rows": 122976,
+      "missing_rows": 12670,
+      "missing_fraction": 0.10302823315118396
+    },
+    "2021": {
+      "rows": 122640,
+      "missing_rows": 14700,
+      "missing_fraction": 0.11986301369863013
+    }
+  },
+  "raw_data_copied_or_opened_locally": false
+}
