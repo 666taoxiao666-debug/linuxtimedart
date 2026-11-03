@@ -483,7 +483,9 @@ def check_frozen(root):
             if not (isinstance(digest, str) and re.fullmatch(r"[0-9a-f]{64}", digest)):
                 continue
             f = root / rel
-            if not (f.is_file() and sha_lf(f) == digest):    # R1-B1：失配一律失败，交接里提到路径也不放行
+            # R1-B1（K1b 阶段）：失配一律失败，交接里提到路径也不放行。
+            # R1-P1（P1 阶段）：审计可能登记原始字节 SHA，也可能登记换行规范化后的 SHA，两种都认；内容一变，两种都对不上
+            if not (f.is_file() and digest in (sha_lf(f), file_sha(f))):
                 fails.append(f"{rel} 与运行 {run} 的审计登记不一致：已完成运行的源码不能原地改，要改就新开文件或版本")
     if n1 == 0 and n2 == 0:
         return SKIP, "没找到 PROTOCOL_SHA256 常量或 audit/launch.json，跳过", []
@@ -640,6 +642,10 @@ def self_test():
         if mention:
             st.update(extra="- 说明：本轮改了 scripts/frozen.py")
 
+    def crlf_audit(repo, change):                     # P1 阶段 R1-P1：CRLF 源码，审计登记的是原始字节 SHA（基础仓库里已建好）
+        if change:
+            (Path(repo) / "scripts/crlf.py").write_bytes(b"y = 2\r\n")
+
     def main_commit(repo):                            # R1-P1 的对照：在主线上提交了代码
         sh(repo, "checkout", "-q", "main")
         sh(repo, "branch", "-q", "-D", "exp/S1")
@@ -674,6 +680,8 @@ def self_test():
         ("冻结协议被改", 7, lambda r, s: _w(r, "configs/p.json", '{"v": 2}\n'), ()),
         ("运行审计登记的源码被改", 7, lambda r, s: audit_touch(r, s, False), ()),
         ("运行审计登记的源码被改、HANDOFF 里提到了路径", 7, lambda r, s: audit_touch(r, s, True), ()),
+        ("审计登记原始字节 SHA 的 CRLF 源码未改（应通过）", None, lambda r, s: crlf_audit(r, False), ()),
+        ("审计登记原始字节 SHA 的 CRLF 源码被改", 7, lambda r, s: crlf_audit(r, True), ()),
     ]
     tmp = tempfile.mkdtemp(prefix="collab_selftest_")
     bad = 0
@@ -690,6 +698,9 @@ def self_test():
             _w(repo, "scripts/frozen.py", "x = 1\n")
             _w(repo, "output/run1/audit/launch.json",
                json.dumps({"source_code": {"scripts/frozen.py": sha_lf(repo / "scripts/frozen.py")}}) + "\n")
+            (repo / "scripts/crlf.py").write_bytes(b"y = 1\r\n")
+            _w(repo, "output/run2/audit/launch.json",
+               json.dumps({"source_code": {"scripts/crlf.py": file_sha(repo / "scripts/crlf.py")}}) + "\n")
             sh(repo, "add", "-A")
             sh(repo, "commit", "-q", "-m", "init")
             sh(repo, "checkout", "-q", "-b", "exp/S1")

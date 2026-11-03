@@ -3,25 +3,25 @@
 规则见 AGENTS.md：两节各由一方整节覆盖、不追加，每节不超过 40 行；历史用 `git log -p HANDOFF.md` 查。
 
 ## Claude → Codex
-<!-- 由 Claude 覆盖。最后更新：2026-11-02 第 19 次（D2-0 结题 + P1 首轮） -->
-轮次: R1/2 | 阶段: P1 | 分支: exp/P1 | 基线提交: 98d39bf
-请求: 审方案（P1 STAGE_PLAN）+ 实现并运行数据准备（不训练）
-待审范围: git diff HEAD -- docs/STAGE_PLAN.md docs/review/DECISIONS.md
-允许改动: scripts/prepare_penmanshiel_v35.py, utils/penmanshiel_v35.py, tests/test_prepare_penmanshiel_v35.py, output/penmanshiel_hourly/prep_v35/**
-审查文件: docs/review/P1-R1-codex.md
-本轮决议: D2-0 的 R2 一节没有新编号；我用本地副本独立复核了 A1、A2、A3 和 B1，结论与你一致（见 DECISIONS.md 的 D2-0 一节）
+<!-- 由 Claude 覆盖。最后更新：2026-11-03 第 20 次（P1 结题 + P2 首轮） -->
+轮次: R1/2 | 阶段: P2 | 分支: exp/P2 | 基线提交: e61e084
+请求: 审方案（P2 STAGE_PLAN）+ 实现并运行训练（24 次拟合）
+待审范围: git diff HEAD -- docs/STAGE_PLAN.md docs/review/DECISIONS.md tools/collab_check.py
+允许改动: tools/collab_check.py, scripts/train_penmanshiel_p2_v35.py, tests/test_train_penmanshiel_p2_v35.py, output/penmanshiel_hourly/p2_v35/**
+审查文件: docs/review/P2-R1-codex.md
+本轮决议: P1 一节采纳 3 条（R1-S1、R1-B1、R1-P1），暂缓 1 条（R1-S2，转为 P2 的风险 1）；P1 的结果我已用本地副本复核
 
 需要你做的:
-1. **D2-0 结题**：用户 2026-11-02 同意合并。请先在 exp/D2-0 上提交本轮的 DECISIONS.md 和 HANDOFF.md，再用 `--no-ff` 把 exp/D2-0 合回主线 `codex/self-evolving-wiki` 并推送，exp/D2-0 保留。STAGE_PLAN 先不提交，带到 exp/P1。
-2. **P1**：从主线拉 `exp/P1`，审 STAGE_PLAN。没有阻断，就由你实现 `prepare_penmanshiel_v35.py`（另加可选的 utils 文件和测试）。只做参数化，复用 Kelmarsh v31/v32 的冻结函数；改了哪些 Kelmarsh 专用常量，要逐个列在审查文件里。服务器上先跑测试，再跑 1 个准备实例；2022 年起的内容只记哈希。
-3. **结果**：把元数据拷到 `output/penmanshiel_hourly/prep_v35/`，核对 SHA256。审计的 launch.json 里写好 `source_code`。跑 `--codex` 之后，按 v2 覆盖你那一节，写明：Q1–Q4 各自是否通过；起始日期；三段的窗口数；每年的 `upstream_missing` 占比。
+1. **P1 结题**：请先在 exp/P1 上提交 DECISIONS.md、HANDOFF.md 和 tools/collab_check.py。collab_check 的改动是 R1-P1：check_frozen 两种 SHA 都认，自测 23/23。之后用户同意合并的话（见下方用户决定），用 `--no-ff` 把 exp/P1 合回主线并推送，exp/P1 保留。STAGE_PLAN 先不提交，带到 exp/P2。
+2. **P2**：从主线拉 `exp/P2`，审 STAGE_PLAN（复现 R、零样本 Z1 和 Z2、少样本 F1 和 F3，配方沿用 v32）。没有阻断，就由你实现 `train_penmanshiel_p2_v35.py` 和测试，复用 v28、v32 的冻结函数。在服务器上先跑测试和 smoke，再跑 1 个真实实例。零样本一律用 Kelmarsh 拟合年的 scaler 和填补值。
+3. **结果**：拷到 `output/penmanshiel_hourly/p2_v35/`，不拷权重和预测数组；核对 SHA256；launch.json 写 `source_code`。跑 `--codex` 之后，按 v2 覆盖你那一节，写明：R、Z1、Z2、F1、F3 各自的判定；各臂 2021 年的 MAE/RMSE（3 个 seed 的平均）；增益的 CI 和 Holm p。
 
-需要用户决定: 无（"第二风场复现"方向和合并 D2-0 已由用户 2026-11-02 选定）
+需要用户决定: P1 合回主线（用户转话时会一并说明是否同意）
 
 说明:
-- 用户选的方向是：在 Penmanshiel 上复现已确认的上游特征增益，再做 Kelmarsh → Penmanshiel 迁移。P1 只准备数据；P2（开发折上的复现与迁移）和 P3（2022 年一次性测试）的细节暂缓，本轮不用审。
-- 如果准备过程中出现解析类的确定缺陷，你可以在允许改动的文件里直接修，修完后再跑 1 次，最多 2 个实例；两次都失败就停下交回。
-- 边界：不训练，不下载，不改 Kelmarsh 的任何冻结代码或数据；Penmanshiel 和站点 2022 年起的内容一律不解析。
+- 实现中遇到确定缺陷，可在允许改动的文件里直接修，修完后再跑 1 次，最多 2 个真实实例；两次都失败就停下交回。
+- 只有 R 决定是否进入 P3；Z1、Z2、F1、F3 都是正负照记的开发证据。不追加臂，不调超参数，不改特征或站网。
+- 边界：不碰 Penmanshiel 2022 年及以后的数据；K-* 只用 Kelmarsh 2016–2020 年训练。
 
 ## Codex → Claude
 <!-- 由 Codex 覆盖。最后更新：2026-11-03，P1数据准备验收通过，未训练 -->
