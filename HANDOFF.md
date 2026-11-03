@@ -24,20 +24,17 @@
 - 边界：不碰 Penmanshiel 2022 年及以后的数据；K-* 只用 Kelmarsh 2016–2020 年训练。
 
 ## Codex → Claude
-<!-- 由 Codex 覆盖。最后更新：2026-11-03，P1数据准备验收通过，未训练 -->
-轮次: R1/2 | 阶段: P1 | 分支: exp/P1 | 提交号: 实现7f92979，修复c51baaf，结果ad48564；原始日志补入本次提交
-审查结论: 通过，评级B，0条剩余阻断；docs/review/P1-R1-codex.md。P1只证明准备条件满足，不证明预测或迁移增益。
-已直接修复: R1-B1（c51baaf）运行审计将动态模块相对文件名误识别为仓库源码；只修新增文件的路径解析，按第19次解析缺陷补跑授权实施。
-运行信息: D2-0结题5d361cf，已用--no-ff合回主线c1a4ff9并推送，原分支保留；P1从该主线接续，main未动。
-运行信息: 本地纯逻辑及服务器原环境各9/9测试通过；第1实例230898在读数据前失败，原日志/提交保留在结果attempt1/；第2实例231246（监督231245）退出0，357.875秒，无第3实例。
-运行信息: 第2实例2026-11-03 02:31:52–02:37:54 UTC；隔离worktree /home/XT/nuist/pythoncode/TimeDARTFirst_P1_7f92979（运行HEAD c51baaf）。
-运行信息: python -u scripts/prepare_penmanshiel_v35.py --data-root /home/XT/nuist/pythoncode/TimeDARTFirst --out /home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/Penmanshiel/prep_v35_c51baaf_r2；完整命令见audit/*.process.completed.json。
-关键数字: Q1通过：14台真实ID（无03）、21通道同序；起点2016-08-01，逐时664944行，上游47496行。
-关键数字: Q2通过：train2016–19 / validation2020 / development_eval2021的ALL窗口64771 / 35603 / 38147（各≥5000）。
-关键数字: Q3通过：2016–2021 upstream_missing分别9.5861% / 7.5228% / 13.4475% / 10.7078% / 10.3028% / 11.9863%，各≤20%。
-关键数字: Q4通过：标签修改/截断/插补0格；原严格聚合、整行选择及21通道组装后标签一致；仅上游输入按训练年均值填补。
-关键数字: 120输入文件大小/哈希符合D2登记；16项运行源码前后不变并与提交对象逐字节核对；回传清单内16文件209990字节SHA一致，清单自身SHA也已独立核对。
-运行信息: 数据留服务器datasets/wind_public_v35/resampled_hourly_scada/penmanshiel_multiyear/；两CSV已复算SHA256，见audit/server_dataset_verification.json。本地只存output/penmanshiel_hourly/prep_v35/元数据。
-运行信息: audit/launch.json有source_code；audit/verify_metadata.py独立复核闸门、源码、回传哈希，退出0；首次路径缺陷及本地CRLF/Git字节核验差异均有记录。未训练/下载，2022+仅验字节，不读表头。
-需要 Claude 做的: 复核P1实现、R1-B1修复及结果，并决议R1-P1检查器修复提案；确认后另写P2方案。P1未合主线，不启动P2/P3。
-需要用户决定: --codex退出1：检查器sha_lf误报历史CRLF文件（原始字节与Git对象均一致）；tools/collab_check.py超出本轮允许改动，已提R1-P1待Claude批准，未擅改；P1合并仍须复核和用户同意。
+<!-- 由 Codex 覆盖。最后更新：2026-11-03，P1已合主线，P2首轮方案审查 -->
+轮次: R1/2 | 阶段: P2 | 分支: exp/P2 | 提交号: P1结题0d06336，主线合并882f30c；P2审查见本次提交
+审查结论: 需修改，评级C，1条阻断R1-B1、2条建议；docs/review/P2-R1-codex.md。
+已直接修复: 无；P1检查器修复由Claude编写，经审查及23/23自测后提交0d06336；P2计划未代改。
+运行信息: 用户已明确批准P1合并；--no-ff合入codex/self-evolving-wiki并推送，exp/P1保留并推送，main未动。
+运行信息: exp/P2从主线882f30c创建；只带入Claude的P2计划并审查，未实现训练脚本、未运行服务器测试/smoke/真实训练。
+运行信息: python tools/collab_check.py及--self-test通过；交接前--codex退出0，冻结哈希全部通过，仅警告R1-B1待Claude决议。本轮未重新生成P1数据或重跑原实验。
+关键数字: P1原Q1–Q4全部通过；14台机组、21通道；train/validation/development_eval ALL窗口64771/35603/38147。
+关键数字: P1历史运行源码、输入及回传SHA核验记录保留在output/penmanshiel_hourly/prep_v35/；检查器现在同时识别原始字节和LF规范SHA，实质变更仍拒绝。
+关键数字: R1-B1合成反例：固定训练80行=10，仅将验证20行从10改1010，整段均值10→210、标准差0→400；训练部分均值不变，说明整段统计引入验证信息。
+关键数字: P2尚无MAE/RMSE/R²或R/Z1/Z2/F1/F3判定；24次拟合尚未启动。
+需要 Claude 做的: 在DECISIONS的P2节决议R1-B1，将Scratch scaler/填补统计限定为切分后前80%拟合行，并明确4步目标切分边界；R2只复核这些改动及本编号。
+需要 Claude 做的: R1-S1/S2为不阻塞建议：明确Scratch学习率及配方比较归因，未过门槛表述为“未获得支持”；不追加臂、不调整已冻结模块。
+需要用户决定: 无。按协作协议v2“有阻断：等Claude给出决议后再动手”，等待Claude修改方案后继续P2。
