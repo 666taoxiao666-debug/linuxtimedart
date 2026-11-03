@@ -28,7 +28,9 @@ def source_code():
     paths = {Path(__file__).resolve(), ROOT / "tests/test_prepare_penmanshiel_v35.py"}
     for module in list(sys.modules.values()):
         name = getattr(module, "__file__", None)
-        if name:
+        # Runtime-generated modules (e.g. torch's _classes.py) can advertise a
+        # bare filename. It is not a repository path relative to our cwd.
+        if name and Path(name).is_absolute():
             path = Path(name).resolve()
             if path.suffix == ".py" and ROOT in path.parents:
                 paths.add(path)

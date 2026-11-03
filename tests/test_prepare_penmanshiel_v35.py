@@ -1,11 +1,13 @@
 """Synthetic P1 boundaries: farm identities, sealed inputs, original labels and causal assembly."""
 import unittest
+import types
 from unittest.mock import patch
 
 import numpy as np
 import pandas as pd
 
 from scripts.prepare_kelmarsh_multiyear_v31 import canonical_ticks
+from scripts import prepare_penmanshiel_v35 as prepare
 from utils import kelmarsh_enrichment as enrich
 from utils import kelmarsh_upstream_v31 as upstream
 from utils import penmanshiel_v35 as farm
@@ -40,6 +42,14 @@ def fixture():
 
 
 class FarmTests(unittest.TestCase):
+    def test_runtime_relative_module_filename_is_not_repository_source(self):
+        fake = types.ModuleType("runtime_generated")
+        fake.__file__ = "_classes.py"
+        with patch.dict(prepare.sys.modules, {"runtime_generated": fake}):
+            hashes = prepare.source_code()
+        self.assertNotIn("_classes.py", hashes)
+        self.assertIn("scripts/prepare_penmanshiel_v35.py", {p.replace("\\", "/"): v for p, v in hashes.items()})
+
     def test_gap_in_ids_is_preserved_and_missing_turbine_rejected(self):
         ratings, audit = farm.validate_static(static())
         self.assertEqual([int(k) for k in ratings], list(farm.TURBINES))
