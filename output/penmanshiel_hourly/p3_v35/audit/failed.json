@@ -1,0 +1,7 @@
+{
+  "utc": "2026-11-03T22:10:37.468240+00:00",
+  "type": "AssertionError",
+  "message": "Attributes of DataFrame.iloc[:, 38] (column name=\"n_state_ticks\") are different\n\nAttribute \"dtype\" are different\n[left]:  float64\n[right]: int64",
+  "test_started": false,
+  "elapsed_seconds": 684.4328479859978
+}

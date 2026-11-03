@@ -29,17 +29,16 @@
 - 这是 P3 的第 1 轮。方案如果有阻断，而且修法不唯一，就先停在第 1 步之前交回，此时这些年份都还没有解封。
 
 ## Codex → Claude
-<!-- 由 Codex 覆盖。最后更新：2026-11-04，P3已启动，30分钟静默检查 -->
-轮次: R1/2 | 阶段: P3 | 分支: exp/P3 | 提交号: 协议14ec00a；实现83f44f5；运行代码1981921
-审查结论: 通过，评级B，0条未解决技术阻断；docs/review/P3-R1-codex.md；服务器11测试通过，三折smoke完成。
-已直接修复: 合成模板日期/新列赋值两处确定缺陷（1a958de、1981921），仅synthetic_data，不改真实处理/冻结协议；请事后复核。
-运行信息: P2已合主线0e2e939并推送；本分支从该主线建立，main未动。
-运行信息: 用户明确同意2022后又同意2023/2024；协议已先提交推送14ec00a，SHA256(LF)=a99b7ca91910b159088991bdbc680ba95ed240410e02c414f3e68ada22fe8926。
-运行信息: worktree=/home/XT/nuist/pythoncode/TimeDARTFirst_P3_83f44f5，HEAD=1981921；run=/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/Penmanshiel/p3_v35_1981921_r1；PID289435已确认存活，正在原始校验/准备阶段。
-运行信息: Python=/home/XT/miniconda3/envs/timedart/bin/python -u scripts/train_penmanshiel_p3_v35.py --data-root /home/XT/nuist/pythoncode/TimeDARTFirst --out <run> --device cuda:0；OPENBLAS_NUM_THREADS=2 OMP_NUM_THREADS=2，脱离SSH运行。
-运行信息: 原始校验/准备失败即停并通知；不擅自续跑。test_evaluation_started出现后绝不重启。原服务器工作区两份文档改动保留；运行worktree干净。
-关键数字: 服务器unittest 11/11通过（3.291s）；GPU smoke三折24个单seed小拟合完成（31.099s）；50个源码文件SHA与Git blob及smoke记录一致后才启动正式实例。
-关键数字: T22/T23/T24三折，8臂×3seed×3=72拟合；确认门槛5000；T24及Z1/Z2只描述。
-关键数字: 全72拟合冻结后独占创建最终测试锁；标记出现后不重启、不补跑；之前最多两次进程尝试，完整拟合按哈希复用。
-需要 Claude 做的: 事后复核实现及S1–S3表述；不更改已冻结协议或部署源码。结果完成后另行交接；当前没有P3最终指标。
-需要用户决定: 无；监控p3-30已ACTIVE，每30分钟只读检查；正常安静，只通知完成/失败/需处理。无需重复测试或逐拟合汇报。
+<!-- 由 Codex 覆盖。最后更新：2026-11-04 06:30 CST巡检，P3准备失败已停止 -->
+轮次: R1/2 | 阶段: P3 | 分支: exp/P3 | 提交号: 运行1981921；启动记录e2f82cd；本次保存故障证据
+审查结论: 真实准备未通过，不可进入训练；类型一致性门禁失败，详见docs/review/P3-R1-codex.md与output/penmanshiel_hourly/p3_v35/FAILURE.md。
+已直接修复: 本次无；未改协议、代码或数据，未重启。先前合成模板修复1a958de/1981921仍待Claude事后复核。
+运行信息: worktree=/home/XT/nuist/pythoncode/TimeDARTFirst_P3_83f44f5；run=/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/Penmanshiel/p3_v35_1981921_r1；PID289435已退出。
+运行信息: 失败UTC=2026-11-03T22:10:37.468240+00:00，用时684.433s；AssertionError发生于prepare_penmanshiel_v35_p3.verify_old_rows的check_dtype默认检查。
+运行信息: failed.json及failure_run.log已拷回；SHA256分别094e1b63855995ca4cb01f6cd1c2669ea7703e6f31245c3fa45a05ee86c45d14、29a41fa50e874775e5b14b09dbb43140331baf77c9a4ffef1b99420a00021bd3。
+关键数字: trained.json=0/72；selection_freeze、test_evaluation_started、completed及prepared_complete均不存在；未计算最终测试指标。
+关键数字: 2016–2021重建与P1均664944行；只读诊断check_exact=True/check_dtype=False全列逐值相等（含标签和NaN），并非放宽实际运行门禁。
+关键数字: dtype差异仅n_state_ticks、n_capacity_ticks：重建float64，P1 int64；不能据此把尚未完成的上游准备/全部验收记为通过。
+关键数字: 已访问授权2022–2024原始SCADA进行准备；不再声称这些年份完全未打开，但尚无模型评估结果。
+需要 Claude 做的: 审核R1-P1类型规范化最小提案及恢复方式；不得删除失败产物、改冻结协议或擅自部署。待明确授权再实施。
+需要用户决定: 是否批准修复准备比较中的计数列类型处理并使用剩余一次技术恢复；当前已停止且未改代码。故障后监控p3-30已删除，避免重复通知。

@@ -1,0 +1,36 @@
+[PREP] turbine=01 hours=65016
+[PREP] turbine=02 hours=65016
+[PREP] turbine=04 hours=65016
+[PREP] turbine=05 hours=65016
+[PREP] turbine=06 hours=65016
+[PREP] turbine=07 hours=65016
+[PREP] turbine=08 hours=65016
+[PREP] turbine=09 hours=65016
+[PREP] turbine=10 hours=65016
+[PREP] turbine=11 hours=73800
+[PREP] turbine=12 hours=73800
+[PREP] turbine=13 hours=73800
+[PREP] turbine=14 hours=73800
+[PREP] turbine=15 hours=73800
+Traceback (most recent call last):
+  File "/home/XT/nuist/pythoncode/TimeDARTFirst_P3_83f44f5/scripts/train_penmanshiel_p3_v35.py", line 390, in <module>
+    main()
+  File "/home/XT/nuist/pythoncode/TimeDARTFirst_P3_83f44f5/scripts/train_penmanshiel_p3_v35.py", line 330, in main
+    prep.prepare(data_root, out / "prepared")
+  File "/home/XT/nuist/pythoncode/TimeDARTFirst_P3_83f44f5/scripts/prepare_penmanshiel_v35_p3.py", line 132, in prepare
+    equality = verify_old_rows(pd.read_csv(prepared["path"]), pd.read_csv(oldcsv))
+  File "/home/XT/nuist/pythoncode/TimeDARTFirst_P3_83f44f5/scripts/prepare_penmanshiel_v35_p3.py", line 29, in verify_old_rows
+    pd.testing.assert_frame_equal(old.sort_values(order).reset_index(drop=True),
+  File "/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/pandas/_testing/asserters.py", line 1279, in assert_frame_equal
+    assert_series_equal(
+  File "/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/pandas/_testing/asserters.py", line 975, in assert_series_equal
+    assert_attr_equal("dtype", left, right, obj=f"Attributes of {obj}")
+  File "/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/pandas/_testing/asserters.py", line 421, in assert_attr_equal
+    raise_assert_detail(obj, msg, left_attr, right_attr)
+  File "/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/pandas/_testing/asserters.py", line 614, in raise_assert_detail
+    raise AssertionError(msg)
+AssertionError: Attributes of DataFrame.iloc[:, 38] (column name="n_state_ticks") are different
+
+Attribute "dtype" are different
+[left]:  float64
+[right]: int64
