@@ -1,0 +1,66 @@
+{
+  "attempt1/audit/failure_provenance.json": {
+    "bytes": 491,
+    "sha256": "7c71720a975b8bacee1d90709b7edd08151b66656067fdd46bbbd39e56e375b5"
+  },
+  "attempt1/audit/prep_v35_7f92979.log": {
+    "bytes": 1320,
+    "sha256": "5c058fe725166f2296402ec44f869f1d2720a39796d21d3014c3c924d1f4ec18"
+  },
+  "attempt1/audit/prep_v35_7f92979.process.completed.json": {
+    "bytes": 601,
+    "sha256": "ffc130fb1407a80b59ccf494c1f82bd647e750297803afbeed7d55d94a36148d"
+  },
+  "attempt1/audit/prep_v35_7f92979.process.json": {
+    "bytes": 529,
+    "sha256": "0bc49b983c6d1c28df2f3dfc3a4c74a7e9bb114dcbe51bd32001f1d3652ae95b"
+  },
+  "attempt1/failure.json": {
+    "bytes": 151,
+    "sha256": "116b70b4eb23d42ba73181c177419f26d18a021aea9b612a7a31a0cb951c838f"
+  },
+  "audit/launch.json": {
+    "bytes": 2458,
+    "sha256": "bd0af8b820ce74d6b5470cd2300167e736729de03c8bd58abd1d92657b5c6be3"
+  },
+  "audit/prep_v35_c51baaf_r2.log": {
+    "bytes": 3477,
+    "sha256": "4a71f045d122681b22221ff8713264240b0af9c6632280cec96c3c77be4720b0"
+  },
+  "audit/prep_v35_c51baaf_r2.process.completed.json": {
+    "bytes": 604,
+    "sha256": "4b6f36b3a89b015a29b667bada1ebd416a406ca8085c2566c00756e2a5d4042b"
+  },
+  "audit/prep_v35_c51baaf_r2.process.json": {
+    "bytes": 532,
+    "sha256": "f0b06f1f3639dbf22dd9b59819c7eb76741b8519efb470634176fd12db32fbd2"
+  },
+  "audit/server_dataset_verification.json": {
+    "bytes": 707,
+    "sha256": "f6c3267354ceab7e97f7b3613699b4b5f5b68c0cea58f550d6eec0ac924906c4"
+  },
+  "input_hashes.json": {
+    "bytes": 41683,
+    "sha256": "0ac7b679e2ffe86bd89c13d000b585c7e72e714e958842e13cd97df308c5f497"
+  },
+  "preparation.json": {
+    "bytes": 99122,
+    "sha256": "c95fa5a928a07fb7dc7ef3cb426e3d19c83c7f6d6c75efd7f4843824b9893f6c"
+  },
+  "quality_by_year.csv": {
+    "bytes": 10263,
+    "sha256": "83324ff0d1a34dc1390828e2c32b36ba1f4ed642cd9fef389eef1e95d2afbb8a"
+  },
+  "result.json": {
+    "bytes": 3086,
+    "sha256": "6bfd6f281c1d7b6644ad28807e051b616832a0a6ac9f6f1676076ca9ce930d79"
+  },
+  "routing.json": {
+    "bytes": 39433,
+    "sha256": "eef6d22dcb657d79ab7cb72ee7088b1610c19852557d30b46a6d409d2078e382"
+  },
+  "series_audit.json": {
+    "bytes": 5533,
+    "sha256": "0315446848c7b012dab3f45dc71540c64e3f2830c8b29d1352225a09c743b8a8"
+  }
+}

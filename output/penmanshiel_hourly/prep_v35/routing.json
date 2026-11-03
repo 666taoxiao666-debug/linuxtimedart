@@ -1,0 +1,820 @@
+{
+  "start": "2016-08-01T00:00:00Z",
+  "start_basis": "first full calendar month covered by every turbine's registered file intervals; missing cells retained",
+  "center": [
+    55.90367642857142,
+    -2.2919617857142858
+  ],
+  "stations": [
+    {
+      "src_id": 150,
+      "distance_km": 134.64213679352417,
+      "bearing_deg": 345.73166059598606
+    },
+    {
+      "src_id": 161,
+      "distance_km": 144.79865567629938,
+      "bearing_deg": 2.0730515991947143
+    },
+    {
+      "src_id": 177,
+      "distance_km": 105.4608825197037,
+      "bearing_deg": 0.8576659093490668
+    },
+    {
+      "src_id": 235,
+      "distance_km": 63.38128352196569,
+      "bearing_deg": 326.37455110269815
+    },
+    {
+      "src_id": 982,
+      "distance_km": 98.8436719015374,
+      "bearing_deg": 267.90375671720733
+    },
+    {
+      "src_id": 987,
+      "distance_km": 95.42685866774924,
+      "bearing_deg": 251.79057419510428
+    },
+    {
+      "src_id": 1023,
+      "distance_km": 87.35754147475477,
+      "bearing_deg": 221.51734404911332
+    },
+    {
+      "src_id": 1074,
+      "distance_km": 148.27430846145123,
+      "bearing_deg": 183.01641874245962
+    },
+    {
+      "src_id": 16589,
+      "distance_km": 68.79850008200569,
+      "bearing_deg": 179.31640019391597
+    },
+    {
+      "src_id": 24125,
+      "distance_km": 139.61963032664903,
+      "bearing_deg": 271.0791715397814
+    },
+    {
+      "src_id": 30523,
+      "distance_km": 101.60196769466188,
+      "bearing_deg": 165.09444615063921
+    }
+  ],
+  "development_members": [
+    {
+      "archive": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2016_WT01-10_3107.zip",
+      "member": "Turbine_Data_Penmanshiel_01_2016-06-06_-_2017-01-01_1042.csv",
+      "bytes": 82365300,
+      "turbine": 1,
+      "begin": "2016-06-06",
+      "end": "2017-01-01"
+    },
+    {
+      "archive": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2016_WT01-10_3107.zip",
+      "member": "Turbine_Data_Penmanshiel_02_2016-06-03_-_2017-01-01_1043.csv",
+      "bytes": 83797237,
+      "turbine": 2,
+      "begin": "2016-06-03",
+      "end": "2017-01-01"
+    },
+    {
+      "archive": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2016_WT01-10_3107.zip",
+      "member": "Turbine_Data_Penmanshiel_04_2016-06-13_-_2017-01-01_1044.csv",
+      "bytes": 80597209,
+      "turbine": 4,
+      "begin": "2016-06-13",
+      "end": "2017-01-01"
+    },
+    {
+      "archive": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2016_WT01-10_3107.zip",
+      "member": "Turbine_Data_Penmanshiel_05_2016-06-15_-_2017-01-01_1045.csv",
+      "bytes": 81385338,
+      "turbine": 5,
+      "begin": "2016-06-15",
+      "end": "2017-01-01"
+    },
+    {
+      "archive": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2016_WT01-10_3107.zip",
+      "member": "Turbine_Data_Penmanshiel_06_2016-06-02_-_2017-01-01_1046.csv",
+      "bytes": 79863124,
+      "turbine": 6,
+      "begin": "2016-06-02",
+      "end": "2017-01-01"
+    },
+    {
+      "archive": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2016_WT01-10_3107.zip",
+      "member": "Turbine_Data_Penmanshiel_07_2016-06-02_-_2017-01-01_1047.csv",
+      "bytes": 84587060,
+      "turbine": 7,
+      "begin": "2016-06-02",
+      "end": "2017-01-01"
+    },
+    {
+      "archive": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2016_WT01-10_3107.zip",
+      "member": "Turbine_Data_Penmanshiel_08_2016-07-27_-_2017-01-01_1048.csv",
+      "bytes": 58591766,
+      "turbine": 8,
+      "begin": "2016-07-27",
+      "end": "2017-01-01"
+    },
+    {
+      "archive": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2016_WT01-10_3107.zip",
+      "member": "Turbine_Data_Penmanshiel_09_2016-06-24_-_2017-01-01_1049.csv",
+      "bytes": 63930217,
+      "turbine": 9,
+      "begin": "2016-06-24",
+      "end": "2017-01-01"
+    },
+    {
+      "archive": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2016_WT01-10_3107.zip",
+      "member": "Turbine_Data_Penmanshiel_10_2016-06-27_-_2017-01-01_1050.csv",
+      "bytes": 62629196,
+      "turbine": 10,
+      "begin": "2016-06-27",
+      "end": "2017-01-01"
+    },
+    {
+      "archive": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2016_WT11-15_3107.zip",
+      "member": "Turbine_Data_Penmanshiel_11_2016-07-19_-_2017-01-01_1051.csv",
+      "bytes": 60005147,
+      "turbine": 11,
+      "begin": "2016-07-19",
+      "end": "2017-01-01"
+    },
+    {
+      "archive": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2016_WT11-15_3107.zip",
+      "member": "Turbine_Data_Penmanshiel_12_2016-07-02_-_2017-01-01_1052.csv",
+      "bytes": 63817910,
+      "turbine": 12,
+      "begin": "2016-07-02",
+      "end": "2017-01-01"
+    },
+    {
+      "archive": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2016_WT11-15_3107.zip",
+      "member": "Turbine_Data_Penmanshiel_13_2016-06-30_-_2017-01-01_1053.csv",
+      "bytes": 63235959,
+      "turbine": 13,
+      "begin": "2016-06-30",
+      "end": "2017-01-01"
+    },
+    {
+      "archive": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2016_WT11-15_3107.zip",
+      "member": "Turbine_Data_Penmanshiel_14_2016-07-09_-_2017-01-01_1054.csv",
+      "bytes": 60437496,
+      "turbine": 14,
+      "begin": "2016-07-09",
+      "end": "2017-01-01"
+    },
+    {
+      "archive": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2016_WT11-15_3107.zip",
+      "member": "Turbine_Data_Penmanshiel_15_2016-07-14_-_2017-01-01_1056.csv",
+      "bytes": 60485882,
+      "turbine": 15,
+      "begin": "2016-07-14",
+      "end": "2017-01-01"
+    },
+    {
+      "archive": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2017_WT01-10_3114.zip",
+      "member": "Turbine_Data_Penmanshiel_01_2017-01-01_-_2018-01-01_1042.csv",
+      "bytes": 149940573,
+      "turbine": 1,
+      "begin": "2017-01-01",
+      "end": "2018-01-01"
+    },
+    {
+      "archive": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2017_WT01-10_3114.zip",
+      "member": "Turbine_Data_Penmanshiel_02_2017-01-01_-_2018-01-01_1043.csv",
+      "bytes": 150010832,
+      "turbine": 2,
+      "begin": "2017-01-01",
+      "end": "2018-01-01"
+    },
+    {
+      "archive": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2017_WT01-10_3114.zip",
+      "member": "Turbine_Data_Penmanshiel_04_2017-01-01_-_2018-01-01_1044.csv",
+      "bytes": 149068523,
+      "turbine": 4,
+      "begin": "2017-01-01",
+      "end": "2018-01-01"
+    },
+    {
+      "archive": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2017_WT01-10_3114.zip",
+      "member": "Turbine_Data_Penmanshiel_05_2017-01-01_-_2018-01-01_1045.csv",
+      "bytes": 150540937,
+      "turbine": 5,
+      "begin": "2017-01-01",
+      "end": "2018-01-01"
+    },
+    {
+      "archive": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2017_WT01-10_3114.zip",
+      "member": "Turbine_Data_Penmanshiel_06_2017-01-01_-_2018-01-01_1046.csv",
+      "bytes": 147891168,
+      "turbine": 6,
+      "begin": "2017-01-01",
+      "end": "2018-01-01"
+    },
+    {
+      "archive": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2017_WT01-10_3114.zip",
+      "member": "Turbine_Data_Penmanshiel_07_2017-01-01_-_2018-01-01_1047.csv",
+      "bytes": 148088539,
+      "turbine": 7,
+      "begin": "2017-01-01",
+      "end": "2018-01-01"
+    },
+    {
+      "archive": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2017_WT01-10_3114.zip",
+      "member": "Turbine_Data_Penmanshiel_08_2017-01-01_-_2018-01-01_1048.csv",
+      "bytes": 147806238,
+      "turbine": 8,
+      "begin": "2017-01-01",
+      "end": "2018-01-01"
+    },
+    {
+      "archive": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2017_WT01-10_3114.zip",
+      "member": "Turbine_Data_Penmanshiel_09_2017-01-01_-_2018-01-01_1049.csv",
+      "bytes": 147260228,
+      "turbine": 9,
+      "begin": "2017-01-01",
+      "end": "2018-01-01"
+    },
+    {
+      "archive": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2017_WT01-10_3114.zip",
+      "member": "Turbine_Data_Penmanshiel_10_2017-01-01_-_2018-01-01_1050.csv",
+      "bytes": 147422941,
+      "turbine": 10,
+      "begin": "2017-01-01",
+      "end": "2018-01-01"
+    },
+    {
+      "archive": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2017_WT11-15_3115.zip",
+      "member": "Turbine_Data_Penmanshiel_11_2017-01-01_-_2018-01-01_1051.csv",
+      "bytes": 149057455,
+      "turbine": 11,
+      "begin": "2017-01-01",
+      "end": "2018-01-01"
+    },
+    {
+      "archive": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2017_WT11-15_3115.zip",
+      "member": "Turbine_Data_Penmanshiel_12_2017-01-01_-_2018-01-01_1052.csv",
+      "bytes": 149790624,
+      "turbine": 12,
+      "begin": "2017-01-01",
+      "end": "2018-01-01"
+    },
+    {
+      "archive": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2017_WT11-15_3115.zip",
+      "member": "Turbine_Data_Penmanshiel_13_2017-01-01_-_2018-01-01_1053.csv",
+      "bytes": 148958085,
+      "turbine": 13,
+      "begin": "2017-01-01",
+      "end": "2018-01-01"
+    },
+    {
+      "archive": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2017_WT11-15_3115.zip",
+      "member": "Turbine_Data_Penmanshiel_14_2017-01-01_-_2018-01-01_1054.csv",
+      "bytes": 148187011,
+      "turbine": 14,
+      "begin": "2017-01-01",
+      "end": "2018-01-01"
+    },
+    {
+      "archive": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2017_WT11-15_3115.zip",
+      "member": "Turbine_Data_Penmanshiel_15_2017-01-01_-_2018-01-01_1056.csv",
+      "bytes": 148202092,
+      "turbine": 15,
+      "begin": "2017-01-01",
+      "end": "2018-01-01"
+    },
+    {
+      "archive": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2018_WT01-10_3113.zip",
+      "member": "Turbine_Data_Penmanshiel_01_2018-01-01_-_2019-01-01_1042.csv",
+      "bytes": 146184247,
+      "turbine": 1,
+      "begin": "2018-01-01",
+      "end": "2019-01-01"
+    },
+    {
+      "archive": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2018_WT01-10_3113.zip",
+      "member": "Turbine_Data_Penmanshiel_02_2018-01-01_-_2019-01-01_1043.csv",
+      "bytes": 146632222,
+      "turbine": 2,
+      "begin": "2018-01-01",
+      "end": "2019-01-01"
+    },
+    {
+      "archive": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2018_WT01-10_3113.zip",
+      "member": "Turbine_Data_Penmanshiel_04_2018-01-01_-_2019-01-01_1044.csv",
+      "bytes": 147127851,
+      "turbine": 4,
+      "begin": "2018-01-01",
+      "end": "2019-01-01"
+    },
+    {
+      "archive": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2018_WT01-10_3113.zip",
+      "member": "Turbine_Data_Penmanshiel_05_2018-01-01_-_2019-01-01_1045.csv",
+      "bytes": 147979630,
+      "turbine": 5,
+      "begin": "2018-01-01",
+      "end": "2019-01-01"
+    },
+    {
+      "archive": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2018_WT01-10_3113.zip",
+      "member": "Turbine_Data_Penmanshiel_06_2018-01-01_-_2019-01-01_1046.csv",
+      "bytes": 146583810,
+      "turbine": 6,
+      "begin": "2018-01-01",
+      "end": "2019-01-01"
+    },
+    {
+      "archive": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2018_WT01-10_3113.zip",
+      "member": "Turbine_Data_Penmanshiel_07_2018-01-01_-_2019-01-01_1047.csv",
+      "bytes": 146579131,
+      "turbine": 7,
+      "begin": "2018-01-01",
+      "end": "2019-01-01"
+    },
+    {
+      "archive": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2018_WT01-10_3113.zip",
+      "member": "Turbine_Data_Penmanshiel_08_2018-01-01_-_2019-01-01_1048.csv",
+      "bytes": 146868836,
+      "turbine": 8,
+      "begin": "2018-01-01",
+      "end": "2019-01-01"
+    },
+    {
+      "archive": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2018_WT01-10_3113.zip",
+      "member": "Turbine_Data_Penmanshiel_09_2018-01-01_-_2019-01-01_1049.csv",
+      "bytes": 146056065,
+      "turbine": 9,
+      "begin": "2018-01-01",
+      "end": "2019-01-01"
+    },
+    {
+      "archive": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2018_WT01-10_3113.zip",
+      "member": "Turbine_Data_Penmanshiel_10_2018-01-01_-_2019-01-01_1050.csv",
+      "bytes": 145428707,
+      "turbine": 10,
+      "begin": "2018-01-01",
+      "end": "2019-01-01"
+    },
+    {
+      "archive": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2018_WT11-15_3116.zip",
+      "member": "Turbine_Data_Penmanshiel_11_2018-01-01_-_2019-01-01_1051.csv",
+      "bytes": 147210024,
+      "turbine": 11,
+      "begin": "2018-01-01",
+      "end": "2019-01-01"
+    },
+    {
+      "archive": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2018_WT11-15_3116.zip",
+      "member": "Turbine_Data_Penmanshiel_12_2018-01-01_-_2019-01-01_1052.csv",
+      "bytes": 147571042,
+      "turbine": 12,
+      "begin": "2018-01-01",
+      "end": "2019-01-01"
+    },
+    {
+      "archive": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2018_WT11-15_3116.zip",
+      "member": "Turbine_Data_Penmanshiel_13_2018-01-01_-_2019-01-01_1053.csv",
+      "bytes": 147929633,
+      "turbine": 13,
+      "begin": "2018-01-01",
+      "end": "2019-01-01"
+    },
+    {
+      "archive": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2018_WT11-15_3116.zip",
+      "member": "Turbine_Data_Penmanshiel_14_2018-01-01_-_2019-01-01_1054.csv",
+      "bytes": 147016379,
+      "turbine": 14,
+      "begin": "2018-01-01",
+      "end": "2019-01-01"
+    },
+    {
+      "archive": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2018_WT11-15_3116.zip",
+      "member": "Turbine_Data_Penmanshiel_15_2018-01-01_-_2019-01-01_1056.csv",
+      "bytes": 147397914,
+      "turbine": 15,
+      "begin": "2018-01-01",
+      "end": "2019-01-01"
+    },
+    {
+      "archive": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2019_WT01-10_3112.zip",
+      "member": "Turbine_Data_Penmanshiel_01_2019-01-01_-_2020-01-01_1042.csv",
+      "bytes": 151874961,
+      "turbine": 1,
+      "begin": "2019-01-01",
+      "end": "2020-01-01"
+    },
+    {
+      "archive": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2019_WT01-10_3112.zip",
+      "member": "Turbine_Data_Penmanshiel_02_2019-01-01_-_2020-01-01_1043.csv",
+      "bytes": 150768433,
+      "turbine": 2,
+      "begin": "2019-01-01",
+      "end": "2020-01-01"
+    },
+    {
+      "archive": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2019_WT01-10_3112.zip",
+      "member": "Turbine_Data_Penmanshiel_04_2019-01-01_-_2020-01-01_1044.csv",
+      "bytes": 151569228,
+      "turbine": 4,
+      "begin": "2019-01-01",
+      "end": "2020-01-01"
+    },
+    {
+      "archive": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2019_WT01-10_3112.zip",
+      "member": "Turbine_Data_Penmanshiel_05_2019-01-01_-_2020-01-01_1045.csv",
+      "bytes": 150598790,
+      "turbine": 5,
+      "begin": "2019-01-01",
+      "end": "2020-01-01"
+    },
+    {
+      "archive": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2019_WT01-10_3112.zip",
+      "member": "Turbine_Data_Penmanshiel_06_2019-01-01_-_2020-01-01_1046.csv",
+      "bytes": 151792519,
+      "turbine": 6,
+      "begin": "2019-01-01",
+      "end": "2020-01-01"
+    },
+    {
+      "archive": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2019_WT01-10_3112.zip",
+      "member": "Turbine_Data_Penmanshiel_07_2019-01-01_-_2020-01-01_1047.csv",
+      "bytes": 147796844,
+      "turbine": 7,
+      "begin": "2019-01-01",
+      "end": "2020-01-01"
+    },
+    {
+      "archive": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2019_WT01-10_3112.zip",
+      "member": "Turbine_Data_Penmanshiel_08_2019-01-01_-_2020-01-01_1048.csv",
+      "bytes": 151608325,
+      "turbine": 8,
+      "begin": "2019-01-01",
+      "end": "2020-01-01"
+    },
+    {
+      "archive": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2019_WT01-10_3112.zip",
+      "member": "Turbine_Data_Penmanshiel_09_2019-01-01_-_2020-01-01_1049.csv",
+      "bytes": 150536008,
+      "turbine": 9,
+      "begin": "2019-01-01",
+      "end": "2020-01-01"
+    },
+    {
+      "archive": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2019_WT01-10_3112.zip",
+      "member": "Turbine_Data_Penmanshiel_10_2019-01-01_-_2020-01-01_1050.csv",
+      "bytes": 150877084,
+      "turbine": 10,
+      "begin": "2019-01-01",
+      "end": "2020-01-01"
+    },
+    {
+      "archive": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2019_WT11-15_3117.zip",
+      "member": "Turbine_Data_Penmanshiel_11_2019-01-01_-_2020-01-01_1051.csv",
+      "bytes": 151166599,
+      "turbine": 11,
+      "begin": "2019-01-01",
+      "end": "2020-01-01"
+    },
+    {
+      "archive": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2019_WT11-15_3117.zip",
+      "member": "Turbine_Data_Penmanshiel_12_2019-01-01_-_2020-01-01_1052.csv",
+      "bytes": 151170637,
+      "turbine": 12,
+      "begin": "2019-01-01",
+      "end": "2020-01-01"
+    },
+    {
+      "archive": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2019_WT11-15_3117.zip",
+      "member": "Turbine_Data_Penmanshiel_13_2019-01-01_-_2020-01-01_1053.csv",
+      "bytes": 152378181,
+      "turbine": 13,
+      "begin": "2019-01-01",
+      "end": "2020-01-01"
+    },
+    {
+      "archive": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2019_WT11-15_3117.zip",
+      "member": "Turbine_Data_Penmanshiel_14_2019-01-01_-_2020-01-01_1054.csv",
+      "bytes": 151680551,
+      "turbine": 14,
+      "begin": "2019-01-01",
+      "end": "2020-01-01"
+    },
+    {
+      "archive": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2019_WT11-15_3117.zip",
+      "member": "Turbine_Data_Penmanshiel_15_2019-01-01_-_2020-01-01_1056.csv",
+      "bytes": 151850311,
+      "turbine": 15,
+      "begin": "2019-01-01",
+      "end": "2020-01-01"
+    },
+    {
+      "archive": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2020_WT01-10_3109.zip",
+      "member": "Turbine_Data_Penmanshiel_01_2020-01-01_-_2021-01-01_1042.csv",
+      "bytes": 201698339,
+      "turbine": 1,
+      "begin": "2020-01-01",
+      "end": "2021-01-01"
+    },
+    {
+      "archive": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2020_WT01-10_3109.zip",
+      "member": "Turbine_Data_Penmanshiel_02_2020-01-01_-_2021-01-01_1043.csv",
+      "bytes": 199921737,
+      "turbine": 2,
+      "begin": "2020-01-01",
+      "end": "2021-01-01"
+    },
+    {
+      "archive": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2020_WT01-10_3109.zip",
+      "member": "Turbine_Data_Penmanshiel_04_2020-01-01_-_2021-01-01_1044.csv",
+      "bytes": 201282001,
+      "turbine": 4,
+      "begin": "2020-01-01",
+      "end": "2021-01-01"
+    },
+    {
+      "archive": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2020_WT01-10_3109.zip",
+      "member": "Turbine_Data_Penmanshiel_05_2020-01-01_-_2021-01-01_1045.csv",
+      "bytes": 200398312,
+      "turbine": 5,
+      "begin": "2020-01-01",
+      "end": "2021-01-01"
+    },
+    {
+      "archive": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2020_WT01-10_3109.zip",
+      "member": "Turbine_Data_Penmanshiel_06_2020-01-01_-_2021-01-01_1046.csv",
+      "bytes": 202719461,
+      "turbine": 6,
+      "begin": "2020-01-01",
+      "end": "2021-01-01"
+    },
+    {
+      "archive": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2020_WT01-10_3109.zip",
+      "member": "Turbine_Data_Penmanshiel_07_2020-01-01_-_2021-01-01_1047.csv",
+      "bytes": 200303824,
+      "turbine": 7,
+      "begin": "2020-01-01",
+      "end": "2021-01-01"
+    },
+    {
+      "archive": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2020_WT01-10_3109.zip",
+      "member": "Turbine_Data_Penmanshiel_08_2020-01-01_-_2021-01-01_1048.csv",
+      "bytes": 202110149,
+      "turbine": 8,
+      "begin": "2020-01-01",
+      "end": "2021-01-01"
+    },
+    {
+      "archive": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2020_WT01-10_3109.zip",
+      "member": "Turbine_Data_Penmanshiel_09_2020-01-01_-_2021-01-01_1049.csv",
+      "bytes": 201146048,
+      "turbine": 9,
+      "begin": "2020-01-01",
+      "end": "2021-01-01"
+    },
+    {
+      "archive": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2020_WT01-10_3109.zip",
+      "member": "Turbine_Data_Penmanshiel_10_2020-01-01_-_2021-01-01_1050.csv",
+      "bytes": 201332005,
+      "turbine": 10,
+      "begin": "2020-01-01",
+      "end": "2021-01-01"
+    },
+    {
+      "archive": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2020_WT11-15_3118.zip",
+      "member": "Turbine_Data_Penmanshiel_11_2020-01-01_-_2021-01-01_1051.csv",
+      "bytes": 201475344,
+      "turbine": 11,
+      "begin": "2020-01-01",
+      "end": "2021-01-01"
+    },
+    {
+      "archive": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2020_WT11-15_3118.zip",
+      "member": "Turbine_Data_Penmanshiel_12_2020-01-01_-_2021-01-01_1052.csv",
+      "bytes": 201906758,
+      "turbine": 12,
+      "begin": "2020-01-01",
+      "end": "2021-01-01"
+    },
+    {
+      "archive": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2020_WT11-15_3118.zip",
+      "member": "Turbine_Data_Penmanshiel_13_2020-01-01_-_2021-01-01_1053.csv",
+      "bytes": 202387408,
+      "turbine": 13,
+      "begin": "2020-01-01",
+      "end": "2021-01-01"
+    },
+    {
+      "archive": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2020_WT11-15_3118.zip",
+      "member": "Turbine_Data_Penmanshiel_14_2020-01-01_-_2021-01-01_1054.csv",
+      "bytes": 202419856,
+      "turbine": 14,
+      "begin": "2020-01-01",
+      "end": "2021-01-01"
+    },
+    {
+      "archive": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2020_WT11-15_3118.zip",
+      "member": "Turbine_Data_Penmanshiel_15_2020-01-01_-_2021-01-01_1056.csv",
+      "bytes": 202853017,
+      "turbine": 15,
+      "begin": "2020-01-01",
+      "end": "2021-01-01"
+    },
+    {
+      "archive": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2021_WT01-10_4460.zip",
+      "member": "Turbine_Data_Penmanshiel_01_2021-01-01_-_2022-01-01_1042.csv",
+      "bytes": 225917030,
+      "turbine": 1,
+      "begin": "2021-01-01",
+      "end": "2022-01-01"
+    },
+    {
+      "archive": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2021_WT01-10_4460.zip",
+      "member": "Turbine_Data_Penmanshiel_02_2021-01-01_-_2022-01-01_1043.csv",
+      "bytes": 224045975,
+      "turbine": 2,
+      "begin": "2021-01-01",
+      "end": "2022-01-01"
+    },
+    {
+      "archive": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2021_WT01-10_4460.zip",
+      "member": "Turbine_Data_Penmanshiel_04_2021-01-01_-_2022-01-01_1044.csv",
+      "bytes": 225300141,
+      "turbine": 4,
+      "begin": "2021-01-01",
+      "end": "2022-01-01"
+    },
+    {
+      "archive": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2021_WT01-10_4460.zip",
+      "member": "Turbine_Data_Penmanshiel_05_2021-01-01_-_2022-01-01_1045.csv",
+      "bytes": 224012173,
+      "turbine": 5,
+      "begin": "2021-01-01",
+      "end": "2022-01-01"
+    },
+    {
+      "archive": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2021_WT01-10_4460.zip",
+      "member": "Turbine_Data_Penmanshiel_06_2021-01-01_-_2022-01-01_1046.csv",
+      "bytes": 226225839,
+      "turbine": 6,
+      "begin": "2021-01-01",
+      "end": "2022-01-01"
+    },
+    {
+      "archive": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2021_WT01-10_4460.zip",
+      "member": "Turbine_Data_Penmanshiel_07_2021-01-01_-_2022-01-01_1047.csv",
+      "bytes": 223149949,
+      "turbine": 7,
+      "begin": "2021-01-01",
+      "end": "2022-01-01"
+    },
+    {
+      "archive": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2021_WT01-10_4460.zip",
+      "member": "Turbine_Data_Penmanshiel_08_2021-01-01_-_2022-01-01_1048.csv",
+      "bytes": 225754791,
+      "turbine": 8,
+      "begin": "2021-01-01",
+      "end": "2022-01-01"
+    },
+    {
+      "archive": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2021_WT01-10_4460.zip",
+      "member": "Turbine_Data_Penmanshiel_09_2021-01-01_-_2022-01-01_1049.csv",
+      "bytes": 225376791,
+      "turbine": 9,
+      "begin": "2021-01-01",
+      "end": "2022-01-01"
+    },
+    {
+      "archive": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2021_WT01-10_4460.zip",
+      "member": "Turbine_Data_Penmanshiel_10_2021-01-01_-_2022-01-01_1050.csv",
+      "bytes": 224916887,
+      "turbine": 10,
+      "begin": "2021-01-01",
+      "end": "2022-01-01"
+    },
+    {
+      "archive": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2021_WT11-15_4461.zip",
+      "member": "Turbine_Data_Penmanshiel_11_2021-01-01_-_2022-01-01_1051.csv",
+      "bytes": 224510935,
+      "turbine": 11,
+      "begin": "2021-01-01",
+      "end": "2022-01-01"
+    },
+    {
+      "archive": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2021_WT11-15_4461.zip",
+      "member": "Turbine_Data_Penmanshiel_12_2021-01-01_-_2022-01-01_1052.csv",
+      "bytes": 225434722,
+      "turbine": 12,
+      "begin": "2021-01-01",
+      "end": "2022-01-01"
+    },
+    {
+      "archive": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2021_WT11-15_4461.zip",
+      "member": "Turbine_Data_Penmanshiel_13_2021-01-01_-_2022-01-01_1053.csv",
+      "bytes": 226461609,
+      "turbine": 13,
+      "begin": "2021-01-01",
+      "end": "2022-01-01"
+    },
+    {
+      "archive": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2021_WT11-15_4461.zip",
+      "member": "Turbine_Data_Penmanshiel_14_2021-01-01_-_2022-01-01_1054.csv",
+      "bytes": 226149944,
+      "turbine": 14,
+      "begin": "2021-01-01",
+      "end": "2022-01-01"
+    },
+    {
+      "archive": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2021_WT11-15_4461.zip",
+      "member": "Turbine_Data_Penmanshiel_15_2021-01-01_-_2022-01-01_1056.csv",
+      "bytes": 226529758,
+      "turbine": 15,
+      "begin": "2021-01-01",
+      "end": "2022-01-01"
+    }
+  ],
+  "protected_station_paths_hash_only": [
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/150/midas-open_uk-hourly-weather-obs_dv-202607_aberdeenshire_00150_aboyne-no-2_qcv-1_2022.csv",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/150/midas-open_uk-hourly-weather-obs_dv-202607_aberdeenshire_00150_aboyne-no-2_qcv-1_2023.csv",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/150/midas-open_uk-hourly-weather-obs_dv-202607_aberdeenshire_00150_aboyne-no-2_qcv-1_2024.csv",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/161/midas-open_uk-hourly-weather-obs_dv-202607_aberdeenshire_00161_dyce_qcv-1_2022.csv",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/161/midas-open_uk-hourly-weather-obs_dv-202607_aberdeenshire_00161_dyce_qcv-1_2023.csv",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/161/midas-open_uk-hourly-weather-obs_dv-202607_aberdeenshire_00161_dyce_qcv-1_2024.csv",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/177/midas-open_uk-hourly-weather-obs_dv-202607_kincardineshire_00177_inverbervie-no-2_qcv-1_2022.csv",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/177/midas-open_uk-hourly-weather-obs_dv-202607_kincardineshire_00177_inverbervie-no-2_qcv-1_2023.csv",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/177/midas-open_uk-hourly-weather-obs_dv-202607_kincardineshire_00177_inverbervie-no-2_qcv-1_2024.csv",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/235/midas-open_uk-hourly-weather-obs_dv-202607_fife_00235_leuchars_qcv-1_2022.csv",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/235/midas-open_uk-hourly-weather-obs_dv-202607_fife_00235_leuchars_qcv-1_2023.csv",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/235/midas-open_uk-hourly-weather-obs_dv-202607_fife_00235_leuchars_qcv-1_2024.csv",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/982/midas-open_uk-hourly-weather-obs_dv-202607_lanarkshire_00982_salsburgh_qcv-1_2022.csv",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/982/midas-open_uk-hourly-weather-obs_dv-202607_lanarkshire_00982_salsburgh_qcv-1_2023.csv",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/982/midas-open_uk-hourly-weather-obs_dv-202607_lanarkshire_00982_salsburgh_qcv-1_2024.csv",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/987/midas-open_uk-hourly-weather-obs_dv-202607_lanarkshire_00987_drumalbin_qcv-1_2022.csv",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/987/midas-open_uk-hourly-weather-obs_dv-202607_lanarkshire_00987_drumalbin_qcv-1_2023.csv",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/987/midas-open_uk-hourly-weather-obs_dv-202607_lanarkshire_00987_drumalbin_qcv-1_2024.csv",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/1023/midas-open_uk-hourly-weather-obs_dv-202607_dumfriesshire_01023_eskdalemuir_qcv-1_2022.csv",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/1023/midas-open_uk-hourly-weather-obs_dv-202607_dumfriesshire_01023_eskdalemuir_qcv-1_2023.csv",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/1023/midas-open_uk-hourly-weather-obs_dv-202607_dumfriesshire_01023_eskdalemuir_qcv-1_2024.csv",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/1074/midas-open_uk-hourly-weather-obs_dv-202607_cumbria_01074_warcop-range_qcv-1_2022.csv",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/1074/midas-open_uk-hourly-weather-obs_dv-202607_cumbria_01074_warcop-range_qcv-1_2023.csv",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/1074/midas-open_uk-hourly-weather-obs_dv-202607_cumbria_01074_warcop-range_qcv-1_2024.csv",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/16589/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_16589_redesdale-camp_qcv-1_2022.csv",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/16589/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_16589_redesdale-camp_qcv-1_2023.csv",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/16589/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_16589_redesdale-camp_qcv-1_2024.csv",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/24125/midas-open_uk-hourly-weather-obs_dv-202607_renfrewshire_24125_glasgow-bishopton_qcv-1_2022.csv",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/24125/midas-open_uk-hourly-weather-obs_dv-202607_renfrewshire_24125_glasgow-bishopton_qcv-1_2023.csv",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/24125/midas-open_uk-hourly-weather-obs_dv-202607_renfrewshire_24125_glasgow-bishopton_qcv-1_2024.csv",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/30523/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_30523_albemarle_qcv-1_2022.csv",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/30523/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_30523_albemarle_qcv-1_2023.csv",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/30523/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_30523_albemarle_qcv-1_2024.csv"
+  ],
+  "protected_scada_paths_hash_only": [
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2022_WT01-10_4462.zip",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2022_WT11-15_4463.zip",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2023_02_WT_01-10_5981.zip",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2023_03_WT_01-10_5982.zip",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2023_Q2_WT_01-10_5977.zip",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2023_Q3 Q4_WT_01-10_5973.zip",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2023_WT_11-15_5964.zip",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/penmanshiel_16807304/Penmanshiel_SCADA_2024_WT_11-15_5966.zip"
+  ],
+  "static": {
+    "original_rows": 29,
+    "entirely_empty_rows_removed": 15,
+    "turbines": [
+      1,
+      2,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+    ],
+    "model": "MM82",
+    "rated_kw": 2050.0
+  },
+  "splits": {
+    "train": [
+      2016,
+      2017,
+      2018,
+      2019
+    ],
+    "validation": [
+      2020
+    ],
+    "development_eval": [
+      2021
+    ]
+  }
+}

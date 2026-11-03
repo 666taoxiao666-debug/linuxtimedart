@@ -1,0 +1,20 @@
+{
+  "pid": 230898,
+  "supervisor_pid": 230897,
+  "command": [
+    "/home/XT/miniconda3/envs/timedart/bin/python",
+    "-u",
+    "scripts/prepare_penmanshiel_v35.py",
+    "--data-root",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst",
+    "--out",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/Penmanshiel/prep_v35_7f92979"
+  ],
+  "cwd": "/home/XT/nuist/pythoncode/TimeDARTFirst_P1_7f92979",
+  "started_utc": "2026-11-03T02:28:21.759279+00:00",
+  "server_tests_passed": 8,
+  "source_commit": "7f92979",
+  "instance": 1,
+  "exit_code": 1,
+  "finished_utc": "2026-11-03T02:28:22.991791+00:00"
+}

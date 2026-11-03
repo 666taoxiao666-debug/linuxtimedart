@@ -1,0 +1,243 @@
+{
+  "channels": [
+    "Wspd",
+    "Etmp",
+    "Ndir_sin",
+    "Ndir_cos",
+    "Pab_mean",
+    "rotor_speed",
+    "power_last10",
+    "wind_last10",
+    "upwind_ws",
+    "upwind_dws3",
+    "upwind_minus_local",
+    "local_ws",
+    "local_dws3",
+    "regional_ws",
+    "regional_dws3",
+    "local_dp3",
+    "grad_east",
+    "grad_north",
+    "grad_magnitude_change3",
+    "upstream_missing",
+    "power"
+  ],
+  "extras": [
+    "power_last10",
+    "wind_last10"
+  ],
+  "splits": {
+    "train": [
+      2016,
+      2017,
+      2018,
+      2019
+    ],
+    "validation": [
+      2020
+    ],
+    "development_eval": [
+      2021
+    ]
+  },
+  "candidate_starts": 221639,
+  "eligible_starts": 138549,
+  "windows": {
+    "train": {
+      "all": 64771,
+      "normal": 60744
+    },
+    "validation": {
+      "all": 35603,
+      "normal": 32764
+    },
+    "development_eval": {
+      "all": 38147,
+      "normal": 34878
+    }
+  },
+  "scaler_rows": 419328,
+  "scaler_mean": [
+    7.122516981854915,
+    10.03310089981288,
+    -0.24277708907290646,
+    -0.28717905400198634,
+    9.769514243210471,
+    11.937491820440052,
+    643.9729012120783,
+    7.124195166574874,
+    4.520910841336696,
+    -0.037556237111477125,
+    -0.3045966893214137,
+    4.842868824457284,
+    -6.872087155282349e-05,
+    4.410515619079325,
+    0.00023117269149532818,
+    0.0018149549609885168,
+    -0.00018536875427019303,
+    -0.00719163936521672,
+    7.128894462507914e-07,
+    0.10440037393162394,
+    643.977539625702
+  ],
+  "scaler_scale": [
+    3.710276149720468,
+    4.848985931321182,
+    0.648505873915434,
+    0.6618365413461405,
+    17.569802641604714,
+    5.159430468854818,
+    672.9683829333111,
+    3.787886030901635,
+    2.2653633323159132,
+    1.1764612848890832,
+    1.7440857746320366,
+    2.913221030840507,
+    2.0622857354161703,
+    2.1005469408070936,
+    1.0133573378715264,
+    1.534657290009868,
+    0.011923189781758008,
+    0.013985310730735577,
+    0.0039097408571292435,
+    0.3057792273096269,
+    656.495965386353
+  ],
+  "normal_hour_share_pct": 94.30102384561707,
+  "preparation_schema": 2,
+  "curve_years": [
+    2016,
+    2017,
+    2018,
+    2019
+  ],
+  "prepared_hash_verified": true,
+  "normal_cohort_uses_future_target_state": true,
+  "all_cohort_required_for_deployment_accuracy": true,
+  "labels_modified": false,
+  "imputation": false,
+  "upstream": {
+    "features": [
+      "upwind_ws",
+      "upwind_dws3",
+      "upwind_minus_local",
+      "local_ws",
+      "local_dws3",
+      "regional_ws",
+      "regional_dws3",
+      "local_dp3",
+      "grad_east",
+      "grad_north",
+      "grad_magnitude_change3"
+    ],
+    "fill_values_training_mean": [
+      4.520910841340044,
+      -0.0375562371114458,
+      -0.30459668932105094,
+      4.842868824480953,
+      -6.872087155282465e-05,
+      4.410515619079566,
+      0.00023117269149531817,
+      0.001814954960988508,
+      -0.00018536875427019295,
+      -0.007191639365216829,
+      7.128894462507597e-07
+    ],
+    "missing_row_share_by_split": {
+      "train": 0.10440037393162394,
+      "validation": 0.10302823315118396,
+      "development_eval": 0.11986301369863013
+    },
+    "missing_policy": "input-only training-mean fill plus upstream_missing flag; labels untouched",
+    "window_queue": "identical to the frozen provider queue"
+  },
+  "turbines": [
+    1,
+    2,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+  ],
+  "finite_fraction_after_input_fill": {
+    "Wspd": 0.9768356433022931,
+    "Etmp": 0.9429816646213817,
+    "Ndir_sin": 0.9771048389037272,
+    "Ndir_cos": 0.9771048389037272,
+    "Pab_mean": 0.6607548906374071,
+    "rotor_speed": 0.9771003272456026,
+    "power_last10": 0.978270350585914,
+    "wind_last10": 0.9780131860728122,
+    "upwind_ws": 1.0,
+    "upwind_dws3": 1.0,
+    "upwind_minus_local": 1.0,
+    "local_ws": 1.0,
+    "local_dws3": 1.0,
+    "regional_ws": 1.0,
+    "regional_dws3": 1.0,
+    "local_dp3": 1.0,
+    "grad_east": 1.0,
+    "grad_north": 1.0,
+    "grad_magnitude_change3": 1.0,
+    "upstream_missing": 1.0,
+    "power": 0.9771033350176856
+  },
+  "upstream_finite_fraction_before_fill": {
+    "upwind_ws": 0.8952543372073438,
+    "upwind_dws3": 0.8952543372073438,
+    "upwind_minus_local": 0.8950227387569479,
+    "local_ws": 0.9997684015496042,
+    "local_dws3": 0.9995789119083712,
+    "regional_ws": 1.0,
+    "regional_dws3": 1.0,
+    "local_dp3": 0.9975787434731346,
+    "grad_east": 1.0,
+    "grad_north": 1.0,
+    "grad_magnitude_change3": 1.0
+  },
+  "upstream_missing_by_year": {
+    "2016": {
+      "rows": 51408,
+      "missing_rows": 4928,
+      "missing_fraction": 0.09586056644880174
+    },
+    "2017": {
+      "rows": 122640,
+      "missing_rows": 9226,
+      "missing_fraction": 0.07522831050228311
+    },
+    "2018": {
+      "rows": 122640,
+      "missing_rows": 16492,
+      "missing_fraction": 0.13447488584474887
+    },
+    "2019": {
+      "rows": 122640,
+      "missing_rows": 13132,
+      "missing_fraction": 0.10707762557077626
+    },
+    "2020": {
+      "rows": 122976,
+      "missing_rows": 12670,
+      "missing_fraction": 0.10302823315118396
+    },
+    "2021": {
+      "rows": 122640,
+      "missing_rows": 14700,
+      "missing_fraction": 0.11986301369863013
+    }
+  },
+  "upstream_file": {
+    "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/wind_public_v35/resampled_hourly_scada/penmanshiel_multiyear/hourly/penmanshiel_upstream_raw.csv",
+    "sha256": "85bc83c17bc638d24241759630ae7e77c40a28fd5d97e506238f5367d36b61c3",
+    "rows": 47496
+  }
+}
