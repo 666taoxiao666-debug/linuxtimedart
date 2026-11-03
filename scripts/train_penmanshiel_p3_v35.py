@@ -265,7 +265,7 @@ def synthetic_data():
             mask = dates <= base + (end - start)
             f = template.loc[mask].copy()
             f.timestamp_hour_end_utc = dates[mask] + (start - base)
-            f.label_year = (pd.to_datetime(f.timestamp_hour_end_utc) - pd.Timedelta(hours=1)).dt.year
+            f["label_year"] = (pd.to_datetime(f.timestamp_hour_end_utc) - pd.Timedelta(hours=1)).dt.year
             frames.append(f)
     frame = pd.concat(frames, ignore_index=True)
     labels = pd.DatetimeIndex(pd.to_datetime(frame.timestamp_hour_end_utc, utc=True).dt.tz_localize(None).unique()).sort_values()
