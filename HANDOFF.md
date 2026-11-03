@@ -29,20 +29,15 @@
 - 这是 P3 的第 1 轮。方案如果有阻断，而且修法不唯一，就先停在第 1 步之前交回，此时这些年份都还没有解封。
 
 ## Codex → Claude
-<!-- 由 Codex 覆盖。最后更新：2026-11-03，P2结果回传及哈希核验完成 -->
-轮次: R2/2 | 阶段: P2 | 分支: exp/P2 | 提交号: 实现e3ae7a6；启动aa37091；提速规则e3554d5；结果见本次提交
-审查结论: 通过，评级B，0条剩余阻断；docs/review/P2-R2-codex.md；结果技术核验完成，等待Claude复核科学结论。
-已直接修复: 无新增代码改动；未改冻结模块或STAGE_PLAN；本轮不援引提速例外。
-运行信息: 服务器10/10合成测试通过，smoke八臂各1seed/1epoch完成（11.029秒）；唯一真实实例24/24拟合完成，用时1385.350秒；原PID243138退出，无重跑。
-运行信息: worktree=/home/XT/nuist/pythoncode/TimeDARTFirst_P2_e3ae7a6；run=/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/Penmanshiel/p2_v35_e3ae7a6_r1。
-运行信息: python -u scripts/train_penmanshiel_p2_v35.py --device cuda:0 --data-root /home/XT/nuist/pythoncode/TimeDARTFirst --out <上述run>；完整命令见process.json。
-运行信息: 网络恢复后完成46源码、184输入（1,117,273,762字节）、120训练产物SHA核验，24份trained与freeze一致；25评估数组哈希留档，保存数组复算报告通过。
-运行信息: stdout关闭后刷新清单；83份元数据及清单回传output/penmanshiel_hourly/p2_v35/并逐文件核对大小/SHA256，未回传权重和数组。
-结果说明: 各臂3seed平均MAE/RMSE/R²及全部CI/p见output/penmanshiel_hourly/p2_v35/RESULTS.md和result.json；2021 ALL=38147窗口，h1–4合并，仅开发证据。
-关键数字: R支持：P-last10→P-upstream MAE 195.5209→184.3714，RMSE 319.8619→299.8978，R² .754390→.784086；MAE增益CI [8.5347,13.9389]，Holm p=4.8457e-15。
-关键数字: Z1未获支持：MAE增益3.0885，CI [-3.4426,10.1698]，Holm p=.365129；Z2未获支持：MAE增益-5.2222，CI [-9.9290,-.1436]，Holm p=.069357。
-关键数字: F1支持：Scratch→FT MAE 314.4308→202.9806，RMSE 415.7316→313.9544；MAE增益CI [104.9873,118.2838]，Holm p=2.7009e-245；三个seed均选epoch0，不能称微调本身有效。
-关键数字: F3支持：Scratch→FT MAE 225.7788→189.0949，RMSE 336.7399→302.7313；MAE增益CI [33.6116,39.9990]，Holm p=9.2960e-110；最佳epoch 7/9/11。
-关键数字: RMSE增益CI依次R [15.1965,24.7787]、Z1 [24.6444,44.1513]、Z2 [-1.1158,13.6349]、F1 [96.1005,110.9388]、F3 [29.0518,40.0922]；统计比较用seed平方误差先平均再开方。
-需要 Claude 做的: 复核P2实现、结果及F1 epoch0解释；F1/F3仅完整配方归因；R满足提请P3条件，请按新流程准备下一阶段方案，不将P2写成独立确认。
-需要用户决定: 当前无；Claude复核后再请用户决定合回主线。主线仍882f30c，main未动，P3未启动。
+<!-- 由 Codex 覆盖。最后更新：2026-11-04，P2合并完成；P3方案首审完成，年份范围待确认 -->
+轮次: R1/2 | 阶段: P3 | 分支: exp/P3 | 提交号: P2复核2682f6c；主线合并0e2e939；P3审查见本次提交
+审查结论: 方案通过，评级B，0条技术阻断、3条非阻断建议；docs/review/P3-R1-codex.md。方案通过不等于新runner通过测试。
+已直接修复: 无；未改Claude方案或决议，只保存其原始P3方案与本轮审查记录。
+运行信息: 已按用户2026-11-04批准，git merge --no-ff exp/P2合回codex/self-evolving-wiki并推送；exp/P2保留，main未动。
+运行信息: exp/P3从合并主线0e2e939建立，P3 STAGE_PLAN从原工作区带入此分支，未混入主线P2结题提交。
+运行信息: P3未冻结协议、未实现/部署runner、未解封数值、未训练；本轮只读现有登记元数据和待审diff。
+关键数字: P2已由Claude独立复核，R/F1/F3支持、Z1/Z2未获支持；24拟合和哈希验收记录已合主线，完整结果在output/penmanshiel_hourly/p2_v35/RESULTS.md。
+关键数字: Claude的P3为T22/T23/T24三折、每折24拟合共72；T22/T23折内R/F1/F3确认，T24及Z1/Z2描述，窗口门槛5000。
+关键数字: 用户本条明确批准2022；2023/2024尚未获得本聊天明确批准。不得依据交接中转述扩大解封范围，也不擅自把三折冻结方案缩为单折。
+需要 Claude 做的: 非阻断建议R1-S1–S3见审查文件：滚动折非统计独立、折内Holm的声明边界、验证指标和最终held-out测试评估锁的区分；不要求为建议额外来回一轮。
+需要用户决定: 是否也批准现方案启用2023、2024，按三折72拟合一次冻结运行；若仅批准2022，则先将P3范围明确为T22。年份确认前不解封或启动。
