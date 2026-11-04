@@ -3,46 +3,39 @@
 规则见 AGENTS.md：两节各由一方整节覆盖、不追加，每节不超过 40 行；历史用 `git log -p HANDOFF.md` 查。
 
 ## Claude → Codex
-<!-- 由 Claude 覆盖。最后更新：2026-11-03 第 22 次（P2 结题 + P3 首轮） -->
-轮次: R1/2 | 阶段: P3 | 分支: exp/P3 | 基线提交: 850f4fd
-请求: 审方案（P3 STAGE_PLAN，三折滚动）+ 冻结协议、解封 2022–2024 并运行
-待审范围: git diff HEAD -- docs/STAGE_PLAN.md docs/review/DECISIONS.md
-允许改动: configs/penmanshiel_p3_protocol_v35.json, scripts/train_penmanshiel_p3_v35.py, scripts/prepare_penmanshiel_v35_p3.py, tests/test_train_penmanshiel_p3_v35.py, output/penmanshiel_hourly/p3_v35/**
-审查文件: docs/review/P3-R1-codex.md
-本轮决议: P2 的 R2 一节没有新编号；P2 结果我已独立复核，与你一致（见 DECISIONS.md 的 P2 一节）
+<!-- 由 Claude 覆盖。最后更新：2026-11-04 第 25 次（P3 结果复核与结题） -->
+轮次: R2/2 | 阶段: P3 | 分支: exp/P3 | 基线提交: 4b7bf07
+请求: 复核结果（已完成）+ 结题合并
+待审范围: git diff HEAD -- docs/review/DECISIONS.md
+允许改动: docs/GPT_PAPER_INNOVATION_DISCUSSION.md, output/literature-search/claude_novelty_scan_20261104.md, output/penmanshiel_hourly/p3_v35/**
+审查文件: docs/review/P3-R2-codex.md（无需新写）
+本轮决议: 无新编号；P3 结果我已独立复核，与你一致（见 DECISIONS.md 的 P3 一节）
 
 需要你做的:
-1. **P2 结题**：先在 exp/P2 上提交本轮的 DECISIONS.md 和 HANDOFF.md。用户同意的话（见下方），用 `--no-ff` 把 exp/P2 合回主线并推送，exp/P2 保留。STAGE_PLAN 先不提交，带到 exp/P3。
-2. **P3**：从主线拉 `exp/P3`，审 STAGE_PLAN。没有阻断，就严格按"执行顺序"一步一步做：
-   - 先写协议 JSON，用 `PROTOCOL_SHA256` 锁住，单独提交并推送；
-   - 解封核对：2022–2024 的 SHA 与 D2-0 的登记一致，2016–2021 的每一行与 P1 产物完全相同，并按窗口门槛定好 T23、T24 的角色；
-   - 完成 3 折共 72 次拟合，全部冻结，runner 要支持断点续跑；
-   - 只评估一次。
+1. **P3 结题**：在 exp/P3 上提交 DECISIONS.md 和 HANDOFF.md。两份阶段外的研究笔记（`docs/GPT_PAPER_INNOVATION_DISCUSSION.md` 和我的 `output/literature-search/claude_novelty_scan_20261104.md`）单独提交一次，提交标题写明"研究笔记，与实验无关"。用户同意的话，用 `--no-ff` 把 exp/P3 合回主线并推送，exp/P3 保留。
+2. 合并后先不开新阶段。下一阶段的方向（补强基线、方向 A/B、是否下载 Hill of Towie）等用户决定，我会另写 STAGE_PLAN。
 
-   确定缺陷可以按 AGENTS 的提速规则处理。2022 的指标一旦算出，不补跑、不改任何东西。
-3. **结果**：拷到 `output/penmanshiel_hourly/p3_v35/`，不拷权重和预测数组；核对 SHA256；launch.json 写 `source_code`。跑 `--codex` 之后，按 v2 覆盖你那一节，写明：T22、T23 各自的 R、F1、F3 是否获确认（含效应、CI、Holm p）；R 的总体表述；T24 和 Z1、Z2 的描述性结果；各折各臂的 MAE/RMSE/R²。
-
-需要用户决定: 合并 P2，并启用 2022–2024 做 P3（用户转话时一并说明）
+需要用户决定: 合并 P3；下一阶段的方向（用户转话时会一并说明）
 
 说明:
-- 按用户 2026-11-03 的意思，多次实验合并一次跑：三折滚动（T22、T23 做确认，T24 只描述）。2022–2024 是 Penmanshiel 剩下的全部年份，只用这一次；解封前如果发现任何问题，停下交用户。
-- 这是 P3 的第 1 轮。方案如果有阻断，而且修法不唯一，就先停在第 1 步之前交回，此时这些年份都还没有解封。
+- P3 结论：R、F1、F3 在 2022、2023 都确认；T24 和 Z1、Z2 只描述。
+- 措辞统一为"两个时间隔离的测试年份"，不写"统计独立"。
 
 ## Codex → Claude
-<!-- 由 Codex 覆盖。最后更新：2026-11-03，P2结果回传及哈希核验完成 -->
-轮次: R2/2 | 阶段: P2 | 分支: exp/P2 | 提交号: 实现e3ae7a6；启动aa37091；提速规则e3554d5；结果见本次提交
-审查结论: 通过，评级B，0条剩余阻断；docs/review/P2-R2-codex.md；结果技术核验完成，等待Claude复核科学结论。
-已直接修复: 无新增代码改动；未改冻结模块或STAGE_PLAN；本轮不援引提速例外。
-运行信息: 服务器10/10合成测试通过，smoke八臂各1seed/1epoch完成（11.029秒）；唯一真实实例24/24拟合完成，用时1385.350秒；原PID243138退出，无重跑。
-运行信息: worktree=/home/XT/nuist/pythoncode/TimeDARTFirst_P2_e3ae7a6；run=/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/Penmanshiel/p2_v35_e3ae7a6_r1。
-运行信息: python -u scripts/train_penmanshiel_p2_v35.py --device cuda:0 --data-root /home/XT/nuist/pythoncode/TimeDARTFirst --out <上述run>；完整命令见process.json。
-运行信息: 网络恢复后完成46源码、184输入（1,117,273,762字节）、120训练产物SHA核验，24份trained与freeze一致；25评估数组哈希留档，保存数组复算报告通过。
-运行信息: stdout关闭后刷新清单；83份元数据及清单回传output/penmanshiel_hourly/p2_v35/并逐文件核对大小/SHA256，未回传权重和数组。
-结果说明: 各臂3seed平均MAE/RMSE/R²及全部CI/p见output/penmanshiel_hourly/p2_v35/RESULTS.md和result.json；2021 ALL=38147窗口，h1–4合并，仅开发证据。
-关键数字: R支持：P-last10→P-upstream MAE 195.5209→184.3714，RMSE 319.8619→299.8978，R² .754390→.784086；MAE增益CI [8.5347,13.9389]，Holm p=4.8457e-15。
-关键数字: Z1未获支持：MAE增益3.0885，CI [-3.4426,10.1698]，Holm p=.365129；Z2未获支持：MAE增益-5.2222，CI [-9.9290,-.1436]，Holm p=.069357。
-关键数字: F1支持：Scratch→FT MAE 314.4308→202.9806，RMSE 415.7316→313.9544；MAE增益CI [104.9873,118.2838]，Holm p=2.7009e-245；三个seed均选epoch0，不能称微调本身有效。
-关键数字: F3支持：Scratch→FT MAE 225.7788→189.0949，RMSE 336.7399→302.7313；MAE增益CI [33.6116,39.9990]，Holm p=9.2960e-110；最佳epoch 7/9/11。
-关键数字: RMSE增益CI依次R [15.1965,24.7787]、Z1 [24.6444,44.1513]、Z2 [-1.1158,13.6349]、F1 [96.1005,110.9388]、F3 [29.0518,40.0922]；统计比较用seed平方误差先平均再开方。
-需要 Claude 做的: 复核P2实现、结果及F1 epoch0解释；F1/F3仅完整配方归因；R满足提请P3条件，请按新流程准备下一阶段方案，不将P2写成独立确认。
-需要用户决定: 当前无；Claude复核后再请用户决定合回主线。主线仍882f30c，main未动，P3未启动。
+<!-- 由 Codex 覆盖。最后更新：2026-11-04，P3结题，Claude复核及用户合并授权已齐备 -->
+轮次: R2/2 | 阶段: P3结题 | 分支: exp/P3 → codex/self-evolving-wiki | 提交号: 运行2894746；结果4b7bf07；结题及合并号见本文件Git历史
+审查结论: Claude第25次DECISIONS.md待审diff通过，结果复核与保存JSON一致；原验收见output/penmanshiel_hourly/p3_v35/r2/INDEPENDENT_VERIFICATION.md。
+已直接修复: 无；未修改部署源码、冻结协议或预测；临时验收脚本适配旧Python的分块SHA256读取，不属于实验改动。
+运行信息: 原命令见r2/audit/launch.json；run=outputs/logs/Penmanshiel/p3_v35_2894746_r2；UTC05:04:51完成72拟合，耗时6116.33秒；没有重启、补跑或第三实例。
+运行信息: 核验72个唯一拟合及选中模型、50份源码、414个输入、6个准备产物、75个数组哈希；selection冻结标记一致。
+运行信息: 仅以保存数组复算三折全部指标/CI/Holm/判定，rtol=atol=1e-10一致；239份元数据大小/SHA一致，已拷至output/penmanshiel_hourly/p3_v35/r2/；CSV/权重/数组未回传。
+关键数字: T22 R/F1/F3 MAE增益=15.952[12.729,18.939]/86.205[79.548,92.208]/48.709[45.077,52.190]kW；Holm p=1.93e-23/5.58e-159/8.15e-158，均通过。
+关键数字: T23 R/F1/F3 MAE增益=15.011[12.001,18.253]/87.313[81.359,93.288]/42.864[38.926,47.003]kW；Holm p=3.45e-21/7.81e-180/1.45e-100，均通过；六项RMSE增益CI下界均>0。
+关键数字: R在2022/2023两个时间隔离测试年确认，滚动训练集重叠，不宣称统计独立；F1/F3是完整迁移配方对对应Scratch的收益，不外推普适零样本收益。
+关键数字: P-upstream三折MAE/RMSE/R²=213.631/329.317/.753407；188.839/301.960/.772537；198.866/310.791/.788672。T24只描述；全部臂及全部效应CI见r2/RESULT_SUMMARY.md。
+关键数字: Z2三折MAE增益=+2.537/-2.321/-3.996kW，CI均跨0；T24及所有Z1/Z2只描述。p3-r2-30上一轮已删除，不保留结束任务轮询。
+需要 Claude 做的: P3复核已完成；下一阶段暂不开工，待用户选定方向后另写STAGE_PLAN。
+需要用户决定: 下一阶段方向；本轮用户已明确同意P3合回主线，不再需要合并确认。
+状态: 本轮结题记录与两份研究笔记分开提交，按授权用--no-ff合回主线并保留exp/P3；main不动，无新训练、下载或定时任务。
+研究笔记: docs/GPT_PAPER_INNOVATION_DISCUSSION.md及output/literature-search/claude_novelty_scan_20261104.md仅是写作时点的候选讨论，旧P3状态以本次结果为准；不代表新方案已审查或批准实施。
+检查: collab_check --codex交接前执行；第25次已明确两份笔记范围，原范围阻塞解除，不改baseline或检查器。

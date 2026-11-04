@@ -1,0 +1,29 @@
+{
+  "T22": {
+    "windows": 37741,
+    "role": "confirmation",
+    "upstream_missing_by_split": {
+      "train": 0.10408921933085502,
+      "validation": 0.11986301369863013,
+      "test": 0.11027397260273973
+    }
+  },
+  "T23": {
+    "windows": 36838,
+    "role": "confirmation",
+    "upstream_missing_by_split": {
+      "train": 0.10699848408287013,
+      "validation": 0.11027397260273973,
+      "test": 0.1295662100456621
+    }
+  },
+  "T24": {
+    "windows": 13449,
+    "role": "descriptive",
+    "upstream_missing_by_split": {
+      "train": 0.1075085324232082,
+      "validation": 0.1295662100456621,
+      "test": 0.10655737704918032
+    }
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "passed": true,
+  "rows": 664944,
+  "columns": 53,
+  "labels_modified": 0,
+  "comparison_only_nullable_count_columns": [
+    "n_state_ticks",
+    "n_capacity_ticks"
+  ],
+  "upstream_rows": 47496
+}

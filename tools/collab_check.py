@@ -61,6 +61,27 @@ def git(root, *args):
     return r.stdout.decode("utf-8", "replace")
 
 
+def git_blobs(root, commit, paths):
+    """{路径: 该提交里的 Git 对象原始字节}；对象不存在的路径不出现在结果里。用一个 cat-file 进程批量读取。"""
+    if not paths:
+        return {}
+    env = dict(os.environ, GIT_OPTIONAL_LOCKS="0")
+    query = "".join(f"{commit}:{p}\n" for p in paths).encode("utf-8")
+    r = subprocess.run(GIT + ("-C", str(root), "cat-file", "--batch"), input=query, capture_output=True, env=env)
+    out, pos, blobs = r.stdout, 0, {}
+    for p in paths:
+        end = out.find(b"\n", pos)
+        if end < 0:
+            break
+        header = out[pos:end].split()
+        pos = end + 1
+        if len(header) == 3 and header[1] == b"blob":
+            size = int(header[2])
+            blobs[p] = out[pos:pos + size]
+            pos += size + 1
+    return blobs
+
+
 def read_text(path):
     try:
         return Path(path).read_bytes().decode("utf-8-sig", "replace").replace("\r\n", "\n")
@@ -468,20 +489,37 @@ def check_frozen(root):
         f = root / m.group(1)
         if not f.is_file() or sha_lf(f) != h.group(1):
             fails.append(f"{m.group(1)} 与 {py.name} 登记的 PROTOCOL_SHA256 不一致：冻结协议不能改，要改就开新版本")
-    launches = sorted(set((root / "output").glob("*/audit/launch.json")) | set((root / "output").glob("*/*/audit/launch.json")))
+    out_dir = root / "output"
+    launches = sorted({lj for depth in ("*", "*/*", "*/*/*") for lj in out_dir.glob(f"{depth}/audit/launch.json")})
+    n_failed = 0
     for lj in launches:
         try:
-            src = json.loads(read_text(lj) or "").get("source_code")
+            data = json.loads(read_text(lj) or "")
+            src = data.get("source_code")
         except (ValueError, AttributeError):
             warns.append(f"{lj.relative_to(root).as_posix()} 无法解析")
             continue
         if not isinstance(src, dict):
             continue
         n2 += 1
-        run = lj.parent.parent.name
-        for rel, digest in src.items():
-            if not (isinstance(digest, str) and re.fullmatch(r"[0-9a-f]{64}", digest)):
+        run = lj.parent.parent.relative_to(out_dir).as_posix()
+        digests = {rel: d for rel, d in src.items() if isinstance(d, str) and re.fullmatch(r"[0-9a-f]{64}", d)}
+        if (lj.parent / "failed.json").exists():
+            # P3 阶段：技术失败的运行（审计目录里有 failed.json）没有结果可复现，它的源码允许按批准修复后用于重跑。
+            # 不放宽哈希：改为逐个核对它登记的提交里的 Git 对象，确认失败运行的身份本身没有被改。
+            n_failed += 1
+            commit = data.get("git_head") or data.get("commit") or (data.get("identity") or {}).get("git_head")
+            if not commit:
+                fails.append(f"技术失败的运行 {run} 没有登记提交号，无法核对历史源码")
                 continue
+            blobs = git_blobs(root, commit, list(digests))
+            for rel, digest in digests.items():
+                blob = blobs.get(rel)
+                if blob is None or digest not in (hashlib.sha256(blob).hexdigest(),
+                                                  hashlib.sha256(blob.replace(b"\r\n", b"\n")).hexdigest()):
+                    fails.append(f"{rel} 与技术失败运行 {run} 登记的提交 {commit[:9]} 不一致：失败运行的历史身份被改动")
+            continue
+        for rel, digest in digests.items():
             f = root / rel
             # R1-B1（K1b 阶段）：失配一律失败，交接里提到路径也不放行。
             # R1-P1（P1 阶段）：审计可能登记原始字节 SHA，也可能登记换行规范化后的 SHA，两种都认；内容一变，两种都对不上
@@ -489,7 +527,7 @@ def check_frozen(root):
                 fails.append(f"{rel} 与运行 {run} 的审计登记不一致：已完成运行的源码不能原地改，要改就新开文件或版本")
     if n1 == 0 and n2 == 0:
         return SKIP, "没找到 PROTOCOL_SHA256 常量或 audit/launch.json，跳过", []
-    summary = f"{n1} 个协议哈希（scripts/*.py）+ {n2} 个运行审计（audit/launch.json）"
+    summary = f"{n1} 个协议哈希（scripts/*.py）+ {n2} 个运行审计（audit/launch.json）" + (f"，其中 {n_failed} 个技术失败运行按其提交核对" if n_failed else "")
     verdict = "有失配" if fails else ("登记哈希一致，但有审计文件无法解析" if warns else "一致")
     return (FAIL if fails else WARN if warns else PASS), f"{summary} {verdict}", fails + warns
 
@@ -682,6 +720,11 @@ def self_test():
         ("运行审计登记的源码被改、HANDOFF 里提到了路径", 7, lambda r, s: audit_touch(r, s, True), ()),
         ("审计登记原始字节 SHA 的 CRLF 源码未改（应通过）", None, lambda r, s: crlf_audit(r, False), ()),
         ("审计登记原始字节 SHA 的 CRLF 源码被改", 7, lambda r, s: crlf_audit(r, True), ()),
+        ("技术失败运行的源码按批准修复（应通过）", None, lambda r, s: _w(r, "tools/fixme.py", "z = 2\n"), ()),
+        ("技术失败运行登记的哈希与其提交不符", 7, lambda r, s: _w(r, "output/run3/audit/launch.json", json.dumps(
+            {"identity": {"git_head": git(r, "rev-parse", "HEAD~1").strip()}, "source_code": {"tools/fixme.py": "0" * 64}}) + "\n"), ()),
+        ("技术失败运行没有登记提交号", 7, lambda r, s: _w(r, "output/run3/audit/launch.json", json.dumps(
+            {"source_code": {"tools/fixme.py": sha_lf(r / "tools/fixme.py")}}) + "\n"), ()),
     ]
     tmp = tempfile.mkdtemp(prefix="collab_selftest_")
     bad = 0
@@ -701,8 +744,15 @@ def self_test():
             (repo / "scripts/crlf.py").write_bytes(b"y = 1\r\n")
             _w(repo, "output/run2/audit/launch.json",
                json.dumps({"source_code": {"scripts/crlf.py": file_sha(repo / "scripts/crlf.py")}}) + "\n")
+            _w(repo, "tools/fixme.py", "z = 1\n")
             sh(repo, "add", "-A")
             sh(repo, "commit", "-q", "-m", "init")
+            first = git(repo, "rev-parse", "HEAD").strip()   # P3 阶段：一个技术失败的运行，登记的是这个提交里的源码
+            _w(repo, "output/run3/audit/launch.json", json.dumps({"identity": {"git_head": first},
+               "source_code": {"tools/fixme.py": sha_lf(repo / "tools/fixme.py")}}) + "\n")
+            _w(repo, "output/run3/audit/failed.json", '{"type": "AssertionError"}\n')
+            sh(repo, "add", "-A")
+            sh(repo, "commit", "-q", "-m", "failed run")
             sh(repo, "checkout", "-q", "-b", "exp/S1")
             _w(repo, "src/a.py", "x = 2\n")
             _w(repo, STAGE_PLAN, "".join(f"## {h}\n内容\n" for h in STAGE_HEADINGS))
