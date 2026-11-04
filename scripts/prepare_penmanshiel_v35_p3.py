@@ -26,9 +26,24 @@ def protocol():
 def verify_old_rows(current, original):
     old = current[current.label_year <= 2021].copy()
     order = ["turbine_id", "timestamp_hour_end_utc"]
-    pd.testing.assert_frame_equal(old.sort_values(order).reset_index(drop=True),
-                                  original.sort_values(order).reset_index(drop=True), check_exact=True)
-    return {"passed": True, "rows": len(old), "columns": len(old.columns), "labels_modified": 0}
+    old = old.sort_values(order).reset_index(drop=True)
+    reference = original.sort_values(order).reset_index(drop=True).copy()
+    # Later years may introduce missing counts, promoting the whole CSV column
+    # to float. Normalize comparison copies only, never the labels or files.
+    normalized = []
+    for name in ("n_state_ticks", "n_capacity_ticks"):
+        if name not in old or name not in reference:
+            continue  # Missing/asymmetric schemas still fail assert_frame_equal.
+        np.testing.assert_array_equal(old[name].isna().to_numpy(), reference[name].isna().to_numpy())
+        for frame in (old, reference):
+            values = frame.loc[frame[name].notna(), name].to_numpy(dtype=np.float64)
+            if not np.isfinite(values).all() or not (values == np.floor(values)).all():
+                raise ValueError(f"Nonintegral/nonfinite count in {name}")
+            frame[name] = frame[name].astype("Int64")
+        normalized.append(name)
+    pd.testing.assert_frame_equal(old, reference, check_exact=True)
+    return {"passed": True, "rows": len(old), "columns": len(old.columns), "labels_modified": 0,
+            "comparison_only_nullable_count_columns": normalized}
 
 
 def read_authorized_member(entry, path):

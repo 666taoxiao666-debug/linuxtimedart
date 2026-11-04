@@ -188,6 +188,53 @@ def assert_can_resume(out):
         raise ValueError("Final test started/completed: restart forbidden")
 
 
+def plan_attempt(registry, out, *, resume=False, restart_from=None):
+    """Validate the global budget under the caller's exclusive P3 lock.
+
+    A new-directory attempt is explicitly authorized only for a failed
+    preparation with no fits or final-test access. Preserve the prior history.
+    This function has no writes, so rejected requests cannot consume/reset it.
+    """
+    out = Path(out).resolve()
+    attempts = u.read_json(registry) if registry.exists() else {"out": str(out), "attempts": []}
+    if len(attempts["attempts"]) >= prep.protocol()["resume"]["maximum_process_attempts"]:
+        raise ValueError("Two-attempt budget exhausted")
+    if restart_from is not None:
+        prior = Path(restart_from).resolve()
+        if resume or prior == out or not attempts["attempts"] or Path(attempts["out"]).resolve() != prior:
+            raise ValueError("Explicit preparation restart does not match registered prior run")
+        assert_can_resume(prior)
+        if (prior / "selection_freeze.json").exists() or list(prior.glob("T*/fits/*/s*/trained.json")) or (prior / "prepared/prepared_complete.json").exists():
+            raise ValueError("Only a pre-training preparation failure may start a fresh directory")
+        failure_path = prior / "audit/failed.json"
+        failure = u.read_json(failure_path)
+        launch = u.read_json(prior / "audit/launch.json")
+        # The reviewed r1 failure is exact and auditable, not a generic retry.
+        if (failure["type"] != "AssertionError" or failure.get("test_started") is not False
+                or 'column name="n_state_ticks"' not in failure["message"]
+                or 'Attribute "dtype"' not in failure["message"]
+                or launch["identity"]["protocol_sha256"] != PROTOCOL_SHA256):
+            raise ValueError("Not the reviewed preparation dtype failure")
+        if Path(f"/proc/{launch['pid']}").exists():
+            raise ValueError("Prior process still exists; refuse duplicate")
+        if (out / "audit/launch.json").exists() or (out / "prepared").exists() or (out / "selection_freeze.json").exists() or list(out.glob("T*/fits/*/s*")):
+            raise ValueError("Replacement directory already contains a run")
+        attempts = copy.deepcopy(attempts)
+        for entry in attempts["attempts"]:
+            entry.setdefault("out", str(prior))
+        attempts["recovery"] = {"from": str(prior), "to": str(out),
+            "prior_registry_sha256": u.file_sha256(registry), "failed_sha256": u.file_sha256(failure_path),
+            "prior_launch_sha256": u.file_sha256(prior / "audit/launch.json"),
+            "authorization": "Claude HANDOFF #23 / DECISIONS R1-P1; user 2026-11-04"}
+        attempts["out"] = str(out)
+    else:
+        if Path(attempts["out"]).resolve() != out:
+            raise ValueError("P3 already registered in another directory")
+        if attempts["attempts"] and not resume:
+            raise ValueError("Existing P3 launch requires explicit --resume")
+    return attempts
+
+
 def evaluate_arrays(predictions, truth, issue, normal, recipe, role):
     metrics = {}
     for name, mask in (("all", np.ones(len(truth), bool)), ("normal", normal)):
@@ -283,6 +330,8 @@ def main():
     parser.add_argument("--device", default="cuda:0")
     parser.add_argument("--smoke", action="store_true")
     parser.add_argument("--resume", action="store_true")
+    parser.add_argument("--restart-after-preparation-failure", type=Path,
+                        help="Reviewed failed run to preserve; consumes final global attempt in a new directory")
     args = parser.parse_args()
     p = prep.protocol()
     out, data_root = args.out.resolve(), args.data_root.resolve()
@@ -301,13 +350,8 @@ def main():
             "git_head": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip(),
             "device": args.device, "smoke": args.smoke}
         registry = out / "audit/attempts.json" if args.smoke else data_root / "outputs/logs/Penmanshiel/p3_v35_registry.json"
-        attempts = u.read_json(registry) if registry.exists() else {"out": str(out), "attempts": []}
-        if attempts["out"] != str(out):
-            raise ValueError("P3 already registered in another directory")
-        if attempts["attempts"] and not args.resume:
-            raise ValueError("Existing P3 launch requires explicit --resume")
-        if len(attempts["attempts"]) >= p["resume"]["maximum_process_attempts"]:
-            raise ValueError("Two-attempt budget exhausted")
+        attempts = plan_attempt(registry, out, resume=args.resume,
+                                restart_from=args.restart_after_preparation_failure)
         launch = out / "audit/launch.json"
         if launch.exists():
             previous = u.read_json(launch)
@@ -317,7 +361,7 @@ def main():
             save(launch, {"identity": identity, "source_code": identity["source_code"], "utc": p2.now(),
                  "pid": os.getpid(), "command": sys.argv, "python": sys.version, "torch": torch.__version__,
                  "determinism": trainer.v26run.determinism_record()})
-        attempts["attempts"].append({"utc": p2.now(), "pid": os.getpid(), "command": sys.argv})
+        attempts["attempts"].append({"utc": p2.now(), "pid": os.getpid(), "command": sys.argv, "out": str(out)})
         save(registry, attempts)
         started = time.monotonic()
         try:

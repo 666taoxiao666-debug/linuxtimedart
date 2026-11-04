@@ -53,6 +53,101 @@ class P3Tests(unittest.TestCase):
             self.assertEqual(p3.fold_role(f, 5000, self.p), "confirmation" if f["id"] != "T24" else "descriptive")
         self.assertEqual(p3.fold_role(self.p["folds"][2], 100000, self.p), "descriptive")
 
+    def count_frames(self):
+        old = pd.DataFrame({"turbine_id": [1, 1], "timestamp_hour_end_utc": ["2021-01-01", "2021-02-01"],
+            "label_year": [2021, 2021], "power_kw": [-3.2, 10.0],
+            "n_state_ticks": [6, 0], "n_capacity_ticks": [6, 4]})
+        current = old.copy()
+        current[["n_state_ticks", "n_capacity_ticks"]] = current[["n_state_ticks", "n_capacity_ticks"]].astype(float)
+        return current, old
+
+    def test_count_dtype_integer_equivalence_without_mutation(self):
+        current, old = self.count_frames()
+        before, reference = current.copy(), old.copy()
+        audit = p3.prep.verify_old_rows(current, old)
+        self.assertEqual(audit["comparison_only_nullable_count_columns"], ["n_state_ticks", "n_capacity_ticks"])
+        pd.testing.assert_frame_equal(current, before, check_exact=True)
+        pd.testing.assert_frame_equal(old, reference, check_exact=True)
+        # Equal missing positions are allowed; they are not filled.
+        current.loc[0, "n_state_ticks"] = np.nan
+        old["n_state_ticks"] = old.n_state_ticks.astype("Int64")
+        old.loc[0, "n_state_ticks"] = pd.NA
+        self.assertTrue(p3.prep.verify_old_rows(current, old)["passed"])
+
+    def test_count_fractional_and_infinite_values_rejected(self):
+        for column in ("n_state_ticks", "n_capacity_ticks"):
+            for value in (5.5, np.inf, -np.inf):
+                current, old = self.count_frames()
+                current.loc[0, column] = value
+                with self.assertRaises((ValueError, TypeError)):
+                    p3.prep.verify_old_rows(current, old)
+
+    def test_count_missing_position_change_rejected(self):
+        current, old = self.count_frames()
+        current.loc[0, "n_capacity_ticks"] = np.nan
+        with self.assertRaises(AssertionError):
+            p3.prep.verify_old_rows(current, old)
+
+    def test_count_normalization_does_not_hide_label_or_other_dtype_change(self):
+        for column, value in (("power_kw", -3.199999999), ("n_state_ticks", 5.0)):
+            current, old = self.count_frames()
+            current.loc[0, column] = value
+            with self.assertRaises(AssertionError):
+                p3.prep.verify_old_rows(current, old)
+        current, old = self.count_frames()
+        current["label_year"] = current.label_year.astype(float)
+        with self.assertRaises(AssertionError):
+            p3.prep.verify_old_rows(current, old)
+
+    def failed_preparation_fixture(self, folder):
+        root = Path(folder)
+        prior, replacement, registry = root / "r1", root / "r2", root / "registry.json"
+        p3.save(prior / "audit/failed.json", {"type": "AssertionError", "test_started": False,
+            "message": 'column name="n_state_ticks" Attribute "dtype" differs'})
+        p3.save(prior / "audit/launch.json", {"pid": 999999999,
+            "identity": {"protocol_sha256": p3.PROTOCOL_SHA256}})
+        p3.save(registry, {"out": str(prior), "attempts": [{"pid": 999999999, "utc": "prior"}]})
+        return prior, replacement, registry
+
+    def test_new_directory_recovery_preserves_history_and_budget(self):
+        with tempfile.TemporaryDirectory() as folder:
+            prior, replacement, registry = self.failed_preparation_fixture(folder)
+            original = registry.read_bytes()
+            before = (prior / "audit/failed.json").read_bytes()
+            plan = p3.plan_attempt(registry, replacement, restart_from=prior)
+            self.assertEqual(len(plan["attempts"]), 1)
+            self.assertEqual(plan["attempts"][0]["out"], str(prior))
+            self.assertEqual(plan["recovery"]["failed_sha256"], p3.u.file_sha256(prior / "audit/failed.json"))
+            self.assertEqual(registry.read_bytes(), original)
+            self.assertEqual((prior / "audit/failed.json").read_bytes(), before)
+            plan["attempts"].append({"pid": 999999998, "out": str(replacement)})
+            p3.save(registry, plan)
+            with self.assertRaisesRegex(ValueError, "budget exhausted"):
+                p3.plan_attempt(registry, replacement, resume=True)
+
+    def test_new_directory_recovery_rejects_unapproved_routes(self):
+        with tempfile.TemporaryDirectory() as folder:
+            prior, replacement, registry = self.failed_preparation_fixture(folder)
+            for kwargs in ({}, {"restart_from": prior, "resume": True}, {"restart_from": replacement}):
+                with self.assertRaises(ValueError):
+                    p3.plan_attempt(registry, replacement, **kwargs)
+            (prior / "test_evaluation_started.json").write_text('{}')
+            with self.assertRaisesRegex(ValueError, "restart forbidden"):
+                p3.plan_attempt(registry, replacement, restart_from=prior)
+
+    def test_new_directory_recovery_rejects_fits_and_unrelated_failure(self):
+        for marker in ("selection_freeze.json", "prepared/prepared_complete.json", "T22/fits/P-upstream/s2024/trained.json"):
+            with tempfile.TemporaryDirectory() as folder:
+                prior, replacement, registry = self.failed_preparation_fixture(folder)
+                p3.save(prior / marker, {})
+                with self.assertRaisesRegex(ValueError, "pre-training"):
+                    p3.plan_attempt(registry, replacement, restart_from=prior)
+        with tempfile.TemporaryDirectory() as folder:
+            prior, replacement, registry = self.failed_preparation_fixture(folder)
+            p3.save(prior / "audit/failed.json", {"type": "ValueError", "test_started": False, "message": "wrong hash"})
+            with self.assertRaisesRegex(ValueError, "Not the reviewed"):
+                p3.plan_attempt(registry, replacement, restart_from=prior)
+
     def test_every_fold_fewshot_time_isolation(self):
         for f in self.p["folds"]:
             pen, kel, variants, _ = p3.build_fold(self.data, f)
