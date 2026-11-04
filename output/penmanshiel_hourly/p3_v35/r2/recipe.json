@@ -1,0 +1,269 @@
+{
+  "training": {
+    "optimizer": "AdamW",
+    "learning_rate": 0.001,
+    "weight_decay": 0.0001,
+    "batch_size": 64,
+    "eval_batch_size": 512,
+    "max_epochs": 20,
+    "patience": 5,
+    "grad_clip_norm": 1,
+    "scheduler": "CosineAnnealingLR",
+    "scheduler_t_max": 20,
+    "scheduler_eta_min": 0,
+    "loss_space": "standardized power",
+    "loss_mae_weight": 0.8,
+    "loss_mse_weight": 0.2,
+    "loss_leads": "uniform",
+    "selection_cohort": "all",
+    "selection_metric": "per fit: validation original-scale MAE on the 2023 ALL cohort (unchanged v28 fit_config)",
+    "epoch0_included": true,
+    "tie_policy": "strictly lower MAE updates; ties keep the earlier epoch",
+    "refit_after_selection": false,
+    "dtype": "float32",
+    "amp": false,
+    "tf32": false,
+    "num_workers": 0,
+    "shuffle": "torch.Generator().manual_seed(seed + epoch)",
+    "same_recipe_as": "v29 TSMixer_last10_all (scripts/train_kelmarsh_multiyear_benchmark.fit_config, unchanged); only the balanced arm overrides the two loss weights"
+  },
+  "families": {
+    "TSMixerBasicSmall": {
+      "factory": "models.TSMixerBasicSmall.Model",
+      "args": {
+        "blocks": 2,
+        "ff_dim": 32,
+        "dropout": 0.1,
+        "norm_eps": 0.001
+      },
+      "parameters": {
+        "last10": 4262,
+        "upstream": 8126
+      }
+    }
+  },
+  "statistics": {
+    "cohort": "computed separately on test all and test normal",
+    "seed_handling": "losses averaged over the 3 seeds on identical windows",
+    "cluster": "issue time across turbines",
+    "block_length": 8,
+    "replicates": 5000,
+    "seed": 2024,
+    "hac_max_lag": 7,
+    "multiple_testing": "Holm over the C1-C3 MAE Newey-West p-values within each cohort; raw p retained",
+    "rmse": "issue-time block bootstrap of squared-error sums; separate from the MAE CI"
+  },
+  "p3": {
+    "protocol_id": "penmanshiel_p3_v35",
+    "status": "FROZEN",
+    "authorization": "User approved P2 merge and 2022 on 2026-11-04, then explicitly approved 2023 and 2024 in the same chat. Claude HANDOFF #22 delegates this implementation.",
+    "recipe_path": "configs/kelmarsh_upstream_protocol_v32.json",
+    "recipe_sha256_lf": "b9fbdce22a83dd0e5128aa3d9a489cbcb725c4f298f2feba6fe15f028f7a3588",
+    "recipe": "P2 unchanged unbalanced 0.8 MAE + 0.2 MSE; TSMixerBasicSmall 2 blocks, ff32, dropout0.1; fit_config unchanged; epoch0 eligible; no refit",
+    "seeds": [
+      2024,
+      2025,
+      2026
+    ],
+    "trained_arms": [
+      "K-last10",
+      "K-upstream",
+      "P-last10",
+      "P-upstream",
+      "FT-1",
+      "Scratch-1",
+      "FT-3",
+      "Scratch-3"
+    ],
+    "baselines": [
+      "PersistenceHour",
+      "PersistenceLast10"
+    ],
+    "folds": [
+      {
+        "id": "T22",
+        "fit_years": [
+          2016,
+          2017,
+          2018,
+          2019,
+          2020
+        ],
+        "validation_year": 2021,
+        "test_year": 2022,
+        "confirmation_candidate": true
+      },
+      {
+        "id": "T23",
+        "fit_years": [
+          2016,
+          2017,
+          2018,
+          2019,
+          2020,
+          2021
+        ],
+        "validation_year": 2022,
+        "test_year": 2023,
+        "confirmation_candidate": true
+      },
+      {
+        "id": "T24",
+        "fit_years": [
+          2016,
+          2017,
+          2018,
+          2019,
+          2020,
+          2021,
+          2022
+        ],
+        "validation_year": 2023,
+        "test_year": 2024,
+        "confirmation_candidate": false
+      }
+    ],
+    "fits_per_fold": 24,
+    "expected_fits": 72,
+    "penmanshiel_start": "2016-08-01T00:00:00Z",
+    "kelmarsh_start": "2016-05-01T00:00:00Z",
+    "input_len": 24,
+    "horizon": 4,
+    "stride": 3,
+    "upstream_lag_hours": 1,
+    "penmanshiel_stations": [
+      150,
+      161,
+      177,
+      235,
+      982,
+      987,
+      1023,
+      1074,
+      16589,
+      24125,
+      30523
+    ],
+    "penmanshiel_turbines": [
+      1,
+      2,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+    ],
+    "data_identity": "D2-0 test_year_registration.json, part_A.json and input_hashes.json locked by utils.penmanshiel_v35.D2_SHA; verify raw size/SHA/official MD5 where registered before parsing; P1 development rows and raw upstream values must match exactly",
+    "preparation": "Reuse frozen P1 numerical functions, fixed 2016-2019 normal-cohort power curves, canonical duplicate normalization, strict original six-tick hourly labels. Never fill, clip or interpolate labels. Stop on any preparation discrepancy.",
+    "preprocessing": "Per-fold full P/K fits use only fit_years for scaler and upstream fill. Zero-shot and FT use source K statistics only. Scratch uses only its few-shot fit segment; target reductions forbidden for transfer.",
+    "fewshot": {
+      "months": [
+        1,
+        3
+      ],
+      "year": "validation_year",
+      "calendar_end_exclusive": "January 1 after validation_year",
+      "fit_fraction": "first floor(4*calendar_hours/5) hours",
+      "windows": "inputs and targets within month interval; fit targets end before cut; validation targets begin at cut",
+      "ft_learning_rate": 0.0001,
+      "scratch_learning_rate": 0.001
+    },
+    "comparisons": {
+      "R": [
+        "P-upstream",
+        "P-last10"
+      ],
+      "F1": [
+        "FT-1",
+        "Scratch-1"
+      ],
+      "F3": [
+        "FT-3",
+        "Scratch-3"
+      ],
+      "Z1": [
+        "K-upstream",
+        "PersistenceHour"
+      ],
+      "Z2": [
+        "K-upstream",
+        "K-last10"
+      ]
+    },
+    "confirmation_family": [
+      "R",
+      "F1",
+      "F3"
+    ],
+    "confirmation_cohort": "all",
+    "confirmation_window_minimum": 5000,
+    "statistics": {
+      "unit": "kW",
+      "leads": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "seed_handling": "average losses, not predictions",
+      "cluster": "issue time across turbines",
+      "mae": "Newey-West, HAC max lag7, CI95",
+      "rmse": "issue-time block bootstrap",
+      "block_length": 8,
+      "replicates": 5000,
+      "seed": 2024,
+      "holm": "R,F1,F3 MAE two-sided p-values within each confirmation fold only; no cross-year family-wise claim",
+      "success": "MAE CI95 lower>0 AND Holm p<=0.05 AND RMSE gain CI95 lower>0"
+    },
+    "reporting": {
+      "two_years": "\u4e24\u4e2a\u72ec\u7acb\u5e74\u4efd\u786e\u8ba4\uff08\u6eda\u52a8\u65f6\u95f4\u9694\u79bb\uff0c\u4e0d\u5ba3\u79f0\u7edf\u8ba1\u72ec\u7acb\uff09",
+      "one_year": "\u90e8\u5206\u786e\u8ba4\uff0c\u6ce8\u660e\u5e74\u4efd",
+      "zero_years": "\u672a\u83b7\u786e\u8ba4",
+      "always_descriptive": [
+        "T24",
+        "Z1",
+        "Z2",
+        "normal",
+        "per-lead",
+        "R2",
+        "FT-3 versus P-upstream",
+        "coverage",
+        "upstream_missing"
+      ],
+      "epoch0": "FT-1 selected epoch0 means direct Kelmarsh model versus Scratch recipe; not evidence of fine-tuning benefit"
+    },
+    "execution_order": [
+      "commit and push protocol before unsealing",
+      "verify all registered raw hashes",
+      "prepare and verify every old 2016-2021 row",
+      "register coverage/windows/roles",
+      "complete all 72 fits",
+      "freeze all selected checkpoint hashes",
+      "persist test_evaluation_started before any held-out prediction or metric",
+      "evaluate all folds once"
+    ],
+    "resume": {
+      "maximum_process_attempts": 2,
+      "before_test_only": true,
+      "reuse": "verify completed fits by contract and artifact hashes; interrupted epochs use unchanged frozen trainer last.pt RNG/optimizer state",
+      "after_test_evaluation_started": "no restart even if evaluation fails",
+      "validation_note": "fold-specific 2022/2023 validation MAE is allowed solely for that fold checkpoint selection; it is not final held-out evaluation and cannot change other folds or recipes"
+    },
+    "prohibited": [
+      "additional arms",
+      "hyperparameter search",
+      "station reselection",
+      "label edits",
+      "test-driven choices",
+      "changes to registered frozen modules",
+      "rerun after final test evaluation starts"
+    ]
+  }
+}

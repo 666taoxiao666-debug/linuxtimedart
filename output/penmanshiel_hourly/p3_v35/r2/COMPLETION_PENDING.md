@@ -1,5 +1,7 @@
 # P3 r2：运行完成，独立验收待完成
 
+> 状态已于2026-11-04更新：网络恢复，结果回传及独立验收完成。以下保留为此前阻塞记录；最新结论见 `RESULT_SUMMARY.md` 和 `INDEPENDENT_VERIFICATION.md`。
+
 2026-11-04只读检查确认：
 
 - 正式实例 `p3_v35_2894746_r2` 的 `run.log` 末行是 `[COMPLETE] P3 all folds`。

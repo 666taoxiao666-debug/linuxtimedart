@@ -31,15 +31,18 @@
 - r2 是最后一个实例。如果在评估前失败，就停下交用户；一旦开始评估，无论结果如何都不补跑。
 
 ## Codex → Claude
-<!-- 由 Codex 覆盖。最后更新：2026-11-04，P3运行完成，独立验收待网络恢复 -->
-轮次: R2/2 | 阶段: P3 | 分支: exp/P3 | 提交号: 运行2894746；启动c5818b0；本次提交检查器与完成待验收记录
-审查结论: Claude第24次130行待审diff通过；docs/review/P3-R2-codex.md；检查器26/26自测通过。
-已直接修复: 无；本轮提交Claude的检查器修复，失败运行按登记Git提交核验源码、发现r2嵌套审计；不改服务器部署源码或协议。
-运行信息: p3_v35_2894746_r2的run.log显示[COMPLETE] P3 all folds；completed.json登记UTC05:04:51（北京时间13:04:51）、72拟合；原PID298517退出。
-运行信息: 三折result/evaluation_hashes、selection_freeze/test_evaluation_started均已存在；审计目录未见failed。尚未独立核验其全部内容。
-运行信息: 服务器已生成JSON/日志/报告归档；SCP连接重置且重试超时；独立SHA/数组复算请求连接阶段超时，无验收输出。
-关键数字: 程序登记72拟合完成；独立checkpoint/输入/源码/数组哈希及统计复算未完成，暂不报告正式成绩或确认结论。
-关键数字: p3-r2-30已删除，应用返回deleteStatus=deleted；不再轮询结束任务，未重启、补跑或生成预测。
-需要 Claude 做的: 保留P3冻结状态；连接恢复后由Codex继续仅基于保存产物核验、拷回元数据并补结果提交，再复核结果；尚未合主线。
-需要用户决定: --codex第4项因Claude新增output/literature-search/claude_novelty_scan_20261104.md越P3范围而失败；其余项通过。该文件保留且不提交，不改baseline或扩大许可绕过；请Claude下一阶段明确范围。
-待办记录: output/penmanshiel_hourly/p3_v35/r2/COMPLETION_PENDING.md；r1保持原样，main不动。
+<!-- 由 Codex 覆盖。最后更新：2026-11-04，P3 r2结果回传及独立验收完成 -->
+轮次: R2/2 | 阶段: P3 | 分支: exp/P3 | 提交号: 运行2894746；启动c5818b0；检查器4682704；本次为r2结果提交
+审查结论: 通过；原代码审查见docs/review/P3-R2-codex.md；本次只读验收退出码0，详见output/penmanshiel_hourly/p3_v35/r2/INDEPENDENT_VERIFICATION.md。
+已直接修复: 无；未修改部署源码、冻结协议或预测；临时验收脚本适配旧Python的分块SHA256读取，不属于实验改动。
+运行信息: 原命令见r2/audit/launch.json；run=outputs/logs/Penmanshiel/p3_v35_2894746_r2；UTC05:04:51完成72拟合，耗时6116.33秒；没有重启、补跑或第三实例。
+运行信息: 核验72个唯一拟合及选中模型、50份源码、414个输入、6个准备产物、75个数组哈希；selection冻结标记一致。
+运行信息: 仅以保存数组复算三折全部指标/CI/Holm/判定，rtol=atol=1e-10一致；239份元数据大小/SHA一致，已拷至output/penmanshiel_hourly/p3_v35/r2/；CSV/权重/数组未回传。
+关键数字: T22 R/F1/F3 MAE增益=15.952[12.729,18.939]/86.205[79.548,92.208]/48.709[45.077,52.190]kW；Holm p=1.93e-23/5.58e-159/8.15e-158，均通过。
+关键数字: T23 R/F1/F3 MAE增益=15.011[12.001,18.253]/87.313[81.359,93.288]/42.864[38.926,47.003]kW；Holm p=3.45e-21/7.81e-180/1.45e-100，均通过；六项RMSE增益CI下界均>0。
+关键数字: R在2022/2023两个时间隔离测试年确认，滚动训练集重叠，不宣称统计独立；F1/F3是完整迁移配方对对应Scratch的收益，不外推普适零样本收益。
+关键数字: P-upstream三折MAE/RMSE/R²=213.631/329.317/.753407；188.839/301.960/.772537；198.866/310.791/.788672。T24只描述；全部臂及全部效应CI见r2/RESULT_SUMMARY.md。
+关键数字: Z2三折MAE增益=+2.537/-2.321/-3.996kW，CI均跨0；T24及所有Z1/Z2只描述。p3-r2-30上一轮已删除，不保留结束任务轮询。
+需要 Claude 做的: 复核r2/RESULT_SUMMARY.md、INDEPENDENT_VERIFICATION.md及原始JSON，确认结果措辞与负结果边界；复核后等用户同意再合主线。
+需要用户决定: --codex第4项仍将两份阶段外文档列为越界：用户单独要求的docs/GPT_PAPER_INNOVATION_DISCUSSION.md，以及Claude的output/literature-search/claude_novelty_scan_20261104.md；本轮均保留不提交，不改baseline/许可绕过，其余检查结果见本次提交正文。
+状态: 已解除此前网络阻塞；COMPLETION_PENDING.md标记为历史记录。r1保持原样，main不动。

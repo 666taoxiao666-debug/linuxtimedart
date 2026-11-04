@@ -1,0 +1,11 @@
+{
+  "protocol_sha256": "a99b7ca91910b159088991bdbc680ba95ed240410e02c414f3e68ada22fe8926",
+  "artifacts": {
+    "coverage.json": "967d3e5ca496e59b2b22423608b7a3cc5cf683f25f40650ab4251659750d7cd3",
+    "development_equality.json": "3b42e0777762e6c894b2bdf2a2f8d23f62198eb4d709705af32e1756bb6c1b10",
+    "input_hashes.json": "0ac7b679e2ffe86bd89c13d000b585c7e72e714e958842e13cd97df308c5f497",
+    "penmanshiel.csv": "d3be9c9800a71ecdb8550cbacaebf20c673f740026be7767bf9abccefa9c450a",
+    "preparation.json": "eb78d0c729c5cd6c010ac4b134d34455c377d718dce207c3b7e7df4170d49875",
+    "upstream.csv": "6b7dfc421ced15bfd927c417471019745e947877bcde27a8ad0988a0fdafa208"
+  }
+}
