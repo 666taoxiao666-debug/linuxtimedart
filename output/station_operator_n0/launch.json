@@ -1,0 +1,13 @@
+{
+  "utc": "2026-11-05T01:48:25.594393+00:00",
+  "pid": 355883,
+  "git_head": "0fba03f9a35310121a52a898e5e350433df425a9",
+  "source_sha256": {
+    "scripts/pilot_station_operator_n0.py": "aa5ca2c4cff4d30a44fb0665675594dfaffce8c415b51f6ae181e058e5bd668e",
+    "tests/test_pilot_station_operator_n0.py": "e34f76b79acaaf0fc5a25dfa47006d6ebb702d7d390f9ad841a3acd159263a51",
+    "scripts/screen_kelmarsh_upstream_observations.py": "c68477c52fa9405b12095560c446f7bfaf160743842efeccc276717070aa214b",
+    "utils/kelmarsh_upstream_v31.py": "66dd2a86694040347c53298be4fd6fc0b18ff2782cece2bcd92f980328a23fcd",
+    "docs/STAGE_PLAN.md": "b2d00892d8eefa1cb48d211fe84cd448e6a98312a2e1967e26d3592de8025355"
+  },
+  "device": "cuda:0"
+}

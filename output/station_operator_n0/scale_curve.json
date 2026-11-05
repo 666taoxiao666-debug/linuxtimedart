@@ -1,0 +1,86 @@
+[
+  {
+    "train_stations": 7,
+    "gate_descriptive": {
+      "own_pass": false,
+      "transfer_pass": false,
+      "continue": false,
+      "stop": true,
+      "choose_simple": false,
+      "own_median": -0.06294059541670083,
+      "own_positive_fraction": 0.0,
+      "D_median": -0.020413367074504474,
+      "D_positive_fraction": 0.0,
+      "G_tr_O_median": 0.026994670113732855,
+      "own_PH_minus_O_median": -0.06201444519441246,
+      "transfer_O_minus_PH_median": -0.04722558885533634,
+      "G_tr_H_median": 0.04083859591897354,
+      "retention": {
+        "H": {
+          "median": 0.304462749752206,
+          "undefined": 0
+        },
+        "O": {
+          "median": 0.4926833787879913,
+          "undefined": 1
+        }
+      }
+    }
+  },
+  {
+    "train_stations": 14,
+    "gate_descriptive": {
+      "own_pass": false,
+      "transfer_pass": false,
+      "continue": false,
+      "stop": true,
+      "choose_simple": false,
+      "own_median": -0.056164924445529785,
+      "own_positive_fraction": 0.0,
+      "D_median": -0.012997667377656397,
+      "D_positive_fraction": 0.125,
+      "G_tr_O_median": 0.03206977761400853,
+      "own_PH_minus_O_median": -0.0632275881288677,
+      "transfer_O_minus_PH_median": -0.040050095274713704,
+      "G_tr_H_median": 0.04083859591897354,
+      "retention": {
+        "H": {
+          "median": 0.304462749752206,
+          "undefined": 0
+        },
+        "O": {
+          "median": 0.4754826881192592,
+          "undefined": 0
+        }
+      }
+    }
+  },
+  {
+    "train_stations": 28,
+    "gate_descriptive": {
+      "own_pass": false,
+      "transfer_pass": false,
+      "continue": false,
+      "stop": true,
+      "choose_simple": false,
+      "own_median": -0.04402001526647936,
+      "own_positive_fraction": 0.0,
+      "D_median": -0.008795843581809182,
+      "D_positive_fraction": 0.375,
+      "G_tr_O_median": 0.04130931779313929,
+      "own_PH_minus_O_median": -0.04059788259442759,
+      "transfer_O_minus_PH_median": -0.034678533668452416,
+      "G_tr_H_median": 0.04083859591897354,
+      "retention": {
+        "H": {
+          "median": 0.304462749752206,
+          "undefined": 0
+        },
+        "O": {
+          "median": 0.6546932467925655,
+          "undefined": 0
+        }
+      }
+    }
+  }
+]

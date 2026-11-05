@@ -1,0 +1,2153 @@
+{
+  "stations": [
+    {
+      "src_id": 384,
+      "name": "WADDINGTON",
+      "lat": 53.175,
+      "lon": -0.523,
+      "distance_km": 90.54438504406001,
+      "bearing_deg": 17.99963030882136,
+      "region": "Kelmarsh"
+    },
+    {
+      "src_id": 386,
+      "name": "CRANWELL",
+      "lat": 53.031,
+      "lon": -0.504,
+      "distance_km": 76.00171767926973,
+      "bearing_deg": 22.71124390043549,
+      "region": "Kelmarsh"
+    },
+    {
+      "src_id": 393,
+      "name": "CONINGSBY",
+      "lat": 53.094,
+      "lon": -0.173,
+      "distance_km": 92.82962657075961,
+      "bearing_deg": 33.62296924418133,
+      "region": "Kelmarsh"
+    },
+    {
+      "src_id": 395,
+      "name": "HOLBEACH NO 2",
+      "lat": 52.873,
+      "lon": 0.139,
+      "distance_km": 89.88735977404542,
+      "bearing_deg": 53.87351950115582,
+      "region": "Kelmarsh"
+    },
+    {
+      "src_id": 405,
+      "name": "DONNA NOOK NO 2",
+      "lat": 53.475,
+      "lon": 0.153,
+      "distance_km": 140.16247123913143,
+      "bearing_deg": 31.15882543499178,
+      "region": "Kelmarsh"
+    },
+    {
+      "src_id": 409,
+      "name": "MARHAM",
+      "lat": 52.651,
+      "lon": 0.566,
+      "distance_km": 105.77838847569089,
+      "bearing_deg": 74.18481570589465,
+      "region": "Kelmarsh"
+    },
+    {
+      "src_id": 440,
+      "name": "WATTISHAM",
+      "lat": 52.124,
+      "lon": 0.957,
+      "distance_km": 132.9144441663377,
+      "bearing_deg": 102.66117617876583,
+      "region": "Kelmarsh"
+    },
+    {
+      "src_id": 456,
+      "name": "MONKS WOOD",
+      "lat": 52.402,
+      "lon": -0.237,
+      "distance_km": 47.883116522735094,
+      "bearing_deg": 89.62725776190842,
+      "region": "Kelmarsh"
+    },
+    {
+      "src_id": 461,
+      "name": "BEDFORD",
+      "lat": 52.227,
+      "lon": -0.465,
+      "distance_km": 37.822432949728096,
+      "bearing_deg": 120.63637678121532,
+      "region": "Kelmarsh"
+    },
+    {
+      "src_id": 556,
+      "name": "NOTTINGHAM, WATNALL",
+      "lat": 53.006,
+      "lon": -1.251,
+      "distance_km": 70.37291424946544,
+      "bearing_deg": 342.96017531957403,
+      "region": "Kelmarsh"
+    },
+    {
+      "src_id": 583,
+      "name": "WITTERING",
+      "lat": 52.612,
+      "lon": -0.468,
+      "distance_km": 39.76869438739783,
+      "bearing_deg": 53.716945146639006,
+      "region": "Kelmarsh"
+    },
+    {
+      "src_id": 595,
+      "name": "CHURCH LAWFORD",
+      "lat": 52.359,
+      "lon": -1.331,
+      "distance_km": 26.765776252586885,
+      "bearing_deg": 260.0326613304533,
+      "region": "Kelmarsh"
+    },
+    {
+      "src_id": 605,
+      "name": "BRIZE NORTON",
+      "lat": 51.758,
+      "lon": -1.578,
+      "distance_km": 83.67111013257937,
+      "bearing_deg": 211.50145895384702,
+      "region": "Kelmarsh"
+    },
+    {
+      "src_id": 613,
+      "name": "BENSON",
+      "lat": 51.62,
+      "lon": -1.099,
+      "distance_km": 87.53183828395733,
+      "bearing_deg": 187.0769177057319,
+      "region": "Kelmarsh"
+    },
+    {
+      "src_id": 643,
+      "name": "SHAWBURY",
+      "lat": 52.795,
+      "lon": -2.665,
+      "distance_km": 124.27878181316713,
+      "bearing_deg": 291.3070568038287,
+      "region": "Kelmarsh"
+    },
+    {
+      "src_id": 657,
+      "name": "PERSHORE",
+      "lat": 52.148,
+      "lon": -2.041,
+      "distance_km": 79.85023729385557,
+      "bearing_deg": 249.78072379789208,
+      "region": "Kelmarsh"
+    },
+    {
+      "src_id": 669,
+      "name": "SHOBDON AIRFIELD",
+      "lat": 52.243,
+      "lon": -2.886,
+      "distance_km": 133.23264298518367,
+      "bearing_deg": 263.178089961497,
+      "region": "Kelmarsh"
+    },
+    {
+      "src_id": 692,
+      "name": "LITTLE RISSINGTON",
+      "lat": 51.861,
+      "lon": -1.693,
+      "distance_km": 78.93953019435924,
+      "bearing_deg": 220.7386336825939,
+      "region": "Kelmarsh"
+    },
+    {
+      "src_id": 708,
+      "name": "HEATHROW",
+      "lat": 51.479,
+      "lon": -0.453,
+      "distance_km": 107.91074118103101,
+      "bearing_deg": 161.67882815742755,
+      "region": "Kelmarsh"
+    },
+    {
+      "src_id": 709,
+      "name": "NORTHOLT",
+      "lat": 51.549,
+      "lon": -0.417,
+      "distance_km": 101.38337550128018,
+      "bearing_deg": 158.98459310642315,
+      "region": "Kelmarsh"
+    },
+    {
+      "src_id": 719,
+      "name": "WISLEY",
+      "lat": 51.311,
+      "lon": -0.476,
+      "distance_km": 125.40223036345348,
+      "bearing_deg": 165.0041681129031,
+      "region": "Kelmarsh"
+    },
+    {
+      "src_id": 723,
+      "name": "KEW GARDENS",
+      "lat": 51.482,
+      "lon": -0.294,
+      "distance_km": 111.47592282553686,
+      "bearing_deg": 156.2316090627205,
+      "region": "Kelmarsh"
+    },
+    {
+      "src_id": 726,
+      "name": "KENLEY AIRFIELD",
+      "lat": 51.304,
+      "lon": -0.092,
+      "distance_km": 135.2833116061147,
+      "bearing_deg": 154.07363956447426,
+      "region": "Kelmarsh"
+    },
+    {
+      "src_id": 847,
+      "name": "MIDDLE WALLOP",
+      "lat": 51.15,
+      "lon": -1.57,
+      "distance_km": 145.67461307602588,
+      "bearing_deg": 197.47749068844618,
+      "region": "Kelmarsh"
+    },
+    {
+      "src_id": 862,
+      "name": "ODIHAM",
+      "lat": 51.239,
+      "lon": -0.945,
+      "distance_km": 129.2419516806994,
+      "bearing_deg": 180.06790187583235,
+      "region": "Kelmarsh"
+    },
+    {
+      "src_id": 888,
+      "name": "LARKHILL",
+      "lat": 51.202,
+      "lon": -1.806,
+      "distance_km": 145.9658960152481,
+      "bearing_deg": 204.33313078012497,
+      "region": "Kelmarsh"
+    },
+    {
+      "src_id": 889,
+      "name": "BOSCOMBE DOWN",
+      "lat": 51.162,
+      "lon": -1.755,
+      "distance_km": 148.69743902184373,
+      "bearing_deg": 202.38995352161976,
+      "region": "Kelmarsh"
+    },
+    {
+      "src_id": 16725,
+      "name": "WAINFLEET NO 2",
+      "lat": 53.088,
+      "lon": 0.271,
+      "distance_km": 111.82856474518361,
+      "bearing_deg": 46.45601835560125,
+      "region": "Kelmarsh"
+    },
+    {
+      "src_id": 19187,
+      "name": "COLESHILL",
+      "lat": 52.48,
+      "lon": -1.691,
+      "distance_km": 51.46411305491311,
+      "bearing_deg": 280.0866128757329,
+      "region": "Kelmarsh"
+    },
+    {
+      "src_id": 19188,
+      "name": "ANDREWSFIELD",
+      "lat": 51.896,
+      "lon": 0.451,
+      "distance_km": 110.45530309008284,
+      "bearing_deg": 120.02370044708756,
+      "region": "Kelmarsh"
+    },
+    {
+      "src_id": 24102,
+      "name": "COVENTRY, COUNDON",
+      "lat": 52.424,
+      "lon": -1.536,
+      "distance_km": 40.31312719857759,
+      "bearing_deg": 273.8247990594367,
+      "region": "Kelmarsh"
+    },
+    {
+      "src_id": 24996,
+      "name": "HEREFORD, CREDENHILL",
+      "lat": 52.08,
+      "lon": -2.802,
+      "distance_km": 131.53310965575412,
+      "bearing_deg": 254.97617471754387,
+      "region": "Kelmarsh"
+    },
+    {
+      "src_id": 30620,
+      "name": "CHARLWOOD",
+      "lat": 51.144,
+      "lon": -0.229,
+      "distance_km": 148.17924588942682,
+      "bearing_deg": 160.36272388682312,
+      "region": "Kelmarsh"
+    },
+    {
+      "src_id": 30690,
+      "name": "LEEK, THORNCLIFFE",
+      "lat": 53.128,
+      "lon": -1.981,
+      "distance_km": 106.81050725236464,
+      "bearing_deg": 319.5701471838381,
+      "region": "Kelmarsh"
+    },
+    {
+      "src_id": 56958,
+      "name": "EMLEY MOOR NO 2",
+      "lat": 53.612,
+      "lon": -1.668,
+      "distance_km": 143.09911220746045,
+      "bearing_deg": 340.4685097190477,
+      "region": "Kelmarsh"
+    },
+    {
+      "src_id": 57199,
+      "name": "ROSTHERNE NO 2",
+      "lat": 53.36,
+      "lon": -2.382,
+      "distance_km": 143.8376580603248,
+      "bearing_deg": 318.39730885975183,
+      "region": "Kelmarsh"
+    },
+    {
+      "src_id": 150,
+      "lat": 57.076,
+      "lon": -2.841,
+      "region": "Penmanshiel"
+    },
+    {
+      "src_id": 161,
+      "lat": 57.205,
+      "lon": -2.205,
+      "region": "Penmanshiel"
+    },
+    {
+      "src_id": 177,
+      "lat": 56.852,
+      "lon": -2.266,
+      "region": "Penmanshiel"
+    },
+    {
+      "src_id": 235,
+      "lat": 56.377,
+      "lon": -2.862,
+      "region": "Penmanshiel"
+    },
+    {
+      "src_id": 982,
+      "lat": 55.861,
+      "lon": -3.875,
+      "region": "Penmanshiel"
+    },
+    {
+      "src_id": 987,
+      "lat": 55.627,
+      "lon": -3.736,
+      "region": "Penmanshiel"
+    },
+    {
+      "src_id": 1023,
+      "lat": 55.312,
+      "lon": -3.207,
+      "region": "Penmanshiel"
+    },
+    {
+      "src_id": 1074,
+      "lat": 54.572,
+      "lon": -2.413,
+      "region": "Penmanshiel"
+    },
+    {
+      "src_id": 16589,
+      "lat": 55.285,
+      "lon": -2.279,
+      "region": "Penmanshiel"
+    },
+    {
+      "src_id": 24125,
+      "lat": 55.907,
+      "lon": -4.532,
+      "region": "Penmanshiel"
+    },
+    {
+      "src_id": 30523,
+      "lat": 55.02,
+      "lon": -1.882,
+      "region": "Penmanshiel"
+    }
+  ],
+  "files": [
+    {
+      "src_id": 384,
+      "year": 2016,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/384/midas-open_uk-hourly-weather-obs_dv-202607_lincolnshire_00384_waddington_qcv-1_2016.csv",
+      "sha256": "aea988e1dc22b784193927314e2978a4f19943301cf384379efaead08d026078"
+    },
+    {
+      "src_id": 384,
+      "year": 2017,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/384/midas-open_uk-hourly-weather-obs_dv-202607_lincolnshire_00384_waddington_qcv-1_2017.csv",
+      "sha256": "8cb66c9c3237a4fab2e5d6b8b7321a7fed4ba03b6d9b0a6574846d9de42ebb0c"
+    },
+    {
+      "src_id": 384,
+      "year": 2018,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/384/midas-open_uk-hourly-weather-obs_dv-202607_lincolnshire_00384_waddington_qcv-1_2018.csv",
+      "sha256": "6bc730e7bb13cf9af292f9b1f6c35c82e5619a0bf677141726b1987f658d965b"
+    },
+    {
+      "src_id": 384,
+      "year": 2019,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/384/midas-open_uk-hourly-weather-obs_dv-202607_lincolnshire_00384_waddington_qcv-1_2019.csv",
+      "sha256": "f1b9dcda394d756e121934c0653d0e0c4179ad81086a09ea92f825000e16e99d"
+    },
+    {
+      "src_id": 384,
+      "year": 2020,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/384/midas-open_uk-hourly-weather-obs_dv-202607_lincolnshire_00384_waddington_qcv-1_2020.csv",
+      "sha256": "b88fcf8ee63363e27743e44a0f7bda4e951180cce83a9b70264f08500890701c"
+    },
+    {
+      "src_id": 384,
+      "year": 2021,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/384/midas-open_uk-hourly-weather-obs_dv-202607_lincolnshire_00384_waddington_qcv-1_2021.csv",
+      "sha256": "bdda2ea1bf513267f48ed4c4cac6bfa619a3f514781264c59bc58aa48a9b64fd"
+    },
+    {
+      "src_id": 386,
+      "year": 2016,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/386/midas-open_uk-hourly-weather-obs_dv-202607_lincolnshire_00386_cranwell_qcv-1_2016.csv",
+      "sha256": "433b9ed4c63345190192d29784b641691f358bf8f325d992c4a5d2c2dc274cc0"
+    },
+    {
+      "src_id": 386,
+      "year": 2017,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/386/midas-open_uk-hourly-weather-obs_dv-202607_lincolnshire_00386_cranwell_qcv-1_2017.csv",
+      "sha256": "0920f0d1c75b1fd00b4dc8f9f4b6298f350a1348326a8150b063473f73fe8272"
+    },
+    {
+      "src_id": 386,
+      "year": 2018,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/386/midas-open_uk-hourly-weather-obs_dv-202607_lincolnshire_00386_cranwell_qcv-1_2018.csv",
+      "sha256": "6fec1fa38419597c54d1c15fc251472fcc81cfc717a2b8dfc5cdba0a7a456697"
+    },
+    {
+      "src_id": 386,
+      "year": 2019,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/386/midas-open_uk-hourly-weather-obs_dv-202607_lincolnshire_00386_cranwell_qcv-1_2019.csv",
+      "sha256": "229e4fa87696681db18e0c91706ed6e8e0930a6285da44f2d04bc85b0d3f588e"
+    },
+    {
+      "src_id": 386,
+      "year": 2020,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/386/midas-open_uk-hourly-weather-obs_dv-202607_lincolnshire_00386_cranwell_qcv-1_2020.csv",
+      "sha256": "ceaf585ba135da6abfabd48bf063be686d9ad82877d07381e4ae6d761060a426"
+    },
+    {
+      "src_id": 386,
+      "year": 2021,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/386/midas-open_uk-hourly-weather-obs_dv-202607_lincolnshire_00386_cranwell_qcv-1_2021.csv",
+      "sha256": "ce54fffefd5fcd9bdc40aeba5715cb859df29654e3d6a5d97174425f9bba3048"
+    },
+    {
+      "src_id": 393,
+      "year": 2016,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/393/midas-open_uk-hourly-weather-obs_dv-202607_lincolnshire_00393_coningsby_qcv-1_2016.csv",
+      "sha256": "950b2ccf182a9efbf287e55eab88c737e880da278e0535cccca9f171683892ef"
+    },
+    {
+      "src_id": 393,
+      "year": 2017,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/393/midas-open_uk-hourly-weather-obs_dv-202607_lincolnshire_00393_coningsby_qcv-1_2017.csv",
+      "sha256": "6a269456b66c64728c87c381c53254ef85d55f3a0e11c60e9a412464471c4998"
+    },
+    {
+      "src_id": 393,
+      "year": 2018,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/393/midas-open_uk-hourly-weather-obs_dv-202607_lincolnshire_00393_coningsby_qcv-1_2018.csv",
+      "sha256": "5660d401e27b9aebf8011ed518b31518b545a0a773469197831d8a54da7bd572"
+    },
+    {
+      "src_id": 393,
+      "year": 2019,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/393/midas-open_uk-hourly-weather-obs_dv-202607_lincolnshire_00393_coningsby_qcv-1_2019.csv",
+      "sha256": "1ce9f8adc9b9339ee75a10c56c2f66997974b2b47b8a12364d6fa498539d3d50"
+    },
+    {
+      "src_id": 393,
+      "year": 2020,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/393/midas-open_uk-hourly-weather-obs_dv-202607_lincolnshire_00393_coningsby_qcv-1_2020.csv",
+      "sha256": "b8d29cd5ed3d938305f9ae30bfc58b972b2dd30613559011a35b2a5c3d950984"
+    },
+    {
+      "src_id": 393,
+      "year": 2021,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/393/midas-open_uk-hourly-weather-obs_dv-202607_lincolnshire_00393_coningsby_qcv-1_2021.csv",
+      "sha256": "70086198beb33bad4d0f760137bac5dc5ce830f06dd91f4098e0694c9c055681"
+    },
+    {
+      "src_id": 395,
+      "year": 2016,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/395/midas-open_uk-hourly-weather-obs_dv-202607_lincolnshire_00395_holbeach-no-2_qcv-1_2016.csv",
+      "sha256": "42015e5d8ddd39e3deb0451260970aa8bd96e4b4ae7fa9a783001db463808c97"
+    },
+    {
+      "src_id": 395,
+      "year": 2017,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/395/midas-open_uk-hourly-weather-obs_dv-202607_lincolnshire_00395_holbeach-no-2_qcv-1_2017.csv",
+      "sha256": "20be8461e7340e1c25c3dc4c051d6b47547ce3f8ef92b988c599a0c9b447f648"
+    },
+    {
+      "src_id": 395,
+      "year": 2018,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/395/midas-open_uk-hourly-weather-obs_dv-202607_lincolnshire_00395_holbeach-no-2_qcv-1_2018.csv",
+      "sha256": "2cb756716210777400c46802d6cd9d74bdb5392e388870d05328da5130744c82"
+    },
+    {
+      "src_id": 395,
+      "year": 2019,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/395/midas-open_uk-hourly-weather-obs_dv-202607_lincolnshire_00395_holbeach-no-2_qcv-1_2019.csv",
+      "sha256": "fa6eddff4fe26744c66ba6a304db99b8efa58ccfe05cb3d7b9da15c8b8dceb3d"
+    },
+    {
+      "src_id": 395,
+      "year": 2020,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/395/midas-open_uk-hourly-weather-obs_dv-202607_lincolnshire_00395_holbeach-no-2_qcv-1_2020.csv",
+      "sha256": "d174b8d7ce1f1605e06a463b320645ce9c8729b62742edcdf1bf5e6a675f5b58"
+    },
+    {
+      "src_id": 395,
+      "year": 2021,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/395/midas-open_uk-hourly-weather-obs_dv-202607_lincolnshire_00395_holbeach-no-2_qcv-1_2021.csv",
+      "sha256": "c95022e75816fa38ac152078d60d9a63e947fff165635e62ad8a0d8613ff3c82"
+    },
+    {
+      "src_id": 405,
+      "year": 2016,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/405/midas-open_uk-hourly-weather-obs_dv-202607_lincolnshire_00405_donna-nook-no-2_qcv-1_2016.csv",
+      "sha256": "a04297c48c5b7899e39dd37907aa06f9a7c55ce84a508769b167ca4382dc9f22"
+    },
+    {
+      "src_id": 405,
+      "year": 2017,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/405/midas-open_uk-hourly-weather-obs_dv-202607_lincolnshire_00405_donna-nook-no-2_qcv-1_2017.csv",
+      "sha256": "69eacc062abcf14027e570623c95a6918a08d6dd63dd814aecbc9886e43b3b12"
+    },
+    {
+      "src_id": 405,
+      "year": 2018,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/405/midas-open_uk-hourly-weather-obs_dv-202607_lincolnshire_00405_donna-nook-no-2_qcv-1_2018.csv",
+      "sha256": "498ca201a1433bdf66d42510c4241ade7616911d49ecb46e7ef54c3dc82c1840"
+    },
+    {
+      "src_id": 405,
+      "year": 2019,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/405/midas-open_uk-hourly-weather-obs_dv-202607_lincolnshire_00405_donna-nook-no-2_qcv-1_2019.csv",
+      "sha256": "3f26d9855aebc94f31f2273cc01da013ed71bb3fafee3ab71a9b6b509ffa8636"
+    },
+    {
+      "src_id": 405,
+      "year": 2020,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/405/midas-open_uk-hourly-weather-obs_dv-202607_lincolnshire_00405_donna-nook-no-2_qcv-1_2020.csv",
+      "sha256": "2a9797935244bc12e23ed4c3aeed56eb0142351c1434a8e81ef3150e30baf5a9"
+    },
+    {
+      "src_id": 405,
+      "year": 2021,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/405/midas-open_uk-hourly-weather-obs_dv-202607_lincolnshire_00405_donna-nook-no-2_qcv-1_2021.csv",
+      "sha256": "74247426fd1e4333ced1d1a5040a40a7f17c43665fab22dd4023bcfed671a0fe"
+    },
+    {
+      "src_id": 409,
+      "year": 2016,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/409/midas-open_uk-hourly-weather-obs_dv-202607_norfolk_00409_marham_qcv-1_2016.csv",
+      "sha256": "e30067b1bd75c58e2252f7bf58d21a49af36e64e5672435e8f97ddb910c05620"
+    },
+    {
+      "src_id": 409,
+      "year": 2017,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/409/midas-open_uk-hourly-weather-obs_dv-202607_norfolk_00409_marham_qcv-1_2017.csv",
+      "sha256": "5903e755b7a9020e901b76c5ae1e308d5264f092cbfb464a370e2c8121191118"
+    },
+    {
+      "src_id": 409,
+      "year": 2018,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/409/midas-open_uk-hourly-weather-obs_dv-202607_norfolk_00409_marham_qcv-1_2018.csv",
+      "sha256": "3b172fea993fd72702e62fd199f1f1195e4017e2619491d22b9ce9a9f3943d16"
+    },
+    {
+      "src_id": 409,
+      "year": 2019,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/409/midas-open_uk-hourly-weather-obs_dv-202607_norfolk_00409_marham_qcv-1_2019.csv",
+      "sha256": "68c43090705af52ad1d82c9c41e1f69ec1d580aec13c3de9ac0d5f9dce4de0f4"
+    },
+    {
+      "src_id": 409,
+      "year": 2020,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/409/midas-open_uk-hourly-weather-obs_dv-202607_norfolk_00409_marham_qcv-1_2020.csv",
+      "sha256": "8b2b99c18ee00c8d8fab8220a7ea617dc7a2a44d2eb24a4e3bc3037899c5c210"
+    },
+    {
+      "src_id": 409,
+      "year": 2021,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/409/midas-open_uk-hourly-weather-obs_dv-202607_norfolk_00409_marham_qcv-1_2021.csv",
+      "sha256": "9f6bac63af3479b135da3e60c6fae9ac305babffce998158555320ef1b3ab756"
+    },
+    {
+      "src_id": 440,
+      "year": 2016,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/440/midas-open_uk-hourly-weather-obs_dv-202607_suffolk_00440_wattisham_qcv-1_2016.csv",
+      "sha256": "c8ff2c2525aaf2143ae56394d2302c1e4b261a28144f55773034387c0f892d47"
+    },
+    {
+      "src_id": 440,
+      "year": 2017,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/440/midas-open_uk-hourly-weather-obs_dv-202607_suffolk_00440_wattisham_qcv-1_2017.csv",
+      "sha256": "9db9c06d93168e83a361e719b253bd1496cf504469b08cb7d692bbeb4a4caab4"
+    },
+    {
+      "src_id": 440,
+      "year": 2018,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/440/midas-open_uk-hourly-weather-obs_dv-202607_suffolk_00440_wattisham_qcv-1_2018.csv",
+      "sha256": "91ab69ff25bc6ba2d5a34a68b3789035c231dc6eb384dec43c1acd79ebebe97b"
+    },
+    {
+      "src_id": 440,
+      "year": 2019,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/440/midas-open_uk-hourly-weather-obs_dv-202607_suffolk_00440_wattisham_qcv-1_2019.csv",
+      "sha256": "899844c0b3c912cdf07a423bbd6eaaff89e7671c7ab2f139aaa25bd39e246bdb"
+    },
+    {
+      "src_id": 440,
+      "year": 2020,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/440/midas-open_uk-hourly-weather-obs_dv-202607_suffolk_00440_wattisham_qcv-1_2020.csv",
+      "sha256": "1baedec58a8a3550f7cb85ca5123c497d4c91c68da694ec17b0bfbcb5a1e7630"
+    },
+    {
+      "src_id": 440,
+      "year": 2021,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/440/midas-open_uk-hourly-weather-obs_dv-202607_suffolk_00440_wattisham_qcv-1_2021.csv",
+      "sha256": "131bba8438016131cdb9b22129140c38f224813aab39b0a9c98e68dd3240b9b8"
+    },
+    {
+      "src_id": 456,
+      "year": 2016,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/456/midas-open_uk-hourly-weather-obs_dv-202607_cambridgeshire_00456_monks-wood_qcv-1_2016.csv",
+      "sha256": "23828f4f3d6d1a2b529a92ff40c26ba25f4451571c270350930da675d7167d70"
+    },
+    {
+      "src_id": 456,
+      "year": 2017,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/456/midas-open_uk-hourly-weather-obs_dv-202607_cambridgeshire_00456_monks-wood_qcv-1_2017.csv",
+      "sha256": "f90a01753f6b7eb0c04d1692a167eaf2edd98865c960d1ae7cb75dad50752a7d"
+    },
+    {
+      "src_id": 456,
+      "year": 2018,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/456/midas-open_uk-hourly-weather-obs_dv-202607_cambridgeshire_00456_monks-wood_qcv-1_2018.csv",
+      "sha256": "96a921f6a773017af73698312c536f457b64e5e27fb8dc3fe2f503f3d011e644"
+    },
+    {
+      "src_id": 456,
+      "year": 2019,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/456/midas-open_uk-hourly-weather-obs_dv-202607_cambridgeshire_00456_monks-wood_qcv-1_2019.csv",
+      "sha256": "20c046ab4c88c509b36e2d90a19b7d5c24f002557d03676a7ef24508b7147313"
+    },
+    {
+      "src_id": 456,
+      "year": 2020,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/456/midas-open_uk-hourly-weather-obs_dv-202607_cambridgeshire_00456_monks-wood_qcv-1_2020.csv",
+      "sha256": "e1786f2a67016248a20144993e9c22bc77d64133d9a18e43e181e074986977c2"
+    },
+    {
+      "src_id": 456,
+      "year": 2021,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/456/midas-open_uk-hourly-weather-obs_dv-202607_cambridgeshire_00456_monks-wood_qcv-1_2021.csv",
+      "sha256": "52bc45d96dd963065bfa9b31b168206cfe3d3527a12586218364d994863ffe68"
+    },
+    {
+      "src_id": 461,
+      "year": 2016,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/461/midas-open_uk-hourly-weather-obs_dv-202607_bedfordshire_00461_bedford_qcv-1_2016.csv",
+      "sha256": "4ad0819ea84d511cdfa61dd51972f4ce58fc49351b93007cbcebd312b594678d"
+    },
+    {
+      "src_id": 461,
+      "year": 2017,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/461/midas-open_uk-hourly-weather-obs_dv-202607_bedfordshire_00461_bedford_qcv-1_2017.csv",
+      "sha256": "0ef3525e079177b6645c9e8be5f48d4764a9eec1c826768897bb3916b646121c"
+    },
+    {
+      "src_id": 461,
+      "year": 2018,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/461/midas-open_uk-hourly-weather-obs_dv-202607_bedfordshire_00461_bedford_qcv-1_2018.csv",
+      "sha256": "c85a78ff885d0d1b544b1c5812aa806bd571aad5912f15901b9f064c9483bd66"
+    },
+    {
+      "src_id": 461,
+      "year": 2019,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/461/midas-open_uk-hourly-weather-obs_dv-202607_bedfordshire_00461_bedford_qcv-1_2019.csv",
+      "sha256": "ae8828242e7ceb0070e172f60cec26c33a7763404839c988534ee6b152398623"
+    },
+    {
+      "src_id": 461,
+      "year": 2020,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/461/midas-open_uk-hourly-weather-obs_dv-202607_bedfordshire_00461_bedford_qcv-1_2020.csv",
+      "sha256": "67dfd1fe98d24e5ce00e5bfb4e3ad3bb444f1a1a96c56068138e09fa29e6bbd1"
+    },
+    {
+      "src_id": 461,
+      "year": 2021,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/461/midas-open_uk-hourly-weather-obs_dv-202607_bedfordshire_00461_bedford_qcv-1_2021.csv",
+      "sha256": "0fe50658ffe705e9eac968d911edd8ed32f0aa2423f93d1000fcaac69be08c11"
+    },
+    {
+      "src_id": 556,
+      "year": 2016,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/556/midas-open_uk-hourly-weather-obs_dv-202607_nottinghamshire_00556_nottingham-watnall_qcv-1_2016.csv",
+      "sha256": "d8fd7d6cec7523dc0b77710580b483a9e30b664a5cbf3c3c95425ec876e13cde"
+    },
+    {
+      "src_id": 556,
+      "year": 2017,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/556/midas-open_uk-hourly-weather-obs_dv-202607_nottinghamshire_00556_nottingham-watnall_qcv-1_2017.csv",
+      "sha256": "79d32d2d57928331f92b70f64ee70ed163bc79fe717126e3048ae6d7fdaeaf7e"
+    },
+    {
+      "src_id": 556,
+      "year": 2018,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/556/midas-open_uk-hourly-weather-obs_dv-202607_nottinghamshire_00556_nottingham-watnall_qcv-1_2018.csv",
+      "sha256": "55bd232c39be2e9b492be277a702b9488c786422b1a4e596b6b10fc08f0bc9b7"
+    },
+    {
+      "src_id": 556,
+      "year": 2019,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/556/midas-open_uk-hourly-weather-obs_dv-202607_nottinghamshire_00556_nottingham-watnall_qcv-1_2019.csv",
+      "sha256": "23edcf64d1b73aaaac71323daaa66669971b3832ae79c55573f3c9a8e20e4fc0"
+    },
+    {
+      "src_id": 556,
+      "year": 2020,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/556/midas-open_uk-hourly-weather-obs_dv-202607_nottinghamshire_00556_nottingham-watnall_qcv-1_2020.csv",
+      "sha256": "b9869126f6f0cf86f49b0ab1a90b271e78a0b97f1a4126138f780358798d9b04"
+    },
+    {
+      "src_id": 556,
+      "year": 2021,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/556/midas-open_uk-hourly-weather-obs_dv-202607_nottinghamshire_00556_nottingham-watnall_qcv-1_2021.csv",
+      "sha256": "a0e0fdc4475ed24ec68a13167d080d37140405ab48475235ac9b739a50bedb10"
+    },
+    {
+      "src_id": 583,
+      "year": 2016,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/583/midas-open_uk-hourly-weather-obs_dv-202607_cambridgeshire_00583_wittering_qcv-1_2016.csv",
+      "sha256": "4792e7b8e422fd4963652533ce24fe0e1814a53169a58568dd0bd1403696e948"
+    },
+    {
+      "src_id": 583,
+      "year": 2017,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/583/midas-open_uk-hourly-weather-obs_dv-202607_cambridgeshire_00583_wittering_qcv-1_2017.csv",
+      "sha256": "4453ad645f2c9859b75f27adfe07871acc3b97a4eaff5041a6c9bbebe2b91547"
+    },
+    {
+      "src_id": 583,
+      "year": 2018,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/583/midas-open_uk-hourly-weather-obs_dv-202607_cambridgeshire_00583_wittering_qcv-1_2018.csv",
+      "sha256": "b28c355851664d379d97efc51d36bcd6b54e00208b4543717a3a2ee95ff1b491"
+    },
+    {
+      "src_id": 583,
+      "year": 2019,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/583/midas-open_uk-hourly-weather-obs_dv-202607_cambridgeshire_00583_wittering_qcv-1_2019.csv",
+      "sha256": "3e8f5724261b8fa4f5178aa9d36a82962275376f18c43777990b423ce8fa5bb8"
+    },
+    {
+      "src_id": 583,
+      "year": 2020,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/583/midas-open_uk-hourly-weather-obs_dv-202607_cambridgeshire_00583_wittering_qcv-1_2020.csv",
+      "sha256": "85ef24ad9a71266e9a96aae56d59e49e2c171b35849a9e2a9799cde05b964c76"
+    },
+    {
+      "src_id": 583,
+      "year": 2021,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/583/midas-open_uk-hourly-weather-obs_dv-202607_cambridgeshire_00583_wittering_qcv-1_2021.csv",
+      "sha256": "e5c5c869b460e58fc6f64d2ed0c2c2b306dee2eda7054476a896b25770f7c398"
+    },
+    {
+      "src_id": 595,
+      "year": 2016,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/595/midas-open_uk-hourly-weather-obs_dv-202607_warwickshire_00595_church-lawford_qcv-1_2016.csv",
+      "sha256": "74a91bf2a02f1c3a1acbc9de9bbc0bcc651279cf022d70459e3d4a3bc5bea0c3"
+    },
+    {
+      "src_id": 595,
+      "year": 2017,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/595/midas-open_uk-hourly-weather-obs_dv-202607_warwickshire_00595_church-lawford_qcv-1_2017.csv",
+      "sha256": "90fcb8b72efbec1acce5296e31df9525b5404f30f8ea4036a69358ac74f7c7d9"
+    },
+    {
+      "src_id": 595,
+      "year": 2018,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/595/midas-open_uk-hourly-weather-obs_dv-202607_warwickshire_00595_church-lawford_qcv-1_2018.csv",
+      "sha256": "caa6e88cd21b4a9418e5c80de986c510b97a6a5f609eb6c973e1448457d4aa34"
+    },
+    {
+      "src_id": 595,
+      "year": 2019,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/595/midas-open_uk-hourly-weather-obs_dv-202607_warwickshire_00595_church-lawford_qcv-1_2019.csv",
+      "sha256": "b101de186c57fdacc017c70c91908b8c177eaf1a5ee6487d615a6c6e531771cc"
+    },
+    {
+      "src_id": 595,
+      "year": 2020,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/595/midas-open_uk-hourly-weather-obs_dv-202607_warwickshire_00595_church-lawford_qcv-1_2020.csv",
+      "sha256": "379a31efff6fa9ca3ab9d16e9cd691b298d50bbf156080d9d2216343910fa741"
+    },
+    {
+      "src_id": 595,
+      "year": 2021,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/595/midas-open_uk-hourly-weather-obs_dv-202607_warwickshire_00595_church-lawford_qcv-1_2021.csv",
+      "sha256": "c7fcff1b4604a77a984f87d5a7ae4d82b30a3d6a8bfd135ec765647c4ccdde89"
+    },
+    {
+      "src_id": 605,
+      "year": 2016,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/605/midas-open_uk-hourly-weather-obs_dv-202607_oxfordshire_00605_brize-norton_qcv-1_2016.csv",
+      "sha256": "8de70ff86cdd1b967d848aec984274ea1fef52a1faeb880fa33c02b37888364d"
+    },
+    {
+      "src_id": 605,
+      "year": 2017,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/605/midas-open_uk-hourly-weather-obs_dv-202607_oxfordshire_00605_brize-norton_qcv-1_2017.csv",
+      "sha256": "f330d4f7a5ba7c70ffcf67dbaa121590b121f0c60aa36454d75c939bcddc84c0"
+    },
+    {
+      "src_id": 605,
+      "year": 2018,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/605/midas-open_uk-hourly-weather-obs_dv-202607_oxfordshire_00605_brize-norton_qcv-1_2018.csv",
+      "sha256": "5f0f01ba9e354f7c8edb26cd8eab1f170e30ee4671dce52d1696d2e95f819b75"
+    },
+    {
+      "src_id": 605,
+      "year": 2019,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/605/midas-open_uk-hourly-weather-obs_dv-202607_oxfordshire_00605_brize-norton_qcv-1_2019.csv",
+      "sha256": "075621653e21342c08e51aff0a2bb37a9fe6ed13554e9a66f788c2fec13192eb"
+    },
+    {
+      "src_id": 605,
+      "year": 2020,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/605/midas-open_uk-hourly-weather-obs_dv-202607_oxfordshire_00605_brize-norton_qcv-1_2020.csv",
+      "sha256": "429250b36a8df77f4db113f428f8bbbdd2e332b067f352afbfd322913d2979e4"
+    },
+    {
+      "src_id": 605,
+      "year": 2021,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/605/midas-open_uk-hourly-weather-obs_dv-202607_oxfordshire_00605_brize-norton_qcv-1_2021.csv",
+      "sha256": "a97c819219f1bd5e97be8541cb226022030d37dfefe327aae7e378ec1ae03202"
+    },
+    {
+      "src_id": 613,
+      "year": 2016,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/613/midas-open_uk-hourly-weather-obs_dv-202607_oxfordshire_00613_benson_qcv-1_2016.csv",
+      "sha256": "eb1603bd007210faa66cb361124532b88a48c93532746d341220abe316331af6"
+    },
+    {
+      "src_id": 613,
+      "year": 2017,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/613/midas-open_uk-hourly-weather-obs_dv-202607_oxfordshire_00613_benson_qcv-1_2017.csv",
+      "sha256": "c2d40ac8d9a8757cd3315b8a585e1550ca170eec9422128a094ef188579a903f"
+    },
+    {
+      "src_id": 613,
+      "year": 2018,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/613/midas-open_uk-hourly-weather-obs_dv-202607_oxfordshire_00613_benson_qcv-1_2018.csv",
+      "sha256": "49d815d4178bfd778057ee6e5d249a6e960f4a9b3a06a39df5b461e1acdd9e6e"
+    },
+    {
+      "src_id": 613,
+      "year": 2019,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/613/midas-open_uk-hourly-weather-obs_dv-202607_oxfordshire_00613_benson_qcv-1_2019.csv",
+      "sha256": "829a86e66e6c1701923cad277a6f082b1c43d0acaf87daefff4b05c40b283e3e"
+    },
+    {
+      "src_id": 613,
+      "year": 2020,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/613/midas-open_uk-hourly-weather-obs_dv-202607_oxfordshire_00613_benson_qcv-1_2020.csv",
+      "sha256": "09de034289eb4293e4cc01e689898c170e4b55df12f92be472e86ef3d3b58966"
+    },
+    {
+      "src_id": 613,
+      "year": 2021,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/613/midas-open_uk-hourly-weather-obs_dv-202607_oxfordshire_00613_benson_qcv-1_2021.csv",
+      "sha256": "efe93acc2369d54bda728ca84097c815120adef523bbf1b8cb8ff5ab9b3cede1"
+    },
+    {
+      "src_id": 643,
+      "year": 2016,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/643/midas-open_uk-hourly-weather-obs_dv-202607_shropshire_00643_shawbury_qcv-1_2016.csv",
+      "sha256": "e4903c6328b24e5e66db8ed84523ce5439f670402d8068ded7f41423f0343662"
+    },
+    {
+      "src_id": 643,
+      "year": 2017,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/643/midas-open_uk-hourly-weather-obs_dv-202607_shropshire_00643_shawbury_qcv-1_2017.csv",
+      "sha256": "3a860e7f17bbda9af01640dc73ae6357636bf855af7629272bd1e5d07633ef04"
+    },
+    {
+      "src_id": 643,
+      "year": 2018,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/643/midas-open_uk-hourly-weather-obs_dv-202607_shropshire_00643_shawbury_qcv-1_2018.csv",
+      "sha256": "000b69199f537fb1dadf73b450f69da15d3563b4ddb82d5757201e94d8284cf1"
+    },
+    {
+      "src_id": 643,
+      "year": 2019,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/643/midas-open_uk-hourly-weather-obs_dv-202607_shropshire_00643_shawbury_qcv-1_2019.csv",
+      "sha256": "272c98b0d826cb2fdc9f6e7d3810a1ec8e4c5c487fecf824b75448ae38a682e3"
+    },
+    {
+      "src_id": 643,
+      "year": 2020,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/643/midas-open_uk-hourly-weather-obs_dv-202607_shropshire_00643_shawbury_qcv-1_2020.csv",
+      "sha256": "80bc5b2ca33dcb795eac70f29d27dda060d901cc9286c0c3ca7307fd9206c77e"
+    },
+    {
+      "src_id": 643,
+      "year": 2021,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/643/midas-open_uk-hourly-weather-obs_dv-202607_shropshire_00643_shawbury_qcv-1_2021.csv",
+      "sha256": "05d73a63fb3001fdd0c6b098efb106487626a779a969012ccb8591e490952651"
+    },
+    {
+      "src_id": 657,
+      "year": 2016,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/657/midas-open_uk-hourly-weather-obs_dv-202607_hereford-and-worcester_00657_pershore_qcv-1_2016.csv",
+      "sha256": "66bd417f802e4ae6bbb50cef0772fae36721d4a98ea8b0af3505dbc4441f1d4a"
+    },
+    {
+      "src_id": 657,
+      "year": 2017,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/657/midas-open_uk-hourly-weather-obs_dv-202607_hereford-and-worcester_00657_pershore_qcv-1_2017.csv",
+      "sha256": "731781b994e20a38f5dd51cc832234f6dd747221e0d538ef6b3ff4b3a41dd165"
+    },
+    {
+      "src_id": 657,
+      "year": 2018,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/657/midas-open_uk-hourly-weather-obs_dv-202607_hereford-and-worcester_00657_pershore_qcv-1_2018.csv",
+      "sha256": "ffacc238ddd26e752eff6b7017215198b585dcec704ff16005bef72b030a0902"
+    },
+    {
+      "src_id": 657,
+      "year": 2019,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/657/midas-open_uk-hourly-weather-obs_dv-202607_hereford-and-worcester_00657_pershore_qcv-1_2019.csv",
+      "sha256": "d975578e5b9727aa46f4c4f851d7375f11622c478ba61c0936c6f155c13462ab"
+    },
+    {
+      "src_id": 657,
+      "year": 2020,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/657/midas-open_uk-hourly-weather-obs_dv-202607_hereford-and-worcester_00657_pershore_qcv-1_2020.csv",
+      "sha256": "343d9c98c6505d3bbbb3a6d1b4fb61ff8722da800ff485a43024f3cba3a64a43"
+    },
+    {
+      "src_id": 657,
+      "year": 2021,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/657/midas-open_uk-hourly-weather-obs_dv-202607_hereford-and-worcester_00657_pershore_qcv-1_2021.csv",
+      "sha256": "340c57dd1811383dd6f41685a8edd3f8e91be5c23be70331529fdfed337cce70"
+    },
+    {
+      "src_id": 669,
+      "year": 2016,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/669/midas-open_uk-hourly-weather-obs_dv-202607_hereford-and-worcester_00669_shobdon-airfield_qcv-1_2016.csv",
+      "sha256": "80e50a44729135342608de528de131092f7a5ab4572d067ff193e869de50aa2f"
+    },
+    {
+      "src_id": 669,
+      "year": 2017,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/669/midas-open_uk-hourly-weather-obs_dv-202607_hereford-and-worcester_00669_shobdon-airfield_qcv-1_2017.csv",
+      "sha256": "a4233b9abfc54c5f7c8e4e683c1114807a58bbb010a40963725fdcc71da5f350"
+    },
+    {
+      "src_id": 669,
+      "year": 2018,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/669/midas-open_uk-hourly-weather-obs_dv-202607_hereford-and-worcester_00669_shobdon-airfield_qcv-1_2018.csv",
+      "sha256": "902f924a62ed08beec33b2ef50eec8e320134f5f26fc348c2238e545922f2b66"
+    },
+    {
+      "src_id": 669,
+      "year": 2019,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/669/midas-open_uk-hourly-weather-obs_dv-202607_hereford-and-worcester_00669_shobdon-airfield_qcv-1_2019.csv",
+      "sha256": "25cf749cdc1e294b8c3d4900376ce458f6d8469f9152ef3fed549856567b985e"
+    },
+    {
+      "src_id": 669,
+      "year": 2020,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/669/midas-open_uk-hourly-weather-obs_dv-202607_hereford-and-worcester_00669_shobdon-airfield_qcv-1_2020.csv",
+      "sha256": "74b593e5a876634b360f357f6b5fd40f63787ed7e91c1f30f21051f6565e3ae5"
+    },
+    {
+      "src_id": 669,
+      "year": 2021,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/669/midas-open_uk-hourly-weather-obs_dv-202607_hereford-and-worcester_00669_shobdon-airfield_qcv-1_2021.csv",
+      "sha256": "da9c578a876d45fa692255dbb5b1fc0b8dd60323c7cb24a01c7e0bba7ac281ad"
+    },
+    {
+      "src_id": 692,
+      "year": 2016,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/692/midas-open_uk-hourly-weather-obs_dv-202607_gloucestershire_00692_little-rissington_qcv-1_2016.csv",
+      "sha256": "850997cc67337a089a1486f880407761b23863e04e3976c1e7ef58c17b0246bc"
+    },
+    {
+      "src_id": 692,
+      "year": 2017,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/692/midas-open_uk-hourly-weather-obs_dv-202607_gloucestershire_00692_little-rissington_qcv-1_2017.csv",
+      "sha256": "e6be2d274e1d9df8e868a8581da9fe7ef24987bc88bd3faea7fa7b99b2d81347"
+    },
+    {
+      "src_id": 692,
+      "year": 2018,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/692/midas-open_uk-hourly-weather-obs_dv-202607_gloucestershire_00692_little-rissington_qcv-1_2018.csv",
+      "sha256": "2140da9c93935f82abfe3c9c3cf2e557fb38f31a28f0247ef8cf107d624e39d9"
+    },
+    {
+      "src_id": 692,
+      "year": 2019,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/692/midas-open_uk-hourly-weather-obs_dv-202607_gloucestershire_00692_little-rissington_qcv-1_2019.csv",
+      "sha256": "d87d50a829197c7715ab095f5e4f8150d2be05768294f078ef0d2709fa5fa6fd"
+    },
+    {
+      "src_id": 692,
+      "year": 2020,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/692/midas-open_uk-hourly-weather-obs_dv-202607_gloucestershire_00692_little-rissington_qcv-1_2020.csv",
+      "sha256": "ff48db8460f61f2360508af529a51b22d1a5c49f4603db045ef3cd7e6ff9a5df"
+    },
+    {
+      "src_id": 692,
+      "year": 2021,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/692/midas-open_uk-hourly-weather-obs_dv-202607_gloucestershire_00692_little-rissington_qcv-1_2021.csv",
+      "sha256": "ae2604f75e94d422557176baf9378d6f6945576ca7dc796f6c977264cc46573c"
+    },
+    {
+      "src_id": 708,
+      "year": 2016,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/708/midas-open_uk-hourly-weather-obs_dv-202607_greater-london_00708_heathrow_qcv-1_2016.csv",
+      "sha256": "7323f53876587a16f9c390ed2ced5edf65c2fdbce75729b2a68a66918fa16f52"
+    },
+    {
+      "src_id": 708,
+      "year": 2017,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/708/midas-open_uk-hourly-weather-obs_dv-202607_greater-london_00708_heathrow_qcv-1_2017.csv",
+      "sha256": "18065567f5bad3864c24ef704e784402aee92e2e302109d04759c2adb454dc68"
+    },
+    {
+      "src_id": 708,
+      "year": 2018,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/708/midas-open_uk-hourly-weather-obs_dv-202607_greater-london_00708_heathrow_qcv-1_2018.csv",
+      "sha256": "faaef9fd9860292322188987f5b448102932221461484eccc5caa82c6a54d6ef"
+    },
+    {
+      "src_id": 708,
+      "year": 2019,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/708/midas-open_uk-hourly-weather-obs_dv-202607_greater-london_00708_heathrow_qcv-1_2019.csv",
+      "sha256": "c99d72891270a95151909ec6aced9d7ccb7897541d992e86ab2df91669be2c06"
+    },
+    {
+      "src_id": 708,
+      "year": 2020,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/708/midas-open_uk-hourly-weather-obs_dv-202607_greater-london_00708_heathrow_qcv-1_2020.csv",
+      "sha256": "8f6799e22f624f873ab47c4c10a2aefba3463ffb232b54e12977175a71a8d0bf"
+    },
+    {
+      "src_id": 708,
+      "year": 2021,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/708/midas-open_uk-hourly-weather-obs_dv-202607_greater-london_00708_heathrow_qcv-1_2021.csv",
+      "sha256": "13c0180cf9eb4f099398fe80d28d405b32fc7b2264c800142683eb70f5ce4b1c"
+    },
+    {
+      "src_id": 709,
+      "year": 2016,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/709/midas-open_uk-hourly-weather-obs_dv-202607_greater-london_00709_northolt_qcv-1_2016.csv",
+      "sha256": "0faf460db19e8c4eda82623ee968ca3ff38605dd5a792084cb25d49a7c8dde03"
+    },
+    {
+      "src_id": 709,
+      "year": 2017,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/709/midas-open_uk-hourly-weather-obs_dv-202607_greater-london_00709_northolt_qcv-1_2017.csv",
+      "sha256": "932bb86d393deefb40767a2e0b2d4004d00ea106c40340337dd89e9599d5ac87"
+    },
+    {
+      "src_id": 709,
+      "year": 2018,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/709/midas-open_uk-hourly-weather-obs_dv-202607_greater-london_00709_northolt_qcv-1_2018.csv",
+      "sha256": "2e293641e8f15770afc17e64860efa6e1cb9ccd6d7aa8a527ab32e52106ea073"
+    },
+    {
+      "src_id": 709,
+      "year": 2019,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/709/midas-open_uk-hourly-weather-obs_dv-202607_greater-london_00709_northolt_qcv-1_2019.csv",
+      "sha256": "e03cecbd26d4a6a143cc468850f6458513ea5289b42fc9c3767593ccafbb9dea"
+    },
+    {
+      "src_id": 709,
+      "year": 2020,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/709/midas-open_uk-hourly-weather-obs_dv-202607_greater-london_00709_northolt_qcv-1_2020.csv",
+      "sha256": "f0f5dabd64cb216fce52e0db26133a00305793c50c8222059ab73b62930618a7"
+    },
+    {
+      "src_id": 709,
+      "year": 2021,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/709/midas-open_uk-hourly-weather-obs_dv-202607_greater-london_00709_northolt_qcv-1_2021.csv",
+      "sha256": "8e5ec15c59a3dbe16f7ddb5715f34eeccfaccfdb652949a0248d15b13a85fbf7"
+    },
+    {
+      "src_id": 719,
+      "year": 2016,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/719/midas-open_uk-hourly-weather-obs_dv-202607_surrey_00719_wisley_qcv-1_2016.csv",
+      "sha256": "8cabfe30faae3894a4fe5ac7063c2e484f7f55292cd84a19e49a053613a4397b"
+    },
+    {
+      "src_id": 719,
+      "year": 2017,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/719/midas-open_uk-hourly-weather-obs_dv-202607_surrey_00719_wisley_qcv-1_2017.csv",
+      "sha256": "1b64789099ef2f76eef61b04efde083ff0649857b33f92ff34650c81a97b4a1d"
+    },
+    {
+      "src_id": 719,
+      "year": 2018,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/719/midas-open_uk-hourly-weather-obs_dv-202607_surrey_00719_wisley_qcv-1_2018.csv",
+      "sha256": "640eea36d5505b70685810da12faf2dc69516e8c658ace43adf170e02d1b973a"
+    },
+    {
+      "src_id": 719,
+      "year": 2019,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/719/midas-open_uk-hourly-weather-obs_dv-202607_surrey_00719_wisley_qcv-1_2019.csv",
+      "sha256": "607161f8544034ff135b2d1e2400d14054dd722334b27c6335fe1bc0ba5e4566"
+    },
+    {
+      "src_id": 719,
+      "year": 2020,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/719/midas-open_uk-hourly-weather-obs_dv-202607_surrey_00719_wisley_qcv-1_2020.csv",
+      "sha256": "502cf8ee28749ffbe142801826edd2e7b21a56bb25c0849c130e6f365bc07c9c"
+    },
+    {
+      "src_id": 719,
+      "year": 2021,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/719/midas-open_uk-hourly-weather-obs_dv-202607_surrey_00719_wisley_qcv-1_2021.csv",
+      "sha256": "21910d9ecb07a3b1113e3b7608f6d0da75e750b06e3a1447be2475595ae37015"
+    },
+    {
+      "src_id": 723,
+      "year": 2016,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/723/midas-open_uk-hourly-weather-obs_dv-202607_greater-london_00723_kew-gardens_qcv-1_2016.csv",
+      "sha256": "392b9a0b00588ccf47c5325ca850c2f7fd7cd321640d8d0173bdcaab2ed1c143"
+    },
+    {
+      "src_id": 723,
+      "year": 2017,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/723/midas-open_uk-hourly-weather-obs_dv-202607_greater-london_00723_kew-gardens_qcv-1_2017.csv",
+      "sha256": "faf2fcbdc23debf737ec183bda6b8eb1404539cecb9fe0ac5df8299e6a3263d2"
+    },
+    {
+      "src_id": 723,
+      "year": 2018,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/723/midas-open_uk-hourly-weather-obs_dv-202607_greater-london_00723_kew-gardens_qcv-1_2018.csv",
+      "sha256": "3c73b6e3c27ed061384680a1f235ab6bbddc35c315e39c1ef7d0cc924cda16e8"
+    },
+    {
+      "src_id": 723,
+      "year": 2019,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/723/midas-open_uk-hourly-weather-obs_dv-202607_greater-london_00723_kew-gardens_qcv-1_2019.csv",
+      "sha256": "4d3f28ad4b1883d1e81db2e2236ef20f501943f85379dc48a5197bd03df12c50"
+    },
+    {
+      "src_id": 723,
+      "year": 2020,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/723/midas-open_uk-hourly-weather-obs_dv-202607_greater-london_00723_kew-gardens_qcv-1_2020.csv",
+      "sha256": "059d239f2d0130190bc1fab4d56dd3a0d25bf10978ea6fd3d812fef929d2c02f"
+    },
+    {
+      "src_id": 723,
+      "year": 2021,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/723/midas-open_uk-hourly-weather-obs_dv-202607_greater-london_00723_kew-gardens_qcv-1_2021.csv",
+      "sha256": "55441ea0a637f0a651e44296bca72a7e15c0b1a52124b5034cf9f83258db0c77"
+    },
+    {
+      "src_id": 726,
+      "year": 2016,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/726/midas-open_uk-hourly-weather-obs_dv-202607_greater-london_00726_kenley-airfield_qcv-1_2016.csv",
+      "sha256": "7a64f8d6b6872a5aef722d7b6d319d95dcec4bbd761ecae3bd8e9765e7c25deb"
+    },
+    {
+      "src_id": 726,
+      "year": 2017,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/726/midas-open_uk-hourly-weather-obs_dv-202607_greater-london_00726_kenley-airfield_qcv-1_2017.csv",
+      "sha256": "0d8049952263eb48d6d35b62f357e289404a7daa80c5a9bf7d55d3912eee45f9"
+    },
+    {
+      "src_id": 726,
+      "year": 2018,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/726/midas-open_uk-hourly-weather-obs_dv-202607_greater-london_00726_kenley-airfield_qcv-1_2018.csv",
+      "sha256": "4d2665b8deef6662d14cf7fb882bf7970f8396052d878ce39ecd6bc069a40db2"
+    },
+    {
+      "src_id": 726,
+      "year": 2019,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/726/midas-open_uk-hourly-weather-obs_dv-202607_greater-london_00726_kenley-airfield_qcv-1_2019.csv",
+      "sha256": "64eef3b37e4bce52a788fee6d243f857c74a8d6144812ffa6655f411becf27d5"
+    },
+    {
+      "src_id": 726,
+      "year": 2020,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/726/midas-open_uk-hourly-weather-obs_dv-202607_greater-london_00726_kenley-airfield_qcv-1_2020.csv",
+      "sha256": "16a7af8b275c8cd31ecae6b2753ba1d92f7661a66b37a37e2c5cf3852f7e2d3d"
+    },
+    {
+      "src_id": 726,
+      "year": 2021,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/726/midas-open_uk-hourly-weather-obs_dv-202607_greater-london_00726_kenley-airfield_qcv-1_2021.csv",
+      "sha256": "195c5863f48a14ee01d237938da8b998486e504686c2bcdb2ade83e1d6c84840"
+    },
+    {
+      "src_id": 847,
+      "year": 2016,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/847/midas-open_uk-hourly-weather-obs_dv-202607_hampshire_00847_middle-wallop_qcv-1_2016.csv",
+      "sha256": "13076775ba935b15944d9f0bac9704061dfce79589526054ff04c5a3d1a0b3b8"
+    },
+    {
+      "src_id": 847,
+      "year": 2017,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/847/midas-open_uk-hourly-weather-obs_dv-202607_hampshire_00847_middle-wallop_qcv-1_2017.csv",
+      "sha256": "ef1a47d3355f4d3b428649a848c1b6ddcdd21fcf9de96eae0256c12f98cd2318"
+    },
+    {
+      "src_id": 847,
+      "year": 2018,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/847/midas-open_uk-hourly-weather-obs_dv-202607_hampshire_00847_middle-wallop_qcv-1_2018.csv",
+      "sha256": "fcf92572fc2879e141e3b5b2a0958b439857d8a4ef9cbfe8553f6a6e929d65ff"
+    },
+    {
+      "src_id": 847,
+      "year": 2019,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/847/midas-open_uk-hourly-weather-obs_dv-202607_hampshire_00847_middle-wallop_qcv-1_2019.csv",
+      "sha256": "fa28b9dbe3ba5ed814f87e2e347a4e51361edfcb79852c8b6407ad9a8b9a9f7e"
+    },
+    {
+      "src_id": 847,
+      "year": 2020,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/847/midas-open_uk-hourly-weather-obs_dv-202607_hampshire_00847_middle-wallop_qcv-1_2020.csv",
+      "sha256": "4900e47f83127cc6eff7bafdf4543bee143d5463947751e6c418d1ecf6c93bd2"
+    },
+    {
+      "src_id": 847,
+      "year": 2021,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/847/midas-open_uk-hourly-weather-obs_dv-202607_hampshire_00847_middle-wallop_qcv-1_2021.csv",
+      "sha256": "445987ed58570d37a5a7e74d6564175e3f2f2263954d161aaf36417aa39175a3"
+    },
+    {
+      "src_id": 862,
+      "year": 2016,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/862/midas-open_uk-hourly-weather-obs_dv-202607_hampshire_00862_odiham_qcv-1_2016.csv",
+      "sha256": "db646e9f5ac75c332de6cc510296862ac9bae4e0393514ca9fb2885c1eb6f985"
+    },
+    {
+      "src_id": 862,
+      "year": 2017,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/862/midas-open_uk-hourly-weather-obs_dv-202607_hampshire_00862_odiham_qcv-1_2017.csv",
+      "sha256": "a4738619122ebe3aa6fd9d8a0599bface07ea87e4f6c86d345f0ccf827478811"
+    },
+    {
+      "src_id": 862,
+      "year": 2018,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/862/midas-open_uk-hourly-weather-obs_dv-202607_hampshire_00862_odiham_qcv-1_2018.csv",
+      "sha256": "7ab35a12c6c5ca1efd4bb194aebcf39a6f4e6eb28ef056a142521ea362ed75ad"
+    },
+    {
+      "src_id": 862,
+      "year": 2019,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/862/midas-open_uk-hourly-weather-obs_dv-202607_hampshire_00862_odiham_qcv-1_2019.csv",
+      "sha256": "fff80faf9ff44adc75cc95ca914a79ba5194cc0bb14e04eb3be7fa73c126015c"
+    },
+    {
+      "src_id": 862,
+      "year": 2020,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/862/midas-open_uk-hourly-weather-obs_dv-202607_hampshire_00862_odiham_qcv-1_2020.csv",
+      "sha256": "74ed7d1f39a423d29543f1a429024c534ea2df81ad39e0643804769046fa3f56"
+    },
+    {
+      "src_id": 862,
+      "year": 2021,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/862/midas-open_uk-hourly-weather-obs_dv-202607_hampshire_00862_odiham_qcv-1_2021.csv",
+      "sha256": "23ee4098b1ea6954b05c96240e242d6cda7e757fb9dfc1ecefb9a77345de9bb0"
+    },
+    {
+      "src_id": 888,
+      "year": 2016,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/888/midas-open_uk-hourly-weather-obs_dv-202607_wiltshire_00888_larkhill_qcv-1_2016.csv",
+      "sha256": "2863a69cd82c87aba6cba44e6b5ecb3da90db6b5eab5c6839519f138b667020a"
+    },
+    {
+      "src_id": 888,
+      "year": 2017,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/888/midas-open_uk-hourly-weather-obs_dv-202607_wiltshire_00888_larkhill_qcv-1_2017.csv",
+      "sha256": "71b212dc60c120fca322f862313c435ae625890049765a7a31a4fe1877879014"
+    },
+    {
+      "src_id": 888,
+      "year": 2018,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/888/midas-open_uk-hourly-weather-obs_dv-202607_wiltshire_00888_larkhill_qcv-1_2018.csv",
+      "sha256": "7672da5e342c8ffae9170d6a8809a6cbb55286c5333b835304b5b8e54e3d8e45"
+    },
+    {
+      "src_id": 888,
+      "year": 2019,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/888/midas-open_uk-hourly-weather-obs_dv-202607_wiltshire_00888_larkhill_qcv-1_2019.csv",
+      "sha256": "c50ed36f970a80e1b708b1c89aaa3cb899763e8fa6e9b7bd32366f7db03e7edd"
+    },
+    {
+      "src_id": 888,
+      "year": 2020,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/888/midas-open_uk-hourly-weather-obs_dv-202607_wiltshire_00888_larkhill_qcv-1_2020.csv",
+      "sha256": "0b7107b891e202b5e33c15f3c3bb5bd414e0d7dd0f5a43574a9ae711ee103d75"
+    },
+    {
+      "src_id": 888,
+      "year": 2021,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/888/midas-open_uk-hourly-weather-obs_dv-202607_wiltshire_00888_larkhill_qcv-1_2021.csv",
+      "sha256": "a11b584a53d967aca5afa5b61cb1324d014127ee4598f9d7056aa21ca42724dc"
+    },
+    {
+      "src_id": 889,
+      "year": 2016,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/889/midas-open_uk-hourly-weather-obs_dv-202607_wiltshire_00889_boscombe-down_qcv-1_2016.csv",
+      "sha256": "fcde2f1bb9bdc913be358411f9c2738edfb9a9a6badb6fb0346e0b6d060530e3"
+    },
+    {
+      "src_id": 889,
+      "year": 2017,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/889/midas-open_uk-hourly-weather-obs_dv-202607_wiltshire_00889_boscombe-down_qcv-1_2017.csv",
+      "sha256": "d68d28e585f9f744948b466fa264b266871b00825a2a43947e4825236a1dd34f"
+    },
+    {
+      "src_id": 889,
+      "year": 2018,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/889/midas-open_uk-hourly-weather-obs_dv-202607_wiltshire_00889_boscombe-down_qcv-1_2018.csv",
+      "sha256": "3016d2da93031035a5a5faa0227435e6cb88f3e3ecf7e0cfb470d847c5e70cab"
+    },
+    {
+      "src_id": 889,
+      "year": 2019,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/889/midas-open_uk-hourly-weather-obs_dv-202607_wiltshire_00889_boscombe-down_qcv-1_2019.csv",
+      "sha256": "faadbb1de485cf852168319955680114c7b4ea55e0938b5475a601e7b60a0ec0"
+    },
+    {
+      "src_id": 889,
+      "year": 2020,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/889/midas-open_uk-hourly-weather-obs_dv-202607_wiltshire_00889_boscombe-down_qcv-1_2020.csv",
+      "sha256": "563118fb96acda519e66b6ba458a4bc6280243e26e8149d23eef9d3583bba30c"
+    },
+    {
+      "src_id": 889,
+      "year": 2021,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/889/midas-open_uk-hourly-weather-obs_dv-202607_wiltshire_00889_boscombe-down_qcv-1_2021.csv",
+      "sha256": "41db74e312b8ad982cc350bbb0618b09e2448fdaf40c0e6617c8e1013f6f1fc9"
+    },
+    {
+      "src_id": 16725,
+      "year": 2016,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/16725/midas-open_uk-hourly-weather-obs_dv-202607_lincolnshire_16725_wainfleet-no-2_qcv-1_2016.csv",
+      "sha256": "03c7183cde4bdf49e1d134ba4e043c52371cbe2313d90c2c6de83c05e329343d"
+    },
+    {
+      "src_id": 16725,
+      "year": 2017,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/16725/midas-open_uk-hourly-weather-obs_dv-202607_lincolnshire_16725_wainfleet-no-2_qcv-1_2017.csv",
+      "sha256": "8d40243d9facfa206ecae9aef2af6f9eeee9fa757090d67596b8ea5418e2c675"
+    },
+    {
+      "src_id": 16725,
+      "year": 2018,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/16725/midas-open_uk-hourly-weather-obs_dv-202607_lincolnshire_16725_wainfleet-no-2_qcv-1_2018.csv",
+      "sha256": "9a07601d2336c370e2aed661f8bc70d2f59e23c6356044e12be5d5ec1a0f4c22"
+    },
+    {
+      "src_id": 16725,
+      "year": 2019,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/16725/midas-open_uk-hourly-weather-obs_dv-202607_lincolnshire_16725_wainfleet-no-2_qcv-1_2019.csv",
+      "sha256": "d4613594490ab91af9132fc9a2efde06bc19d741840db9bf5b4085a25f26507c"
+    },
+    {
+      "src_id": 16725,
+      "year": 2020,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/16725/midas-open_uk-hourly-weather-obs_dv-202607_lincolnshire_16725_wainfleet-no-2_qcv-1_2020.csv",
+      "sha256": "f1a2d08c925599b673ebefe728ff6722e18bb3e9782aac8d3005e64f68a6f744"
+    },
+    {
+      "src_id": 16725,
+      "year": 2021,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/16725/midas-open_uk-hourly-weather-obs_dv-202607_lincolnshire_16725_wainfleet-no-2_qcv-1_2021.csv",
+      "sha256": "0aa487161d9c9f1e3cb453ff3fb7dbd30924bb28e93e5d102af187ffd6d84319"
+    },
+    {
+      "src_id": 19187,
+      "year": 2016,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/19187/midas-open_uk-hourly-weather-obs_dv-202607_warwickshire_19187_coleshill_qcv-1_2016.csv",
+      "sha256": "e495a2cad011a90257eb259c8a2031d730ab2f212441209d7108a55a3ca223ff"
+    },
+    {
+      "src_id": 19187,
+      "year": 2017,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/19187/midas-open_uk-hourly-weather-obs_dv-202607_warwickshire_19187_coleshill_qcv-1_2017.csv",
+      "sha256": "03f8f82a4645058159e83fe09e686fe79daad7a12d942d1613775b7fdac0ab9c"
+    },
+    {
+      "src_id": 19187,
+      "year": 2018,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/19187/midas-open_uk-hourly-weather-obs_dv-202607_warwickshire_19187_coleshill_qcv-1_2018.csv",
+      "sha256": "8f2dd07fb5b15b0e90903fdcff3f1a0837b5284f151cdac6e4123a2e6623bb13"
+    },
+    {
+      "src_id": 19187,
+      "year": 2019,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/19187/midas-open_uk-hourly-weather-obs_dv-202607_warwickshire_19187_coleshill_qcv-1_2019.csv",
+      "sha256": "58146855a20400d38f7dcc5666a4f1f01d538bf9cd35c460070efba155886de9"
+    },
+    {
+      "src_id": 19187,
+      "year": 2020,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/19187/midas-open_uk-hourly-weather-obs_dv-202607_warwickshire_19187_coleshill_qcv-1_2020.csv",
+      "sha256": "41a0144dd69d4729600189ca09db0a816029c32e94a392c1753dea2338434219"
+    },
+    {
+      "src_id": 19187,
+      "year": 2021,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/19187/midas-open_uk-hourly-weather-obs_dv-202607_warwickshire_19187_coleshill_qcv-1_2021.csv",
+      "sha256": "45ed1f2d065f265800c441511d8c18d2ffb436403cfa52a5787aa4bb31526d60"
+    },
+    {
+      "src_id": 19188,
+      "year": 2016,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/19188/midas-open_uk-hourly-weather-obs_dv-202607_essex_19188_andrewsfield_qcv-1_2016.csv",
+      "sha256": "03065effd3365c4b0f7f405524149dece0009f3610a94f58088bbf122471f66f"
+    },
+    {
+      "src_id": 19188,
+      "year": 2017,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/19188/midas-open_uk-hourly-weather-obs_dv-202607_essex_19188_andrewsfield_qcv-1_2017.csv",
+      "sha256": "9463f2fd4fe23a088df28853c8a5ba7926a9b618d3a2e801e2d2e67c949c31db"
+    },
+    {
+      "src_id": 19188,
+      "year": 2018,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/19188/midas-open_uk-hourly-weather-obs_dv-202607_essex_19188_andrewsfield_qcv-1_2018.csv",
+      "sha256": "47e8abd8f7a5bfb3f1c8310148f300030deedce97d47863b2a296a8f9516d3ab"
+    },
+    {
+      "src_id": 19188,
+      "year": 2019,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/19188/midas-open_uk-hourly-weather-obs_dv-202607_essex_19188_andrewsfield_qcv-1_2019.csv",
+      "sha256": "7d2627c7e12b7afcdfdd7f2425c1e2eb5363bf6f470f85652931e3d0c72fc27a"
+    },
+    {
+      "src_id": 19188,
+      "year": 2020,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/19188/midas-open_uk-hourly-weather-obs_dv-202607_essex_19188_andrewsfield_qcv-1_2020.csv",
+      "sha256": "29d13624a4b115a8ce67ea9d00c4f41faf1f23b3086257b1ac8ce8de6453b694"
+    },
+    {
+      "src_id": 19188,
+      "year": 2021,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/19188/midas-open_uk-hourly-weather-obs_dv-202607_essex_19188_andrewsfield_qcv-1_2021.csv",
+      "sha256": "fc10a116b4bb5697cb24f54ec5cdd7fbea59e2f1a5ba67b5cfb92115b723b7a6"
+    },
+    {
+      "src_id": 24102,
+      "year": 2016,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/24102/midas-open_uk-hourly-weather-obs_dv-202607_west-midlands_24102_coventry-coundon_qcv-1_2016.csv",
+      "sha256": "01c281b6ac9b26162d42f718b06f928fa5eb422a25422d267b5d26024b90665c"
+    },
+    {
+      "src_id": 24102,
+      "year": 2017,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/24102/midas-open_uk-hourly-weather-obs_dv-202607_west-midlands_24102_coventry-coundon_qcv-1_2017.csv",
+      "sha256": "1531399eefca2574a3729e90eb78799c89393403b61b0686ce18faf808467f3e"
+    },
+    {
+      "src_id": 24102,
+      "year": 2018,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/24102/midas-open_uk-hourly-weather-obs_dv-202607_west-midlands_24102_coventry-coundon_qcv-1_2018.csv",
+      "sha256": "e941c99e57536df7c636d75947cdb8ce946ba83248a14de4e88be64f328f1c36"
+    },
+    {
+      "src_id": 24102,
+      "year": 2019,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/24102/midas-open_uk-hourly-weather-obs_dv-202607_west-midlands_24102_coventry-coundon_qcv-1_2019.csv",
+      "sha256": "b933d5ed6c7737386815e7c12f8cb16e38913bf89e33546c6566dfc40c5f6404"
+    },
+    {
+      "src_id": 24102,
+      "year": 2020,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/24102/midas-open_uk-hourly-weather-obs_dv-202607_west-midlands_24102_coventry-coundon_qcv-1_2020.csv",
+      "sha256": "d87df9677a06603f62c37c6e3eddbdc657941abb9d4cfedd82f8a21da392d8ec"
+    },
+    {
+      "src_id": 24102,
+      "year": 2021,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/24102/midas-open_uk-hourly-weather-obs_dv-202607_west-midlands_24102_coventry-coundon_qcv-1_2021.csv",
+      "sha256": "71f7d5fde26bbc815cb1e585f38c6b65962df3f65c9e98ca6c8c7cdf857d8156"
+    },
+    {
+      "src_id": 24996,
+      "year": 2016,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/24996/midas-open_uk-hourly-weather-obs_dv-202607_hereford-and-worcester_24996_hereford-credenhill_qcv-1_2016.csv",
+      "sha256": "15932660dff6a8893481452c321d112dd5911fae1ec2a911c369487f3bed4ebc"
+    },
+    {
+      "src_id": 24996,
+      "year": 2017,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/24996/midas-open_uk-hourly-weather-obs_dv-202607_hereford-and-worcester_24996_hereford-credenhill_qcv-1_2017.csv",
+      "sha256": "86467a82074cfecc3cb0f21824b69f021b48f6735f30e9d476ff320ca65bd311"
+    },
+    {
+      "src_id": 24996,
+      "year": 2018,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/24996/midas-open_uk-hourly-weather-obs_dv-202607_hereford-and-worcester_24996_hereford-credenhill_qcv-1_2018.csv",
+      "sha256": "35ea792218f3b681424b98de78e693f6f878d84cc6b58937b3fdece3e3c8a830"
+    },
+    {
+      "src_id": 24996,
+      "year": 2019,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/24996/midas-open_uk-hourly-weather-obs_dv-202607_hereford-and-worcester_24996_hereford-credenhill_qcv-1_2019.csv",
+      "sha256": "0bc57758c5b8ad675d2a44a67a20887bf30988493b013e9c5377e66e1f8f6125"
+    },
+    {
+      "src_id": 24996,
+      "year": 2020,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/24996/midas-open_uk-hourly-weather-obs_dv-202607_hereford-and-worcester_24996_hereford-credenhill_qcv-1_2020.csv",
+      "sha256": "6d98c6a24ebc94c2b0a05a68b52d51f2817de2e1be2d70c53c87cdd15a3f1ba9"
+    },
+    {
+      "src_id": 24996,
+      "year": 2021,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/24996/midas-open_uk-hourly-weather-obs_dv-202607_hereford-and-worcester_24996_hereford-credenhill_qcv-1_2021.csv",
+      "sha256": "ad6200f85dd992c47fb619fc7f6434ecba2900c8218c85c7311e9689839b1c29"
+    },
+    {
+      "src_id": 30620,
+      "year": 2016,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/30620/midas-open_uk-hourly-weather-obs_dv-202607_surrey_30620_charlwood_qcv-1_2016.csv",
+      "sha256": "4d0601949b349192b7cc5694d26532dad0b4dd844ed3fb7c161d6f4d38de0037"
+    },
+    {
+      "src_id": 30620,
+      "year": 2017,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/30620/midas-open_uk-hourly-weather-obs_dv-202607_surrey_30620_charlwood_qcv-1_2017.csv",
+      "sha256": "101affb099ee7e96d7ec28fab2662f417420a4a860701528e9a751d92b4e2717"
+    },
+    {
+      "src_id": 30620,
+      "year": 2018,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/30620/midas-open_uk-hourly-weather-obs_dv-202607_surrey_30620_charlwood_qcv-1_2018.csv",
+      "sha256": "4f57f6f6ac10196007be915cab912de5c3300a421b51d9effdcb90e948215cb1"
+    },
+    {
+      "src_id": 30620,
+      "year": 2019,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/30620/midas-open_uk-hourly-weather-obs_dv-202607_surrey_30620_charlwood_qcv-1_2019.csv",
+      "sha256": "7d23b885a79e5cb787d260718dde55d1c7c08ce1d2963b8f81d3046bc7cf081b"
+    },
+    {
+      "src_id": 30620,
+      "year": 2020,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/30620/midas-open_uk-hourly-weather-obs_dv-202607_surrey_30620_charlwood_qcv-1_2020.csv",
+      "sha256": "c59827cc4d81dc2c044fee033749e02d9cf1ccc74fb9dec5f00e7b447e829b0c"
+    },
+    {
+      "src_id": 30620,
+      "year": 2021,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/30620/midas-open_uk-hourly-weather-obs_dv-202607_surrey_30620_charlwood_qcv-1_2021.csv",
+      "sha256": "74c15b61a11d36852b2c875778f97a51f96d4519515e0bf5d081a6509c454c3d"
+    },
+    {
+      "src_id": 30690,
+      "year": 2016,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/30690/midas-open_uk-hourly-weather-obs_dv-202607_staffordshire_30690_leek-thorncliffe_qcv-1_2016.csv",
+      "sha256": "e2b1776da6122ebeadcdc037979c22b59def45cb3ff38928f49fceeccc38f5c5"
+    },
+    {
+      "src_id": 30690,
+      "year": 2017,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/30690/midas-open_uk-hourly-weather-obs_dv-202607_staffordshire_30690_leek-thorncliffe_qcv-1_2017.csv",
+      "sha256": "cf6f8bb89fdb4a5beddb9c7bb64be4f67ba0baaa0fda5c4f3854d9f737f6eb9c"
+    },
+    {
+      "src_id": 30690,
+      "year": 2018,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/30690/midas-open_uk-hourly-weather-obs_dv-202607_staffordshire_30690_leek-thorncliffe_qcv-1_2018.csv",
+      "sha256": "27eb7217e7bcc72d7589beedb07a490a3903f53362482251efb1429584ed51bc"
+    },
+    {
+      "src_id": 30690,
+      "year": 2019,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/30690/midas-open_uk-hourly-weather-obs_dv-202607_staffordshire_30690_leek-thorncliffe_qcv-1_2019.csv",
+      "sha256": "f9c2cfa8aae5d92efc22e86f6f7d82c009603d08f8a74c62d59148080e3cc5f1"
+    },
+    {
+      "src_id": 30690,
+      "year": 2020,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/30690/midas-open_uk-hourly-weather-obs_dv-202607_staffordshire_30690_leek-thorncliffe_qcv-1_2020.csv",
+      "sha256": "f81b27fc627a15c4daf93d1a414644245b78bfd2c357652bd9a849c9eb6ac3a4"
+    },
+    {
+      "src_id": 30690,
+      "year": 2021,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/30690/midas-open_uk-hourly-weather-obs_dv-202607_staffordshire_30690_leek-thorncliffe_qcv-1_2021.csv",
+      "sha256": "9c5689f8b721c1aee7939ba1fd5f243ef8134564ce463b418e5d27592a82faa2"
+    },
+    {
+      "src_id": 56958,
+      "year": 2016,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/56958/midas-open_uk-hourly-weather-obs_dv-202607_west-yorkshire_56958_emley-moor-no-2_qcv-1_2016.csv",
+      "sha256": "d1da56834f6a52e8c5ac26f39331d345b5aa60603f651cca46b354a2e5abfab5"
+    },
+    {
+      "src_id": 56958,
+      "year": 2017,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/56958/midas-open_uk-hourly-weather-obs_dv-202607_west-yorkshire_56958_emley-moor-no-2_qcv-1_2017.csv",
+      "sha256": "712a039a51e0cce07dcc4f989543b23aa8b91e3e1025c0ae844937c50c7f825c"
+    },
+    {
+      "src_id": 56958,
+      "year": 2018,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/56958/midas-open_uk-hourly-weather-obs_dv-202607_west-yorkshire_56958_emley-moor-no-2_qcv-1_2018.csv",
+      "sha256": "9f802d928448dfec47d6eed965e430db8118b020ad4c27177bb896d65fb40023"
+    },
+    {
+      "src_id": 56958,
+      "year": 2019,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/56958/midas-open_uk-hourly-weather-obs_dv-202607_west-yorkshire_56958_emley-moor-no-2_qcv-1_2019.csv",
+      "sha256": "8b2a99388b0ce848386fbe53846b8146dea3cdcb56f70b706f853a5e78e39e7a"
+    },
+    {
+      "src_id": 56958,
+      "year": 2020,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/56958/midas-open_uk-hourly-weather-obs_dv-202607_west-yorkshire_56958_emley-moor-no-2_qcv-1_2020.csv",
+      "sha256": "72660bcdfd7b29a1e24c995af52ee807f64adf8bdd40143b7fff0cc2ebde07a1"
+    },
+    {
+      "src_id": 56958,
+      "year": 2021,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/56958/midas-open_uk-hourly-weather-obs_dv-202607_west-yorkshire_56958_emley-moor-no-2_qcv-1_2021.csv",
+      "sha256": "0773f2114342eca5f830944643c54d7b2ad2e7ffb1f8fa9a4f3cded7fbb571ac"
+    },
+    {
+      "src_id": 57199,
+      "year": 2016,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/57199/midas-open_uk-hourly-weather-obs_dv-202607_cheshire_57199_rostherne-no-2_qcv-1_2016.csv",
+      "sha256": "47cd1030172414fe1f251ba4a2d03df8ab09bed6510b1bc24a29cc08ccd495ee"
+    },
+    {
+      "src_id": 57199,
+      "year": 2017,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/57199/midas-open_uk-hourly-weather-obs_dv-202607_cheshire_57199_rostherne-no-2_qcv-1_2017.csv",
+      "sha256": "9f07e87eaac32addf526f03252c6ba0e3e7b8d523f7c0462cd27cc6dd2988a2e"
+    },
+    {
+      "src_id": 57199,
+      "year": 2018,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/57199/midas-open_uk-hourly-weather-obs_dv-202607_cheshire_57199_rostherne-no-2_qcv-1_2018.csv",
+      "sha256": "e9118d401a24dfb1b0152672b384f3840d0bb8c7ecc9db70b96665f535348a53"
+    },
+    {
+      "src_id": 57199,
+      "year": 2019,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/57199/midas-open_uk-hourly-weather-obs_dv-202607_cheshire_57199_rostherne-no-2_qcv-1_2019.csv",
+      "sha256": "ecf4901a34325959b22481f608a1c2be30ffd2fd8311dc5e5ecc9b4d69c5d373"
+    },
+    {
+      "src_id": 57199,
+      "year": 2020,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/57199/midas-open_uk-hourly-weather-obs_dv-202607_cheshire_57199_rostherne-no-2_qcv-1_2020.csv",
+      "sha256": "a611eb603f6087ae20dc4844c32e83c6b90510bfb9db03821ccba6d95f7e37e5"
+    },
+    {
+      "src_id": 57199,
+      "year": 2021,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/57199/midas-open_uk-hourly-weather-obs_dv-202607_cheshire_57199_rostherne-no-2_qcv-1_2021.csv",
+      "sha256": "6a4f484b6594ccae6d1372f8fff50583bca093ee23ccb2022c6f0c6fcf0a6f02"
+    },
+    {
+      "src_id": 150,
+      "year": 2016,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/150/midas-open_uk-hourly-weather-obs_dv-202607_aberdeenshire_00150_aboyne-no-2_qcv-1_2016.csv",
+      "sha256": "635519dbff8449c967547aca2b10687fd798264fe6bb1abb88d2106987a0004a"
+    },
+    {
+      "src_id": 150,
+      "year": 2017,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/150/midas-open_uk-hourly-weather-obs_dv-202607_aberdeenshire_00150_aboyne-no-2_qcv-1_2017.csv",
+      "sha256": "e819b48aa051545d21c0bee9dc4ab3c487cfaa99535e0e24c50dbea322c972ed"
+    },
+    {
+      "src_id": 150,
+      "year": 2018,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/150/midas-open_uk-hourly-weather-obs_dv-202607_aberdeenshire_00150_aboyne-no-2_qcv-1_2018.csv",
+      "sha256": "5bac97290e9e2089383dd7723e33f92ef0a39bab15eb1c09d9801d01622aebe3"
+    },
+    {
+      "src_id": 150,
+      "year": 2019,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/150/midas-open_uk-hourly-weather-obs_dv-202607_aberdeenshire_00150_aboyne-no-2_qcv-1_2019.csv",
+      "sha256": "78f0dfe3322da4c5542863121aac2f80c378623822984d5c9955758247448469"
+    },
+    {
+      "src_id": 150,
+      "year": 2020,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/150/midas-open_uk-hourly-weather-obs_dv-202607_aberdeenshire_00150_aboyne-no-2_qcv-1_2020.csv",
+      "sha256": "24bc7cd373e00fb811d55d4b883ffee88c06f99f578b041452cd1cbf4e3cf612"
+    },
+    {
+      "src_id": 150,
+      "year": 2021,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/150/midas-open_uk-hourly-weather-obs_dv-202607_aberdeenshire_00150_aboyne-no-2_qcv-1_2021.csv",
+      "sha256": "4fcb19b640a59ecbf8eb21dc8d720979354335b277d43104cb75a11254f59db6"
+    },
+    {
+      "src_id": 161,
+      "year": 2016,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/161/midas-open_uk-hourly-weather-obs_dv-202607_aberdeenshire_00161_dyce_qcv-1_2016.csv",
+      "sha256": "798cc1ed5305bbf1c9614ec5b7bf8fdf76799b2ba0d3bf2ead0cf861d4f61f5b"
+    },
+    {
+      "src_id": 161,
+      "year": 2017,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/161/midas-open_uk-hourly-weather-obs_dv-202607_aberdeenshire_00161_dyce_qcv-1_2017.csv",
+      "sha256": "d54064179a3176abd8cf78eb1d33222966f02e228c3d670defc0d60b133ebcd9"
+    },
+    {
+      "src_id": 161,
+      "year": 2018,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/161/midas-open_uk-hourly-weather-obs_dv-202607_aberdeenshire_00161_dyce_qcv-1_2018.csv",
+      "sha256": "9a13640248850100f08170ccfa122dce89d6fad9ac16881b79fb29d430079671"
+    },
+    {
+      "src_id": 161,
+      "year": 2019,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/161/midas-open_uk-hourly-weather-obs_dv-202607_aberdeenshire_00161_dyce_qcv-1_2019.csv",
+      "sha256": "281e1b759f85a1ad7ef873d97fde658d585dfc3a8b040d4634fb3e3539a962f2"
+    },
+    {
+      "src_id": 161,
+      "year": 2020,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/161/midas-open_uk-hourly-weather-obs_dv-202607_aberdeenshire_00161_dyce_qcv-1_2020.csv",
+      "sha256": "30250de89ae4317e6286d2570c5a46cdd51351ed745950a156493e93806694ae"
+    },
+    {
+      "src_id": 161,
+      "year": 2021,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/161/midas-open_uk-hourly-weather-obs_dv-202607_aberdeenshire_00161_dyce_qcv-1_2021.csv",
+      "sha256": "2bdd8f1482c42fe3677b2b5e904da94b44c66429e817d925130af22c908f9987"
+    },
+    {
+      "src_id": 177,
+      "year": 2016,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/177/midas-open_uk-hourly-weather-obs_dv-202607_kincardineshire_00177_inverbervie-no-2_qcv-1_2016.csv",
+      "sha256": "21476da1bb41add56100f4fc1a13900150c22457ba74fd162538cd6680859c5d"
+    },
+    {
+      "src_id": 177,
+      "year": 2017,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/177/midas-open_uk-hourly-weather-obs_dv-202607_kincardineshire_00177_inverbervie-no-2_qcv-1_2017.csv",
+      "sha256": "0549e2d6519eba690f244b6b58cb0ddeee36b37b32b092a1bc2dc8dff4017855"
+    },
+    {
+      "src_id": 177,
+      "year": 2018,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/177/midas-open_uk-hourly-weather-obs_dv-202607_kincardineshire_00177_inverbervie-no-2_qcv-1_2018.csv",
+      "sha256": "713261dcc61b6a397380365f8506742e72a8c5f6dda4a72bc31a09e3bf6054a2"
+    },
+    {
+      "src_id": 177,
+      "year": 2019,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/177/midas-open_uk-hourly-weather-obs_dv-202607_kincardineshire_00177_inverbervie-no-2_qcv-1_2019.csv",
+      "sha256": "9e27d45cb97fc7ef268f3a75f788c20b6bb6927bea6697dee08703435d1714f8"
+    },
+    {
+      "src_id": 177,
+      "year": 2020,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/177/midas-open_uk-hourly-weather-obs_dv-202607_kincardineshire_00177_inverbervie-no-2_qcv-1_2020.csv",
+      "sha256": "145bc5d836bb2a53bbe9f9d361030628a08a88c9ac8578688baebaad5cb661f4"
+    },
+    {
+      "src_id": 177,
+      "year": 2021,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/177/midas-open_uk-hourly-weather-obs_dv-202607_kincardineshire_00177_inverbervie-no-2_qcv-1_2021.csv",
+      "sha256": "dfa3d0ecb9ab5a0262cc3dae29888712a480fb88560c877603365ec679cc5348"
+    },
+    {
+      "src_id": 235,
+      "year": 2016,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/235/midas-open_uk-hourly-weather-obs_dv-202607_fife_00235_leuchars_qcv-1_2016.csv",
+      "sha256": "aa5957b09488e5451e39460588a0a008316dd139a6996d40e9fce719e599c8bc"
+    },
+    {
+      "src_id": 235,
+      "year": 2017,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/235/midas-open_uk-hourly-weather-obs_dv-202607_fife_00235_leuchars_qcv-1_2017.csv",
+      "sha256": "1fd7ce8cbcceed0d808c66db1953ad305f0a8f886a0d4077102dc94369bc977b"
+    },
+    {
+      "src_id": 235,
+      "year": 2018,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/235/midas-open_uk-hourly-weather-obs_dv-202607_fife_00235_leuchars_qcv-1_2018.csv",
+      "sha256": "88ddcd08cec75429b7427ca6d0b789a80241879e7d37c2894117ba0436362e5e"
+    },
+    {
+      "src_id": 235,
+      "year": 2019,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/235/midas-open_uk-hourly-weather-obs_dv-202607_fife_00235_leuchars_qcv-1_2019.csv",
+      "sha256": "c2d1f3c61efc48701e56778bebfb0ec5793545d28da90caec48ae034d1f1daee"
+    },
+    {
+      "src_id": 235,
+      "year": 2020,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/235/midas-open_uk-hourly-weather-obs_dv-202607_fife_00235_leuchars_qcv-1_2020.csv",
+      "sha256": "b316728e8a859a7c7bd17aa946159784a7b79c260f24d6cc21da294f04707db2"
+    },
+    {
+      "src_id": 235,
+      "year": 2021,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/235/midas-open_uk-hourly-weather-obs_dv-202607_fife_00235_leuchars_qcv-1_2021.csv",
+      "sha256": "153d726c9b44169141cfe4f911d837e4d137c94751efc08b66a3ae86435a22c2"
+    },
+    {
+      "src_id": 982,
+      "year": 2016,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/982/midas-open_uk-hourly-weather-obs_dv-202607_lanarkshire_00982_salsburgh_qcv-1_2016.csv",
+      "sha256": "5fb5a8a7de136323bd6a7d18194907ca243667ad1b96a9a32055beecad9e22cc"
+    },
+    {
+      "src_id": 982,
+      "year": 2017,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/982/midas-open_uk-hourly-weather-obs_dv-202607_lanarkshire_00982_salsburgh_qcv-1_2017.csv",
+      "sha256": "3f30006c799dc3c5e6caaf8ca7c61659659085e7ecd3a4d2561116ea4dfd9e59"
+    },
+    {
+      "src_id": 982,
+      "year": 2018,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/982/midas-open_uk-hourly-weather-obs_dv-202607_lanarkshire_00982_salsburgh_qcv-1_2018.csv",
+      "sha256": "d9ce8a6a39e0960ce148e493d14c91fbba4d125d9c0501e984cb209cdaad1bc2"
+    },
+    {
+      "src_id": 982,
+      "year": 2019,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/982/midas-open_uk-hourly-weather-obs_dv-202607_lanarkshire_00982_salsburgh_qcv-1_2019.csv",
+      "sha256": "a912876465d4269f31476933258fd2a5b0469379583679041382ecd6890b09f7"
+    },
+    {
+      "src_id": 982,
+      "year": 2020,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/982/midas-open_uk-hourly-weather-obs_dv-202607_lanarkshire_00982_salsburgh_qcv-1_2020.csv",
+      "sha256": "ca9cc2e99410c85baae5716a69a59acfabb237bffee7f1c9654e1f17cbabe351"
+    },
+    {
+      "src_id": 982,
+      "year": 2021,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/982/midas-open_uk-hourly-weather-obs_dv-202607_lanarkshire_00982_salsburgh_qcv-1_2021.csv",
+      "sha256": "d0a94d474bb102275c2c568ff6e4f0687d26db9af684ca0bc1c37a40629ef38e"
+    },
+    {
+      "src_id": 987,
+      "year": 2016,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/987/midas-open_uk-hourly-weather-obs_dv-202607_lanarkshire_00987_drumalbin_qcv-1_2016.csv",
+      "sha256": "dbe7500efa262e0d6106f49322b05dcb1b5735ffbca3a658fd96bffd6166dd75"
+    },
+    {
+      "src_id": 987,
+      "year": 2017,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/987/midas-open_uk-hourly-weather-obs_dv-202607_lanarkshire_00987_drumalbin_qcv-1_2017.csv",
+      "sha256": "8ff10e463e2d34b82442ba066a2879bb823ccd8f62f5cea392deabebfb8aaa77"
+    },
+    {
+      "src_id": 987,
+      "year": 2018,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/987/midas-open_uk-hourly-weather-obs_dv-202607_lanarkshire_00987_drumalbin_qcv-1_2018.csv",
+      "sha256": "da4428cd9a1c2a73384ce42586f3b0ee18872a603e5639cdb9c53d8409fd1d96"
+    },
+    {
+      "src_id": 987,
+      "year": 2019,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/987/midas-open_uk-hourly-weather-obs_dv-202607_lanarkshire_00987_drumalbin_qcv-1_2019.csv",
+      "sha256": "f4d22e6cc6bab3b3eaf131b8b12ee09963fbbf70a82964ca844d8e977dab5503"
+    },
+    {
+      "src_id": 987,
+      "year": 2020,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/987/midas-open_uk-hourly-weather-obs_dv-202607_lanarkshire_00987_drumalbin_qcv-1_2020.csv",
+      "sha256": "fc0c682fa7cb7c1eced8e082c49aa711f88b27fbbe99b95f28ff376f667b5ced"
+    },
+    {
+      "src_id": 987,
+      "year": 2021,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/987/midas-open_uk-hourly-weather-obs_dv-202607_lanarkshire_00987_drumalbin_qcv-1_2021.csv",
+      "sha256": "053b80873f58df84de562d6e1ae774bf90e64474c3eeec92c9b4b8468f31c962"
+    },
+    {
+      "src_id": 1023,
+      "year": 2016,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/1023/midas-open_uk-hourly-weather-obs_dv-202607_dumfriesshire_01023_eskdalemuir_qcv-1_2016.csv",
+      "sha256": "e6175cac89679c580f06c10876f03dfc5d01caed5d0e5cc9daf426622c36eeb0"
+    },
+    {
+      "src_id": 1023,
+      "year": 2017,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/1023/midas-open_uk-hourly-weather-obs_dv-202607_dumfriesshire_01023_eskdalemuir_qcv-1_2017.csv",
+      "sha256": "90d1c39801d9caeba4bff38552b8db2e6ac83b32a7483f27b393dd69bc501196"
+    },
+    {
+      "src_id": 1023,
+      "year": 2018,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/1023/midas-open_uk-hourly-weather-obs_dv-202607_dumfriesshire_01023_eskdalemuir_qcv-1_2018.csv",
+      "sha256": "533568dd477739b72d93c9b014236f193acf7d2f1c9bcef65e084d6b3a4cdb84"
+    },
+    {
+      "src_id": 1023,
+      "year": 2019,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/1023/midas-open_uk-hourly-weather-obs_dv-202607_dumfriesshire_01023_eskdalemuir_qcv-1_2019.csv",
+      "sha256": "32b7d7425e78afe61285b461f7cc3392fd2cec0a00cd86973944a85bc8e0509e"
+    },
+    {
+      "src_id": 1023,
+      "year": 2020,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/1023/midas-open_uk-hourly-weather-obs_dv-202607_dumfriesshire_01023_eskdalemuir_qcv-1_2020.csv",
+      "sha256": "5da7c22472d48d6cb3d38607a4cd542727bb2815db70f80acd8cf366b4566496"
+    },
+    {
+      "src_id": 1023,
+      "year": 2021,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/1023/midas-open_uk-hourly-weather-obs_dv-202607_dumfriesshire_01023_eskdalemuir_qcv-1_2021.csv",
+      "sha256": "fd136939a6ba24fbb2bb7175459e4fbfa10113c61a67d823708f89a7d0feea40"
+    },
+    {
+      "src_id": 1074,
+      "year": 2016,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/1074/midas-open_uk-hourly-weather-obs_dv-202607_cumbria_01074_warcop-range_qcv-1_2016.csv",
+      "sha256": "742d75c595a27681121208d1100603f55ff977df185dbd710c062c5996c1cb78"
+    },
+    {
+      "src_id": 1074,
+      "year": 2017,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/1074/midas-open_uk-hourly-weather-obs_dv-202607_cumbria_01074_warcop-range_qcv-1_2017.csv",
+      "sha256": "585a8eb7cf5f75159be7f8016f6cb0c810628b030e22def117543dbd8da78a09"
+    },
+    {
+      "src_id": 1074,
+      "year": 2018,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/1074/midas-open_uk-hourly-weather-obs_dv-202607_cumbria_01074_warcop-range_qcv-1_2018.csv",
+      "sha256": "1fba4877e61167944477acef8e3e1917a5a9da618d2dcce9650af166b9bbf755"
+    },
+    {
+      "src_id": 1074,
+      "year": 2019,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/1074/midas-open_uk-hourly-weather-obs_dv-202607_cumbria_01074_warcop-range_qcv-1_2019.csv",
+      "sha256": "76486cf37e13e8850ffcf9a0e156c6704015e898f3cf468c50933542e0ee7e21"
+    },
+    {
+      "src_id": 1074,
+      "year": 2020,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/1074/midas-open_uk-hourly-weather-obs_dv-202607_cumbria_01074_warcop-range_qcv-1_2020.csv",
+      "sha256": "f090bb72a16f39d6105b97aaba914d31f6665f9d4704983eb43eefaf7f433d28"
+    },
+    {
+      "src_id": 1074,
+      "year": 2021,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/1074/midas-open_uk-hourly-weather-obs_dv-202607_cumbria_01074_warcop-range_qcv-1_2021.csv",
+      "sha256": "0aef60666bc108da1a7df448321a89d22951466d0b291d9e22b6ee6c82fa8259"
+    },
+    {
+      "src_id": 16589,
+      "year": 2016,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/16589/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_16589_redesdale-camp_qcv-1_2016.csv",
+      "sha256": "8a82fe08b7c0a12f8f0ef1175affdf255dc7580378753b0967b989d5f056ea9e"
+    },
+    {
+      "src_id": 16589,
+      "year": 2017,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/16589/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_16589_redesdale-camp_qcv-1_2017.csv",
+      "sha256": "0f3574ceb46dd0d29bb8416f6f6c777a9ad91a2993fa88e0b3852e2d58e46881"
+    },
+    {
+      "src_id": 16589,
+      "year": 2018,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/16589/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_16589_redesdale-camp_qcv-1_2018.csv",
+      "sha256": "ae88076d1aa3d9416ff95e433e207c257bd87b3760f5b97f79f2adb75ae3efc4"
+    },
+    {
+      "src_id": 16589,
+      "year": 2019,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/16589/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_16589_redesdale-camp_qcv-1_2019.csv",
+      "sha256": "b882d279d5736beb5bb6eb80c8c06444c967817bc244a81f902de9ca9181eff8"
+    },
+    {
+      "src_id": 16589,
+      "year": 2020,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/16589/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_16589_redesdale-camp_qcv-1_2020.csv",
+      "sha256": "2ef45cab5e58a7e6b09176520db1619278d5c30952537ce3f91a0f25391437e6"
+    },
+    {
+      "src_id": 16589,
+      "year": 2021,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/16589/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_16589_redesdale-camp_qcv-1_2021.csv",
+      "sha256": "7bf43156d49f9ac7e1633290030fa462837ba2c063451cbb209aa43941cea436"
+    },
+    {
+      "src_id": 24125,
+      "year": 2016,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/24125/midas-open_uk-hourly-weather-obs_dv-202607_renfrewshire_24125_glasgow-bishopton_qcv-1_2016.csv",
+      "sha256": "8a566ee5fb4f6b5fe35c5057000be45a14efbbad67ef5b55852cd77ef47b7024"
+    },
+    {
+      "src_id": 24125,
+      "year": 2017,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/24125/midas-open_uk-hourly-weather-obs_dv-202607_renfrewshire_24125_glasgow-bishopton_qcv-1_2017.csv",
+      "sha256": "4116ee5d3e1735c5236305e4f8572e0a46c6d8a5005043891816b294272bde05"
+    },
+    {
+      "src_id": 24125,
+      "year": 2018,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/24125/midas-open_uk-hourly-weather-obs_dv-202607_renfrewshire_24125_glasgow-bishopton_qcv-1_2018.csv",
+      "sha256": "a8e4888259f87f14660ae6657be58ebf2452ded5ea0c0a312e9fc796405d1285"
+    },
+    {
+      "src_id": 24125,
+      "year": 2019,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/24125/midas-open_uk-hourly-weather-obs_dv-202607_renfrewshire_24125_glasgow-bishopton_qcv-1_2019.csv",
+      "sha256": "20b370d4d3ff7066aad11b88be12af1efcc0394d70a7a93ea402284e5b3c1c15"
+    },
+    {
+      "src_id": 24125,
+      "year": 2020,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/24125/midas-open_uk-hourly-weather-obs_dv-202607_renfrewshire_24125_glasgow-bishopton_qcv-1_2020.csv",
+      "sha256": "85aca99491d7b253dc1d2189eb2bc0c59f3d302c26d402fca29744ebace74552"
+    },
+    {
+      "src_id": 24125,
+      "year": 2021,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/24125/midas-open_uk-hourly-weather-obs_dv-202607_renfrewshire_24125_glasgow-bishopton_qcv-1_2021.csv",
+      "sha256": "3ad8394f684206cc9ea55f91db72afca858ad8b3e1855de55c0bced3e7932fdf"
+    },
+    {
+      "src_id": 30523,
+      "year": 2016,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/30523/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_30523_albemarle_qcv-1_2016.csv",
+      "sha256": "480ec144bd40ed9f754aa5aed3fe69b1c1e9f75822bab6b222f6b27ac9066c48"
+    },
+    {
+      "src_id": 30523,
+      "year": 2017,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/30523/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_30523_albemarle_qcv-1_2017.csv",
+      "sha256": "a8c0a083f2bfc88e473a27ec6f985dbae7f16dce3a4ee84409d88f4515a59068"
+    },
+    {
+      "src_id": 30523,
+      "year": 2018,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/30523/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_30523_albemarle_qcv-1_2018.csv",
+      "sha256": "d400cf61aacbb5cd246bd6e4136f7e0f5ec6d45800a748dd0a71cb58ba29a870"
+    },
+    {
+      "src_id": 30523,
+      "year": 2019,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/30523/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_30523_albemarle_qcv-1_2019.csv",
+      "sha256": "2203188008de152a01c268203ef10bb337523887e588e735c2bbf43643a74174"
+    },
+    {
+      "src_id": 30523,
+      "year": 2020,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/30523/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_30523_albemarle_qcv-1_2020.csv",
+      "sha256": "2c9f795c364ca1468ced2a7b7c81a550109ba0ebf8ceee80c2e34eda74ec1046"
+    },
+    {
+      "src_id": 30523,
+      "year": 2021,
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/30523/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_30523_albemarle_qcv-1_2021.csv",
+      "sha256": "4b46bfdaa1a96a0dab37c576fd266c8cff1732019e9c4fe369a1bfc3a29d87ae"
+    }
+  ],
+  "missing": [],
+  "split": {
+    "train": [
+      386,
+      393,
+      395,
+      405,
+      440,
+      456,
+      461,
+      556,
+      595,
+      605,
+      613,
+      643,
+      669,
+      692,
+      708,
+      709,
+      723,
+      726,
+      847,
+      862,
+      889,
+      16725,
+      19187,
+      19188,
+      24996,
+      30620,
+      30690,
+      56958
+    ],
+    "kel_holdout": [
+      384,
+      409,
+      583,
+      657,
+      719,
+      888,
+      24102,
+      57199
+    ],
+    "pen_holdout": [
+      150,
+      161,
+      177,
+      235,
+      982,
+      987,
+      1023,
+      1074,
+      16589,
+      24125,
+      30523
+    ]
+  },
+  "metadata_sha256": "3c98d20c4b9a8aba3270280c8692b72a54d66df05d178c5fed27eb70e6fd3acc",
+  "years": [
+    2016,
+    2017,
+    2018,
+    2019,
+    2020,
+    2021
+  ]
+}
