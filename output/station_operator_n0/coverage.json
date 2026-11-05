@@ -1,0 +1,2352 @@
+{
+  "384": {
+    "2016": {
+      "rows": 8784,
+      "finite_counts": {
+        "wind_speed": 8780,
+        "wind_direction": 8755,
+        "msl_pressure": 8780
+      }
+    },
+    "2017": {
+      "rows": 8760,
+      "finite_counts": {
+        "wind_speed": 8759,
+        "wind_direction": 8758,
+        "msl_pressure": 8756
+      }
+    },
+    "2018": {
+      "rows": 8760,
+      "finite_counts": {
+        "wind_speed": 8748,
+        "wind_direction": 8744,
+        "msl_pressure": 8759
+      }
+    },
+    "2019": {
+      "rows": 8760,
+      "finite_counts": {
+        "wind_speed": 8760,
+        "wind_direction": 8751,
+        "msl_pressure": 8758
+      }
+    },
+    "2020": {
+      "rows": 8784,
+      "finite_counts": {
+        "wind_speed": 8728,
+        "wind_direction": 8726,
+        "msl_pressure": 8783
+      }
+    },
+    "2021": {
+      "rows": 8755,
+      "finite_counts": {
+        "wind_speed": 8740,
+        "wind_direction": 8732,
+        "msl_pressure": 8755
+      }
+    }
+  },
+  "386": {
+    "2016": {
+      "rows": 8784,
+      "finite_counts": {
+        "wind_speed": 8784,
+        "wind_direction": 8757,
+        "msl_pressure": 8778
+      }
+    },
+    "2017": {
+      "rows": 8759,
+      "finite_counts": {
+        "wind_speed": 8722,
+        "wind_direction": 8717,
+        "msl_pressure": 8752
+      }
+    },
+    "2018": {
+      "rows": 8760,
+      "finite_counts": {
+        "wind_speed": 8759,
+        "wind_direction": 8753,
+        "msl_pressure": 8758
+      }
+    },
+    "2019": {
+      "rows": 8760,
+      "finite_counts": {
+        "wind_speed": 8747,
+        "wind_direction": 8738,
+        "msl_pressure": 8759
+      }
+    },
+    "2020": {
+      "rows": 8784,
+      "finite_counts": {
+        "wind_speed": 8784,
+        "wind_direction": 8775,
+        "msl_pressure": 8784
+      }
+    },
+    "2021": {
+      "rows": 8756,
+      "finite_counts": {
+        "wind_speed": 8712,
+        "wind_direction": 8684,
+        "msl_pressure": 8691
+      }
+    }
+  },
+  "393": {
+    "2016": {
+      "rows": 8784,
+      "finite_counts": {
+        "wind_speed": 8755,
+        "wind_direction": 8713,
+        "msl_pressure": 8771
+      }
+    },
+    "2017": {
+      "rows": 8760,
+      "finite_counts": {
+        "wind_speed": 8758,
+        "wind_direction": 8731,
+        "msl_pressure": 8757
+      }
+    },
+    "2018": {
+      "rows": 8759,
+      "finite_counts": {
+        "wind_speed": 8756,
+        "wind_direction": 8752,
+        "msl_pressure": 8753
+      }
+    },
+    "2019": {
+      "rows": 8760,
+      "finite_counts": {
+        "wind_speed": 8760,
+        "wind_direction": 8747,
+        "msl_pressure": 8760
+      }
+    },
+    "2020": {
+      "rows": 8783,
+      "finite_counts": {
+        "wind_speed": 8783,
+        "wind_direction": 8765,
+        "msl_pressure": 8781
+      }
+    },
+    "2021": {
+      "rows": 8754,
+      "finite_counts": {
+        "wind_speed": 8743,
+        "wind_direction": 8720,
+        "msl_pressure": 8747
+      }
+    }
+  },
+  "395": {
+    "2016": {
+      "rows": 8784,
+      "finite_counts": {
+        "wind_speed": 8784,
+        "wind_direction": 8778,
+        "msl_pressure": 8777
+      }
+    },
+    "2017": {
+      "rows": 8759,
+      "finite_counts": {
+        "wind_speed": 8757,
+        "wind_direction": 8747,
+        "msl_pressure": 8754
+      }
+    },
+    "2018": {
+      "rows": 8757,
+      "finite_counts": {
+        "wind_speed": 8757,
+        "wind_direction": 8751,
+        "msl_pressure": 8755
+      }
+    },
+    "2019": {
+      "rows": 8760,
+      "finite_counts": {
+        "wind_speed": 8760,
+        "wind_direction": 8734,
+        "msl_pressure": 8755
+      }
+    },
+    "2020": {
+      "rows": 8783,
+      "finite_counts": {
+        "wind_speed": 8769,
+        "wind_direction": 8762,
+        "msl_pressure": 8780
+      }
+    },
+    "2021": {
+      "rows": 8756,
+      "finite_counts": {
+        "wind_speed": 8737,
+        "wind_direction": 8716,
+        "msl_pressure": 8755
+      }
+    }
+  },
+  "405": {
+    "2016": {
+      "rows": 8783,
+      "finite_counts": {
+        "wind_speed": 8634,
+        "wind_direction": 8630,
+        "msl_pressure": 8780
+      }
+    },
+    "2017": {
+      "rows": 8758,
+      "finite_counts": {
+        "wind_speed": 8758,
+        "wind_direction": 8750,
+        "msl_pressure": 8757
+      }
+    },
+    "2018": {
+      "rows": 8760,
+      "finite_counts": {
+        "wind_speed": 8744,
+        "wind_direction": 8732,
+        "msl_pressure": 8759
+      }
+    },
+    "2019": {
+      "rows": 8758,
+      "finite_counts": {
+        "wind_speed": 8758,
+        "wind_direction": 8753,
+        "msl_pressure": 8756
+      }
+    },
+    "2020": {
+      "rows": 8784,
+      "finite_counts": {
+        "wind_speed": 8784,
+        "wind_direction": 8780,
+        "msl_pressure": 8779
+      }
+    },
+    "2021": {
+      "rows": 8759,
+      "finite_counts": {
+        "wind_speed": 8757,
+        "wind_direction": 8747,
+        "msl_pressure": 8757
+      }
+    }
+  },
+  "409": {
+    "2016": {
+      "rows": 8784,
+      "finite_counts": {
+        "wind_speed": 8783,
+        "wind_direction": 8732,
+        "msl_pressure": 8778
+      }
+    },
+    "2017": {
+      "rows": 8759,
+      "finite_counts": {
+        "wind_speed": 8758,
+        "wind_direction": 8719,
+        "msl_pressure": 8750
+      }
+    },
+    "2018": {
+      "rows": 8759,
+      "finite_counts": {
+        "wind_speed": 8717,
+        "wind_direction": 8689,
+        "msl_pressure": 8758
+      }
+    },
+    "2019": {
+      "rows": 8759,
+      "finite_counts": {
+        "wind_speed": 8758,
+        "wind_direction": 8728,
+        "msl_pressure": 8757
+      }
+    },
+    "2020": {
+      "rows": 8784,
+      "finite_counts": {
+        "wind_speed": 8743,
+        "wind_direction": 8716,
+        "msl_pressure": 8784
+      }
+    },
+    "2021": {
+      "rows": 8742,
+      "finite_counts": {
+        "wind_speed": 8703,
+        "wind_direction": 8655,
+        "msl_pressure": 8738
+      }
+    }
+  },
+  "440": {
+    "2016": {
+      "rows": 8782,
+      "finite_counts": {
+        "wind_speed": 8780,
+        "wind_direction": 8680,
+        "msl_pressure": 8773
+      }
+    },
+    "2017": {
+      "rows": 8760,
+      "finite_counts": {
+        "wind_speed": 8760,
+        "wind_direction": 8658,
+        "msl_pressure": 8758
+      }
+    },
+    "2018": {
+      "rows": 8760,
+      "finite_counts": {
+        "wind_speed": 8760,
+        "wind_direction": 8738,
+        "msl_pressure": 8748
+      }
+    },
+    "2019": {
+      "rows": 8759,
+      "finite_counts": {
+        "wind_speed": 8759,
+        "wind_direction": 8742,
+        "msl_pressure": 8755
+      }
+    },
+    "2020": {
+      "rows": 8784,
+      "finite_counts": {
+        "wind_speed": 8784,
+        "wind_direction": 8777,
+        "msl_pressure": 8784
+      }
+    },
+    "2021": {
+      "rows": 8759,
+      "finite_counts": {
+        "wind_speed": 8759,
+        "wind_direction": 8752,
+        "msl_pressure": 8757
+      }
+    }
+  },
+  "456": {
+    "2016": {
+      "rows": 8553,
+      "finite_counts": {
+        "wind_speed": 8553,
+        "wind_direction": 8251,
+        "msl_pressure": 0
+      }
+    },
+    "2017": {
+      "rows": 8760,
+      "finite_counts": {
+        "wind_speed": 8747,
+        "wind_direction": 8613,
+        "msl_pressure": 0
+      }
+    },
+    "2018": {
+      "rows": 7957,
+      "finite_counts": {
+        "wind_speed": 7954,
+        "wind_direction": 7894,
+        "msl_pressure": 0
+      }
+    },
+    "2019": {
+      "rows": 8759,
+      "finite_counts": {
+        "wind_speed": 8759,
+        "wind_direction": 8679,
+        "msl_pressure": 0
+      }
+    },
+    "2020": {
+      "rows": 8616,
+      "finite_counts": {
+        "wind_speed": 8164,
+        "wind_direction": 8078,
+        "msl_pressure": 0
+      }
+    },
+    "2021": {
+      "rows": 8760,
+      "finite_counts": {
+        "wind_speed": 8759,
+        "wind_direction": 8644,
+        "msl_pressure": 0
+      }
+    }
+  },
+  "461": {
+    "2016": {
+      "rows": 8409,
+      "finite_counts": {
+        "wind_speed": 8403,
+        "wind_direction": 8392,
+        "msl_pressure": 8404
+      }
+    },
+    "2017": {
+      "rows": 8427,
+      "finite_counts": {
+        "wind_speed": 8413,
+        "wind_direction": 8402,
+        "msl_pressure": 8413
+      }
+    },
+    "2018": {
+      "rows": 8678,
+      "finite_counts": {
+        "wind_speed": 8676,
+        "wind_direction": 8664,
+        "msl_pressure": 8605
+      }
+    },
+    "2019": {
+      "rows": 8459,
+      "finite_counts": {
+        "wind_speed": 8426,
+        "wind_direction": 8414,
+        "msl_pressure": 8455
+      }
+    },
+    "2020": {
+      "rows": 8784,
+      "finite_counts": {
+        "wind_speed": 8745,
+        "wind_direction": 8724,
+        "msl_pressure": 8777
+      }
+    },
+    "2021": {
+      "rows": 8752,
+      "finite_counts": {
+        "wind_speed": 8307,
+        "wind_direction": 8653,
+        "msl_pressure": 8727
+      }
+    }
+  },
+  "556": {
+    "2016": {
+      "rows": 8781,
+      "finite_counts": {
+        "wind_speed": 8757,
+        "wind_direction": 8737,
+        "msl_pressure": 8772
+      }
+    },
+    "2017": {
+      "rows": 8756,
+      "finite_counts": {
+        "wind_speed": 8503,
+        "wind_direction": 8473,
+        "msl_pressure": 8743
+      }
+    },
+    "2018": {
+      "rows": 8725,
+      "finite_counts": {
+        "wind_speed": 8698,
+        "wind_direction": 8665,
+        "msl_pressure": 8720
+      }
+    },
+    "2019": {
+      "rows": 8760,
+      "finite_counts": {
+        "wind_speed": 8755,
+        "wind_direction": 8694,
+        "msl_pressure": 8750
+      }
+    },
+    "2020": {
+      "rows": 8783,
+      "finite_counts": {
+        "wind_speed": 8774,
+        "wind_direction": 8724,
+        "msl_pressure": 8770
+      }
+    },
+    "2021": {
+      "rows": 8760,
+      "finite_counts": {
+        "wind_speed": 8726,
+        "wind_direction": 8664,
+        "msl_pressure": 8757
+      }
+    }
+  },
+  "583": {
+    "2016": {
+      "rows": 8782,
+      "finite_counts": {
+        "wind_speed": 8780,
+        "wind_direction": 8722,
+        "msl_pressure": 8758
+      }
+    },
+    "2017": {
+      "rows": 8524,
+      "finite_counts": {
+        "wind_speed": 8524,
+        "wind_direction": 8515,
+        "msl_pressure": 8514
+      }
+    },
+    "2018": {
+      "rows": 8597,
+      "finite_counts": {
+        "wind_speed": 8596,
+        "wind_direction": 8570,
+        "msl_pressure": 8589
+      }
+    },
+    "2019": {
+      "rows": 8749,
+      "finite_counts": {
+        "wind_speed": 8564,
+        "wind_direction": 8546,
+        "msl_pressure": 8748
+      }
+    },
+    "2020": {
+      "rows": 8588,
+      "finite_counts": {
+        "wind_speed": 8564,
+        "wind_direction": 8553,
+        "msl_pressure": 8588
+      }
+    },
+    "2021": {
+      "rows": 8485,
+      "finite_counts": {
+        "wind_speed": 8470,
+        "wind_direction": 8454,
+        "msl_pressure": 8485
+      }
+    }
+  },
+  "595": {
+    "2016": {
+      "rows": 8784,
+      "finite_counts": {
+        "wind_speed": 8783,
+        "wind_direction": 8699,
+        "msl_pressure": 8779
+      }
+    },
+    "2017": {
+      "rows": 8758,
+      "finite_counts": {
+        "wind_speed": 8708,
+        "wind_direction": 8636,
+        "msl_pressure": 8738
+      }
+    },
+    "2018": {
+      "rows": 8701,
+      "finite_counts": {
+        "wind_speed": 8694,
+        "wind_direction": 8481,
+        "msl_pressure": 8692
+      }
+    },
+    "2019": {
+      "rows": 8757,
+      "finite_counts": {
+        "wind_speed": 8707,
+        "wind_direction": 8540,
+        "msl_pressure": 8748
+      }
+    },
+    "2020": {
+      "rows": 8783,
+      "finite_counts": {
+        "wind_speed": 8767,
+        "wind_direction": 8686,
+        "msl_pressure": 8777
+      }
+    },
+    "2021": {
+      "rows": 8759,
+      "finite_counts": {
+        "wind_speed": 8732,
+        "wind_direction": 8579,
+        "msl_pressure": 8750
+      }
+    }
+  },
+  "605": {
+    "2016": {
+      "rows": 8781,
+      "finite_counts": {
+        "wind_speed": 8778,
+        "wind_direction": 8437,
+        "msl_pressure": 8779
+      }
+    },
+    "2017": {
+      "rows": 8760,
+      "finite_counts": {
+        "wind_speed": 8735,
+        "wind_direction": 8000,
+        "msl_pressure": 8751
+      }
+    },
+    "2018": {
+      "rows": 8760,
+      "finite_counts": {
+        "wind_speed": 8760,
+        "wind_direction": 8723,
+        "msl_pressure": 8754
+      }
+    },
+    "2019": {
+      "rows": 8760,
+      "finite_counts": {
+        "wind_speed": 8757,
+        "wind_direction": 8700,
+        "msl_pressure": 8738
+      }
+    },
+    "2020": {
+      "rows": 8784,
+      "finite_counts": {
+        "wind_speed": 8773,
+        "wind_direction": 8696,
+        "msl_pressure": 8782
+      }
+    },
+    "2021": {
+      "rows": 8754,
+      "finite_counts": {
+        "wind_speed": 8749,
+        "wind_direction": 8605,
+        "msl_pressure": 8748
+      }
+    }
+  },
+  "613": {
+    "2016": {
+      "rows": 8784,
+      "finite_counts": {
+        "wind_speed": 8784,
+        "wind_direction": 8651,
+        "msl_pressure": 8782
+      }
+    },
+    "2017": {
+      "rows": 8760,
+      "finite_counts": {
+        "wind_speed": 8757,
+        "wind_direction": 8626,
+        "msl_pressure": 8758
+      }
+    },
+    "2018": {
+      "rows": 8760,
+      "finite_counts": {
+        "wind_speed": 8760,
+        "wind_direction": 8607,
+        "msl_pressure": 8759
+      }
+    },
+    "2019": {
+      "rows": 8759,
+      "finite_counts": {
+        "wind_speed": 8746,
+        "wind_direction": 8408,
+        "msl_pressure": 8757
+      }
+    },
+    "2020": {
+      "rows": 8526,
+      "finite_counts": {
+        "wind_speed": 8498,
+        "wind_direction": 8360,
+        "msl_pressure": 8522
+      }
+    },
+    "2021": {
+      "rows": 8757,
+      "finite_counts": {
+        "wind_speed": 8757,
+        "wind_direction": 8588,
+        "msl_pressure": 8754
+      }
+    }
+  },
+  "643": {
+    "2016": {
+      "rows": 8784,
+      "finite_counts": {
+        "wind_speed": 8778,
+        "wind_direction": 8672,
+        "msl_pressure": 8784
+      }
+    },
+    "2017": {
+      "rows": 8760,
+      "finite_counts": {
+        "wind_speed": 8695,
+        "wind_direction": 8646,
+        "msl_pressure": 8756
+      }
+    },
+    "2018": {
+      "rows": 8760,
+      "finite_counts": {
+        "wind_speed": 8760,
+        "wind_direction": 8702,
+        "msl_pressure": 8757
+      }
+    },
+    "2019": {
+      "rows": 8760,
+      "finite_counts": {
+        "wind_speed": 8760,
+        "wind_direction": 8695,
+        "msl_pressure": 8758
+      }
+    },
+    "2020": {
+      "rows": 8784,
+      "finite_counts": {
+        "wind_speed": 8783,
+        "wind_direction": 8713,
+        "msl_pressure": 8783
+      }
+    },
+    "2021": {
+      "rows": 8756,
+      "finite_counts": {
+        "wind_speed": 8755,
+        "wind_direction": 8676,
+        "msl_pressure": 8740
+      }
+    }
+  },
+  "657": {
+    "2016": {
+      "rows": 8784,
+      "finite_counts": {
+        "wind_speed": 8782,
+        "wind_direction": 8613,
+        "msl_pressure": 8782
+      }
+    },
+    "2017": {
+      "rows": 8760,
+      "finite_counts": {
+        "wind_speed": 8702,
+        "wind_direction": 8607,
+        "msl_pressure": 8747
+      }
+    },
+    "2018": {
+      "rows": 8759,
+      "finite_counts": {
+        "wind_speed": 8756,
+        "wind_direction": 8669,
+        "msl_pressure": 8751
+      }
+    },
+    "2019": {
+      "rows": 8755,
+      "finite_counts": {
+        "wind_speed": 8755,
+        "wind_direction": 8619,
+        "msl_pressure": 8732
+      }
+    },
+    "2020": {
+      "rows": 8782,
+      "finite_counts": {
+        "wind_speed": 8782,
+        "wind_direction": 8652,
+        "msl_pressure": 8778
+      }
+    },
+    "2021": {
+      "rows": 8760,
+      "finite_counts": {
+        "wind_speed": 8757,
+        "wind_direction": 8591,
+        "msl_pressure": 8743
+      }
+    }
+  },
+  "669": {
+    "2016": {
+      "rows": 8784,
+      "finite_counts": {
+        "wind_speed": 8784,
+        "wind_direction": 8483,
+        "msl_pressure": 8776
+      }
+    },
+    "2017": {
+      "rows": 8760,
+      "finite_counts": {
+        "wind_speed": 8758,
+        "wind_direction": 8527,
+        "msl_pressure": 8745
+      }
+    },
+    "2018": {
+      "rows": 8760,
+      "finite_counts": {
+        "wind_speed": 8759,
+        "wind_direction": 8453,
+        "msl_pressure": 8754
+      }
+    },
+    "2019": {
+      "rows": 8756,
+      "finite_counts": {
+        "wind_speed": 8744,
+        "wind_direction": 8527,
+        "msl_pressure": 8750
+      }
+    },
+    "2020": {
+      "rows": 8766,
+      "finite_counts": {
+        "wind_speed": 8758,
+        "wind_direction": 8519,
+        "msl_pressure": 8761
+      }
+    },
+    "2021": {
+      "rows": 8759,
+      "finite_counts": {
+        "wind_speed": 8759,
+        "wind_direction": 8399,
+        "msl_pressure": 8758
+      }
+    }
+  },
+  "692": {
+    "2016": {
+      "rows": 8516,
+      "finite_counts": {
+        "wind_speed": 8508,
+        "wind_direction": 8502,
+        "msl_pressure": 8504
+      }
+    },
+    "2017": {
+      "rows": 8760,
+      "finite_counts": {
+        "wind_speed": 8749,
+        "wind_direction": 8742,
+        "msl_pressure": 8743
+      }
+    },
+    "2018": {
+      "rows": 8759,
+      "finite_counts": {
+        "wind_speed": 8750,
+        "wind_direction": 8743,
+        "msl_pressure": 8728
+      }
+    },
+    "2019": {
+      "rows": 8541,
+      "finite_counts": {
+        "wind_speed": 8470,
+        "wind_direction": 8463,
+        "msl_pressure": 8524
+      }
+    },
+    "2020": {
+      "rows": 8782,
+      "finite_counts": {
+        "wind_speed": 8779,
+        "wind_direction": 8747,
+        "msl_pressure": 8780
+      }
+    },
+    "2021": {
+      "rows": 8759,
+      "finite_counts": {
+        "wind_speed": 8745,
+        "wind_direction": 8663,
+        "msl_pressure": 8747
+      }
+    }
+  },
+  "708": {
+    "2016": {
+      "rows": 8784,
+      "finite_counts": {
+        "wind_speed": 8775,
+        "wind_direction": 8758,
+        "msl_pressure": 8781
+      }
+    },
+    "2017": {
+      "rows": 8759,
+      "finite_counts": {
+        "wind_speed": 8754,
+        "wind_direction": 8745,
+        "msl_pressure": 8758
+      }
+    },
+    "2018": {
+      "rows": 8749,
+      "finite_counts": {
+        "wind_speed": 8742,
+        "wind_direction": 8737,
+        "msl_pressure": 8735
+      }
+    },
+    "2019": {
+      "rows": 8757,
+      "finite_counts": {
+        "wind_speed": 8559,
+        "wind_direction": 8514,
+        "msl_pressure": 8734
+      }
+    },
+    "2020": {
+      "rows": 8776,
+      "finite_counts": {
+        "wind_speed": 8360,
+        "wind_direction": 8328,
+        "msl_pressure": 8773
+      }
+    },
+    "2021": {
+      "rows": 8760,
+      "finite_counts": {
+        "wind_speed": 8223,
+        "wind_direction": 8150,
+        "msl_pressure": 8758
+      }
+    }
+  },
+  "709": {
+    "2016": {
+      "rows": 8781,
+      "finite_counts": {
+        "wind_speed": 8779,
+        "wind_direction": 8639,
+        "msl_pressure": 8780
+      }
+    },
+    "2017": {
+      "rows": 8760,
+      "finite_counts": {
+        "wind_speed": 8732,
+        "wind_direction": 8644,
+        "msl_pressure": 8755
+      }
+    },
+    "2018": {
+      "rows": 8757,
+      "finite_counts": {
+        "wind_speed": 8701,
+        "wind_direction": 8607,
+        "msl_pressure": 8753
+      }
+    },
+    "2019": {
+      "rows": 8760,
+      "finite_counts": {
+        "wind_speed": 8733,
+        "wind_direction": 8628,
+        "msl_pressure": 8759
+      }
+    },
+    "2020": {
+      "rows": 8784,
+      "finite_counts": {
+        "wind_speed": 8774,
+        "wind_direction": 8699,
+        "msl_pressure": 8784
+      }
+    },
+    "2021": {
+      "rows": 8750,
+      "finite_counts": {
+        "wind_speed": 8731,
+        "wind_direction": 8635,
+        "msl_pressure": 8748
+      }
+    }
+  },
+  "719": {
+    "2016": {
+      "rows": 8767,
+      "finite_counts": {
+        "wind_speed": 8742,
+        "wind_direction": 8589,
+        "msl_pressure": 0
+      }
+    },
+    "2017": {
+      "rows": 8760,
+      "finite_counts": {
+        "wind_speed": 8760,
+        "wind_direction": 8668,
+        "msl_pressure": 0
+      }
+    },
+    "2018": {
+      "rows": 8627,
+      "finite_counts": {
+        "wind_speed": 8625,
+        "wind_direction": 8537,
+        "msl_pressure": 0
+      }
+    },
+    "2019": {
+      "rows": 8758,
+      "finite_counts": {
+        "wind_speed": 8757,
+        "wind_direction": 8631,
+        "msl_pressure": 0
+      }
+    },
+    "2020": {
+      "rows": 8780,
+      "finite_counts": {
+        "wind_speed": 8780,
+        "wind_direction": 8650,
+        "msl_pressure": 0
+      }
+    },
+    "2021": {
+      "rows": 8740,
+      "finite_counts": {
+        "wind_speed": 8602,
+        "wind_direction": 8332,
+        "msl_pressure": 0
+      }
+    }
+  },
+  "723": {
+    "2016": {
+      "rows": 8771,
+      "finite_counts": {
+        "wind_speed": 8432,
+        "wind_direction": 8185,
+        "msl_pressure": 0
+      }
+    },
+    "2017": {
+      "rows": 8738,
+      "finite_counts": {
+        "wind_speed": 8601,
+        "wind_direction": 8440,
+        "msl_pressure": 0
+      }
+    },
+    "2018": {
+      "rows": 8723,
+      "finite_counts": {
+        "wind_speed": 8456,
+        "wind_direction": 8267,
+        "msl_pressure": 0
+      }
+    },
+    "2019": {
+      "rows": 8656,
+      "finite_counts": {
+        "wind_speed": 8602,
+        "wind_direction": 8389,
+        "msl_pressure": 0
+      }
+    },
+    "2020": {
+      "rows": 8766,
+      "finite_counts": {
+        "wind_speed": 7855,
+        "wind_direction": 7692,
+        "msl_pressure": 0
+      }
+    },
+    "2021": {
+      "rows": 8562,
+      "finite_counts": {
+        "wind_speed": 8398,
+        "wind_direction": 8176,
+        "msl_pressure": 0
+      }
+    }
+  },
+  "726": {
+    "2016": {
+      "rows": 8784,
+      "finite_counts": {
+        "wind_speed": 8778,
+        "wind_direction": 8738,
+        "msl_pressure": 8685
+      }
+    },
+    "2017": {
+      "rows": 8758,
+      "finite_counts": {
+        "wind_speed": 8723,
+        "wind_direction": 8704,
+        "msl_pressure": 8756
+      }
+    },
+    "2018": {
+      "rows": 8760,
+      "finite_counts": {
+        "wind_speed": 8756,
+        "wind_direction": 8725,
+        "msl_pressure": 8756
+      }
+    },
+    "2019": {
+      "rows": 8609,
+      "finite_counts": {
+        "wind_speed": 8598,
+        "wind_direction": 8551,
+        "msl_pressure": 8557
+      }
+    },
+    "2020": {
+      "rows": 8784,
+      "finite_counts": {
+        "wind_speed": 8777,
+        "wind_direction": 8731,
+        "msl_pressure": 8771
+      }
+    },
+    "2021": {
+      "rows": 8759,
+      "finite_counts": {
+        "wind_speed": 8757,
+        "wind_direction": 8718,
+        "msl_pressure": 8756
+      }
+    }
+  },
+  "847": {
+    "2016": {
+      "rows": 8784,
+      "finite_counts": {
+        "wind_speed": 8783,
+        "wind_direction": 8707,
+        "msl_pressure": 8783
+      }
+    },
+    "2017": {
+      "rows": 8760,
+      "finite_counts": {
+        "wind_speed": 8757,
+        "wind_direction": 8675,
+        "msl_pressure": 8759
+      }
+    },
+    "2018": {
+      "rows": 8759,
+      "finite_counts": {
+        "wind_speed": 8759,
+        "wind_direction": 8715,
+        "msl_pressure": 8759
+      }
+    },
+    "2019": {
+      "rows": 8760,
+      "finite_counts": {
+        "wind_speed": 8617,
+        "wind_direction": 8559,
+        "msl_pressure": 8760
+      }
+    },
+    "2020": {
+      "rows": 8783,
+      "finite_counts": {
+        "wind_speed": 8783,
+        "wind_direction": 8732,
+        "msl_pressure": 8783
+      }
+    },
+    "2021": {
+      "rows": 8758,
+      "finite_counts": {
+        "wind_speed": 8757,
+        "wind_direction": 8710,
+        "msl_pressure": 8754
+      }
+    }
+  },
+  "862": {
+    "2016": {
+      "rows": 8784,
+      "finite_counts": {
+        "wind_speed": 8783,
+        "wind_direction": 8768,
+        "msl_pressure": 8783
+      }
+    },
+    "2017": {
+      "rows": 8760,
+      "finite_counts": {
+        "wind_speed": 8759,
+        "wind_direction": 8750,
+        "msl_pressure": 8753
+      }
+    },
+    "2018": {
+      "rows": 8760,
+      "finite_counts": {
+        "wind_speed": 8760,
+        "wind_direction": 8748,
+        "msl_pressure": 8758
+      }
+    },
+    "2019": {
+      "rows": 8760,
+      "finite_counts": {
+        "wind_speed": 8760,
+        "wind_direction": 8744,
+        "msl_pressure": 8753
+      }
+    },
+    "2020": {
+      "rows": 8783,
+      "finite_counts": {
+        "wind_speed": 8783,
+        "wind_direction": 8763,
+        "msl_pressure": 8782
+      }
+    },
+    "2021": {
+      "rows": 8753,
+      "finite_counts": {
+        "wind_speed": 8752,
+        "wind_direction": 8732,
+        "msl_pressure": 8752
+      }
+    }
+  },
+  "888": {
+    "2016": {
+      "rows": 8783,
+      "finite_counts": {
+        "wind_speed": 8774,
+        "wind_direction": 8723,
+        "msl_pressure": 8780
+      }
+    },
+    "2017": {
+      "rows": 8755,
+      "finite_counts": {
+        "wind_speed": 8749,
+        "wind_direction": 8702,
+        "msl_pressure": 8751
+      }
+    },
+    "2018": {
+      "rows": 8760,
+      "finite_counts": {
+        "wind_speed": 8759,
+        "wind_direction": 8678,
+        "msl_pressure": 8757
+      }
+    },
+    "2019": {
+      "rows": 8759,
+      "finite_counts": {
+        "wind_speed": 8758,
+        "wind_direction": 8676,
+        "msl_pressure": 8756
+      }
+    },
+    "2020": {
+      "rows": 8784,
+      "finite_counts": {
+        "wind_speed": 8784,
+        "wind_direction": 8602,
+        "msl_pressure": 8782
+      }
+    },
+    "2021": {
+      "rows": 8746,
+      "finite_counts": {
+        "wind_speed": 8697,
+        "wind_direction": 8593,
+        "msl_pressure": 8739
+      }
+    }
+  },
+  "889": {
+    "2016": {
+      "rows": 8784,
+      "finite_counts": {
+        "wind_speed": 8732,
+        "wind_direction": 8725,
+        "msl_pressure": 8778
+      }
+    },
+    "2017": {
+      "rows": 8760,
+      "finite_counts": {
+        "wind_speed": 8749,
+        "wind_direction": 8717,
+        "msl_pressure": 8759
+      }
+    },
+    "2018": {
+      "rows": 8759,
+      "finite_counts": {
+        "wind_speed": 8665,
+        "wind_direction": 8652,
+        "msl_pressure": 8757
+      }
+    },
+    "2019": {
+      "rows": 8760,
+      "finite_counts": {
+        "wind_speed": 8732,
+        "wind_direction": 8703,
+        "msl_pressure": 8731
+      }
+    },
+    "2020": {
+      "rows": 8783,
+      "finite_counts": {
+        "wind_speed": 8650,
+        "wind_direction": 8610,
+        "msl_pressure": 8783
+      }
+    },
+    "2021": {
+      "rows": 8753,
+      "finite_counts": {
+        "wind_speed": 8595,
+        "wind_direction": 8560,
+        "msl_pressure": 8753
+      }
+    }
+  },
+  "16725": {
+    "2016": {
+      "rows": 8688,
+      "finite_counts": {
+        "wind_speed": 8684,
+        "wind_direction": 8667,
+        "msl_pressure": 8675
+      }
+    },
+    "2017": {
+      "rows": 8759,
+      "finite_counts": {
+        "wind_speed": 8753,
+        "wind_direction": 8739,
+        "msl_pressure": 8754
+      }
+    },
+    "2018": {
+      "rows": 8760,
+      "finite_counts": {
+        "wind_speed": 8749,
+        "wind_direction": 8742,
+        "msl_pressure": 8756
+      }
+    },
+    "2019": {
+      "rows": 8741,
+      "finite_counts": {
+        "wind_speed": 8718,
+        "wind_direction": 8706,
+        "msl_pressure": 8735
+      }
+    },
+    "2020": {
+      "rows": 8783,
+      "finite_counts": {
+        "wind_speed": 8762,
+        "wind_direction": 8754,
+        "msl_pressure": 8766
+      }
+    },
+    "2021": {
+      "rows": 8083,
+      "finite_counts": {
+        "wind_speed": 7928,
+        "wind_direction": 7877,
+        "msl_pressure": 8059
+      }
+    }
+  },
+  "19187": {
+    "2016": {
+      "rows": 8784,
+      "finite_counts": {
+        "wind_speed": 8777,
+        "wind_direction": 8694,
+        "msl_pressure": 8774
+      }
+    },
+    "2017": {
+      "rows": 8668,
+      "finite_counts": {
+        "wind_speed": 8636,
+        "wind_direction": 8559,
+        "msl_pressure": 8455
+      }
+    },
+    "2018": {
+      "rows": 8760,
+      "finite_counts": {
+        "wind_speed": 8747,
+        "wind_direction": 8694,
+        "msl_pressure": 8748
+      }
+    },
+    "2019": {
+      "rows": 8754,
+      "finite_counts": {
+        "wind_speed": 8740,
+        "wind_direction": 8631,
+        "msl_pressure": 8748
+      }
+    },
+    "2020": {
+      "rows": 8784,
+      "finite_counts": {
+        "wind_speed": 8778,
+        "wind_direction": 8678,
+        "msl_pressure": 8779
+      }
+    },
+    "2021": {
+      "rows": 8758,
+      "finite_counts": {
+        "wind_speed": 8741,
+        "wind_direction": 8591,
+        "msl_pressure": 8746
+      }
+    }
+  },
+  "19188": {
+    "2016": {
+      "rows": 8784,
+      "finite_counts": {
+        "wind_speed": 8783,
+        "wind_direction": 8753,
+        "msl_pressure": 8776
+      }
+    },
+    "2017": {
+      "rows": 8756,
+      "finite_counts": {
+        "wind_speed": 8751,
+        "wind_direction": 8738,
+        "msl_pressure": 8749
+      }
+    },
+    "2018": {
+      "rows": 8687,
+      "finite_counts": {
+        "wind_speed": 8682,
+        "wind_direction": 8663,
+        "msl_pressure": 8683
+      }
+    },
+    "2019": {
+      "rows": 8752,
+      "finite_counts": {
+        "wind_speed": 8749,
+        "wind_direction": 8717,
+        "msl_pressure": 8628
+      }
+    },
+    "2020": {
+      "rows": 8784,
+      "finite_counts": {
+        "wind_speed": 8781,
+        "wind_direction": 8749,
+        "msl_pressure": 8781
+      }
+    },
+    "2021": {
+      "rows": 8759,
+      "finite_counts": {
+        "wind_speed": 8736,
+        "wind_direction": 8684,
+        "msl_pressure": 8756
+      }
+    }
+  },
+  "24102": {
+    "2016": {
+      "rows": 8784,
+      "finite_counts": {
+        "wind_speed": 8784,
+        "wind_direction": 8729,
+        "msl_pressure": 0
+      }
+    },
+    "2017": {
+      "rows": 8754,
+      "finite_counts": {
+        "wind_speed": 8754,
+        "wind_direction": 8649,
+        "msl_pressure": 0
+      }
+    },
+    "2018": {
+      "rows": 8758,
+      "finite_counts": {
+        "wind_speed": 8755,
+        "wind_direction": 8671,
+        "msl_pressure": 0
+      }
+    },
+    "2019": {
+      "rows": 8533,
+      "finite_counts": {
+        "wind_speed": 8529,
+        "wind_direction": 8496,
+        "msl_pressure": 0
+      }
+    },
+    "2020": {
+      "rows": 8783,
+      "finite_counts": {
+        "wind_speed": 8776,
+        "wind_direction": 8737,
+        "msl_pressure": 0
+      }
+    },
+    "2021": {
+      "rows": 8760,
+      "finite_counts": {
+        "wind_speed": 8759,
+        "wind_direction": 8724,
+        "msl_pressure": 0
+      }
+    }
+  },
+  "24996": {
+    "2016": {
+      "rows": 8784,
+      "finite_counts": {
+        "wind_speed": 8779,
+        "wind_direction": 8350,
+        "msl_pressure": 8780
+      }
+    },
+    "2017": {
+      "rows": 8758,
+      "finite_counts": {
+        "wind_speed": 8752,
+        "wind_direction": 8537,
+        "msl_pressure": 8754
+      }
+    },
+    "2018": {
+      "rows": 8760,
+      "finite_counts": {
+        "wind_speed": 8760,
+        "wind_direction": 8574,
+        "msl_pressure": 8663
+      }
+    },
+    "2019": {
+      "rows": 8757,
+      "finite_counts": {
+        "wind_speed": 8685,
+        "wind_direction": 8423,
+        "msl_pressure": 8752
+      }
+    },
+    "2020": {
+      "rows": 8784,
+      "finite_counts": {
+        "wind_speed": 8771,
+        "wind_direction": 8557,
+        "msl_pressure": 8772
+      }
+    },
+    "2021": {
+      "rows": 8759,
+      "finite_counts": {
+        "wind_speed": 8738,
+        "wind_direction": 8513,
+        "msl_pressure": 8740
+      }
+    }
+  },
+  "30620": {
+    "2016": {
+      "rows": 8759,
+      "finite_counts": {
+        "wind_speed": 8752,
+        "wind_direction": 8493,
+        "msl_pressure": 8748
+      }
+    },
+    "2017": {
+      "rows": 8715,
+      "finite_counts": {
+        "wind_speed": 8711,
+        "wind_direction": 8501,
+        "msl_pressure": 8713
+      }
+    },
+    "2018": {
+      "rows": 8754,
+      "finite_counts": {
+        "wind_speed": 8746,
+        "wind_direction": 8507,
+        "msl_pressure": 8747
+      }
+    },
+    "2019": {
+      "rows": 8746,
+      "finite_counts": {
+        "wind_speed": 8734,
+        "wind_direction": 8430,
+        "msl_pressure": 8688
+      }
+    },
+    "2020": {
+      "rows": 8430,
+      "finite_counts": {
+        "wind_speed": 8422,
+        "wind_direction": 8189,
+        "msl_pressure": 8423
+      }
+    },
+    "2021": {
+      "rows": 8757,
+      "finite_counts": {
+        "wind_speed": 8756,
+        "wind_direction": 8485,
+        "msl_pressure": 8753
+      }
+    }
+  },
+  "30690": {
+    "2016": {
+      "rows": 8784,
+      "finite_counts": {
+        "wind_speed": 8762,
+        "wind_direction": 8737,
+        "msl_pressure": 8755
+      }
+    },
+    "2017": {
+      "rows": 8757,
+      "finite_counts": {
+        "wind_speed": 8751,
+        "wind_direction": 8688,
+        "msl_pressure": 8750
+      }
+    },
+    "2018": {
+      "rows": 8759,
+      "finite_counts": {
+        "wind_speed": 8673,
+        "wind_direction": 8539,
+        "msl_pressure": 8753
+      }
+    },
+    "2019": {
+      "rows": 8729,
+      "finite_counts": {
+        "wind_speed": 8723,
+        "wind_direction": 8711,
+        "msl_pressure": 8727
+      }
+    },
+    "2020": {
+      "rows": 8784,
+      "finite_counts": {
+        "wind_speed": 8779,
+        "wind_direction": 8767,
+        "msl_pressure": 8772
+      }
+    },
+    "2021": {
+      "rows": 8759,
+      "finite_counts": {
+        "wind_speed": 8754,
+        "wind_direction": 8704,
+        "msl_pressure": 8754
+      }
+    }
+  },
+  "56958": {
+    "2016": {
+      "rows": 8784,
+      "finite_counts": {
+        "wind_speed": 8783,
+        "wind_direction": 8761,
+        "msl_pressure": 0
+      }
+    },
+    "2017": {
+      "rows": 8756,
+      "finite_counts": {
+        "wind_speed": 8747,
+        "wind_direction": 8742,
+        "msl_pressure": 0
+      }
+    },
+    "2018": {
+      "rows": 8760,
+      "finite_counts": {
+        "wind_speed": 8752,
+        "wind_direction": 8749,
+        "msl_pressure": 0
+      }
+    },
+    "2019": {
+      "rows": 8758,
+      "finite_counts": {
+        "wind_speed": 8724,
+        "wind_direction": 8720,
+        "msl_pressure": 0
+      }
+    },
+    "2020": {
+      "rows": 8783,
+      "finite_counts": {
+        "wind_speed": 8779,
+        "wind_direction": 8765,
+        "msl_pressure": 0
+      }
+    },
+    "2021": {
+      "rows": 8759,
+      "finite_counts": {
+        "wind_speed": 8153,
+        "wind_direction": 8619,
+        "msl_pressure": 0
+      }
+    }
+  },
+  "57199": {
+    "2016": {
+      "rows": 8459,
+      "finite_counts": {
+        "wind_speed": 8456,
+        "wind_direction": 8298,
+        "msl_pressure": 8450
+      }
+    },
+    "2017": {
+      "rows": 8760,
+      "finite_counts": {
+        "wind_speed": 8756,
+        "wind_direction": 8707,
+        "msl_pressure": 8754
+      }
+    },
+    "2018": {
+      "rows": 8760,
+      "finite_counts": {
+        "wind_speed": 8754,
+        "wind_direction": 8687,
+        "msl_pressure": 8742
+      }
+    },
+    "2019": {
+      "rows": 8760,
+      "finite_counts": {
+        "wind_speed": 8710,
+        "wind_direction": 8637,
+        "msl_pressure": 8726
+      }
+    },
+    "2020": {
+      "rows": 8778,
+      "finite_counts": {
+        "wind_speed": 8752,
+        "wind_direction": 8650,
+        "msl_pressure": 8771
+      }
+    },
+    "2021": {
+      "rows": 8760,
+      "finite_counts": {
+        "wind_speed": 8742,
+        "wind_direction": 8611,
+        "msl_pressure": 8758
+      }
+    }
+  },
+  "150": {
+    "2016": {
+      "rows": 8454,
+      "finite_counts": {
+        "wind_speed": 8349,
+        "wind_direction": 8209,
+        "msl_pressure": 8448
+      }
+    },
+    "2017": {
+      "rows": 8758,
+      "finite_counts": {
+        "wind_speed": 8750,
+        "wind_direction": 8662,
+        "msl_pressure": 8746
+      }
+    },
+    "2018": {
+      "rows": 8759,
+      "finite_counts": {
+        "wind_speed": 8752,
+        "wind_direction": 8696,
+        "msl_pressure": 8753
+      }
+    },
+    "2019": {
+      "rows": 8758,
+      "finite_counts": {
+        "wind_speed": 8754,
+        "wind_direction": 8689,
+        "msl_pressure": 8749
+      }
+    },
+    "2020": {
+      "rows": 8784,
+      "finite_counts": {
+        "wind_speed": 8782,
+        "wind_direction": 8696,
+        "msl_pressure": 8776
+      }
+    },
+    "2021": {
+      "rows": 8708,
+      "finite_counts": {
+        "wind_speed": 8704,
+        "wind_direction": 8587,
+        "msl_pressure": 8699
+      }
+    }
+  },
+  "161": {
+    "2016": {
+      "rows": 8782,
+      "finite_counts": {
+        "wind_speed": 7924,
+        "wind_direction": 7845,
+        "msl_pressure": 8774
+      }
+    },
+    "2017": {
+      "rows": 8658,
+      "finite_counts": {
+        "wind_speed": 8155,
+        "wind_direction": 8128,
+        "msl_pressure": 8649
+      }
+    },
+    "2018": {
+      "rows": 8435,
+      "finite_counts": {
+        "wind_speed": 8015,
+        "wind_direction": 7979,
+        "msl_pressure": 8428
+      }
+    },
+    "2019": {
+      "rows": 8737,
+      "finite_counts": {
+        "wind_speed": 8330,
+        "wind_direction": 8282,
+        "msl_pressure": 8721
+      }
+    },
+    "2020": {
+      "rows": 8783,
+      "finite_counts": {
+        "wind_speed": 8214,
+        "wind_direction": 8145,
+        "msl_pressure": 8776
+      }
+    },
+    "2021": {
+      "rows": 8716,
+      "finite_counts": {
+        "wind_speed": 7674,
+        "wind_direction": 7616,
+        "msl_pressure": 8707
+      }
+    }
+  },
+  "177": {
+    "2016": {
+      "rows": 8784,
+      "finite_counts": {
+        "wind_speed": 8781,
+        "wind_direction": 8775,
+        "msl_pressure": 8773
+      }
+    },
+    "2017": {
+      "rows": 8759,
+      "finite_counts": {
+        "wind_speed": 8757,
+        "wind_direction": 8749,
+        "msl_pressure": 8727
+      }
+    },
+    "2018": {
+      "rows": 8760,
+      "finite_counts": {
+        "wind_speed": 8608,
+        "wind_direction": 8542,
+        "msl_pressure": 8756
+      }
+    },
+    "2019": {
+      "rows": 8757,
+      "finite_counts": {
+        "wind_speed": 8755,
+        "wind_direction": 8753,
+        "msl_pressure": 8751
+      }
+    },
+    "2020": {
+      "rows": 8784,
+      "finite_counts": {
+        "wind_speed": 8783,
+        "wind_direction": 8783,
+        "msl_pressure": 8775
+      }
+    },
+    "2021": {
+      "rows": 8608,
+      "finite_counts": {
+        "wind_speed": 8599,
+        "wind_direction": 8585,
+        "msl_pressure": 8594
+      }
+    }
+  },
+  "235": {
+    "2016": {
+      "rows": 8784,
+      "finite_counts": {
+        "wind_speed": 8780,
+        "wind_direction": 8749,
+        "msl_pressure": 8777
+      }
+    },
+    "2017": {
+      "rows": 8760,
+      "finite_counts": {
+        "wind_speed": 8760,
+        "wind_direction": 8728,
+        "msl_pressure": 8757
+      }
+    },
+    "2018": {
+      "rows": 8759,
+      "finite_counts": {
+        "wind_speed": 8759,
+        "wind_direction": 8729,
+        "msl_pressure": 8708
+      }
+    },
+    "2019": {
+      "rows": 8758,
+      "finite_counts": {
+        "wind_speed": 8757,
+        "wind_direction": 8732,
+        "msl_pressure": 8754
+      }
+    },
+    "2020": {
+      "rows": 8784,
+      "finite_counts": {
+        "wind_speed": 8784,
+        "wind_direction": 8766,
+        "msl_pressure": 8783
+      }
+    },
+    "2021": {
+      "rows": 8755,
+      "finite_counts": {
+        "wind_speed": 8753,
+        "wind_direction": 8737,
+        "msl_pressure": 8747
+      }
+    }
+  },
+  "982": {
+    "2016": {
+      "rows": 8783,
+      "finite_counts": {
+        "wind_speed": 8783,
+        "wind_direction": 8755,
+        "msl_pressure": 0
+      }
+    },
+    "2017": {
+      "rows": 8743,
+      "finite_counts": {
+        "wind_speed": 8742,
+        "wind_direction": 8709,
+        "msl_pressure": 0
+      }
+    },
+    "2018": {
+      "rows": 8760,
+      "finite_counts": {
+        "wind_speed": 8756,
+        "wind_direction": 8748,
+        "msl_pressure": 0
+      }
+    },
+    "2019": {
+      "rows": 8755,
+      "finite_counts": {
+        "wind_speed": 8402,
+        "wind_direction": 8398,
+        "msl_pressure": 0
+      }
+    },
+    "2020": {
+      "rows": 8784,
+      "finite_counts": {
+        "wind_speed": 8773,
+        "wind_direction": 8764,
+        "msl_pressure": 0
+      }
+    },
+    "2021": {
+      "rows": 8758,
+      "finite_counts": {
+        "wind_speed": 8705,
+        "wind_direction": 8660,
+        "msl_pressure": 0
+      }
+    }
+  },
+  "987": {
+    "2016": {
+      "rows": 8782,
+      "finite_counts": {
+        "wind_speed": 8738,
+        "wind_direction": 8665,
+        "msl_pressure": 8778
+      }
+    },
+    "2017": {
+      "rows": 8724,
+      "finite_counts": {
+        "wind_speed": 8715,
+        "wind_direction": 8697,
+        "msl_pressure": 8720
+      }
+    },
+    "2018": {
+      "rows": 8760,
+      "finite_counts": {
+        "wind_speed": 8758,
+        "wind_direction": 8688,
+        "msl_pressure": 8754
+      }
+    },
+    "2019": {
+      "rows": 8754,
+      "finite_counts": {
+        "wind_speed": 8748,
+        "wind_direction": 8706,
+        "msl_pressure": 8676
+      }
+    },
+    "2020": {
+      "rows": 8784,
+      "finite_counts": {
+        "wind_speed": 8783,
+        "wind_direction": 8739,
+        "msl_pressure": 8779
+      }
+    },
+    "2021": {
+      "rows": 8760,
+      "finite_counts": {
+        "wind_speed": 8754,
+        "wind_direction": 8591,
+        "msl_pressure": 8751
+      }
+    }
+  },
+  "1023": {
+    "2016": {
+      "rows": 8710,
+      "finite_counts": {
+        "wind_speed": 8634,
+        "wind_direction": 8462,
+        "msl_pressure": 8706
+      }
+    },
+    "2017": {
+      "rows": 8664,
+      "finite_counts": {
+        "wind_speed": 8659,
+        "wind_direction": 8292,
+        "msl_pressure": 8661
+      }
+    },
+    "2018": {
+      "rows": 8759,
+      "finite_counts": {
+        "wind_speed": 8672,
+        "wind_direction": 8393,
+        "msl_pressure": 8755
+      }
+    },
+    "2019": {
+      "rows": 8760,
+      "finite_counts": {
+        "wind_speed": 8743,
+        "wind_direction": 8628,
+        "msl_pressure": 8758
+      }
+    },
+    "2020": {
+      "rows": 8543,
+      "finite_counts": {
+        "wind_speed": 8538,
+        "wind_direction": 8471,
+        "msl_pressure": 8539
+      }
+    },
+    "2021": {
+      "rows": 8740,
+      "finite_counts": {
+        "wind_speed": 8722,
+        "wind_direction": 8507,
+        "msl_pressure": 8736
+      }
+    }
+  },
+  "1074": {
+    "2016": {
+      "rows": 8534,
+      "finite_counts": {
+        "wind_speed": 8519,
+        "wind_direction": 8463,
+        "msl_pressure": 8518
+      }
+    },
+    "2017": {
+      "rows": 8731,
+      "finite_counts": {
+        "wind_speed": 8727,
+        "wind_direction": 8683,
+        "msl_pressure": 8716
+      }
+    },
+    "2018": {
+      "rows": 8747,
+      "finite_counts": {
+        "wind_speed": 8746,
+        "wind_direction": 8710,
+        "msl_pressure": 8735
+      }
+    },
+    "2019": {
+      "rows": 8755,
+      "finite_counts": {
+        "wind_speed": 8659,
+        "wind_direction": 8609,
+        "msl_pressure": 8626
+      }
+    },
+    "2020": {
+      "rows": 8783,
+      "finite_counts": {
+        "wind_speed": 8779,
+        "wind_direction": 8619,
+        "msl_pressure": 8778
+      }
+    },
+    "2021": {
+      "rows": 8759,
+      "finite_counts": {
+        "wind_speed": 8757,
+        "wind_direction": 8656,
+        "msl_pressure": 8755
+      }
+    }
+  },
+  "16589": {
+    "2016": {
+      "rows": 8784,
+      "finite_counts": {
+        "wind_speed": 8729,
+        "wind_direction": 8399,
+        "msl_pressure": 8778
+      }
+    },
+    "2017": {
+      "rows": 8759,
+      "finite_counts": {
+        "wind_speed": 8757,
+        "wind_direction": 8522,
+        "msl_pressure": 8753
+      }
+    },
+    "2018": {
+      "rows": 8760,
+      "finite_counts": {
+        "wind_speed": 8719,
+        "wind_direction": 8607,
+        "msl_pressure": 8743
+      }
+    },
+    "2019": {
+      "rows": 8759,
+      "finite_counts": {
+        "wind_speed": 8752,
+        "wind_direction": 8658,
+        "msl_pressure": 8755
+      }
+    },
+    "2020": {
+      "rows": 8780,
+      "finite_counts": {
+        "wind_speed": 8776,
+        "wind_direction": 8671,
+        "msl_pressure": 8772
+      }
+    },
+    "2021": {
+      "rows": 8759,
+      "finite_counts": {
+        "wind_speed": 8690,
+        "wind_direction": 8506,
+        "msl_pressure": 8751
+      }
+    }
+  },
+  "24125": {
+    "2016": {
+      "rows": 8582,
+      "finite_counts": {
+        "wind_speed": 8577,
+        "wind_direction": 8494,
+        "msl_pressure": 8560
+      }
+    },
+    "2017": {
+      "rows": 8756,
+      "finite_counts": {
+        "wind_speed": 8750,
+        "wind_direction": 8673,
+        "msl_pressure": 8752
+      }
+    },
+    "2018": {
+      "rows": 8759,
+      "finite_counts": {
+        "wind_speed": 8708,
+        "wind_direction": 8678,
+        "msl_pressure": 8754
+      }
+    },
+    "2019": {
+      "rows": 8760,
+      "finite_counts": {
+        "wind_speed": 8758,
+        "wind_direction": 8722,
+        "msl_pressure": 8755
+      }
+    },
+    "2020": {
+      "rows": 8784,
+      "finite_counts": {
+        "wind_speed": 8782,
+        "wind_direction": 8738,
+        "msl_pressure": 8779
+      }
+    },
+    "2021": {
+      "rows": 8757,
+      "finite_counts": {
+        "wind_speed": 8753,
+        "wind_direction": 8637,
+        "msl_pressure": 8753
+      }
+    }
+  },
+  "30523": {
+    "2016": {
+      "rows": 8780,
+      "finite_counts": {
+        "wind_speed": 8771,
+        "wind_direction": 8739,
+        "msl_pressure": 8744
+      }
+    },
+    "2017": {
+      "rows": 8758,
+      "finite_counts": {
+        "wind_speed": 8737,
+        "wind_direction": 8709,
+        "msl_pressure": 8749
+      }
+    },
+    "2018": {
+      "rows": 8760,
+      "finite_counts": {
+        "wind_speed": 8757,
+        "wind_direction": 8713,
+        "msl_pressure": 8752
+      }
+    },
+    "2019": {
+      "rows": 8760,
+      "finite_counts": {
+        "wind_speed": 8760,
+        "wind_direction": 8702,
+        "msl_pressure": 8756
+      }
+    },
+    "2020": {
+      "rows": 8783,
+      "finite_counts": {
+        "wind_speed": 8780,
+        "wind_direction": 8728,
+        "msl_pressure": 8774
+      }
+    },
+    "2021": {
+      "rows": 8760,
+      "finite_counts": {
+        "wind_speed": 8726,
+        "wind_direction": 8525,
+        "msl_pressure": 8753
+      }
+    }
+  }
+}

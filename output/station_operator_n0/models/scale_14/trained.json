@@ -1,0 +1,77 @@
+{
+  "kind": "O",
+  "train_stations": [
+    386,
+    393,
+    395,
+    405,
+    440,
+    456,
+    461,
+    556,
+    595,
+    605,
+    613,
+    643,
+    669,
+    692
+  ],
+  "parameters": 3145,
+  "best_epoch": 7,
+  "history": [
+    {
+      "epoch": 1,
+      "validation_mse": 5.01153567058938
+    },
+    {
+      "epoch": 2,
+      "validation_mse": 4.975011226443772
+    },
+    {
+      "epoch": 3,
+      "validation_mse": 4.035000384297284
+    },
+    {
+      "epoch": 4,
+      "validation_mse": 4.7395126890745845
+    },
+    {
+      "epoch": 5,
+      "validation_mse": 5.127385849815595
+    },
+    {
+      "epoch": 6,
+      "validation_mse": 4.673581136020937
+    },
+    {
+      "epoch": 7,
+      "validation_mse": 3.8342524339816872
+    },
+    {
+      "epoch": 8,
+      "validation_mse": 4.06146015533115
+    },
+    {
+      "epoch": 9,
+      "validation_mse": 4.333567120695774
+    },
+    {
+      "epoch": 10,
+      "validation_mse": 3.865686089176758
+    },
+    {
+      "epoch": 11,
+      "validation_mse": 4.057115577516474
+    }
+  ],
+  "elapsed": 13.746967091981787,
+  "checkpoint_sha256": "0fe2e260be90254e5618eb8c92834ba54151fa5c2fbb0d720d17abe253d173cf",
+  "fit_years": [
+    2016,
+    2017,
+    2018,
+    2019
+  ],
+  "selection_year": 2020,
+  "seed": 2024
+}
