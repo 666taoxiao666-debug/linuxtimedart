@@ -3,29 +3,27 @@
 规则见 AGENTS.md：两节各由一方整节覆盖、不追加，每节不超过 40 行；历史用 `git log -p HANDOFF.md` 查。
 
 ## Claude → Codex
-<!-- 由 Claude 覆盖。最后更新：2026-11-06 第 38 次（E1 R2 + 用户裁决的因果切分 + 下载全部交给 Cursor） -->
-轮次: R2/2 | 阶段: E1 | 分支: exp/E1 | 基线提交: 7351780
-请求: 审方案（只看 R1 的改动）+ 没有阻断就实现并运行（C 线优先）
+<!-- 由 Claude 覆盖。最后更新：2026-11-06 第 39 次（E1：按用户裁决的因果切分直接实现并运行 C0 和 A 线） -->
+轮次: R2/2 | 阶段: E1 | 分支: exp/E1 | 基线提交: dd06aa7
+请求: 审代码后运行（方案已由用户裁决定稿，不再审方案；C 线优先，A 线并行）
 待审范围: git diff HEAD -- docs/STAGE_PLAN.md docs/review/DECISIONS.md
-允许改动: models/iTransformer.py, models/TimeXer.py, configs/e1_baselines_protocol.json, scripts/train_e1_baselines.py, tests/test_train_e1_baselines.py, scripts/audit_hill_of_towie_e1.py, tests/test_audit_hill_of_towie_e1.py, scripts/pilot_conformal_c0.py, tests/test_pilot_conformal_c0.py, output/e1_baselines/**, output/hill_of_towie_e1/**, output/conformal_c0/**, scripts/acquire_hill_of_towie.py, output/external_acquisition/hill_of_towie/**
-审查文件: docs/review/E1-R2-codex.md
-本轮决议: 采纳 6 / 反驳 0 / 暂缓 0 / 转实验 0（R1-B1、R1-B2、R1-S1 至 S4，见 DECISIONS.md 的 E1 一节）
+允许改动: models/iTransformer.py, models/TimeXer.py, configs/e1_baselines_protocol.json, scripts/train_e1_baselines.py, tests/test_train_e1_baselines.py, scripts/pilot_conformal_c0.py, tests/test_pilot_conformal_c0.py, output/e1_baselines/**, output/conformal_c0/**, output/hill_of_towie_e1/**, scripts/acquire_hill_of_towie.py, output/external_acquisition/hill_of_towie/**
+审查文件: docs/review/E1-R2-codex.md（续写实现与运行记录）
+本轮决议: R2-B1 已登记为用户裁决（严格因果切分），见 DECISIONS.md 的 E1 一节；你上一轮的实现和状态我已复核，没有问题
 
 需要你做的:
-1. **复审**：只看 STAGE_PLAN 中改动的地方——
-   - A 线的"基线"和"超参数"两条，以及配置表；
-   - C 线的"场景"、"校准数据"、"实现细节"和判定的"汇总"条，以及最后一条；
-   - 目标 0 的措辞。
-2. **C 线先做**：按用户 2026-11-06 裁决的严格因果切分（见 STAGE_PLAN 和 DECISIONS 的 E1 R2 用户裁决）。用冻结的 K-upstream checkpoint（P2 主折，3 个 seed）只推理补出 Kelmarsh 2021、Penmanshiel 2021-12 和 2022 的预测，评估年是 Penmanshiel 2022；然后按冻结的实现跑 C0，判定严格按方案。
-3. **A 线**：跑 DLinear、PatchTST（单变量）和 iTransformer、TimeXer（两种通道），d_model 只按 Kelmarsh 2023 验证集选。
-   - **B 线和所有下载、安装都改由 Cursor 执行**（用户 2026-11-06：下载类工作不占 GPT 额度）。包括 Hill of Towie 主体、当地 MIDAS（需要先由用户更新 CEDA 令牌），以及 Chronos-2 的独立环境和权重。你这边不要重试下载或安装。
-   - Cursor 完成后，你只做只读核验：哈希、清单、合格站门槛。没有 Chronos-2 环境就先跳过这个可选基线。
-4. **交回**：「关键数字」先写 C0——M 与 B0–B3 的覆盖率、平均宽度和区间分数，M+ 对 B2 的比较，以及判定是"继续"还是"停止"；再写 A 线的数字和 B 线的进度。
+1. **提交**：先提交本轮的 STAGE_PLAN.md 和 DECISIONS.md。新增了 R2-B1 的决议行，以及"因果断言"一条：校准窗口的最后一个标签必须 ≤ 2021-12-31 23:00，跨年的窗口剔除；每个预测都检查 max(校准标签时刻) ≤ 起报时刻。
+2. **C0（直接实现并运行，不用再交审）**：
+   - 用 P2 主折冻结的 K-upstream（3 个 seed）只做推理，补齐 Kelmarsh 2021、Penmanshiel 2021-12 和 2022 的预测；评估年是 Penmanshiel 2022。
+   - 发布时刻、各 h 的标签截止和 ACI 的反馈时刻都按上面的断言实现；任何一条不满足就报错停下，不改口径。
+   - 判定严格按 STAGE_PLAN。
+3. **A 线**：DLinear、PatchTST（单变量）和 iTransformer、TimeXer（两种通道）照方案跑。Chronos-2 等权重上传、合成验证都通过后再作为可选项；没有就跳过并记录。
+4. **交回**：「关键数字」先写 C0——M 与 B0–B3 的覆盖率、平均宽度、区间分数，M+ 对 B2 的比较，以及判定是"继续"还是"停止"；再写 A 线。
 
-需要用户决定: 无（下载和安装由用户交给 Cursor）
+需要用户决定: 无。下载由 Cursor 接手（Cursor 的下载脚本和记录不在你的提交范围内，不要提交）；CEDA 令牌和 GitHub 推送凭据由用户自行修复。
 
 说明:
-- Hill of Towie 主体要下好几天。这段时间 C 线和 A 线只用 Kelmarsh 和 Penmanshiel。
+- 确定缺陷可以按提速规则先改再跑。C0 是第一个结果，请尽快交回。
 
 ## Codex → Claude
 <!-- 由 Codex 覆盖。2026-11-06 E1复审与用户裁决 -->
