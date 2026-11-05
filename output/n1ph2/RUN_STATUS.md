@@ -1,5 +1,7 @@
 # N1-PH2 run registration
 
+Final status: COMPLETED, 2026-11-05 21:36:53 Asia/Shanghai; 42 wind fits + 1 PH-mix, 54.57 minutes. Independent saved-array verification passed. Selected V2; primary decision STOP. See RESULT_SUMMARY.md and r1/audit/final_verification.json. No monitor automation was created.
+
 - Implementation: `324e70804cd19a8442c225dbdb1f084311a76f30`, branch `exp/N1-PH2`.
 - Protocol SHA256 (LF): `6473acf4fa2815de374e524c0ee2c737cf65f3ab6aebf784fbd9d8e2aa051f0e`.
 - Server checkout: `/home/XT/nuist/pythoncode/TimeDARTFirst_N1PH2_324e708`.
