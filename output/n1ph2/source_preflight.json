@@ -1,0 +1,18 @@
+{
+  "passed": true,
+  "formal_fits": 0,
+  "target_farm_labels_accessed": false,
+  "v0_seeds_verified": [
+    2024,
+    2025,
+    2026
+  ],
+  "channels": [
+    14,
+    25
+  ],
+  "source_fit_windows": 59113,
+  "source_validation_windows": 15905,
+  "registered_files_checked": 226,
+  "utc": "2026-11-05T12:32:34.165758+00:00"
+}
