@@ -1,0 +1,105 @@
+{
+  "selected": "V2",
+  "mean_mae": {
+    "V0": 175.95185457579882,
+    "V1": 175.74840243299323,
+    "V2": 172.03038294510574,
+    "V3": 171.97087700885973
+  },
+  "records": {
+    "V0": [
+      {
+        "seed": 2024,
+        "farm": "Kelmarsh",
+        "year": 2020,
+        "split": "validation",
+        "mae": 176.6712723103811
+      },
+      {
+        "seed": 2025,
+        "farm": "Kelmarsh",
+        "year": 2020,
+        "split": "validation",
+        "mae": 174.0521736809707
+      },
+      {
+        "seed": 2026,
+        "farm": "Kelmarsh",
+        "year": 2020,
+        "split": "validation",
+        "mae": 177.13211773604456
+      }
+    ],
+    "V1": [
+      {
+        "seed": 2024,
+        "farm": "Kelmarsh",
+        "year": 2020,
+        "split": "validation",
+        "mae": 176.19301557237156
+      },
+      {
+        "seed": 2025,
+        "farm": "Kelmarsh",
+        "year": 2020,
+        "split": "validation",
+        "mae": 174.1468460560719
+      },
+      {
+        "seed": 2026,
+        "farm": "Kelmarsh",
+        "year": 2020,
+        "split": "validation",
+        "mae": 176.90534567053624
+      }
+    ],
+    "V2": [
+      {
+        "seed": 2024,
+        "farm": "Kelmarsh",
+        "year": 2020,
+        "split": "validation",
+        "mae": 172.79170959594435
+      },
+      {
+        "seed": 2025,
+        "farm": "Kelmarsh",
+        "year": 2020,
+        "split": "validation",
+        "mae": 171.50474116534318
+      },
+      {
+        "seed": 2026,
+        "farm": "Kelmarsh",
+        "year": 2020,
+        "split": "validation",
+        "mae": 171.79469807402964
+      }
+    ],
+    "V3": [
+      {
+        "seed": 2024,
+        "farm": "Kelmarsh",
+        "year": 2020,
+        "split": "validation",
+        "mae": 172.9385081483981
+      },
+      {
+        "seed": 2025,
+        "farm": "Kelmarsh",
+        "year": 2020,
+        "split": "validation",
+        "mae": 171.2497859678974
+      },
+      {
+        "seed": 2026,
+        "farm": "Kelmarsh",
+        "year": 2020,
+        "split": "validation",
+        "mae": 171.7243369102837
+      }
+    ]
+  },
+  "utc": "2026-11-05T13:01:26.991441+00:00",
+  "protocol_sha256_lf": "6473acf4fa2815de374e524c0ee2c737cf65f3ab6aebf784fbd9d8e2aa051f0e"
+}

@@ -1,0 +1,107 @@
+{
+  "kind": "PH-mix",
+  "train_stations": [
+    386,
+    393,
+    395,
+    405,
+    440,
+    456,
+    461,
+    556,
+    595,
+    605,
+    613,
+    643,
+    669,
+    692,
+    708,
+    709,
+    723,
+    726,
+    847,
+    862,
+    889,
+    16725,
+    19187,
+    19188,
+    24996,
+    30620,
+    30690,
+    56958
+  ],
+  "parameters": 1572,
+  "best_epoch": 11,
+  "history": [
+    {
+      "epoch": 1,
+      "validation_mse": 4.77919412981559
+    },
+    {
+      "epoch": 2,
+      "validation_mse": 5.3682541683928475
+    },
+    {
+      "epoch": 3,
+      "validation_mse": 3.623091486788489
+    },
+    {
+      "epoch": 4,
+      "validation_mse": 3.987611446174345
+    },
+    {
+      "epoch": 5,
+      "validation_mse": 3.5870671263186957
+    },
+    {
+      "epoch": 6,
+      "validation_mse": 3.809676125028836
+    },
+    {
+      "epoch": 7,
+      "validation_mse": 4.174203747727459
+    },
+    {
+      "epoch": 8,
+      "validation_mse": 3.564778943514499
+    },
+    {
+      "epoch": 9,
+      "validation_mse": 3.501846189730216
+    },
+    {
+      "epoch": 10,
+      "validation_mse": 3.477778788390471
+    },
+    {
+      "epoch": 11,
+      "validation_mse": 3.4594454825366934
+    },
+    {
+      "epoch": 12,
+      "validation_mse": 3.8183184151485703
+    },
+    {
+      "epoch": 13,
+      "validation_mse": 3.9120431098094763
+    },
+    {
+      "epoch": 14,
+      "validation_mse": 4.193193204038943
+    },
+    {
+      "epoch": 15,
+      "validation_mse": 3.676829682055918
+    }
+  ],
+  "elapsed": 8.657822532986756,
+  "checkpoint_sha256": "a6f1268828eea924b9c33a3a7a81be9a7c9594762d152b69153c3516d5b19e24",
+  "fit_years": [
+    2016,
+    2017,
+    2018,
+    2019
+  ],
+  "selection_year": 2020,
+  "seed": 2024
+}

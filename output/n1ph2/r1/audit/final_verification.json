@@ -1,0 +1,18 @@
+{
+  "utc": "2026-11-05T15:13:07.728914+00:00",
+  "passed": true,
+  "wind_fits_verified": 42,
+  "ph_mix_verified": true,
+  "source_files_verified": 53,
+  "inputs_verified": 430,
+  "saved_arrays_verified": 61,
+  "fold_report_replay": {
+    "T21": true,
+    "T22": true,
+    "T23": true
+  },
+  "all_variant_primary_metrics_replay": true,
+  "station_own_metrics_replay": 19,
+  "no_training_or_new_predictions": true,
+  "transfer_station_pairs_note": "Pair metrics recorded by original run; individual pair predictions not persisted, no new forward passes for replay"
+}

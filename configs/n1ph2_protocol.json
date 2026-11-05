@@ -1,0 +1,12 @@
+{
+  "id": "N1-PH2", "status": "FROZEN", "parent": "configs/n1ph_protocol.json",
+  "parent_sha256_lf": "6b0aabe483c7d1d44af7f2f6e98fad85ac7c40c3c1515dca3b3cea1762818e48",
+  "previous_run": "outputs/logs/Penmanshiel/n1ph_41a5b74_r1",
+  "variants": {"V0": {"loss":"mse","channels":14}, "V1":{"loss":"mix","channels":14}, "V2":{"loss":"mse","channels":25}, "V3":{"loss":"mix","channels":25}},
+  "selection": "Kelmarsh 2020 validation mean MAE over seeds 2024,2025,2026 only; within strictly <0.5 kW of global minimum choose first V0,V1,V2,V3",
+  "ph_training": "N0 exact PH flow, raw m/s targets; only train loss replaced by 0.8 MAE+0.2 MSE; validation MSE checkpoint/early stopping unchanged",
+  "source_split": {"fit":[2016,2017,2018,2019],"validation":2020},
+  "maximum_wind_fits":42, "ph_mix_fits":1, "maximum_instances":1, "budget_seconds":5400,
+  "station_description": "N0 heldout station own/transfer PH ridge protocol, old PH-mse evidence reused; never used for variant selection",
+  "scope": "One bounded posthoc development optimization, no independent confirmation; no target labels before variant selection freeze; no resume or second instance"
+}
