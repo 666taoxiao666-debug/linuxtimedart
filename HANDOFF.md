@@ -3,36 +3,29 @@
 规则见 AGENTS.md：两节各由一方整节覆盖、不追加，每节不超过 40 行；历史用 `git log -p HANDOFF.md` 查。
 
 ## Claude → Codex
-<!-- 由 Claude 覆盖。最后更新：2026-11-05 第 27 次（N0 第 2 轮：处理 R1-B1） -->
-轮次: R2/2 | 阶段: N0 | 分支: exp/N0 | 基线提交: 758f528
-请求: 审方案（只看 R1 的改动）+ 没有阻断就实现并运行
+<!-- 由 Claude 覆盖。最后更新：2026-11-05 第 29 次（N0 结题 + N1-PH 首轮） -->
+轮次: R1/2 | 阶段: N1-PH | 分支: exp/N1-PH | 基线提交: 9f125d0
+请求: 审方案（N1-PH STAGE_PLAN）+ 没有阻断就实现并运行
 待审范围: git diff HEAD -- docs/STAGE_PLAN.md docs/review/DECISIONS.md
-允许改动: scripts/pilot_station_operator_n0.py, tests/test_pilot_station_operator_n0.py, output/station_operator_n0/**, docs/review/N0-R*-codex.md
-审查文件: docs/review/N0-R2-codex.md
-本轮决议: 采纳 3 / 反驳 0 / 暂缓 0 / 转实验 0（R1-B1、R1-S1、R1-S2，见 DECISIONS.md 的 N0 一节）
+允许改动: configs/n1ph_protocol.json, scripts/train_n1ph.py, tests/test_train_n1ph.py, output/n1ph/**
+审查文件: docs/review/N1-PH-R1-codex.md
+本轮决议: N0 一节没有新编号；N0 结果我已用 result.json 的 56 对原始记录独立复核，与你一致，判为有效负结果
 
 需要你做的:
-1. **复审**：只看 STAGE_PLAN 中的改动——
-   - "继续"判据（本站一条、迁移一条）；
-   - "选简"条；
-   - "迁移测试"一节（同源迁移增益 G_tr、先按目标站汇总、比值只作描述）；
-   - 配置表里 O 的输入和结构两行（数值保护、候选为空）；
-   - 测试清单新增的两条；
-   - 留出站数（8 个）和 `upstream_features` 调用前先过滤站表。
-   
-   再加 DECISIONS.md 的 N0 一节。
-2. **实现与运行**：没有阻断，就实现 `pilot_station_operator_n0.py` 和测试，测试要包含 B1 的反例。先在服务器只读核对 47 站 2016–2021 的小时数据，缺的站如实记录，不下载。然后跑 1 个实例（≤1.5 h），结果放到 `output/station_operator_n0/`。确定缺陷可以按提速规则先按最小修法处理。
+1. **N0 结题**：先在 exp/N0 上提交 DECISIONS.md 和 HANDOFF.md。用户同意的话，用 `--no-ff` 把 exp/N0 合回主线并推送，exp/N0 保留。STAGE_PLAN 先不提交，带到 exp/N1-PH。
+2. **N1-PH**：从主线拉 `exp/N1-PH`，审 STAGE_PLAN。重点审三处：PH 通道有没有时间泄漏；零样本时是否只用 Kelmarsh 和 N0 的统计量；复用 P2、P3 数组时窗口是否一致。没有阻断，就按"执行顺序"实现并跑 1 个实例（≤1.5 h）：先冻结协议，再核对哈希，再完成 36 次拟合，最后只评估一次。确定缺陷可以按提速规则处理。
 3. **交回**：「关键数字」写：
-   - 本站：L+O 对 L+H 的改善中位数和正值站比例；
-   - 迁移：D(q) 的中位数和正值比例、G_tr(O) 和 G_tr(H) 的中位数；
-   - L+PH 与 L+O 在本站、迁移两项上的差距；
-   - 继续、停止、选简三条判定的结果。
+   - 主折上 ZP、ZQ、F1P、F3P 的判定（含效应、CI、Holm p）；
+   - IP 的非劣结果；
+   - 继续、部分、停止三者中的哪一个；
+   - 描述折 T22、T23 的同方向数字；
+   - 各臂 2021 年的 MAE/RMSE。
 
-需要用户决定: 无
+需要用户决定: 合并 N0（用户转话时一并说明）
 
 说明:
-- 这是 N0 的第 2 轮，也是最后一轮。复审如果还有阻断，就交用户裁决。
-- N0 只是门槛，不作论文确认，不碰任何风场标签。补充一下近邻文献：ContraVirt（arXiv 2604.10328）和 OAT（arXiv 2610.28327）离"站网算子"这部分很近，所以创新要靠 N1（迁移到新风场的功率预测）。
+- PH 的迁移优势来自 N0 的事后观察，所以 N1-PH 作为新假设在风场上重新登记。创新预期约 5–5.5，论文走 CCF-B 的应用赛道。
+- 这是 N1-PH 的第 1 轮。方案如果有阻断，而且修法不唯一，就停在冻结协议之前交回。
 
 ## Codex → Claude
 <!-- 由 Codex 覆盖。最后更新：2026-11-05，N0唯一正式实例完成 -->
