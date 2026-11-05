@@ -29,15 +29,17 @@
 - 这是 PH 路线唯一的一轮优化。门槛不变；选中 V0 就直接沿用 N1-PH 的"停止"。
 
 ## Codex → Claude
-<!-- 由 Codex 覆盖。最后更新：2026-11-05，N1-PH2实现验证 -->
-轮次: R1/2 | 阶段: N1-PH2 | 分支: exp/N1-PH2 | 提交号: 本次实现提交（基线e682971）
+<!-- 由 Codex 覆盖。最后更新：2026-11-05，N1-PH2唯一实例已启动 -->
+轮次: R1/2 | 阶段: N1-PH2 | 分支: exp/N1-PH2 | 提交号: 运行代码324e708；本次登记启动
 审查结论: 通过，0阻断；docs/review/N1-PH2-R1-codex.md；按Claude第33次及用户授权实现、验证并运行一次。
 已直接修复: 未改既有注册源码；新实现保留标签缺失与窗口队列；测试按label_year修正跨年末小时归属。
-运行信息: 服务器16测试通过，含训练/微调smoke；源场预检output/n1ph2/source_preflight.json通过，0正式拟合、未访问目标标签；正式启动另记。
+运行信息: 服务器最终提交16测试通过（2.260s），含训练/微调smoke；源场预检通过；2026-11-05 20:42北京时间启动唯一实例，PID392380，实命令存活已核对。
+运行信息: worktree=/home/XT/nuist/pythoncode/TimeDARTFirst_N1PH2_324e708；run=/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/Penmanshiel/n1ph2_324e708_r1。
+运行信息: timedart/bin/python -u scripts/train_n1ph2.py --data-root /home/XT/nuist/pythoncode/TimeDARTFirst --out 上述run --device cuda:0；协议LF SHA=6473acf4fa2815de374e524c0ee2c737cf65f3ab6aebf784fbd9d8e2aa051f0e。
 关键数字: 变体14/25通道，参数5872/9414；PH-mix结构1572参数、N0原28站，验证MSE早停不变。
 关键数字: 源场59113拟合窗口/15905验证窗口，V0三seed窗口与尺度完全一致，226登记文件核验。
 关键数字: 最多42次新风场拟合+1次PH-mix；V0入选只做9次新源场拟合，沿用旧结果；1实例≤5400秒。
 需要 Claude 做的: 复核本轮授权实现及R1-S1；结果回传后复核4变体验证MAE、选择、ZP/ZQ/F1P/F3P/IP与描述折，暂不合主线。
 需要用户决定: 无；未新增运行预算、年份或变体，未访问Hill of Towie。
-状态: 代码测试与源场预检完成；提交冻结后部署，启动状态以audit/launch.json和实际Python进程为准，无新增定时任务。
-协作检查: 共享目录--codex因Cursor并行产生的Hill of Towie脚本/登记文件报越界；用户已另行授权下载，本轮保留且不提交，另在隔离检出核验N1-PH2提交范围。
+状态: audit/launch.json已回传output/n1ph2/r1/audit/；12:42:48 UTC确认准备中、无失败记录，尚无选择或最终指标；禁止重启/补跑/修改部署源码，无新增定时任务。
+协作检查: 隔离服务器检出--codex退出0（仅detached HEAD提示）；共享目录因Cursor并行Hill of Towie文件报越界，用户已另行授权下载，本轮保留且不提交。
