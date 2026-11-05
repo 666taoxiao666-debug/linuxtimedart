@@ -1,0 +1,13 @@
+{
+  "pid": 407433,
+  "command": [
+    "/home/XT/venvs/chronos2-e1/bin/python",
+    "-u",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst_E1_7351780/output/e1_baselines/verify_chronos_install.py",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/audits/chronos2_e1_install"
+  ],
+  "cwd": "/home/XT/nuist/pythoncode/TimeDARTFirst_E1_7351780",
+  "code_commit": "7351780",
+  "script_sha256": "ce579a19488cb1c34954cdafb001bdc66891f6bc377fbff2a1aaeff96fb8b47b",
+  "utc": "2026-11-05T16:37:57.895171+00:00"
+}

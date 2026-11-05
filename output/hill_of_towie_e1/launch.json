@@ -1,0 +1,19 @@
+{
+  "pid": 407432,
+  "command": [
+    "/home/XT/miniconda3/envs/timedart/bin/python",
+    "-u",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst_E1_7351780/scripts/audit_hill_of_towie_e1.py",
+    "--data-root",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst",
+    "--record",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/output/external_acquisition/hill_of_towie/record_22662930.json",
+    "--download-midas",
+    "--audit-root",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/audits/hill_of_towie_e1_midas"
+  ],
+  "cwd": "/home/XT/nuist/pythoncode/TimeDARTFirst_E1_7351780",
+  "code_commit": "7351780",
+  "script_sha256": "baa4f1051cfdd8dbbd31cdc8e4d674519cbcf99836a7fac64b896bd8f190c6e1",
+  "utc": "2026-11-05T16:37:57.894690+00:00"
+}

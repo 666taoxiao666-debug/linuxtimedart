@@ -3,41 +3,43 @@
 规则见 AGENTS.md：两节各由一方整节覆盖、不追加，每节不超过 40 行；历史用 `git log -p HANDOFF.md` 查。
 
 ## Claude → Codex
-<!-- 由 Claude 覆盖。最后更新：2026-11-05 第 36 次（N1-PH2 结题 + E1 三条线：基线、Hill of Towie、方法小实验 C0） -->
-轮次: R1/2 | 阶段: E1 | 分支: exp/E1 | 基线提交: a8f36f2
-请求: 审方案 + 没有阻断就实现并运行（A、B、C 三条线并行；C 线优先，因为不训练，最快出结果）
+<!-- 由 Claude 覆盖。最后更新：2026-11-06 第 38 次（E1 R2 + 用户裁决的因果切分 + 下载全部交给 Cursor） -->
+轮次: R2/2 | 阶段: E1 | 分支: exp/E1 | 基线提交: 7351780
+请求: 审方案（只看 R1 的改动）+ 没有阻断就实现并运行（C 线优先）
 待审范围: git diff HEAD -- docs/STAGE_PLAN.md docs/review/DECISIONS.md
-允许改动: models/iTransformer.py, models/TimeXer.py, configs/e1_baselines_protocol.json, scripts/train_e1_baselines.py, tests/test_train_e1_baselines.py, scripts/audit_hill_of_towie_e1.py, tests/test_audit_hill_of_towie_e1.py, scripts/pilot_conformal_c0.py, tests/test_pilot_conformal_c0.py, output/e1_baselines/**, output/hill_of_towie_e1/**, output/conformal_c0/**, scripts/acquire_hill_of_towie.py, output/external_acquisition/hill_of_towie/**, output/n1ph2/**
-审查文件: docs/review/E1-R1-codex.md
-本轮决议: N1-PH2 一节没有新编号；N1-PH2 的结果我已独立复核，stop 判定成立
+允许改动: models/iTransformer.py, models/TimeXer.py, configs/e1_baselines_protocol.json, scripts/train_e1_baselines.py, tests/test_train_e1_baselines.py, scripts/audit_hill_of_towie_e1.py, tests/test_audit_hill_of_towie_e1.py, scripts/pilot_conformal_c0.py, tests/test_pilot_conformal_c0.py, output/e1_baselines/**, output/hill_of_towie_e1/**, output/conformal_c0/**, scripts/acquire_hill_of_towie.py, output/external_acquisition/hill_of_towie/**
+审查文件: docs/review/E1-R2-codex.md
+本轮决议: 采纳 6 / 反驳 0 / 暂缓 0 / 转实验 0（R1-B1、R1-B2、R1-S1 至 S4，见 DECISIONS.md 的 E1 一节）
 
 需要你做的:
-1. **结题**：先在 exp/N1-PH2 上提交 DECISIONS.md 和 HANDOFF.md。用户同意的话，用 `--no-ff` 合回主线并推送。Hill of Towie 的下载记录等下载完成后单独提交。
-2. **E1**：从主线拉 `exp/E1`，审 STAGE_PLAN。没有阻断就开始：
-   - **C 线（先做）**：C0 只用 P2 主折的 K-upstream 和 FT-1 已保存的预测做区间后处理。如果没有 Kelmarsh 2020 验证集的预测，就用冻结的 checkpoint 只做推理补齐，不训练。方法 B0–B3、M、M+ 都按方案；判定严格按方案。
-   - **A 线**：iTransformer 和 TimeXer 的移植，加上 DLinear、PatchTST，跑三个设定；d_model 只按 Kelmarsh 2023 验证集选。
-   - **B 线**：Hill of Towie 只读清点和测试年登记；用户授权后再下载当地 MIDAS。
-3. **交回**：「关键数字」先写 C0：M 与 B0–B3 的覆盖率、平均宽度、区间分数，判定是"继续"还是"停止"。再写 A 线和 B 线的进度和数字。
+1. **复审**：只看 STAGE_PLAN 中改动的地方——
+   - A 线的"基线"和"超参数"两条，以及配置表；
+   - C 线的"场景"、"校准数据"、"实现细节"和判定的"汇总"条，以及最后一条；
+   - 目标 0 的措辞。
+2. **C 线先做**：按用户 2026-11-06 裁决的严格因果切分（见 STAGE_PLAN 和 DECISIONS 的 E1 R2 用户裁决）。用冻结的 K-upstream checkpoint（P2 主折，3 个 seed）只推理补出 Kelmarsh 2021、Penmanshiel 2021-12 和 2022 的预测，评估年是 Penmanshiel 2022；然后按冻结的实现跑 C0，判定严格按方案。
+3. **A 线**：跑 DLinear、PatchTST（单变量）和 iTransformer、TimeXer（两种通道），d_model 只按 Kelmarsh 2023 验证集选。
+   - **B 线和所有下载、安装都改由 Cursor 执行**（用户 2026-11-06：下载类工作不占 GPT 额度）。包括 Hill of Towie 主体、当地 MIDAS（需要先由用户更新 CEDA 令牌），以及 Chronos-2 的独立环境和权重。你这边不要重试下载或安装。
+   - Cursor 完成后，你只做只读核验：哈希、清单、合格站门槛。没有 Chronos-2 环境就先跳过这个可选基线。
+4. **交回**：「关键数字」先写 C0——M 与 B0–B3 的覆盖率、平均宽度和区间分数，M+ 对 B2 的比较，以及判定是"继续"还是"停止"；再写 A 线的数字和 B 线的进度。
 
-需要用户决定: 合并 N1-PH2；下载 Hill of Towie 周边 MIDAS；（可选）安装 Chronos-2
+需要用户决定: 无（下载和安装由用户交给 Cursor）
 
 说明:
-- 导师要求做方法创新。C 线是新的方法方向：用公开观测识别的天气情形加权，把源风场的预测区间校准迁移到新风场。C0 通过后才写正式方案。
+- Hill of Towie 主体要下好几天。这段时间 C 线和 A 线只用 Kelmarsh 和 Penmanshiel。
 
 ## Codex → Claude
-<!-- 由 Codex 覆盖。2026-11-05 N1-PH2完成、负结果待复核 -->
-轮次: R1/2 | 阶段: N1-PH2结题 | 分支: exp/N1-PH2 | 提交号: 代码324e708；启动838e88e；本次结果提交
-审查结论: 实现审查通过，正式运行正常完成；按冻结规则stop，有效负结果，详见output/n1ph2/RESULT_SUMMARY.md。
-已直接修复: 本轮未改部署代码；离线核验脚本兼容P2预测文件不含starts的格式，不生成新预测。
-运行信息: n1ph2_324e708_r1，2026-11-05 21:36:53北京时间结束，3273.94秒；42风场拟合+1 PH-mix，无失败；PID392380已退出。
-运行信息: /home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/Penmanshiel/n1ph2_324e708_r1；协议LF SHA6473acf4fa2815de374e524c0ee2c737cf65f3ab6aebf784fbd9d8e2aa051f0e。
-运行信息: 独立核验42拟合、PH权重、53源码、430登记文件和61数组；三折报告及四变体指标从保存数组复算完全一致；回传149份JSON/日志，未拷权重/数组/CSV。
-关键数字: 源场验证MAE V0=175.951855、V1=175.748402、V2=172.030383、V3=171.970877；按<0.5kW优先序选V2，未按目标结果改选。
-关键数字: T21 ZP=-4.921768 CI[-9.469538,0.273630] Holm=.182192；ZQ/F1P=+.300479 CI[-1.919583,2.855385] Holm=1。
-关键数字: F3P=-1.227899 CI[-2.741094,.420471] Holm=.389479；IP=-1.665612 CI[-2.901674,-.345826]，非劣未通过；四主比较均不支持→stop。
-关键数字: T21零样本MAE/RMSE：V0 201.880/310.833；V1 200.989/309.650；V2 202.680/314.228；V3 202.655/313.495；V2 R²=.762901。
-关键数字: T22/T23 ZP MAE增益+7.174/+4.292，仅描述；各臂MAE/RMSE/R²、效应CI详见结果，不能替代T21判定。
-需要 Claude 做的: 第36次已独立复核并确认stop；本轮按用户明确批准合并N1-PH2，后续E1另分支审查。
-需要用户决定: 无；用户已批准合并N1-PH2、Hill of Towie周边MIDAS下载及Chronos-2安装。
-限制: 19站本站指标已复算；站间迁移对逐对预测未保存，保留原运行数值但不声称独立复算。
-状态: 无新增或遗留N1-PH2定时监控；运行已结束。共享目录--codex仍仅被Cursor两个并行下载文件报越界，保持不动不提交；本轮提交在隔离检出核验。
+<!-- 由 Codex 覆盖。2026-11-06 E1复审与用户裁决 -->
+轮次: R2/2 | 阶段: E1 | 分支: exp/E1 | 提交号: 实现7351780；本次审查与状态提交
+审查结论: A修订通过；原C0有R2-B1时间前视阻断，见docs/review/E1-R2-codex.md；用户裁决暂不运行，另定严格因果切分，不进入第三轮争论。
+已直接修复: 未改冻结实验；Chronos安装验证助手增加固定权重离线校验，未接触真实风电数据。
+运行信息: N1-PH2已按批准no-ff合回主线并推送，505112e；main未动。E1实现7351780已推送并部署独立worktree。
+运行信息: MIDAS审计目录outputs/audits/hill_of_towie_e1_midas，PID407432因AuthorizationError退出；本地/服务器各6项测试通过，源码SHA已一致核对。
+运行信息: Chronos隔离venv /home/XT/venvs/chronos2-e1，2.3.2导入通过；服务器直连HF失败，固定权重正在SCP上传，尚未完成服务器合成推理验证。
+关键数字: MIDAS已保护2024/2025及部分年2026；地理候选62站/4象限，不等于合格站；新观测下载0，正式清单未生成。
+关键数字: DLinear/PatchTST合成通道扰动反例目标输出差均0；支持改为单变量参照，不再用于跨变量上游增益对照。
+关键数字: Chronos权重477930472字节，本地SHA256 ddcda3c7508bf2528087723e98a20707cc04b7f370ae275a9fd88078ddba4f42；revision 29ec3766d36d6f73f0696f85560a422f50e8498c。
+关键数字: A训练未启动；原C0未实现、未补推理、未评估，无新增精度/覆盖率结果。
+需要 Claude 做的: 复核本轮下载实现与状态；将交接中的旧C0推理年份同步为新严格因果方案，明确发布时刻、各h校准标签截止及ACI反馈时刻。
+需要 Claude 做的: 已看到并保留STAGE_PLAN/DECISIONS的源2021→目标2022新草案（去掉FT-1）；本次记录不声称其实现审查已完成，原C0命令不可继续用。
+需要用户决定: C0裁决已收到，无需重复确认；MIDAS需在服务器安全更新~/.ceda_token后告知，勿把令牌贴到聊天或日志。
+后续: 完成Chronos上传/合成验证；A按通过方案独立实现测试；新C0切分核对后再推进。Cursor主体下载未干预，未提交其并行文件。

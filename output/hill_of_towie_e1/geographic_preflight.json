@@ -1,0 +1,12 @@
+{
+  "source": "previously pinned CEDA 202607 station metadata, matched original download_plan metadata_sha256",
+  "metadata_sha256": "3c98d20c4b9a8aba3270280c8692b72a54d66df05d178c5fed27eb70e6fd3acc",
+  "center": [57.505768197619034, -3.0683841857142857],
+  "radius_km": 150,
+  "geographic_candidates": 62,
+  "station_ids": [32,38,40,44,48,50,66,67,79,103,105,110,111,113,114,117,118,132,137,142,145,148,150,159,160,161,170,176,177,181,205,208,212,214,219,226,232,235,237,14093,14444,15045,15365,15381,17310,17336,19193,30810,55827,55896,56216,56451,56463,57267,62004,62039,62151,62222,62226,62279,62343,62354],
+  "candidate_quadrants": 4,
+  "qualified_stations": null,
+  "observation_values_accessed": false,
+  "note": "Geographic metadata preflight only; no completeness or pressure-availability screening"
+}

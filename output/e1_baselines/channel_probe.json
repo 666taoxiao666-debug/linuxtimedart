@@ -1,0 +1,11 @@
+{
+  "kind": "synthetic_counterexample_only",
+  "seed": 2024,
+  "device": "cpu",
+  "input_shape": [2, 24, 21],
+  "forecast_horizon": 4,
+  "intervention": "Keep last target channel fixed; replace other 20 channels with random values scaled by 100",
+  "mode": "eval",
+  "target_max_absolute_difference": {"DLinear": 0.0, "PatchTST": 0.0},
+  "interpretation": "Fixed-checkpoint target predictions have no explicit exogenous-channel path in these existing implementations; this is not a trained accuracy result"
+}
