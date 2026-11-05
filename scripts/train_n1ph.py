@@ -52,6 +52,9 @@ def load_ph(path, digest, identities):
 def ph_features(frame, model, stats):
     if list(frame.columns) != up.UPSTREAM_FEATURES or frame.index.has_duplicates:
         raise ValueError('PH input schema mismatch')
+    # Sparse timestamps are missing observations, not missing forecast rows.
+    # Fill their H11 through the same frozen N0 transform before PH inference.
+    frame = frame.reindex(pd.date_range(frame.index.min(),frame.index.max(),freq='h'))
     raw = frame.to_numpy(dtype=float)
     x = n0.transform(raw, stats)
     with torch.inference_mode():
@@ -260,7 +263,8 @@ def run(data_root, out, protocol, device, preflight=False):
                                  'cohort_equality':['starts','truth','times','normal_mask']})
         signal.alarm(0)
         return
-    if p2.source_code()!=before: raise ValueError('Source changed')
+    if p2.source_code()!=before or u.text_sha256_lf(PROTOCOL)!=identity['protocol_sha256_lf']:
+        raise ValueError('Source or protocol changed')
     # Recheck registered references/inputs before opening the evaluation gate.
     for path,value in identities.items():
         checked(path,value['sha256'] if isinstance(value,dict) else value,{})

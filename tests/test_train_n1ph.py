@@ -17,6 +17,7 @@ class N1PHTests(unittest.TestCase):
         cls.protocol=n.u.read_json(n.PROTOCOL)
         cls.recipe=n.u.read_json(n.p2.PROTOCOL)
         cls.base,cls.raw,_=n.p2.synthetic_data()
+        cls.raw=cls.raw.reindex(pd.date_range(cls.raw.index.min(),cls.raw.index.max(),freq='h'))
         torch.manual_seed(7)
         cls.model=torch.nn.Sequential(torch.nn.Linear(11,32),torch.nn.ReLU(),torch.nn.Linear(32,32),torch.nn.ReLU(),torch.nn.Linear(32,4)).eval()
         cls.stats=(np.arange(11,dtype=float),np.arange(11,dtype=float)+1)
@@ -59,7 +60,8 @@ class N1PHTests(unittest.TestCase):
         a=n.u.hourly_upstream(obs,stations,issue,1)
         altered={i:d.copy() for i,d in obs.items()}
         for d in altered.values(): d.loc[d.index>=issue[0],:]=999.
-        b=n.u.hourly_upstream(altered,stations,issue[:1],1)
+        b=n.u.hourly_upstream(altered,stations,issue,1)
+        np.testing.assert_array_equal(a.iloc[0],b.iloc[0])
         np.testing.assert_array_equal(n.ph_features(a,self.model,self.stats).iloc[0],n.ph_features(b,self.model,self.stats).iloc[0])
 
     def test_cohort_misalignment_rejected(self):
