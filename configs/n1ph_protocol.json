@@ -1,0 +1,28 @@
+{
+  "id": "N1-PH", "status": "FROZEN",
+  "scope": "Development hypothesis from posthoc N0; no independent confirmation",
+  "recipe": "configs/kelmarsh_upstream_protocol_v32.json",
+  "recipe_sha256_lf": "b9fbdce22a83dd0e5128aa3d9a489cbcb725c4f298f2feba6fe15f028f7a3588",
+  "ph_run": "outputs/logs/StationOperator/n0_0fba03f_r1",
+  "ph_sha256": "584fa1e929eae27576ed49679b695c3e5ce7696c3baab5c53ff88f819e50b7e0",
+  "p2_run": "outputs/logs/Penmanshiel/p2_v35_e3ae7a6_r1",
+  "p3_run": "outputs/logs/Penmanshiel/p3_v35_2894746_r2",
+  "folds": [
+    {"id":"T21", "fit_years":[2016,2017,2018,2019], "validation_year":2020, "test_year":2021, "fewshot_year":2019, "role":"primary_development"},
+    {"id":"T22", "fit_years":[2016,2017,2018,2019,2020], "validation_year":2021, "test_year":2022, "fewshot_year":2021, "role":"descriptive"},
+    {"id":"T23", "fit_years":[2016,2017,2018,2019,2020,2021], "validation_year":2022, "test_year":2023, "fewshot_year":2022, "role":"descriptive"}
+  ],
+  "seeds":[2024,2025,2026], "arms":["K-PH","FT-1-PH","FT-3-PH","P-PH"],
+  "channels":["Wspd","Etmp","Ndir_sin","Ndir_cos","Pab_mean","rotor_speed","power_last10","wind_last10","PH_h1","PH_h2","PH_h3","PH_h4","upstream_missing","power"],
+  "parameters":5872,
+  "preprocessing":"Raw causal H11 in frozen order -> N0 mean fill/scaling -> frozen PH. Outer scaler on farm fit rows only. Zero-shot and FT use Kelmarsh outer scaler, no target statistics. Power last, labels unchanged.",
+  "input_len":24,"horizon":4,"stride":3,"lag_hours":1,
+  "comparisons":{"ZP":["K-PH","K-last10"],"ZQ":["K-PH","K-upstream"],"F1P":["FT-1-PH","FT-1"],"F3P":["FT-3-PH","FT-3"],"IP":["P-PH","P-upstream"]},
+  "family":["ZP","ZQ","F1P","F3P"],
+  "statistics":{"block_length":8,"replicates":5000,"seed":2024,"hac_max_lag":7,"seed_handling":"average losses, not forecasts"},
+  "support":"MAE gain CI95 low >0 AND family Holm p<=0.05 AND RMSE gain CI95 low>0",
+  "ip_margin_kw":2,
+  "decision":"continue if ZP supported and IP noninferior; partial if ZP unsupported and (F1P or F3P supported); otherwise stop",
+  "fits":36,"maximum_instances":1,"budget_seconds":5400,
+  "execution":"Verify historical reference arrays/checkpoints and input hashes; freeze all 36 selected fits before one evaluation; no resume, no baseline refit, no PH retraining, no label edits, no additional arms or years"
+}
