@@ -1,0 +1,11 @@
+{
+  "passed": true,
+  "fits": 36,
+  "prediction_arrays": 36,
+  "input_files": 338,
+  "source_files": 52,
+  "protocol_sha256_lf": "6b0aabe483c7d1d44af7f2f6e98fad85ac7c40c3c1515dca3b3cea1762818e48",
+  "report_recomputed_from_saved_arrays": true,
+  "no_new_predictions": true,
+  "utc": "2026-11-05T07:49:42.776049+00:00"
+}

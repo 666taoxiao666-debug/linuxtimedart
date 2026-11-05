@@ -27,18 +27,19 @@
 - 即使 ZP 获得支持，也只叫"开发支持"，确认要靠第三个风场。
 
 ## Codex → Claude
-<!-- 由 Codex 覆盖。最后更新：2026-11-05，Claude第30次决议复核通过 -->
-轮次: R2/2 | 阶段: N1-PH | 分支: exp/N1-PH | 提交号: 本轮文档登记（父提交8be1279）；正式代码41a5b74
-审查结论: 通过，无新阻断；R1-B1/S1/S2及缺失时间行修复均已闭环，见docs/review/N1-PH-R2-codex.md；原8项服务器测试通过，本轮未重复测试。
-已直接修复: R1-B1（2c8201c），14通道、5872参数；41a5b74修正缺失时间行映射，按N0均值填补H11再推断；未改标签/臂/阈值/年份。
-运行信息: 新增configs/n1ph_protocol.json、scripts/train_n1ph.py、tests/test_train_n1ph.py；冻结历史源码不改。
-运行信息: 本地py_compile、服务器8项测试及只读preflight通过；证据output/n1ph/preflight/，三折starts/truth/times/normal_mask逐元素一致。
-运行信息: 正式PID371498；worktree=/home/XT/nuist/pythoncode/TimeDARTFirst_N1PH_2c8201c（实际HEAD41a5b74）。
-运行信息: run=/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/Penmanshiel/n1ph_41a5b74_r1；python -u scripts/train_n1ph.py --data-root /home/XT/nuist/pythoncode/TimeDARTFirst --out <run> --device cuda:0。
-运行信息: 最新只读检查24/36拟合完成，进程命令匹配且正常；无failed/completed，最终评估尚未开始；无重复启动、无新增定时任务。
-关键数字: PH checkpoint SHA256=584fa1e929eae27576ed49679b695c3e5ce7696c3baab5c53ff88f819e50b7e0，服务器复算一致；N0归一化两向量均11维有限。
-关键数字: 3折×4臂×3seed=36，1实例≤5400秒；ZP/ZQ/F1P/F3P为主折开发族，IP单独非劣，T22/T23只描述。
-关键数字: 协议SHA256(LF)=6b0aabe483c7d1d44af7f2f6e98fad85ac7c40c3c1515dca3b3cea1762818e48；主折FT1窗口2443/686、FT3窗口7698/1989，与P2一致。
-需要 Claude 做的: 本轮决议已登记，无需重复审方案；等待结果交回后复核效应/CI/Holm/IP和继续/部分/停止结论，暂不修改已部署代码或合并。
-需要用户决定: 无。
-状态: 等待唯一正式实例结束，禁止修改部署源码或新增实例；结果核验后另次提交交Claude复核，未经批准不合主线。
+<!-- 由 Codex 覆盖。最后更新：2026-11-05，N1-PH完成并核验 -->
+轮次: R2/2 | 阶段: N1-PH结果 | 分支: exp/N1-PH | 提交号: 本轮结果提交（父defd769）；运行41a5b74
+审查结论: 运行与保存数组核验通过，冻结判定stop（有效负结果），待Claude独立复核；output/n1ph/RESULT_SUMMARY.md及r1/result.json。
+已直接修复: 本轮无；R1-B1与41a5b74修复已获Claude第30次复核；部署代码未变。
+运行信息: n1ph_41a5b74_r1，36/36拟合、3083.68秒；2026-11-05 15:43:59北京时间完成，PID371498已退出，无failed，无重启补跑。
+运行信息: run=/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/Penmanshiel/n1ph_41a5b74_r1；原python scripts/train_n1ph.py参数不变。
+运行信息: 36选中拟合/36预测数组/338登记文件/52源码哈希通过；三折保存数组统计复算一致，未生成新预测。
+运行信息: 126份JSON/日志/PID元数据已拷回output/n1ph/r1并核对导出SHA；无CSV/权重/预测数组。未创建本阶段定时任务，无待关闭监控。
+关键数字: T21 ZP MAE−4.121 [−7.818,−0.071],Holm .108991；ZQ +1.101 [−2.354,4.626],.529263；F1P +2.336 [−1.066,5.812],.360195；F3P −3.252 [−5.252,−1.435],.003190；均不支持。
+关键数字: 同序RMSE增益/CI：+9.137 [3.218,15.275]；+3.106 [−1.805,7.976]；+3.369 [−1.496,8.236]；−6.217 [−9.323,−3.332]；IP MAE−3.940 [−6.190,−1.884]，非劣不通过，stop。
+关键数字: T22同序四比较及IP的MAE增益=4.635/2.098/1.908/−5.031/−3.078；T23=1.988/4.309/−0.069/−1.552/−2.602，仅描述；完整RMSE/CI在报告。
+关键数字: T21 K-PH/FT1-PH/FT3-PH/P-PH的MAE/RMSE=201.880/310.833、200.645/310.575、192.347/308.922、188.311/306.989；全部14臂含参照指标见RESULT_SUMMARY。
+关键数字: 协议SHA256(LF)=6b0aabe483c7d1d44af7f2f6e98fad85ac7c40c3c1515dca3b3cea1762818e48；主折仅开发证据，不是独立确认。
+需要 Claude 做的: 独立复核stop、效应方向/CI/Holm/IP、各臂指标及哈希证据，登记结果决议；不要把F3P小p或描述折改善解释为主假设获支持。
+需要用户决定: Claude复核通过后再决定合并；本轮不启动新阶段、不追加实验。
+状态: 正式运行结束；未导出PH分布诊断（非判定项），不为此重跑；等待结果复核，main及主线未变。
