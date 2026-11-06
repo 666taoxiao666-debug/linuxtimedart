@@ -1,0 +1,157 @@
+{
+  "record_id": 22662930,
+  "record_sha256": "7064b838681db88aa70eb7c9783e3383b074204a41e621bd62681c8abe50b5d0",
+  "metadata_source": "https://zenodo.org/records/22662930",
+  "development_years": [
+    2016,
+    2017,
+    2018,
+    2019,
+    2020,
+    2021,
+    2022,
+    2023
+  ],
+  "test_years": [
+    2024,
+    2025
+  ],
+  "protected_partial_years": [
+    2026
+  ],
+  "partial_year_end": "2026-04",
+  "basis": "official record describes Jan 2016 through Apr 2026; filenames only",
+  "policy": "test/protected observations: bytes and hashes only; no parsing",
+  "files": [
+    {
+      "name": "2017.zip",
+      "bytes": 1400540048,
+      "md5": "md5:c7cbe0b4d99c69994b95b1c1557ce0a4"
+    },
+    {
+      "name": "Hill_of_Towie_AeroUp_install_dates.csv",
+      "bytes": 629,
+      "md5": "md5:6145283b4d93c00b7f614143f6f27972"
+    },
+    {
+      "name": "Hill_of_Towie_tables_description.csv",
+      "bytes": 846,
+      "md5": "md5:e138e6caaec5aed652bc8eda727f322b"
+    },
+    {
+      "name": "2020.zip",
+      "bytes": 1424021621,
+      "md5": "md5:51b9cd3a98469373302722d1ab8094b7"
+    },
+    {
+      "name": "2016.zip",
+      "bytes": 1604970103,
+      "md5": "md5:74c6807483a6e8c767b9082afff6558d"
+    },
+    {
+      "name": "Hill_of_Towie_ShutdownDuration.zip",
+      "bytes": 19834579,
+      "md5": "md5:089be3c24d6fa80f2d652f244b51e470"
+    },
+    {
+      "name": "Hill_of_Towie_grid_fields_description.csv",
+      "bytes": 670,
+      "md5": "md5:beb450d696fa4aca3572ccf35cf74d7b"
+    },
+    {
+      "name": "2018.zip",
+      "bytes": 1418462145,
+      "md5": "md5:5d3a77aa05c75ea8476cc279a24d48ac"
+    },
+    {
+      "name": "2019.zip",
+      "bytes": 1430010222,
+      "md5": "md5:ca240b179200f5db25a273a1291eb597"
+    },
+    {
+      "name": "Hill_of_Towie_data_dictionary.md",
+      "bytes": 14886,
+      "md5": "md5:8b34bcd19813feda5e45834763d46c0b"
+    },
+    {
+      "name": "Hill_of_Towie_alarms_description.csv",
+      "bytes": 428,
+      "md5": "md5:65117a1d5740da6af2653147be471692"
+    },
+    {
+      "name": "Hill_of_Towie_turbine_fields_description.csv",
+      "bytes": 3532,
+      "md5": "md5:d77de82c0b094f0788d4ed9b54ddfdfa"
+    },
+    {
+      "name": "Hill_of_Towie_turbine_metadata.csv",
+      "bytes": 2239,
+      "md5": "md5:bb9673e7adb522b7e15a62f3e7ada6c8"
+    },
+    {
+      "name": "lidar_data.zip",
+      "bytes": 2413137067,
+      "md5": "md5:b5be91b03d3b18cbe85d332e9a792370"
+    },
+    {
+      "name": "2021.zip",
+      "bytes": 1393858626,
+      "md5": "md5:86d59d93afab4916bf06949a8986e644"
+    },
+    {
+      "name": "2022.zip",
+      "bytes": 1412250190,
+      "md5": "md5:3861de12eb3ba588f48259c918ade242"
+    },
+    {
+      "name": "2023.zip",
+      "bytes": 1512000259,
+      "md5": "md5:45eceb1855af89cf4dc215f2ab97eda1"
+    },
+    {
+      "name": "2025.zip",
+      "bytes": 1596220683,
+      "md5": "md5:d3cd7edb535a45ffca1c7028b397f035"
+    },
+    {
+      "name": "2024.zip",
+      "bytes": 1557682397,
+      "md5": "md5:89783562792fd71fc7a8543faf93ab18"
+    },
+    {
+      "name": "2026.zip",
+      "bytes": 553982874,
+      "md5": "md5:42a2264187912ca63214bacfbc8d4905"
+    },
+    {
+      "name": "turbine_fastlog.zip",
+      "bytes": 11925990240,
+      "md5": "md5:483acf28d7a901faf5eac611412e1a1f"
+    },
+    {
+      "name": "ZXMS-RES035-REP01-01.pdf",
+      "bytes": 1483553,
+      "md5": "md5:dd453d6fa084af36b96b068e924e3bd4"
+    },
+    {
+      "name": "ZXMS-RES029-REP01-01.pdf",
+      "bytes": 1271423,
+      "md5": "md5:ba41ddba4d685faf32e4907357b7f2b5"
+    },
+    {
+      "name": "T21_weather_sensors.jpg",
+      "bytes": 3586480,
+      "md5": "md5:9a221cf569cbbd7cc2d6259724bca957"
+    },
+    {
+      "name": "CHANGELOG.md",
+      "bytes": 2996,
+      "md5": "md5:7f3e2e71bed47e52f71032d7b8fb83c0"
+    },
+    {
+      "name": "README.md",
+      "bytes": 5930,
+      "md5": "md5:567004f1e3f81b3ad81f397272dc31b0"
+    }
+  ]
+}

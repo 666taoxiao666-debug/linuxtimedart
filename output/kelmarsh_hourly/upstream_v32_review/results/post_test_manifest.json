@@ -1,0 +1,36 @@
+{
+  "windows": {
+    "train": {
+      "all": 107665,
+      "normal": 100782
+    },
+    "validation": {
+      "all": 16716,
+      "normal": 15419
+    },
+    "test": {
+      "all": 16738,
+      "normal": 15478
+    }
+  },
+  "normal_share_pct": {
+    "train": 93.60702178052291,
+    "validation": 92.24096673845418,
+    "test": 92.47221890309476
+  },
+  "pre_test_data_manifest_sha256": "f52267c3b69f2f00fafa9eb06f1af5e2079db6b0916f93a4512f41e015642c17",
+  "selection_freeze_sha256": "8716d484a76c44551669fbbfea886f1e5f8fd7c34d42e8f8ff829d85c438b729",
+  "test_cohort_sha256": "793af42f2b6d771eda5284dee94e1e3b5cb32c9763861aa2b4787e869ca32676",
+  "test_predictions_sha256": {
+    "TSMixer_last10_all_s2024.npz": "d29a79fb6672eb00755818b043435af24c76b972134ce462f52d49fde28e6565",
+    "TSMixer_last10_all_s2025.npz": "2eff534b6b0829e48ed15d22e3e235a07564cefe923b19273f92795df900f35c",
+    "TSMixer_last10_all_s2026.npz": "9271b24f75e973c340fd39fad7784f9ee4d72d26d659725726be08ac1f88470a",
+    "TSMixer_upstream_all_balanced_s2024.npz": "fd3d3639b643cc5c6abd547dde6240ff9a48fb1ac4469289e2a05a9e6e7d61c6",
+    "TSMixer_upstream_all_balanced_s2025.npz": "43533c68ead73420dea3b0950224cb973b6568c4bdf62aa338d5a28f697959ce",
+    "TSMixer_upstream_all_balanced_s2026.npz": "f783a8775d68ff119e0db8a2128d98f607bca9f9cecd530966c4496213310ae1",
+    "TSMixer_upstream_all_s2024.npz": "34adc01f68f1507aae0fa34f5492b458d20f584f8588f82d67da301276d57376",
+    "TSMixer_upstream_all_s2025.npz": "d4febbcbc7fb62ddc49eea693e18dc1fcf723660b04b4cb8b767ccb9b2806dc2",
+    "TSMixer_upstream_all_s2026.npz": "3ba23a2a5b6e17fdbb71787e2d93e2f95433deeb2405c638024adc94534bdf71"
+  },
+  "policy": "data_manifest.json is written at D0 before any test window exists and is never modified; this file completes the record after E1"
+}

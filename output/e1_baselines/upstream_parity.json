@@ -1,0 +1,16 @@
+{
+  "commit": "4e938a1767106324dd753b2a44832bf870a0252e",
+  "parameters": {
+    "iTransformer_last10_64": 101956,
+    "iTransformer_upstream_64": 101956,
+    "iTransformer_last10_128": 400516,
+    "iTransformer_upstream_128": 400516,
+    "TimeXer_last10_64": 136836,
+    "TimeXer_upstream_64": 136836,
+    "TimeXer_last10_128": 535812,
+    "TimeXer_upstream_128": 535812
+  },
+  "same_state_outputs_exact": true,
+  "shared_embedding_adapter": true,
+  "platform": "Windows CPU; import-only fcntl/resource stubs"
+}

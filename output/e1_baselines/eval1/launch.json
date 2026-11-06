@@ -1,0 +1,204 @@
+{
+  "utc": "2026-11-06T05:41:54.314339+00:00",
+  "argv": [
+    "scripts/train_e1_baselines.py",
+    "--data-root",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst",
+    "--out",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/E1/e1_b5be60a_eval1",
+    "--device",
+    "cuda:0",
+    "--recover-evaluation"
+  ],
+  "source_code": {
+    "data_provider/__init__.py": "7eb70257593da06f682a3ddda54a9d260d4fc514f645237f5ca74b08f8da61a6",
+    "data_provider/kelmarsh_hourly.py": "f9db4f8d5166fad17bfeb74542b630fdd27526696355ede6a2b7ad1468f33fbb",
+    "data_provider/kelmarsh_multiyear.py": "bbf838888b77bae6865d4b2e2443bf42ce898f41dadc027641c149acd868d558",
+    "data_provider/sdwpf_features.py": "cfab7da7c414fd087f2a93d38065a5dfa0e739354ccc6d693ba11cbe8a636f49",
+    "layers/Embed.py": "22cfa6f507317665e84fca1e79310558f2a879aa0f10d3e7285102bf14bab4f3",
+    "layers/SelfAttention_Family.py": "d73987086b8783d5330414d6439f89da343cd886c58b8da61479dd7d8a9638ad",
+    "layers/TimeDART_EncDec.py": "34098e2aa5f4c4593d96805c0abbcc2d7e5f8a09bd7837a52529e5fe22ce94a4",
+    "layers/Transformer_EncDec.py": "031b26a6ed774442bfb4cf316d4a605f7642cd652a4c2b82f5e3d1fcdc47b098",
+    "layers/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "models/DLinear.py": "35ecb825016e5827d20f0a6ef9c80349b503d8b6df0f8d16403ff859bed64277",
+    "models/DLinearAnchoredResidual.py": "f6e973aab10497cc4e2ebd0c5fa6350c212290815e9df6657bf066764b2dff3d",
+    "models/LinearFlat.py": "b81c347fd2aea5c3474c0b3aeac89050e5b9620b6cd9f919ae6cf7848fdff9d1",
+    "models/PatchTST.py": "376b036269332977077d044a13857b6ad1472fb901fe4a9355f0570621ffa664",
+    "models/PromptTimeDART.py": "d32ca6fa3d1648e06822979993c150877b2ee587253a72a0d036bc0921bcb89b",
+    "models/SimMTM.py": "53fda3a8a9bf4349534c1604240f9e848da75237531f2308056f45d86e30e03f",
+    "models/TSMixerBasicSmall.py": "bea4bcca1309f994f6bde074afaa04192a919abd23f22f42be46c2b7a0b2993a",
+    "models/TimeDART.py": "cca2da225135f8c08880cecfbe30f54324e5c7c51dc6792364bdf2f31d300b83",
+    "models/TimeDART_v2.py": "dea99eae94d253fab21e5ccd05ea670b875ef1beabf391c651f102fa82464ea5",
+    "models/__init__.py": "998062bc2115a58147b3d7a33da78832fba3d850b52b10d17b175954ec4ab534",
+    "scripts/acquire_hourly_wind_datasets.py": "9deb94c2bb5d678c0b227c868f787445d179e154005d71a2baa054e8489f2bee",
+    "scripts/pilot_station_operator_n0.py": "aa5ca2c4cff4d30a44fb0665675594dfaffce8c415b51f6ae181e058e5bd668e",
+    "scripts/prepare_kelmarsh_multiyear.py": "c10e62aa34fb7827c79c4f5d853aae3daa093f0b4a8393e9df0456397d425d97",
+    "scripts/prepare_kelmarsh_multiyear_v31.py": "df468d9e1b780fb559aa946d117edf1fedd871e51c9dd92f4a559cf3a988e2fc",
+    "scripts/prepare_penmanshiel_v35.py": "06ce1a25efd396a7b3fbf9d5a469f33681af780923ec720791d9414d14e1cfca",
+    "scripts/prepare_penmanshiel_v35_p3.py": "6c0aef05a4147f5557c107f021278f2e09ada90ea8ff7ec4e904ccb78dc8558a",
+    "scripts/screen_kelmarsh_upstream_observations.py": "c68477c52fa9405b12095560c446f7bfaf160743842efeccc276717070aa214b",
+    "scripts/train_e1_baselines.py": "57d25dbe76e184e0f746e75d0e9828cb4742c274665a4827f603607e5481f25e",
+    "scripts/train_kelmarsh_anchored_residual.py": "11435b256898f024e1c854c0e1d020ab419f590745c23b04b7140312fedad01d",
+    "scripts/train_kelmarsh_multiyear_benchmark.py": "f0455cda23cf0398e37f51cdea40ab384b15e7af2976cc9f904a3b7f8a757b18",
+    "scripts/train_n1ph.py": "3091d861746783612ec6ae48e1b9a7eb2c7d9040df0402046721f70dfbceda21",
+    "scripts/train_penmanshiel_p2_v35.py": "65e17b4a181159485f743c6248d04b58eb7aee3f2ba1f39530259dbcf4ae4f7b",
+    "scripts/train_penmanshiel_p3_v35.py": "afb11142e37f68d6b6990f85b407b5572fba6259a34e3b9208b74c7d85b46ea3",
+    "tests/test_train_penmanshiel_p2_v35.py": "a3b0c9be3d7047c8a27cfc1805dd40a7760035cabe330289d881e3d89d7cf590",
+    "utils/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "utils/factorized_wiki.py": "b5cda0d4e82e4825f460299804ec148b8926e62708c8a37d69b8b5df51ed6ca7",
+    "utils/kelmarsh_anchored_residual.py": "15a61154ef0bd0368b87233227e8a0cb1516f041148e32bb7a5792c905e83a24",
+    "utils/kelmarsh_backbone_information.py": "1354a3905c61a2131cb975def1bccb5ef6083b75ff3615e2f115298a535bfe6c",
+    "utils/kelmarsh_enrichment.py": "6a05295abb1bbe7217dcb43c57ca2501d7b7ad3173431f60a94fba61b2094872",
+    "utils/kelmarsh_multiyear_benchmark.py": "313e2102a80abc931bc2a2640dbd78089777b86f55a867bed289400543caed35",
+    "utils/kelmarsh_operating_state.py": "dc8a4d5534e05a7321ad731d4e847a88bdf3a826c8304cc1bc8829740d0df8e0",
+    "utils/kelmarsh_upstream_v31.py": "66dd2a86694040347c53298be4fd6fc0b18ff2782cece2bcd92f980328a23fcd",
+    "utils/kelmarsh_upstream_v32.py": "e690c1987cd363904b5c7bc2143c5e32b6f6ed33d69e963fbbf8c864dfcd4b2f",
+    "utils/losses.py": "fa35d03d647ca1ea19a2cf880e1d78dd561dc2e9f37a9c431173320c8685ebc6",
+    "utils/masking.py": "c18ac0bb6e5742a8e8b5490bfe966acf82487c982f88607f52da791e90c43da6",
+    "utils/metrics.py": "4938b96935c76de8a4fb74a3d7849e66d85893098ea181f75c10d55eb30e161d",
+    "utils/paired_forecast_statistics.py": "b6f8613466ed76b53f64699798d3aac2d04dbcb5ae6dfe6bbdc44eb4f16b3248",
+    "utils/penmanshiel_v35.py": "e65c2949e80fcf976494086d72d5300dd6ec0101cf4a2b5b0768b0a2ed9a1daa",
+    "utils/physics_normalization.py": "4e5970d8686e272bb9819121ab07392f7bf04a00412b97b520ee8da51356b3c7",
+    "utils/regime_labels.py": "d4abbcf12076df9297965c45fb32608a698dc671a1b655656f106ebab8239ef5",
+    "utils/tools.py": "fd052ecfbb16386be7c0945ce5e4b3f717cefd523a387e353c8704957707e054",
+    "utils/utility_calibration.py": "c4fa927e95286c685a12d4db08d41ced3125434a4ffa60ca6c52bf56c76b23cb",
+    "utils/utility_wiki.py": "56fde90f1f13301b5f9d6a64888ffe90b03f2739c765d3ad901c570b4d406d58",
+    "utils/wind_regime_wiki.py": "61c5c1931fef557911f030319d1fabbaba32f6fc32994f204d279b423a71c458",
+    "tests/test_train_e1_baselines.py": "f48715631cc4a624bfde18e34a32fe1ae24bc429368e629d0b2e29533ee450bf",
+    "models/iTransformer.py": "96cc6b61edefee19205d8920a9f205cbd48f187a495eef6d03ea985939579a03",
+    "models/TimeXer.py": "f181a55eaac8f502662ecf1891f8dcbcec5c361479c9fa4ef830bdd0b5b4acc4"
+  },
+  "protocol": {
+    "id": "E1-A",
+    "status": "FROZEN",
+    "scope": "descriptive on previously opened test years",
+    "seeds": [
+      2024,
+      2025,
+      2026
+    ],
+    "search_seed": 2024,
+    "d_model_candidates": [
+      64,
+      128
+    ],
+    "selection": "Kelmarsh 2023 validation MAE only; smaller d_model wins exact ties",
+    "arms": {
+      "DLinear": [
+        "power"
+      ],
+      "PatchTST": [
+        "power"
+      ],
+      "iTransformer": [
+        "last10",
+        "upstream"
+      ],
+      "TimeXer": [
+        "last10",
+        "upstream"
+      ]
+    },
+    "fixed_args": {
+      "seq_len": 24,
+      "pred_len": 4,
+      "task_name": "long_term_forecast",
+      "features": "MS",
+      "use_norm": true,
+      "n_heads": 4,
+      "e_layers": 2,
+      "dropout": 0.1,
+      "factor": 1,
+      "embed": "fixed",
+      "freq": "h",
+      "activation": "gelu",
+      "patch_len": 8,
+      "stride": 4,
+      "moving_avg": 25,
+      "individual": false
+    },
+    "d_ff": "4*d_model",
+    "training_recipe": "configs/kelmarsh_upstream_protocol_v32.json",
+    "recipe_sha256_lf": "b9fbdce22a83dd0e5128aa3d9a489cbcb725c4f298f2feba6fe15f028f7a3588",
+    "folds": [
+      {
+        "id": "Kelmarsh",
+        "fit_years": [
+          2016,
+          2017,
+          2018,
+          2019,
+          2020,
+          2021,
+          2022
+        ],
+        "validation_year": 2023,
+        "test_year": 2024
+      },
+      {
+        "id": "T22",
+        "fit_years": [
+          2016,
+          2017,
+          2018,
+          2019,
+          2020
+        ],
+        "validation_year": 2021,
+        "test_year": 2022
+      },
+      {
+        "id": "T23",
+        "fit_years": [
+          2016,
+          2017,
+          2018,
+          2019,
+          2020,
+          2021
+        ],
+        "validation_year": 2022,
+        "test_year": 2023
+      }
+    ],
+    "search_fits": 10,
+    "formal_fits": 54,
+    "instances": 1,
+    "resume": false,
+    "chronos": "optional; skip if verified environment/weights unavailable; no download or install",
+    "upstream_source": "https://github.com/thuml/Time-Series-Library/tree/4e938a1767106324dd753b2a44832bf870a0252e",
+    "statistics": {
+      "block_length": 8,
+      "replicates": 5000,
+      "seed": 2024,
+      "hac_max_lag": 7,
+      "seed_handling": "average losses, not forecasts",
+      "holm": false
+    }
+  },
+  "implementation_sha256": "57d25dbe76e184e0f746e75d0e9828cb4742c274665a4827f603607e5481f25e",
+  "recovery": {
+    "id": "E1-A-eval-recovery-v1",
+    "mode": "evaluation_only",
+    "source_run": "outputs/logs/E1/e1_b5be60a_r1",
+    "output_run": "outputs/logs/E1/e1_b5be60a_eval1",
+    "original_worktree": "/home/XT/nuist/pythoncode/TimeDARTFirst_E1_b5be60a",
+    "instances": 1,
+    "training": false,
+    "reselection": false,
+    "source_metadata": {
+      "launch.json": "60ef1fa39131affb442ab0c702740e3fe0988388e1161b3bea396a38c71dc99c",
+      "selection_freeze.json": "5b67c030398e6870c4e810b29392f616344135eb20806aef46cd21e318a59848",
+      "hyperparameter_selection.json": "bcba67a3219bce4c24c06fafaa783728c47db8bbc5dfa73f5ea96a44ae36be58",
+      "input_identity.json": "3468697a5fa8fe750dcf9a4137855a1ef2503a0c6b44029802925f2c8241d5f7",
+      "failed.json": "d3e4c700463cdea261397063a196fdb947c8875becc2fa0d94d10ea353c146a4",
+      "evaluation_started.json": "a8290d9294cf6d52d1cb8732c1e2134ec6037b03c806871820dc86450fd0b3de"
+    },
+    "v32_manifest_sha256": "a8cc5708e4d530ed962f458fb967b7955b148072aa480aed923b6a52a8fb370b",
+    "v32_predictions": {
+      "TSMixer_upstream_all_s2024.npz": "34adc01f68f1507aae0fa34f5492b458d20f584f8588f82d67da301276d57376",
+      "TSMixer_upstream_all_s2025.npz": "d4febbcbc7fb62ddc49eea693e18dc1fcf723660b04b4cb8b767ccb9b2806dc2",
+      "TSMixer_upstream_all_s2026.npz": "3ba23a2a5b6e17fdbb71787e2d93e2f95433deeb2405c638024adc94534bdf71"
+    }
+  }
+}
