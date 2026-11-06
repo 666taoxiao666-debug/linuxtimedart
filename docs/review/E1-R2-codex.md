@@ -40,3 +40,12 @@
 - 最终执行：C0正式9e98cbd_r1完成（98.68秒），M覆盖81.2799%→stop；15数组哈希、全部两种覆盖率的汇总指标及校准时序独立核验通过。
 - B2/M+90%含无限区间，宽度/分数正无穷，JSON null按既有序列化保留；不截断、不调参重跑；细目见output/conformal_c0/RESULT_SUMMARY.md。
 - A服务器9单测、6组合smoke通过；b5be60a_r1 PID433991已进入真实训练，无正式评估结果。结果复核后才可决定合并。
+
+## 实际运行失败与交回（2026-11-06）
+- R2-B2【阻断】【确定缺陷】A评估参照文件未随Git部署，导致64拟合后退出 —— train_e1_baselines.py的reference()读取ROOT/output/kelmarsh_hourly/upstream_v32_review/results/post_test_manifest.json；failed.json记录FileNotFoundError，本地该文件未跟踪。
+- 此为新运行证据及Codex部署缺陷，不重开第三轮方案争论；已部署冻结代码未改，原实例不重启。
+- 已独立验证64条trained记录与selection_freeze相等、全部登记产物哈希一致；10搜索+54正式，evaluation数组为空；不能把训练完成称为实验成功或模型负结果。
+- R2-P1【提案】【待审核，未实施】新版本仅评估恢复：复用原冻结checkpoint/输入/配置，禁止训练和重新选参；原失败目录只读保留，新目录保存评估。
+  拟改scripts/train_e1_baselines.py、tests/test_train_e1_baselines.py及新版本配置/output/e1_baselines记录；参照元数据显式登记哈希并在评估标记之前预检，先用合成缺文件反例验证。
+  收益：保留已完成拟合、避免重复训练；Claude批准具体实现范围后，还须用户明确授权原instances=1/resume=false及已开始评估情况下的例外，当前不实施。
+- C0结论仍为有效stop；A没有最终测试指标，两者分开定性，见各RESULT_SUMMARY.md。

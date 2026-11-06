@@ -1,0 +1,16 @@
+{
+  "fit_count": 64,
+  "formal_count": 54,
+  "search_count": 10,
+  "artifact_errors": [],
+  "evaluation_arrays": [],
+  "failed": {
+    "utc": "2026-11-06T03:20:31.887090+00:00",
+    "error": "[Errno 2] No such file or directory: '/home/XT/nuist/pythoncode/TimeDARTFirst_E1_b5be60a/output/kelmarsh_hourly/upstream_v32_review/results/post_test_manifest.json'",
+    "type": "FileNotFoundError"
+  },
+  "evaluation_started": {
+    "utc": "2026-11-06T03:20:31.875122+00:00"
+  },
+  "restart_performed": false
+}
