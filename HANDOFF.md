@@ -34,9 +34,12 @@
 运行信息: 原64拟合及全部登记产物哈希、原源码和未改共享代码身份检查通过；v32 manifest哈希a8cc5708…通过。
 运行信息: 新worktree=/home/XT/nuist/pythoncode/TimeDARTFirst_E1_eval_6204100；PID446391，真实完整命令已确认。
 运行信息: python -u scripts/train_e1_baselines.py --data-root /home/XT/nuist/pythoncode/TimeDARTFirst --out /home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/E1/e1_b5be60a_eval1 --device cuda:0 --recover-evaluation
-运行信息: 输出目录固定唯一且拒绝复用；父目录launch_once排他登记已写入，原r1保持只读；当前仍运行，尚未取得最终结果。
+运行信息: 输出目录固定唯一且拒绝复用；父目录launch_once排他登记已写入，原r1保持只读；已于北京时间13:44:26完成，无failed标记；本次仅一次评估。
 关键数字: 复用64拟合（10搜索+54正式），新增训练=0、重新选参=0；三设定/六臂/三seed，评估仅一次。
 关键数字: C0维持stop，M覆盖81.2799%未达88–92%；B2/M+无限区间照实保留；Claude已复核，不再优化或补跑。
-需要 Claude 做的: 本次运行完成后复核三设定各臂MAE/RMSE/R²、上游增益CI和相对TSMixer差距，全部仅描述；当前不宣称有最终成绩。
-需要用户决定: 无，用户已具体授权此次仅评估例外；若本实例失败不自动重启。
+需要 Claude 做的: 复核output/e1_baselines/RESULT_SUMMARY.md及eval1/result.json、independent_verification.json；各臂指标、增益CI、相对TSMixer差距均已列出，全部仅描述。
+关键数字: TSMixer在Kel/T22/T23的MAE=166.2789/213.6308/188.8388（精确值见result），三设定全部新增基线均更差。
+关键数字: TimeXer上游MAE增益4.0119/4.6883/4.1757kW，95%CI均>0；iTransformer为4.0338/1.0364/0.3902kW，后两组CI跨0。
+运行信息: 57数组哈希、64拟合原产物重新核验；保存数组复算全部指标和24比较，结果见独立核验JSON；无新增定时任务。
+需要用户决定: 无；结果待Claude复核，未合主线。
 边界: 未改原冻结协议/旧worktree、未重新训练/选参、未合主线、main未动、无新增定时任务、未提交Cursor下载文件。

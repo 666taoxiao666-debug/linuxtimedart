@@ -1,0 +1,10 @@
+{
+  "completed": true,
+  "array_hashes_verified": 57,
+  "all_new_arm_metrics_recomputed": true,
+  "frozen_fit_artifacts_reverified": 64,
+  "training": false,
+  "reselection": false,
+  "all_reference_metrics_recomputed": true,
+  "all_24_comparisons_recomputed": true
+}

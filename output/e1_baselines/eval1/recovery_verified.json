@@ -1,0 +1,15 @@
+{
+  "source": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/E1/e1_b5be60a_r1",
+  "fits": 64,
+  "formal": 54,
+  "training": false,
+  "reselection": false,
+  "metadata": {
+    "launch.json": "60ef1fa39131affb442ab0c702740e3fe0988388e1161b3bea396a38c71dc99c",
+    "selection_freeze.json": "5b67c030398e6870c4e810b29392f616344135eb20806aef46cd21e318a59848",
+    "hyperparameter_selection.json": "bcba67a3219bce4c24c06fafaa783728c47db8bbc5dfa73f5ea96a44ae36be58",
+    "input_identity.json": "3468697a5fa8fe750dcf9a4137855a1ef2503a0c6b44029802925f2c8241d5f7",
+    "failed.json": "d3e4c700463cdea261397063a196fdb947c8875becc2fa0d94d10ea353c146a4",
+    "evaluation_started.json": "a8290d9294cf6d52d1cb8732c1e2134ec6037b03c806871820dc86450fd0b3de"
+  }
+}
