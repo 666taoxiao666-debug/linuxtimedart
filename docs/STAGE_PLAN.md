@@ -116,7 +116,7 @@ E1：补强证据，三条线并行：
 - `configs/e1_baselines_protocol.json`、`scripts/train_e1_baselines.py`、`tests/test_train_e1_baselines.py`：新文件，复用 P3/v32 的数据和统计函数。
 - `scripts/audit_hill_of_towie_e1.py`、`tests/test_audit_hill_of_towie_e1.py`：B 线的只读审计。
 - `scripts/pilot_conformal_c0.py`、`tests/test_pilot_conformal_c0.py`、`output/conformal_c0/**`：C 线。
-  - 测试要覆盖：密度比只用无标签的上游特征；校准不用 2021 年的标签；ACI 的标签按 h 小时延迟到达；加权分位数的正确性。
+  - 测试要覆盖：密度比只用无标签的上游特征；校准不用评估年 2022 的标签（校准标签最晚到 2021-12-31 23:00）；ACI 的标签按 h 小时延迟到达；加权分位数的正确性。
 - `output/e1_baselines/**`、`output/hill_of_towie_e1/**`：结果和登记，不拷权重、数组和原始数据。
 - 已有的 `scripts/acquire_hill_of_towie.py` 和下载记录，按上一轮交接单独提交。
 
