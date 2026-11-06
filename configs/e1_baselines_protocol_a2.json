@@ -1,0 +1,111 @@
+{
+  "id": "L0-A2",
+  "status": "FROZEN",
+  "scope": "descriptive on previously opened test years",
+  "seeds": [
+    2024,
+    2025,
+    2026
+  ],
+  "search_seed": 2024,
+  "d_model_candidates": [
+    64,
+    128
+  ],
+  "selection": "Kelmarsh 2023 validation MAE only; smaller d_model wins exact ties",
+  "arms": {
+    "iTransformer": [
+      "last10",
+      "upstream"
+    ],
+    "TimeXer": [
+      "last10",
+      "upstream"
+    ]
+  },
+  "fixed_args": {
+    "seq_len": 24,
+    "pred_len": 4,
+    "task_name": "long_term_forecast",
+    "features": "MS",
+    "use_norm": true,
+    "n_heads": 4,
+    "e_layers": 2,
+    "dropout": 0.1,
+    "factor": 1,
+    "embed": "fixed",
+    "freq": "h",
+    "activation": "gelu",
+    "patch_len": 8,
+    "stride": 4,
+    "moving_avg": 25,
+    "individual": false
+  },
+  "d_ff": "4*d_model",
+  "training_recipe": "configs/kelmarsh_upstream_protocol_v32.json",
+  "recipe_sha256_lf": "b9fbdce22a83dd0e5128aa3d9a489cbcb725c4f298f2feba6fe15f028f7a3588",
+  "folds": [
+    {
+      "id": "Kelmarsh",
+      "fit_years": [
+        2016,
+        2017,
+        2018,
+        2019,
+        2020,
+        2021,
+        2022
+      ],
+      "validation_year": 2023,
+      "test_year": 2024
+    },
+    {
+      "id": "T22",
+      "fit_years": [
+        2016,
+        2017,
+        2018,
+        2019,
+        2020
+      ],
+      "validation_year": 2021,
+      "test_year": 2022
+    },
+    {
+      "id": "T23",
+      "fit_years": [
+        2016,
+        2017,
+        2018,
+        2019,
+        2020,
+        2021
+      ],
+      "validation_year": 2022,
+      "test_year": 2023
+    }
+  ],
+  "search_fits": 8,
+  "formal_fits": 54,
+  "instances": 1,
+  "resume": false,
+  "chronos": "optional; skip if verified environment/weights unavailable; no download or install",
+  "upstream_source": "https://github.com/thuml/Time-Series-Library/tree/4e938a1767106324dd753b2a44832bf870a0252e",
+  "statistics": {
+    "block_length": 8,
+    "replicates": 5000,
+    "seed": 2024,
+    "hac_max_lag": 7,
+    "seed_handling": "average losses, not forecasts",
+    "holm": false
+  },
+  "formal_fits_max": 36,
+  "normalization_candidates": [
+    true,
+    false
+  ],
+  "tie_break": "use_norm=true then smaller d_model",
+  "reuse": "outputs/logs/E1/e1_b5be60a_r1",
+  "output_run": "outputs/logs/L0/a2_r1",
+  "e1_source_sha256": "57d25dbe76e184e0f746e75d0e9828cb4742c274665a4827f603607e5481f25e"
+}
