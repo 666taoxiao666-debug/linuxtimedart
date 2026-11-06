@@ -1,0 +1,29 @@
+{
+  "passed": true,
+  "fits": {
+    "DLinear_power": {
+      "parameters": 200,
+      "epochs": 1
+    },
+    "PatchTST_power": {
+      "parameters": 102148,
+      "epochs": 1
+    },
+    "iTransformer_last10": {
+      "parameters": 101956,
+      "epochs": 1
+    },
+    "iTransformer_upstream": {
+      "parameters": 101956,
+      "epochs": 1
+    },
+    "TimeXer_last10": {
+      "parameters": 136836,
+      "epochs": 1
+    },
+    "TimeXer_upstream": {
+      "parameters": 136836,
+      "epochs": 1
+    }
+  }
+}

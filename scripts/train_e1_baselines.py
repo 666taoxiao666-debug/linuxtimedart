@@ -177,8 +177,10 @@ def execute(root,out,protocol,device):
         for family in ('iTransformer','TimeXer'):
             comparisons[family+'_upstream_gain']={'candidate':family+'_upstream','reference':family+'_last10','question':'descriptive'}
         for arm in selected: comparisons[arm+'_vs_TSMixer']={'candidate':arm,'reference':'TSMixer-upstream','question':'descriptive'}
-        comp=u.compare_all(predictions,truth,windows.target_times()[:,0]-np.timedelta64(1,'h'),comparisons,None,protocol['statistics'])
-        for value in comp.values(): value.pop('holm_p',None)
+        from utils.kelmarsh_multiyear_benchmark import paired
+        issue=windows.target_times()[:,0]-np.timedelta64(1,'h')
+        comp={name:{**spec,**paired(predictions[spec['candidate']],predictions[spec['reference']],truth,issue,protocol['statistics'])}
+              for name,spec in comparisons.items()}
         report={'metrics':{arm:u.seed_mean([u.metrics(p,truth,2050) for p in ps]) for arm,ps in predictions.items()},
                 'comparisons':comp,'windows':len(windows),'scope':'descriptive only; no Holm; previously opened tests'}
         save(dest/'report.json',report); reports[fid]=report
@@ -193,7 +195,10 @@ def main():
     args.out.mkdir(parents=True,exist_ok=False)
     protocol=u.read_json(ROOT/'configs/e1_baselines_protocol.json')
     if u.text_sha256_lf(p2.PROTOCOL)!=protocol['recipe_sha256_lf']: raise ValueError('Frozen recipe changed')
-    save(args.out/'launch.json',{'utc':p2.now(),'argv':sys.argv,'source_code':p2.source_code(),'protocol':protocol,
+    sources=p2.source_code()
+    for name in ('scripts/train_e1_baselines.py','tests/test_train_e1_baselines.py','models/iTransformer.py','models/TimeXer.py','models/PatchTST.py','models/DLinear.py'):
+        sources[name]=u.file_sha256(ROOT/name)
+    save(args.out/'launch.json',{'utc':p2.now(),'argv':sys.argv,'source_code':sources,'protocol':protocol,
                               'implementation_sha256':u.file_sha256(__file__)})
     try:
         if args.smoke: model_smoke(args.out,protocol)

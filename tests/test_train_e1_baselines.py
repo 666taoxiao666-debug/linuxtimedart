@@ -16,12 +16,13 @@ class BaselineTests(unittest.TestCase):
                 for d in (64,128):
                     cfg=e.configuration(self.protocol,family,channel,d)
                     model,count=e.build_model(cfg);model.eval()
-                    x=torch.randn(2,24,cfg['channels'],requires_grad=True)
+                    x=torch.randn(2,24,cfg['channels'])
                     y=model(x)
                     self.assertEqual(y.shape[:2],(2,4)); self.assertTrue(torch.isfinite(y).all())
                     y[...,-1].sum().backward()
                     if family in ('TimeXer','iTransformer'):
-                        self.assertGreater(x.grad[...,:-1].abs().sum().item(),0.)
+                        changed=x.clone();changed[...,:-1]=torch.randn_like(changed[...,:-1])
+                        self.assertGreater((model(changed)[...,-1]-y[...,-1]).abs().max().item(),0.)
                     self.assertEqual(count,sum(p.numel() for p in model.parameters()))
 
     def test_only_validation_selects_configuration(self):
