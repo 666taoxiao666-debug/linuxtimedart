@@ -3,53 +3,46 @@
 规则见 AGENTS.md：两节各由一方整节覆盖、不追加，每节不超过 40 行；历史用 `git log -p HANDOFF.md` 查。
 
 ## Claude → Codex
-<!-- 由 Claude 覆盖。最后更新：2026-11-06 第 41 次（E1 收尾复核 + 新阶段 L0：H0 信息余量探针 / A2 基线归一化补查） -->
-轮次: R1/2 | 阶段: L0 | 分支: exp/L0 | 基线提交: ae3b8f2
-请求: 审方案后实现并运行（H0、A2；无阻断即可直接跑，提速规则适用）
+<!-- 由 Claude 覆盖。最后更新：2026-11-06 第 42 次（L0 R1 决议；H0、A2 运行中） -->
+轮次: R1/2 | 阶段: L0 | 分支: exp/L0 | 基线提交: ba4293a
+请求: 只运行（等 H0、A2 两个实例跑完，交回结果）
 待审范围: git diff HEAD -- docs/STAGE_PLAN.md docs/review/DECISIONS.md
-允许改动: scripts/acquire_hill_of_towie.py, scripts/probe_upstream_headroom_l0.py, tests/test_probe_upstream_headroom_l0.py, configs/l0_headroom_protocol.json, output/l0_headroom/**, scripts/train_e1_baselines_a2.py, tests/test_train_e1_baselines_a2.py, configs/e1_baselines_protocol_a2.json, output/e1_baselines/a2/**, scripts/audit_hill_of_towie_e1.py, output/hill_of_towie_e1/**, output/external_acquisition/hill_of_towie/**, output/e1_baselines/local_smoke_1343756/**
+允许改动: output/l0_headroom/**, output/e1_baselines/a2/**, output/hill_of_towie_e1/**, scripts/audit_hill_of_towie_e1.py, tests/test_audit_hill_of_towie_e1.py, scripts/acquire_hill_of_towie.py, output/external_acquisition/hill_of_towie/**, output/e1_baselines/local_smoke_1343756/**
 审查文件: docs/review/L0-R1-codex.md
-本轮决议: E1 没有待决议编号；A 线结果已独立复核，只作描述，并转出 A2（见 DECISIONS.md 的 E1 末节和 L0 一节）
+本轮决议: 采纳 3（R1-B1 已复核修法正确，S1、S2 改措辞）/ 反驳 0 / 暂缓 1（S3）/ 转实验 0
 
 需要你做的:
-1. **提交与合并**：
-   - 提交本轮的 STAGE_PLAN 和 DECISIONS；
-   - 用户同意后，把 exp/E1 用 --no-ff 合回 codex/self-evolving-wiki（A、C 都是有效结果，B 线移入 L0）；
-   - 再从主线拉 exp/L0。
-2. **审 STAGE_PLAN 的 L0**：有阻断按 v2 写审查文件；没有阻断就实现并各运行一次：
-   - H0：CPU，先冻结协议和特征清单；
-   - A2：GPU，与 H0 可并行。
-   - H0 的判定只按事先设定，不改阈值、不调学习器。
-   - L1 草案只看方向有没有硬伤，不实现，也不调用任何大模型。
-3. **交回**：
-   - H0：两个风场 × 两个方向的 H_MAE%、H_RMSE%，以及 GO / STOP / 边缘的判定；
-   - A2：选参结果（use_norm、d_model）、各臂指标、两种持续法的分 h 参照；
-   - B 线：只在 Cursor 下载完成后做只读核验，没完成就写"未开始"。
+1. **提交**本轮的 STAGE_PLAN（同步了 R1-B1 和措辞）和 DECISIONS。H0、A2 两个实例不重启、不干预，跑完后：
+   - 把结果 JSON 和报告拷回 output/l0_headroom/r1/、output/e1_baselines/a2/r1/，不拷数组和权重；
+   - H0 交回：4 个方向的 H_MAE%、H_RMSE%、两风场平均，以及 GO / STOP / 边缘的判定；
+   - A2 交回：4 个组合的选参结果、各臂指标、上游增益及 CI、两种持续法的分 h 参照。
+2. **B 线**：Cursor 的 MIDAS 下载（进程 460894）结束且 manifest 状态是 AVAILABLE_FILES_VERIFIED 时，按 E1 B 线原规则做只读清点：
+   - 风机数据：测试年 2024、2025（2026 一并保护）只核对已登记的哈希；开发年只读文件头和元数据，做列名对照，并记录 AeroUp 改造日期。
+   - MIDAS：开发年小时风速完整率 ≥85% 的才算合格站；门槛是合格站 ≥8、其中有气压的 ≥5、覆盖 ≥3 个象限。封存年只记哈希。
+   - 需要写筛选代码的话，在 audit_hill_of_towie_e1.py 里加只读模式，并补测试。
+   - 下载没结束就写"未开始"，不代下、不干预。
+3. **交回**后我按 STAGE_PLAN 里事先设定的规则复核，不改阈值。
 
-需要用户决定: 是否同意把 exp/E1 合回主线；（只有 H0 = GO 才需要）大模型用 API 还是本地开源模型
+需要用户决定: 无（只有 H0 = GO 才需要决定大模型用 API 还是本地开源模型）
 
 说明:
-- 这一阶段的起因：用户提议"把手工上游特征改成可学习的参数化结构、由大模型决定结构"。
-- 我判断直接做偏牵强，因为 K1b、N0、N1-PH 和 S 筛查都显示手工特征可能已接近信息上限。所以先测余量，再决定开不开 L1。
-- A2 的起因：iTransformer、TimeXer 的 h1 MAE 只与小时持续法持平，怀疑 use_norm=true 抹掉了水平信息。
-- 不下载、不安装：sklearn 若不可用，就停下写进交回，由 Cursor 处理。
-- 本地未跟踪的 output/e1_baselines/local_smoke_1343756/（43 个文件，含 .pt）是 E1 冒烟残留：不提交，删除还是保留由你决定。
+- L1 仍然不实现、不调用大模型。
+- R1-S2 提醒得对：我之前把 use_norm 的影响说重了，已改成"怀疑，待 A2 实测"。
 
 ## Codex → Claude
-<!-- 由Codex覆盖。2026-11-06 第41次：E1合并，L0 H0/A2审查及启动 -->
-轮次: R1/2 | 阶段: L0运行中 | 分支: exp/L0 | 提交号: E1收尾4bd8397；主线no-ff合并e215917；L0实现5944271
-审查结论: B，无未解决运行阻断；见docs/review/L0-R1-codex.md，R1-B1按唯一最小修法先行，建议不阻塞。
-已直接修复: 5944271仅在A2新脚本适配iTransformer，use_norm=false真实绕开归一化/反归一化；原模型、E1脚本与协议未改；参数/state_dict相同，true仍复用原工厂。
-运行信息: 服务器sklearn1.5.2；6单测通过；A2四组合false各1epoch合成fit通过；源码和协议已提交推送后部署。
-运行信息: 输入预检通过，旧预测cohort/标签逐元素一致；H0跨年完整输入+标签不重叠；三设定两种持续法共同窗口无缺值。
-运行信息: worktree=/home/XT/nuist/pythoncode/TimeDARTFirst_L0_5944271；数据根=/home/XT/nuist/pythoncode/TimeDARTFirst。
-运行信息: H0 PID461811，python -u scripts/probe_upstream_headroom_l0.py --data-root <数据根> --out <数据根>/outputs/logs/L0/h0_r1；CPU2线程。
-运行信息: A2 PID461812，python -u scripts/train_e1_baselines_a2.py --data-root <数据根> --out <数据根>/outputs/logs/L0/a2_r1 --device cuda:0；各只有一个实例，启动登记排他，不自动重启。
-关键数字: H0现有年共同窗口Kelmarsh16668、Penmanshiel37634；特征a/b1/b2为32/572/80及32/197/80维；固定24次GBM，不训练深度模型。
-关键数字: A2新增8次false搜索，正式新增≤36次；true搜索和选中true正式拟合复用冻结E1；只按Kel2023验证MAE选择，平局true优先再小宽度。
-关键数字: 两线正式结果尚未取得；不得把启动或合成测试当GO/STOP及正式指标。
-运行信息: B未开始验收；只读看到Cursor MIDAS下载进程460894仍在运行，不代下、不干预；L1未实现、未调用LLM。
-需要 Claude 做的: 事后复核R1-B1最小适配，在DECISIONS登记；H0 STOP表述限“固定探针未发现足够余量”，不能证明信息论上限；use_norm影响待A2实测，不先归因为确定错误。
-需要 Claude 做的: 两线结束后复核H0四方向余量及固定判定、A2选参/指标/持续法分h结果；当前无需新增实验指令。
-需要用户决定: 无；E1合并已按用户授权完成并推送，main未动；只有H0 GO后才讨论L1。
-边界: 未提交Cursor下载脚本/文件或本地冒烟权重；原失败E1记录保留；没有新增定时任务；不逐次汇报正常拟合。
+<!-- 由Codex覆盖。2026-11-06 第42次：H0已完成STOP，A2仍运行 -->
+轮次: R1/2 | 阶段: L0部分结果 | 分支: exp/L0 | 提交号: 实现5944271；启动记录ba4293a；本轮见git log
+审查结论: 第42次决议及措辞修订通过，未改任何运行配置；H0有效STOP，A2尚无最终指标。
+已直接修复: 本轮无；R1-B1已有Claude复核采纳，不改已部署代码或协议。
+运行信息: H0 outputs/logs/L0/h0_r1于北京时间2026-11-06 19:02:22完成，进程已退出，无failed；24次固定GBM。
+运行信息: 24预测/校正数组哈希核验通过；从保存truth/baseline/correction复算总体和分h误差、四方向H值及判定，全部一致，无新拟合/预测。
+关键数字: Kelmarsh 2023→2024：H_MAE=0.077268%，H_RMSE=0.360194%；2024→2023：0.552242% / 0.798554%。
+关键数字: Penmanshiel 2022→2023：H_MAE=0.103521%，H_RMSE=0.631547%；2023→2022：0.960052% / 0.840009%。
+关键数字: Kel平均H_MAE/H_RMSE=0.314755%/0.579374%；Pen平均=0.531786%/0.735778%。
+关键数字: Kel平均H_MAE<0.5%→STOP；不进入L1。结论限固定探针未发现足够余量，不证明信息论上限。
+运行信息: H0 JSON已拷回output/l0_headroom/r1/，无权重/数组；报告output/l0_headroom/RESULT_SUMMARY.md。
+运行信息: A2 PID461812完整Python命令与out=outputs/logs/L0/a2_r1确认，仍正常选参训练，未完成/未最终评估；不重启、不干预、不逐次汇报。
+运行信息: B只读确认Cursor MIDAS PID460894仍在下载，验收“未开始”，不代下、不解析封存年。
+需要 Claude 做的: 复核H0四方向及STOP证据；等A2结束后再复核四组合选参、各臂指标/上游CI和两种持续法分h参照。
+需要用户决定: 无；H0未GO，不需要决定LLM部署方式；A2按原预算继续。
+边界: 原冻结文件未改、L1未实现、未合L0主线、main未动、无新增定时任务、未提交Cursor下载文件。

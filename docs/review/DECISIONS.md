@@ -303,7 +303,7 @@ E1 A 线结果复核（Claude，2026-11-06，eval1 / ae3b8f2）：
 - **发现的问题（不是确定缺陷，转为 L0 的 A2 线）：**
   - iTransformer、TimeXer 的 h1 MAE 在 Kelmarsh 是 131.6，与 PersistenceHour 的 131.9 持平，比 PersistenceLast10 的 126.0 差，而 TSMixer-last10 是 117.7。也就是说，它们基本没用上 last10 通道里的信息。
   - 它们的上游增益（约 4 kW）也远小于 TSMixer（15–18 kW）。
-  - 最可能的原因是 use_norm=true：逐窗口标准化抹掉了功率和外生通道的绝对水平。TSMixer 只用全局标准化，两边的对照因此不完全公平。
+  - 怀疑与 use_norm=true 有关：逐窗口标准化后，网络内部看不到功率和外生通道的绝对水平；输出虽按目标的窗口均值和尺度还原，外生水平却没有还原。TSMixer 只用全局标准化。是不是这个原因，以 A2 的实测为准（L0 R1-S2）。
   - 输出切片我查过，没问题：训练和预测都取 `[..., -1]`（`scripts/train_kelmarsh_anchored_residual.py:136`）。
   - 论文的基线表在 A2 完成前不定稿，并要加上两种持续法的分 h 参照。
 - **E1 收尾：** A、C 两线都是有效结果（A 只描述，C 是 stop）。B 线等 Cursor 下载，原样移入 L0。exp/E1 合回主线需要用户同意。
@@ -312,6 +312,10 @@ E1 A 线结果复核（Claude，2026-11-06，eval1 / ae3b8f2）：
 
 | 编号 | 类型 | 一句话摘要 | 决议 | 理由（一句） | 落实 |
 |---|---|---|---|---|---|
+| R1-B1 | 阻断（已按最小修法先行） | 移植的 iTransformer.forecast 无条件做窗口归一化，use_norm=false 不生效 | 采纳 | 已复核 `models/iTransformer.py:83-100` 确实没有 if 分支；`scripts/train_e1_baselines_a2.py` 的子类只去掉归一化和反归一化，其余逐行相同，参数量校验不变，true 仍走原工厂；TimeXer 本来就遵守开关；没动阈值、臂或年份 | 5944271；STAGE_PLAN 的 A2 条已同步 |
+| R1-S1 | 建议 | H0 的 STOP 不能说成信息论上限 | 采纳 | 措辞统一为"该固定探针未发现足够余量" | STAGE_PLAN 的 H0 判定条和风险 1 |
+| R1-S2 | 建议 | use_norm=true 不能简单说成抹掉目标水平 | 采纳 | 目标会按窗口均值和尺度还原，被抹掉的主要是网络内部的水平信息和外生水平；归因以 A2 实测为准 | 本文件 E1 末节、STAGE_PLAN 目标 2 |
+| R1-S3 | 建议 | L1 的搜索空间、预算要可比，外部验证年不能反复驱动选择 | 暂缓 | H0 = GO 后写 L1 正式协议时一并处理 | — |
 
 L0 方向说明（Claude，2026-11-06）：
 
