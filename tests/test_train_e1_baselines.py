@@ -1,5 +1,8 @@
 import copy
 import unittest
+import tempfile
+from pathlib import Path
+from unittest.mock import patch, MagicMock
 import torch
 from scripts import train_e1_baselines as e
 
@@ -43,5 +46,30 @@ class BaselineTests(unittest.TestCase):
             v=e.view(w,channel)
             self.assertIs(v.window_starts,w.window_starts)
             torch.testing.assert_close(torch.as_tensor(v[0][1][:,-1]),torch.as_tensor(w[0][1][:,-1]))
+
+class RecoveryTests(unittest.TestCase):
+    def test_missing_reference_fails_before_evaluation_marker(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            out=Path(tmp); windows=MagicMock()
+            with patch.object(e,'reference',side_effect=FileNotFoundError('reference missing')):
+                with self.assertRaises(FileNotFoundError):
+                    e.evaluate(out,out,{'folds':[{'id':'Kelmarsh'}]},'cpu',{'Kelmarsh':windows},{},[],out,{})
+            self.assertFalse((out/'evaluation_started.json').exists())
+
+    def test_changed_frozen_metadata_rejected(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);(root/'freeze.json').write_text('changed')
+            with self.assertRaises((ValueError,RuntimeError)):
+                e.checked_recovery_records(root,{'source_run':'.','source_metadata':{'freeze.json':'0'*64}})
+
+    def test_recovery_never_calls_fit_or_choose(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp); source=root/'original';source.mkdir();out=root/'new';out.mkdir()
+            protocol={'folds':[]};e.save(source/'launch.json',{'protocol':protocol});e.save(source/'input_identity.json',{})
+            recovery={'output_run':'new','source_metadata':{}}
+            with patch.object(e,'checked_recovery_records',return_value=(source,{},[])), patch.object(e,'load_data',return_value=({},{})), patch.object(e,'evaluate') as evaluate, patch.object(e,'fit',side_effect=AssertionError('training forbidden')), patch.object(e,'choose',side_effect=AssertionError('selection forbidden')):
+                e.recover_evaluation(root,out,protocol,'cpu',recovery)
+                evaluate.assert_called_once()
+            with self.assertRaises(ValueError): e.recover_evaluation(root,root/'other',protocol,'cpu',recovery)
 
 if __name__=='__main__':unittest.main()

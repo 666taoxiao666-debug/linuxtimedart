@@ -1,0 +1,24 @@
+{
+  "id": "E1-A-eval-recovery-v1",
+  "mode": "evaluation_only",
+  "source_run": "outputs/logs/E1/e1_b5be60a_r1",
+  "output_run": "outputs/logs/E1/e1_b5be60a_eval1",
+  "original_worktree": "/home/XT/nuist/pythoncode/TimeDARTFirst_E1_b5be60a",
+  "instances": 1,
+  "training": false,
+  "reselection": false,
+  "source_metadata": {
+    "launch.json": "60ef1fa39131affb442ab0c702740e3fe0988388e1161b3bea396a38c71dc99c",
+    "selection_freeze.json": "5b67c030398e6870c4e810b29392f616344135eb20806aef46cd21e318a59848",
+    "hyperparameter_selection.json": "bcba67a3219bce4c24c06fafaa783728c47db8bbc5dfa73f5ea96a44ae36be58",
+    "input_identity.json": "3468697a5fa8fe750dcf9a4137855a1ef2503a0c6b44029802925f2c8241d5f7",
+    "failed.json": "d3e4c700463cdea261397063a196fdb947c8875becc2fa0d94d10ea353c146a4",
+    "evaluation_started.json": "a8290d9294cf6d52d1cb8732c1e2134ec6037b03c806871820dc86450fd0b3de"
+  },
+  "v32_manifest_sha256": "a8cc5708e4d530ed962f458fb967b7955b148072aa480aed923b6a52a8fb370b",
+  "v32_predictions": {
+    "TSMixer_upstream_all_s2024.npz": "34adc01f68f1507aae0fa34f5492b458d20f584f8588f82d67da301276d57376",
+    "TSMixer_upstream_all_s2025.npz": "d4febbcbc7fb62ddc49eea693e18dc1fcf723660b04b4cb8b767ccb9b2806dc2",
+    "TSMixer_upstream_all_s2026.npz": "3ba23a2a5b6e17fdbb71787e2d93e2f95433deeb2405c638024adc94534bdf71"
+  }
+}

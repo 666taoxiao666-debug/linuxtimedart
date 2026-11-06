@@ -84,9 +84,10 @@ def load_data(root,protocol,identity):
     return sets,recipe
 
 
-def reference(root,fid,windows):
+def reference(root,fid,windows,recovery=None):
     if fid=='Kelmarsh':
         local=ROOT/'output/kelmarsh_hourly/upstream_v32_review/results'
+        if recovery: n1.checked(local/'post_test_manifest.json',recovery['v32_manifest_sha256'],{})
         registry=u.read_json(local/'post_test_manifest.json')
         # Locate by already registered cohort hash, not newest run name.
         matches=[]
@@ -101,8 +102,9 @@ def reference(root,fid,windows):
         starts=cohort['window_starts']; preds=[]
         for seed in p2.SEEDS:
             name=f'TSMixer_upstream_all_s{seed}.npz'
-            record=u.read_json(local/'evaluation'/name.replace('.npz','.json'))
-            n1.checked(folder/name,record['prediction_sha256'],{})
+            digest=(recovery['v32_predictions'][name] if recovery else
+                    u.read_json(local/'evaluation'/name.replace('.npz','.json'))['prediction_sha256'])
+            n1.checked(folder/name,digest,{})
             with np.load(folder/name,allow_pickle=False) as z: preds.append(z['prediction'])
     else:
         old=u.read_json(ROOT/'configs/n1ph_protocol.json'); folder=root/old['p3_run']/fid/'evaluation'
@@ -160,15 +162,21 @@ def execute(root,out,protocol,device):
     if len(records)!=64 or len(formal)!=54: raise ValueError('Fit count mismatch')
     for entry in records: trainer.verify_trained(out/entry['folder'],entry['record']['contract'])
     save(out/'selection_freeze.json',{'fits':records,'count':64,'formal_count':54})
+    evaluate(root,out,protocol,device,sets,selected,formal,out)
+
+
+def evaluate(root,out,protocol,device,sets,selected,formal,source,recovery=None):
+    # All historical references and exact cohorts are checked before evaluation begins.
+    references={f['id']:reference(root,f['id'],sets[f['id']].windows('test'),recovery) for f in protocol['folds']}
     with (out/'evaluation_started.json').open('x') as f: json.dump({'utc':p2.now()},f)
     reports={}
     for fold in protocol['folds']:
         fid=fold['id']; windows=sets[fid].windows('test'); truth=windows.truth_and_anchor()[0]
-        predictions={'TSMixer-upstream':reference(root,fid,windows)}
+        predictions={'TSMixer-upstream':references[fid]}
         dest=out/'evaluation'/fid; dest.mkdir(parents=True)
         np.savez_compressed(dest/'cohort.npz',truth=truth,times=windows.target_times(),starts=windows.window_starts)
         for entry in [r for r in formal if r['fold']==fid]:
-            model,_=build_model(entry['config']); ck=torch.load(out/entry['folder']/'best.pt',map_location='cpu',weights_only=False)
+            model,_=build_model(entry['config']); ck=torch.load(source/entry['folder']/'best.pt',map_location='cpu',weights_only=False)
             model.load_state_dict(ck['model'],strict=True); model.to(device)
             prediction=trainer.v26run.predict(model,view(windows,entry['config']['channel']),entry['seed'],device,512)
             arm=entry['config']['arm']; predictions.setdefault(arm,[]).append(prediction)
@@ -188,9 +196,45 @@ def execute(root,out,protocol,device):
                            'artifacts':{str(p.relative_to(out)):u.file_sha256(p) for p in (out/'evaluation').rglob('*.npz')}})
 
 
+def checked_recovery_records(root,recovery):
+    source=root/recovery['source_run']
+    for name,digest in recovery['source_metadata'].items(): n1.checked(source/name,digest,{})
+    freeze=u.read_json(source/'selection_freeze.json')
+    selected=u.read_json(source/'hyperparameter_selection.json')
+    records=freeze['fits']; formal=[r for r in records if r['folder'].startswith('fits/')]
+    if len(records)!=64 or len(formal)!=54 or len({r['folder'] for r in records})!=64:
+        raise ValueError('Frozen fit count/uniqueness mismatch')
+    for entry in records:
+        folder=(source/entry['folder']).resolve()
+        if not folder.is_relative_to(source.resolve()): raise ValueError('Invalid fit path')
+        if u.read_json(folder/'trained.json')!=entry['record']: raise ValueError('Frozen trained record changed')
+        trainer.verify_trained(folder,entry['record']['contract'])
+    for entry in formal:
+        if entry['config']!=selected[entry['config']['arm']]: raise ValueError('Selection changed')
+    if list((source/'evaluation').rglob('*.npz')): raise ValueError('Original evaluation already contains predictions')
+    launch=u.read_json(source/'launch.json')
+    for name,digest in launch['source_code'].items():
+        n1.checked(Path(recovery['original_worktree'])/name,digest,{})
+        if name not in ('scripts/train_e1_baselines.py','tests/test_train_e1_baselines.py'):
+            n1.checked(ROOT/name,digest,{})
+    return source,selected,formal
+
+
+def recover_evaluation(root,out,protocol,device,recovery):
+    if out.resolve()!=(root/recovery['output_run']).resolve(): raise ValueError('Recovery output must be the single authorized directory')
+    source,selected,formal=checked_recovery_records(root,recovery)
+    if u.read_json(source/'launch.json')['protocol']!=protocol: raise ValueError('Original protocol changed')
+    identity={}; sets,_=load_data(root,protocol,identity)
+    if identity!=u.read_json(source/'input_identity.json'): raise ValueError('Input identity changed')
+    save(out/'input_identity.json',identity)
+    save(out/'recovery_verified.json',{'source':str(source),'fits':64,'formal':54,'training':False,'reselection':False,'metadata':recovery['source_metadata']})
+    evaluate(root,out,protocol,device,sets,selected,formal,source,recovery)
+
+
 def main():
     parser=argparse.ArgumentParser(); parser.add_argument('--data-root',type=Path,required=True);parser.add_argument('--out',type=Path,required=True)
-    parser.add_argument('--device',default='cuda:0');parser.add_argument('--smoke',action='store_true');args=parser.parse_args()
+    parser.add_argument('--device',default='cuda:0');parser.add_argument('--smoke',action='store_true');parser.add_argument('--recover-evaluation',action='store_true');args=parser.parse_args()
+    if args.recover_evaluation and args.smoke: parser.error('Recovery cannot train even synthetic models')
     torch.set_num_threads(2);torch.backends.cuda.matmul.allow_tf32=False;torch.backends.cudnn.allow_tf32=False
     args.out.mkdir(parents=True,exist_ok=False)
     protocol=u.read_json(ROOT/'configs/e1_baselines_protocol.json')
@@ -199,9 +243,10 @@ def main():
     for name in ('scripts/train_e1_baselines.py','tests/test_train_e1_baselines.py','models/iTransformer.py','models/TimeXer.py','models/PatchTST.py','models/DLinear.py'):
         sources[name]=u.file_sha256(ROOT/name)
     save(args.out/'launch.json',{'utc':p2.now(),'argv':sys.argv,'source_code':sources,'protocol':protocol,
-                              'implementation_sha256':u.file_sha256(__file__)})
+                              'implementation_sha256':u.file_sha256(__file__),'recovery':u.read_json(ROOT/'configs/e1_baselines_protocol_eval_v1.json') if args.recover_evaluation else None})
     try:
-        if args.smoke: model_smoke(args.out,protocol)
+        if args.recover_evaluation: recover_evaluation(args.data_root,args.out,protocol,torch.device(args.device),u.read_json(ROOT/'configs/e1_baselines_protocol_eval_v1.json'))
+        elif args.smoke: model_smoke(args.out,protocol)
         else: execute(args.data_root,args.out,protocol,torch.device(args.device))
         save(args.out/'completed.json',{'utc':p2.now()})
     except Exception as e:
