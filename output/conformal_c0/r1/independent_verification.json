@@ -1,0 +1,58 @@
+{
+  "passed": true,
+  "arrays_verified": 15,
+  "metrics_recomputed_from_saved_arrays": true,
+  "calibration_causality_passed": true,
+  "infinite_intervals": {
+    "2024_0.1": {
+      "B0": 0,
+      "B1": 0,
+      "B2": 88,
+      "B3": 0,
+      "M": 0,
+      "M+": 28
+    },
+    "2024_0.2": {
+      "B0": 0,
+      "B1": 0,
+      "B2": 0,
+      "B3": 0,
+      "M": 0,
+      "M+": 0
+    },
+    "2025_0.1": {
+      "B0": 0,
+      "B1": 0,
+      "B2": 173,
+      "B3": 0,
+      "M": 0,
+      "M+": 55
+    },
+    "2025_0.2": {
+      "B0": 0,
+      "B1": 0,
+      "B2": 0,
+      "B3": 0,
+      "M": 0,
+      "M+": 0
+    },
+    "2026_0.1": {
+      "B0": 0,
+      "B1": 0,
+      "B2": 185,
+      "B3": 0,
+      "M": 0,
+      "M+": 40
+    },
+    "2026_0.2": {
+      "B0": 0,
+      "B1": 0,
+      "B2": 0,
+      "B3": 0,
+      "M": 0,
+      "M+": 0
+    }
+  },
+  "new_predictions_generated": false,
+  "decision": "stop"
+}

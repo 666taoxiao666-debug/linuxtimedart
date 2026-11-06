@@ -1,0 +1,69 @@
+{
+  "status": "COMPLETED",
+  "seeds": [
+    2024,
+    2025,
+    2026
+  ],
+  "mean_90": {
+    "B0": {
+      "coverage": 0.7855934748240198,
+      "width_kw": 746.9999271418837,
+      "winkler_kw": 1833.2424721944237
+    },
+    "B1": {
+      "coverage": 0.9137233600946804,
+      "width_kw": 1242.1126403014048,
+      "winkler_kw": 1639.9800682644843
+    },
+    "B2": {
+      "coverage": 0.8934271305300161,
+      "width_kw": null,
+      "winkler_kw": null
+    },
+    "B3": {
+      "coverage": 0.8048430972505586,
+      "width_kw": 685.8424654110444,
+      "winkler_kw": 1522.9092135906214
+    },
+    "M": {
+      "coverage": 0.8127986363194758,
+      "width_kw": 728.7275525223982,
+      "winkler_kw": 1521.0805006687108
+    },
+    "M+": {
+      "coverage": 0.8944295770294022,
+      "width_kw": null,
+      "winkler_kw": null
+    }
+  },
+  "decision": "stop",
+  "eligible_comparators": [
+    "B1"
+  ],
+  "best_comparator_score": 1639.9800682644843,
+  "score_threshold": 1557.98106485126,
+  "scope": "development only; previously opened 2022; no coverage guarantee",
+  "M_plus_minus_B2": {
+    "coverage": 0.0010024464993860782,
+    "width_kw": null,
+    "winkler_kw": null
+  },
+  "artifacts": {
+    "evaluation_s2025.npz": "141259caf24c33fb667b8fee17404bd69409310de67b92fdd379680ec9c1e57e",
+    "evaluation_s2024.npz": "ea405e7071a618bc31e7d73ac71c7397c8790ed129ff7f4659c3f2f32e16319b",
+    "intervals_0.1_s2025.npz": "d2a4d48f8131ad0fe6e6cc5ea36a28a18d3ed207f5d23ee900d13ac989c3ad66",
+    "source_s2024.npz": "af7504673f072d9db2da4047e2facde3f1f39a074c4d39dfb7c87832e9fbf764",
+    "intervals_0.1_s2026.npz": "1b82cb16366da9869262a8c0c9c0abf3a8a6c3ab13878adc562511bbdaa2e18e",
+    "target_month_s2025.npz": "9971a836402ee30bcdf64d288cdea6b7308debaa36ded878e52d191fab63ac00",
+    "intervals_0.2_s2026.npz": "493db260811f05c05e0f327b3569e9575052168689e44962b1f36b721dd1ddfd",
+    "target_month_s2026.npz": "8ad9b767fce6890e603fa87bdf2d249eb7ccb55ff2c273435281dc81eaf234ed",
+    "intervals_0.2_s2025.npz": "e55a26c19f6d2c70028de4cb792dd76882b9ca284aabd93cc016f8499a0b28c4",
+    "intervals_0.1_s2024.npz": "8f0313ebbd47a82e47fe4814ec5ba323f137825c447b8d3c16ea488ea87cef97",
+    "source_s2025.npz": "86a346947010b8fe8004e49bd31912427f3801ed487664d3a4f7da00e15d5155",
+    "intervals_0.2_s2024.npz": "758f9b4b277ad95c564e4fcf9b13b1597600b4573661b87ca380687c85e5b88b",
+    "evaluation_s2026.npz": "c43081bf8059b6449898adac40bcb65bd9c014dae7ddacbf834900fc6cac9b81",
+    "source_s2026.npz": "75666833494fa22859a251e79622502da55dacf584c09ec4971068697d213b71",
+    "target_month_s2024.npz": "61901abd2da096129f7cb77d387c253514ea031fc19bde48dfa0cd4ce45e3ce2"
+  }
+}
