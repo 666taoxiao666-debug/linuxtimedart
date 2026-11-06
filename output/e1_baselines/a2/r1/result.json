@@ -1,0 +1,1736 @@
+{
+  "status": "COMPLETED",
+  "fits": 44,
+  "reports": {
+    "Kelmarsh": {
+      "metrics": {
+        "TSMixer-upstream": {
+          "mae": 166.27892980670353,
+          "mse": 65172.73877038435,
+          "rmse": 255.2891557730145,
+          "r2": 0.8148138799988972,
+          "mbe": -13.09693642397693,
+          "nmae_pct_rated": 8.111167307644076,
+          "nrmse_pct_rated": 12.453129549903146,
+          "hit_5pct_capacity_pct": 50.98279364320707,
+          "hit_10pct_capacity_pct": 72.05361054685945,
+          "lead_mae": [
+            112.89241198042693,
+            158.57625134492125,
+            184.72043944804227,
+            208.92661645342437
+          ],
+          "lead_mse": [
+            30599.18697977271,
+            58716.94190240212,
+            75914.6938677536,
+            95460.13233160893
+          ],
+          "lead_rmse": [
+            174.92569133630056,
+            242.31477032061392,
+            275.5254238773235,
+            308.9661833899979
+          ],
+          "lead_r2": [
+            0.9130924820415579,
+            0.8332832042672956,
+            0.7839005561873643,
+            0.728912043666104
+          ],
+          "seeds": 3
+        },
+        "iTransformer_last10": {
+          "mae": 191.87648015393344,
+          "mse": 87785.17620212231,
+          "rmse": 296.265520850628,
+          "r2": 0.7505614083250487,
+          "mbe": -18.88172811083498,
+          "nmae_pct_rated": 9.359828300191873,
+          "nrmse_pct_rated": 14.451976626859903,
+          "hit_5pct_capacity_pct": 47.32295774086908,
+          "hit_10pct_capacity_pct": 67.84960369618035,
+          "lead_mae": [
+            127.18090268940313,
+            181.74440050785697,
+            214.7085796993115,
+            243.87203771916154
+          ],
+          "lead_mse": [
+            38817.72739472941,
+            77613.31384256162,
+            103422.03899389018,
+            131287.6245773082
+          ],
+          "lead_rmse": [
+            197.00797734922,
+            278.56705355647097,
+            321.5724806522822,
+            362.31310487920854
+          ],
+          "lead_r2": [
+            0.8897502622245025,
+            0.7796301617421381,
+            0.7055979025156578,
+            0.6271690288993087
+          ],
+          "seeds": 3
+        },
+        "iTransformer_upstream": {
+          "mae": 184.6207759619217,
+          "mse": 80646.74810594217,
+          "rmse": 283.97826041038144,
+          "r2": 0.7708450089068178,
+          "mbe": -26.668004815540126,
+          "nmae_pct_rated": 9.005891510337642,
+          "nrmse_pct_rated": 13.852598068799095,
+          "hit_5pct_capacity_pct": 48.05233600191181,
+          "hit_10pct_capacity_pct": 68.54413111881149,
+          "lead_mae": [
+            127.35776456824625,
+            173.187112446842,
+            205.2035969773731,
+            232.73462985522488
+          ],
+          "lead_mse": [
+            39198.059920947686,
+            69759.24370327625,
+            93793.08887282615,
+            119836.59992671861
+          ],
+          "lead_rmse": [
+            197.98122224914582,
+            264.1090078055177,
+            306.24788053868116,
+            346.1628767775394
+          ],
+          "lead_r2": [
+            0.888670045424156,
+            0.801930461530537,
+            0.7330077577050419,
+            0.6596876813947181
+          ],
+          "seeds": 3
+        },
+        "TimeXer_last10": {
+          "mae": 196.82448830573995,
+          "mse": 85556.27690928364,
+          "rmse": 292.493903051263,
+          "r2": 0.7568947498371835,
+          "mbe": -3.0633641266864515,
+          "nmae_pct_rated": 9.601194551499512,
+          "nrmse_pct_rated": 14.267995270793316,
+          "hit_5pct_capacity_pct": 44.6409367905365,
+          "hit_10pct_capacity_pct": 68.0592065957701,
+          "lead_mae": [
+            132.09168620062044,
+            187.08497299352914,
+            218.83660487643377,
+            249.2846891523758
+          ],
+          "lead_mse": [
+            37532.38865408546,
+            75419.12078887188,
+            101122.94360357802,
+            128150.6545905996
+          ],
+          "lead_rmse": [
+            193.73027058548783,
+            274.6163292923939,
+            317.98839676641256,
+            357.9768683379293
+          ],
+          "lead_r2": [
+            0.8934008690121612,
+            0.7858602006930452,
+            0.7121425279340802,
+            0.6360774052236102
+          ],
+          "seeds": 3
+        },
+        "TimeXer_upstream": {
+          "mae": 191.09239301780516,
+          "mse": 80539.45255162865,
+          "rmse": 283.7889438966658,
+          "r2": 0.7711498855741419,
+          "mbe": -11.718168104853312,
+          "nmae_pct_rated": 9.321580147210007,
+          "nrmse_pct_rated": 13.843363116910526,
+          "hit_5pct_capacity_pct": 45.13332935038037,
+          "hit_10pct_capacity_pct": 68.53915242760982,
+          "lead_mae": [
+            132.7219366247336,
+            180.1374572199786,
+            211.32001339448934,
+            240.19016483201918
+          ],
+          "lead_mse": [
+            38903.288046295515,
+            70053.56106930554,
+            94541.92820845883,
+            118659.03288245476
+          ],
+          "lead_rmse": [
+            197.23765453752313,
+            264.6708039270415,
+            307.4689709655875,
+            344.46136484625623
+          ],
+          "lead_r2": [
+            0.8895072536809282,
+            0.8010947972979813,
+            0.7308761049815633,
+            0.6630317396489714
+          ],
+          "seeds": 3
+        }
+      },
+      "comparisons": {
+        "iTransformer_upstream_gain": {
+          "candidate": "iTransformer_upstream",
+          "reference": "iTransformer_last10",
+          "question": "descriptive",
+          "absolute_error": {
+            "loss": "absolute_error",
+            "units": "kW",
+            "gain_definition": "mean reference loss - mean candidate loss; positive favours candidate",
+            "estimand": "window_uniform",
+            "candidate_mean_loss": 184.62077596192168,
+            "reference_mean_loss": 191.87648015393344,
+            "gain": 7.255704192011738,
+            "ci95_low": 4.351061580398231,
+            "ci95_high": 10.209730349746948,
+            "probability_gain_positive": 1.0,
+            "bootstrap": {
+              "block_length_issue_times": 8,
+              "replicates": 5000,
+              "seed": 2024
+            },
+            "newey_west": {
+              "statistic": 5.003931869924002,
+              "p_value_two_sided": 5.61726169003195e-07,
+              "lag": 7,
+              "time_points": 2827
+            },
+            "windows": 16738,
+            "issue_time_clusters": 2827,
+            "candidate_better_window_pct": 55.09618831401602
+          },
+          "rmse_difference": {
+            "units": "kW",
+            "rmse_candidate_kw": 283.9837109869898,
+            "rmse_reference_kw": 296.28563279734357,
+            "rmse_gain_kw": 12.301921810353747,
+            "ci95_low_kw": 7.350617341088794,
+            "ci95_high_kw": 17.053740820212376,
+            "probability_gain_positive": 1.0,
+            "block_length_issue_times": 8,
+            "replicates": 5000,
+            "seed": 2024,
+            "method": "issue-time moving-block bootstrap of squared-error sums; sqrt per arm per replicate; NOT a reuse of the MAE-difference interval"
+          },
+          "per_lead_mae_gain_kw": [
+            -0.17686187884317056,
+            8.557288061015962,
+            9.504982721938086,
+            11.137407863936025
+          ]
+        },
+        "TimeXer_upstream_gain": {
+          "candidate": "TimeXer_upstream",
+          "reference": "TimeXer_last10",
+          "question": "descriptive",
+          "absolute_error": {
+            "loss": "absolute_error",
+            "units": "kW",
+            "gain_definition": "mean reference loss - mean candidate loss; positive favours candidate",
+            "estimand": "window_uniform",
+            "candidate_mean_loss": 191.09239301780514,
+            "reference_mean_loss": 196.82448830573998,
+            "gain": 5.732095287934828,
+            "ci95_low": 3.3890917629944477,
+            "ci95_high": 8.03853310434575,
+            "probability_gain_positive": 1.0,
+            "bootstrap": {
+              "block_length_issue_times": 8,
+              "replicates": 5000,
+              "seed": 2024
+            },
+            "newey_west": {
+              "statistic": 4.864335719760601,
+              "p_value_two_sided": 1.148418452824001e-06,
+              "lag": 7,
+              "time_points": 2827
+            },
+            "windows": 16738,
+            "issue_time_clusters": 2827,
+            "candidate_better_window_pct": 56.46433265623133
+          },
+          "rmse_difference": {
+            "units": "kW",
+            "rmse_candidate_kw": 283.79473665244154,
+            "rmse_reference_kw": 292.50004599877184,
+            "rmse_gain_kw": 8.705309346330296,
+            "ci95_low_kw": 4.758802531570166,
+            "ci95_high_kw": 12.368384608180929,
+            "probability_gain_positive": 1.0,
+            "block_length_issue_times": 8,
+            "replicates": 5000,
+            "seed": 2024,
+            "method": "issue-time moving-block bootstrap of squared-error sums; sqrt per arm per replicate; NOT a reuse of the MAE-difference interval"
+          },
+          "per_lead_mae_gain_kw": [
+            -0.6302504241130549,
+            6.94751577355086,
+            7.516591481944549,
+            9.09452432035699
+          ]
+        },
+        "iTransformer_last10_vs_TSMixer": {
+          "candidate": "iTransformer_last10",
+          "reference": "TSMixer-upstream",
+          "question": "descriptive",
+          "absolute_error": {
+            "loss": "absolute_error",
+            "units": "kW",
+            "gain_definition": "mean reference loss - mean candidate loss; positive favours candidate",
+            "estimand": "window_uniform",
+            "candidate_mean_loss": 191.87648015393344,
+            "reference_mean_loss": 166.27892980670356,
+            "gain": -25.597550347229884,
+            "ci95_low": -28.923747419420966,
+            "ci95_high": -22.1901725446382,
+            "probability_gain_positive": 0.0,
+            "bootstrap": {
+              "block_length_issue_times": 8,
+              "replicates": 5000,
+              "seed": 2024
+            },
+            "newey_west": {
+              "statistic": -15.195161699744153,
+              "p_value_two_sided": 3.807229597414517e-52,
+              "lag": 7,
+              "time_points": 2827
+            },
+            "windows": 16738,
+            "issue_time_clusters": 2827,
+            "candidate_better_window_pct": 36.742741068227986
+          },
+          "rmse_difference": {
+            "units": "kW",
+            "rmse_candidate_kw": 296.28563279734357,
+            "rmse_reference_kw": 255.28951950752767,
+            "rmse_gain_kw": -40.996113289815895,
+            "ci95_low_kw": -45.9067106830746,
+            "ci95_high_kw": -35.81171028844623,
+            "probability_gain_positive": 0.0,
+            "block_length_issue_times": 8,
+            "replicates": 5000,
+            "seed": 2024,
+            "method": "issue-time moving-block bootstrap of squared-error sums; sqrt per arm per replicate; NOT a reuse of the MAE-difference interval"
+          },
+          "per_lead_mae_gain_kw": [
+            -14.28849070897593,
+            -23.168149162936846,
+            -29.988140251269574,
+            -34.94542126573703
+          ]
+        },
+        "iTransformer_upstream_vs_TSMixer": {
+          "candidate": "iTransformer_upstream",
+          "reference": "TSMixer-upstream",
+          "question": "descriptive",
+          "absolute_error": {
+            "loss": "absolute_error",
+            "units": "kW",
+            "gain_definition": "mean reference loss - mean candidate loss; positive favours candidate",
+            "estimand": "window_uniform",
+            "candidate_mean_loss": 184.62077596192168,
+            "reference_mean_loss": 166.27892980670356,
+            "gain": -18.34184615521815,
+            "ci95_low": -21.019573445019006,
+            "ci95_high": -15.616615427959193,
+            "probability_gain_positive": 0.0,
+            "bootstrap": {
+              "block_length_issue_times": 8,
+              "replicates": 5000,
+              "seed": 2024
+            },
+            "newey_west": {
+              "statistic": -13.429661060070345,
+              "p_value_two_sided": 4.0526209940847733e-41,
+              "lag": 7,
+              "time_points": 2827
+            },
+            "windows": 16738,
+            "issue_time_clusters": 2827,
+            "candidate_better_window_pct": 38.51714661249851
+          },
+          "rmse_difference": {
+            "units": "kW",
+            "rmse_candidate_kw": 283.9837109869898,
+            "rmse_reference_kw": 255.28951950752767,
+            "rmse_gain_kw": -28.694191479462148,
+            "ci95_low_kw": -32.96556656463777,
+            "ci95_high_kw": -24.328269673314203,
+            "probability_gain_positive": 0.0,
+            "block_length_issue_times": 8,
+            "replicates": 5000,
+            "seed": 2024,
+            "method": "issue-time moving-block bootstrap of squared-error sums; sqrt per arm per replicate; NOT a reuse of the MAE-difference interval"
+          },
+          "per_lead_mae_gain_kw": [
+            -14.465352587819146,
+            -14.610861101921008,
+            -20.483157529331375,
+            -23.808013401801038
+          ]
+        },
+        "TimeXer_last10_vs_TSMixer": {
+          "candidate": "TimeXer_last10",
+          "reference": "TSMixer-upstream",
+          "question": "descriptive",
+          "absolute_error": {
+            "loss": "absolute_error",
+            "units": "kW",
+            "gain_definition": "mean reference loss - mean candidate loss; positive favours candidate",
+            "estimand": "window_uniform",
+            "candidate_mean_loss": 196.82448830573998,
+            "reference_mean_loss": 166.27892980670356,
+            "gain": -30.545558499036453,
+            "ci95_low": -33.88802435489834,
+            "ci95_high": -27.075901028543914,
+            "probability_gain_positive": 0.0,
+            "bootstrap": {
+              "block_length_issue_times": 8,
+              "replicates": 5000,
+              "seed": 2024
+            },
+            "newey_west": {
+              "statistic": -18.043512718572845,
+              "p_value_two_sided": 8.872089109944048e-73,
+              "lag": 7,
+              "time_points": 2827
+            },
+            "windows": 16738,
+            "issue_time_clusters": 2827,
+            "candidate_better_window_pct": 34.25140399091887
+          },
+          "rmse_difference": {
+            "units": "kW",
+            "rmse_candidate_kw": 292.50004599877184,
+            "rmse_reference_kw": 255.28951950752767,
+            "rmse_gain_kw": -37.21052649124417,
+            "ci95_low_kw": -42.14477453753414,
+            "ci95_high_kw": -32.06725463640965,
+            "probability_gain_positive": 0.0,
+            "block_length_issue_times": 8,
+            "replicates": 5000,
+            "seed": 2024,
+            "method": "issue-time moving-block bootstrap of squared-error sums; sqrt per arm per replicate; NOT a reuse of the MAE-difference interval"
+          },
+          "per_lead_mae_gain_kw": [
+            -19.19927422019345,
+            -28.508721648608827,
+            -34.116165428391355,
+            -40.358072698951844
+          ]
+        },
+        "TimeXer_upstream_vs_TSMixer": {
+          "candidate": "TimeXer_upstream",
+          "reference": "TSMixer-upstream",
+          "question": "descriptive",
+          "absolute_error": {
+            "loss": "absolute_error",
+            "units": "kW",
+            "gain_definition": "mean reference loss - mean candidate loss; positive favours candidate",
+            "estimand": "window_uniform",
+            "candidate_mean_loss": 191.09239301780514,
+            "reference_mean_loss": 166.27892980670356,
+            "gain": -24.813463211101624,
+            "ci95_low": -27.72539928146795,
+            "ci95_high": -21.78343764421321,
+            "probability_gain_positive": 0.0,
+            "bootstrap": {
+              "block_length_issue_times": 8,
+              "replicates": 5000,
+              "seed": 2024
+            },
+            "newey_west": {
+              "statistic": -16.602036667197012,
+              "p_value_two_sided": 6.736581057637016e-62,
+              "lag": 7,
+              "time_points": 2827
+            },
+            "windows": 16738,
+            "issue_time_clusters": 2827,
+            "candidate_better_window_pct": 35.57175289759828
+          },
+          "rmse_difference": {
+            "units": "kW",
+            "rmse_candidate_kw": 283.79473665244154,
+            "rmse_reference_kw": 255.28951950752767,
+            "rmse_gain_kw": -28.50521714491387,
+            "ci95_low_kw": -32.85705832454608,
+            "ci95_high_kw": -23.918847109941673,
+            "probability_gain_positive": 0.0,
+            "block_length_issue_times": 8,
+            "replicates": 5000,
+            "seed": 2024,
+            "method": "issue-time moving-block bootstrap of squared-error sums; sqrt per arm per replicate; NOT a reuse of the MAE-difference interval"
+          },
+          "per_lead_mae_gain_kw": [
+            -19.82952464430641,
+            -21.56120587505798,
+            -26.59957394644714,
+            -31.26354837859479
+          ]
+        }
+      },
+      "windows": 16738,
+      "scope": "descriptive only; no Holm; previously opened tests",
+      "persistence": {
+        "PersistenceHour": {
+          "windows": 16738,
+          "mae": 198.64864778765624,
+          "mse": 96836.33133187729,
+          "rmse": 311.1853649063164,
+          "r2": 0.7248428589494764,
+          "mbe": 0.3314590101484401,
+          "nmae_pct_rated": 9.690177940861279,
+          "nrmse_pct_rated": 15.179773897869092,
+          "hit_5pct_capacity_pct": 46.682698052336,
+          "hit_10pct_capacity_pct": 66.58650973831999,
+          "lead_mse": [
+            43449.50528568116,
+            82542.0392555278,
+            113655.17894993893,
+            147698.6018363614
+          ],
+          "lead_mae": [
+            131.92214488381313,
+            185.66300113997062,
+            222.0542726027891,
+            254.95517252405196
+          ],
+          "lead_rmse": [
+            208.4454491843877,
+            287.30130395723546,
+            337.12783769653157,
+            384.31575798601
+          ],
+          "lead_r2": [
+            0.8765951309949213,
+            0.7656358820457962,
+            0.6764681551598785,
+            0.5805650888257239
+          ]
+        },
+        "PersistenceLast10": {
+          "windows": 16738,
+          "mae": 202.2339389627573,
+          "mse": 103139.15295258207,
+          "rmse": 321.1528498279006,
+          "r2": 0.7069336057399462,
+          "mbe": 1.0624324956267666,
+          "nmae_pct_rated": 9.865070193305234,
+          "nrmse_pct_rated": 15.665992674531735,
+          "hit_5pct_capacity_pct": 47.314493965826266,
+          "hit_10pct_capacity_pct": 66.51033576293463,
+          "lead_mse": [
+            40160.65057199091,
+            90653.72662332772,
+            123315.11313716181,
+            158427.1214778466
+          ],
+          "lead_mae": [
+            125.99295674678376,
+            192.02168673098734,
+            228.6047057348441,
+            262.3164066384135
+          ],
+          "lead_rmse": [
+            200.40122397827542,
+            301.08757301377904,
+            351.1625167029673,
+            398.02904602283314
+          ],
+          "lead_r2": [
+            0.8859361046711723,
+            0.7426041218394674,
+            0.6489701004517603,
+            0.5500982081179201
+          ]
+        }
+      }
+    },
+    "T22": {
+      "metrics": {
+        "TSMixer-upstream": {
+          "mae": 213.63082163466177,
+          "mse": 108452.46330624733,
+          "rmse": 329.31733865136863,
+          "r2": 0.7534068229082934,
+          "mbe": -16.17473136856518,
+          "nmae_pct_rated": 10.421015689495698,
+          "nrmse_pct_rated": 16.06426042201798,
+          "hit_5pct_capacity_pct": 44.745988005970524,
+          "hit_10pct_capacity_pct": 64.57234837444689,
+          "lead_mae": [
+            140.80919139151558,
+            200.83218306193285,
+            239.42773875449402,
+            273.45417333070435
+          ],
+          "lead_mse": [
+            48714.3881701803,
+            95675.82667617853,
+            128030.75029262039,
+            161388.8880860093
+          ],
+          "lead_rmse": [
+            220.71298525743097,
+            309.31445601194997,
+            357.80717368097703,
+            401.7174848012428
+          ],
+          "lead_r2": [
+            0.8891126674100399,
+            0.7827620243764478,
+            0.7099777714836052,
+            0.6315531353321332
+          ],
+          "seeds": 3
+        },
+        "iTransformer_last10": {
+          "mae": 239.17220458330357,
+          "mse": 137909.32372731113,
+          "rmse": 371.3473368252328,
+          "r2": 0.6864294525753999,
+          "mbe": -21.45564899333182,
+          "nmae_pct_rated": 11.666936808941635,
+          "nrmse_pct_rated": 18.11450423537721,
+          "hit_5pct_capacity_pct": 43.154217782606004,
+          "hit_10pct_capacity_pct": 61.08741156832093,
+          "lead_mae": [
+            155.22044787670785,
+            225.1132773104376,
+            268.88901949848884,
+            307.46607364758034
+          ],
+          "lead_mse": [
+            60614.23768988913,
+            122518.02839590849,
+            165654.26101144307,
+            202850.76781200268
+          ],
+          "lead_rmse": [
+            246.19383494774618,
+            350.00744633225213,
+            406.9990653977474,
+            450.3627440240546
+          ],
+          "lead_r2": [
+            0.8620253402151935,
+            0.721815118920286,
+            0.6247509459097152,
+            0.5368966830233651
+          ],
+          "seeds": 3
+        },
+        "iTransformer_upstream": {
+          "mae": 236.78665951001952,
+          "mse": 138127.0593727458,
+          "rmse": 371.58030209671637,
+          "r2": 0.6859343773789774,
+          "mbe": -16.349516107390883,
+          "nmae_pct_rated": 11.550568756586317,
+          "nrmse_pct_rated": 18.125868394961774,
+          "hit_5pct_capacity_pct": 44.125310228487145,
+          "hit_10pct_capacity_pct": 61.995575103998306,
+          "lead_mae": [
+            159.74502680240684,
+            221.10590322754206,
+            264.7502667566748,
+            301.54544125345365
+          ],
+          "lead_mse": [
+            65481.183076908615,
+            121552.39413551647,
+            163156.6904317833,
+            202317.96984677567
+          ],
+          "lead_rmse": [
+            255.8419983928084,
+            348.5589672314906,
+            403.8621343768862,
+            449.70293276084925
+          ],
+          "lead_r2": [
+            0.8509468352375212,
+            0.7240076521777231,
+            0.6304085788122357,
+            0.5381130476821555
+          ],
+          "seeds": 3
+        },
+        "TimeXer_last10": {
+          "mae": 245.04908642539388,
+          "mse": 133839.59482380713,
+          "rmse": 365.8275271986324,
+          "r2": 0.6956829757285176,
+          "mbe": -33.868311110745374,
+          "nmae_pct_rated": 11.953613971970434,
+          "nrmse_pct_rated": 17.84524522920158,
+          "hit_5pct_capacity_pct": 40.45467793646167,
+          "hit_10pct_capacity_pct": 60.92490041775964,
+          "lead_mae": [
+            165.15774817779493,
+            229.71583927774532,
+            273.33602159966324,
+            311.9867366463714
+          ],
+          "lead_mse": [
+            59209.25435079795,
+            119333.09357326513,
+            158487.63189495666,
+            198328.39947620992
+          ],
+          "lead_rmse": [
+            243.2884194655428,
+            345.4055580637678,
+            398.09484542227574,
+            445.3391871394226
+          ],
+          "lead_r2": [
+            0.8652234683382626,
+            0.7290467135393296,
+            0.6409851845013301,
+            0.5472211387771471
+          ],
+          "seeds": 3
+        },
+        "TimeXer_upstream": {
+          "mae": 247.15044576340492,
+          "mse": 136261.62604210878,
+          "rmse": 369.12442797820876,
+          "r2": 0.690175895898991,
+          "mbe": -22.94614851662888,
+          "nmae_pct_rated": 12.056119305531949,
+          "nrmse_pct_rated": 18.0060696574736,
+          "hit_5pct_capacity_pct": 40.59820001236498,
+          "hit_10pct_capacity_pct": 60.43140527984597,
+          "lead_mae": [
+            168.033411684688,
+            229.55701115226398,
+            276.73216296826604,
+            314.27919724840376
+          ],
+          "lead_mse": [
+            61988.68109117848,
+            117812.6698376687,
+            161670.20929068697,
+            203574.94394890164
+          ],
+          "lead_rmse": [
+            248.9610332933399,
+            343.2279036915717,
+            402.0755900955547,
+            451.1738244224407
+          ],
+          "lead_r2": [
+            0.8588967293819337,
+            0.7324989311567313,
+            0.6337758368514413,
+            0.5352434067025968
+          ],
+          "seeds": 3
+        }
+      },
+      "comparisons": {
+        "iTransformer_upstream_gain": {
+          "candidate": "iTransformer_upstream",
+          "reference": "iTransformer_last10",
+          "question": "descriptive",
+          "absolute_error": {
+            "loss": "absolute_error",
+            "units": "kW",
+            "gain_definition": "mean reference loss - mean candidate loss; positive favours candidate",
+            "estimand": "window_uniform",
+            "candidate_mean_loss": 236.78665951001952,
+            "reference_mean_loss": 239.17220458330348,
+            "gain": 2.385545073283994,
+            "ci95_low": -0.9910437569033951,
+            "ci95_high": 5.536936253906166,
+            "probability_gain_positive": 0.9116,
+            "bootstrap": {
+              "block_length_issue_times": 8,
+              "replicates": 5000,
+              "seed": 2024
+            },
+            "newey_west": {
+              "statistic": 1.451651530071714,
+              "p_value_two_sided": 0.14659852288245157,
+              "lag": 7,
+              "time_points": 2769
+            },
+            "windows": 37741,
+            "issue_time_clusters": 2769,
+            "candidate_better_window_pct": 52.208473543361336
+          },
+          "rmse_difference": {
+            "units": "kW",
+            "rmse_candidate_kw": 371.6544892406734,
+            "rmse_reference_kw": 371.3614462047873,
+            "rmse_gain_kw": -0.29304303588611447,
+            "ci95_low_kw": -5.5532337629072455,
+            "ci95_high_kw": 4.6881006384602655,
+            "probability_gain_positive": 0.444,
+            "block_length_issue_times": 8,
+            "replicates": 5000,
+            "seed": 2024,
+            "method": "issue-time moving-block bootstrap of squared-error sums; sqrt per arm per replicate; NOT a reuse of the MAE-difference interval"
+          },
+          "per_lead_mae_gain_kw": [
+            -4.524578925698258,
+            4.007374082895406,
+            4.13875274181445,
+            5.920632394124322
+          ]
+        },
+        "TimeXer_upstream_gain": {
+          "candidate": "TimeXer_upstream",
+          "reference": "TimeXer_last10",
+          "question": "descriptive",
+          "absolute_error": {
+            "loss": "absolute_error",
+            "units": "kW",
+            "gain_definition": "mean reference loss - mean candidate loss; positive favours candidate",
+            "estimand": "window_uniform",
+            "candidate_mean_loss": 247.15044576340495,
+            "reference_mean_loss": 245.0490864253939,
+            "gain": -2.1013593380110254,
+            "ci95_low": -5.170258845951416,
+            "ci95_high": 1.2042758258781634,
+            "probability_gain_positive": 0.1134,
+            "bootstrap": {
+              "block_length_issue_times": 8,
+              "replicates": 5000,
+              "seed": 2024
+            },
+            "newey_west": {
+              "statistic": -1.284611812685437,
+              "p_value_two_sided": 0.19892796869273516,
+              "lag": 7,
+              "time_points": 2769
+            },
+            "windows": 37741,
+            "issue_time_clusters": 2769,
+            "candidate_better_window_pct": 51.80042924140855
+          },
+          "rmse_difference": {
+            "units": "kW",
+            "rmse_candidate_kw": 369.13632446849334,
+            "rmse_reference_kw": 365.8409419731574,
+            "rmse_gain_kw": -3.295382495335957,
+            "ci95_low_kw": -8.02764247332058,
+            "ci95_high_kw": 1.830968206312537,
+            "probability_gain_positive": 0.1054,
+            "block_length_issue_times": 8,
+            "replicates": 5000,
+            "seed": 2024,
+            "method": "issue-time moving-block bootstrap of squared-error sums; sqrt per arm per replicate; NOT a reuse of the MAE-difference interval"
+          },
+          "per_lead_mae_gain_kw": [
+            -2.8756635068926037,
+            0.15882812548228217,
+            -3.3961413686006017,
+            -2.2924606020331506
+          ]
+        },
+        "iTransformer_last10_vs_TSMixer": {
+          "candidate": "iTransformer_last10",
+          "reference": "TSMixer-upstream",
+          "question": "descriptive",
+          "absolute_error": {
+            "loss": "absolute_error",
+            "units": "kW",
+            "gain_definition": "mean reference loss - mean candidate loss; positive favours candidate",
+            "estimand": "window_uniform",
+            "candidate_mean_loss": 239.17220458330348,
+            "reference_mean_loss": 213.63082163466177,
+            "gain": -25.541382948641726,
+            "ci95_low": -29.299111149051942,
+            "ci95_high": -21.499866506199204,
+            "probability_gain_positive": 0.0,
+            "bootstrap": {
+              "block_length_issue_times": 8,
+              "replicates": 5000,
+              "seed": 2024
+            },
+            "newey_west": {
+              "statistic": -12.641326111761494,
+              "p_value_two_sided": 1.2492895990635003e-36,
+              "lag": 7,
+              "time_points": 2769
+            },
+            "windows": 37741,
+            "issue_time_clusters": 2769,
+            "candidate_better_window_pct": 42.5876367875785
+          },
+          "rmse_difference": {
+            "units": "kW",
+            "rmse_candidate_kw": 371.3614462047873,
+            "rmse_reference_kw": 329.3212159977661,
+            "rmse_gain_kw": -42.04023020702118,
+            "ci95_low_kw": -48.24487507489294,
+            "ci95_high_kw": -35.618743699800795,
+            "probability_gain_positive": 0.0,
+            "block_length_issue_times": 8,
+            "replicates": 5000,
+            "seed": 2024,
+            "method": "issue-time moving-block bootstrap of squared-error sums; sqrt per arm per replicate; NOT a reuse of the MAE-difference interval"
+          },
+          "per_lead_mae_gain_kw": [
+            -14.411256485192824,
+            -24.281094248504818,
+            -29.461280743994212,
+            -34.01190031687471
+          ]
+        },
+        "iTransformer_upstream_vs_TSMixer": {
+          "candidate": "iTransformer_upstream",
+          "reference": "TSMixer-upstream",
+          "question": "descriptive",
+          "absolute_error": {
+            "loss": "absolute_error",
+            "units": "kW",
+            "gain_definition": "mean reference loss - mean candidate loss; positive favours candidate",
+            "estimand": "window_uniform",
+            "candidate_mean_loss": 236.78665951001952,
+            "reference_mean_loss": 213.63082163466177,
+            "gain": -23.155837875357733,
+            "ci95_low": -27.15172521257137,
+            "ci95_high": -19.29628581828571,
+            "probability_gain_positive": 0.0,
+            "bootstrap": {
+              "block_length_issue_times": 8,
+              "replicates": 5000,
+              "seed": 2024
+            },
+            "newey_west": {
+              "statistic": -11.545652804768299,
+              "p_value_two_sided": 7.7649668607639076e-31,
+              "lag": 7,
+              "time_points": 2769
+            },
+            "windows": 37741,
+            "issue_time_clusters": 2769,
+            "candidate_better_window_pct": 42.065658037677856
+          },
+          "rmse_difference": {
+            "units": "kW",
+            "rmse_candidate_kw": 371.6544892406734,
+            "rmse_reference_kw": 329.3212159977661,
+            "rmse_gain_kw": -42.333273242907296,
+            "ci95_low_kw": -48.4718389915967,
+            "ci95_high_kw": -36.17088232615998,
+            "probability_gain_positive": 0.0,
+            "block_length_issue_times": 8,
+            "replicates": 5000,
+            "seed": 2024,
+            "method": "issue-time moving-block bootstrap of squared-error sums; sqrt per arm per replicate; NOT a reuse of the MAE-difference interval"
+          },
+          "per_lead_mae_gain_kw": [
+            -18.935835410891052,
+            -20.27372016560954,
+            -25.3225280021801,
+            -28.09126792275024
+          ]
+        },
+        "TimeXer_last10_vs_TSMixer": {
+          "candidate": "TimeXer_last10",
+          "reference": "TSMixer-upstream",
+          "question": "descriptive",
+          "absolute_error": {
+            "loss": "absolute_error",
+            "units": "kW",
+            "gain_definition": "mean reference loss - mean candidate loss; positive favours candidate",
+            "estimand": "window_uniform",
+            "candidate_mean_loss": 245.0490864253939,
+            "reference_mean_loss": 213.63082163466177,
+            "gain": -31.418264790732113,
+            "ci95_low": -35.163984670593685,
+            "ci95_high": -27.400672659517575,
+            "probability_gain_positive": 0.0,
+            "bootstrap": {
+              "block_length_issue_times": 8,
+              "replicates": 5000,
+              "seed": 2024
+            },
+            "newey_west": {
+              "statistic": -15.683059317742812,
+              "p_value_two_sided": 1.9750775539113047e-55,
+              "lag": 7,
+              "time_points": 2769
+            },
+            "windows": 37741,
+            "issue_time_clusters": 2769,
+            "candidate_better_window_pct": 34.20153149095149
+          },
+          "rmse_difference": {
+            "units": "kW",
+            "rmse_candidate_kw": 365.8409419731574,
+            "rmse_reference_kw": 329.3212159977661,
+            "rmse_gain_kw": -36.51972597539128,
+            "ci95_low_kw": -42.203738538978484,
+            "ci95_high_kw": -30.331016675804985,
+            "probability_gain_positive": 0.0,
+            "block_length_issue_times": 8,
+            "replicates": 5000,
+            "seed": 2024,
+            "method": "issue-time moving-block bootstrap of squared-error sums; sqrt per arm per replicate; NOT a reuse of the MAE-difference interval"
+          },
+          "per_lead_mae_gain_kw": [
+            -24.34855678627954,
+            -28.88365621581268,
+            -33.90828284516943,
+            -38.53256331566684
+          ]
+        },
+        "TimeXer_upstream_vs_TSMixer": {
+          "candidate": "TimeXer_upstream",
+          "reference": "TSMixer-upstream",
+          "question": "descriptive",
+          "absolute_error": {
+            "loss": "absolute_error",
+            "units": "kW",
+            "gain_definition": "mean reference loss - mean candidate loss; positive favours candidate",
+            "estimand": "window_uniform",
+            "candidate_mean_loss": 247.15044576340495,
+            "reference_mean_loss": 213.63082163466177,
+            "gain": -33.51962412874314,
+            "ci95_low": -37.35811287964044,
+            "ci95_high": -29.149346089841714,
+            "probability_gain_positive": 0.0,
+            "bootstrap": {
+              "block_length_issue_times": 8,
+              "replicates": 5000,
+              "seed": 2024
+            },
+            "newey_west": {
+              "statistic": -15.647195623509969,
+              "p_value_two_sided": 3.4718518130724084e-55,
+              "lag": 7,
+              "time_points": 2769
+            },
+            "windows": 37741,
+            "issue_time_clusters": 2769,
+            "candidate_better_window_pct": 35.637635462759334
+          },
+          "rmse_difference": {
+            "units": "kW",
+            "rmse_candidate_kw": 369.13632446849334,
+            "rmse_reference_kw": 329.3212159977661,
+            "rmse_gain_kw": -39.81510847072724,
+            "ci95_low_kw": -45.98823938689481,
+            "ci95_high_kw": -33.144490725234206,
+            "probability_gain_positive": 0.0,
+            "block_length_issue_times": 8,
+            "replicates": 5000,
+            "seed": 2024,
+            "method": "issue-time moving-block bootstrap of squared-error sums; sqrt per arm per replicate; NOT a reuse of the MAE-difference interval"
+          },
+          "per_lead_mae_gain_kw": [
+            -27.22422029317193,
+            -28.724828090330362,
+            -37.30442421376986,
+            -40.82502391770048
+          ]
+        }
+      },
+      "windows": 37741,
+      "scope": "descriptive only; no Holm; previously opened tests",
+      "persistence": {
+        "PersistenceHour": {
+          "windows": 37741,
+          "mae": 246.39184255265744,
+          "mse": 152933.24813581802,
+          "rmse": 391.0668077653971,
+          "r2": 0.6522688891420202,
+          "mbe": 2.328626749990818,
+          "nmae_pct_rated": 12.019114270861339,
+          "nrmse_pct_rated": 19.076429647092542,
+          "hit_5pct_capacity_pct": 43.73757982035452,
+          "hit_10pct_capacity_pct": 61.03640603057683,
+          "lead_mse": [
+            66299.73033680508,
+            131930.18197409055,
+            181949.16748172068,
+            231553.91275065733
+          ],
+          "lead_mae": [
+            157.8609759939364,
+            229.53799374030214,
+            277.5791822321186,
+            320.5892182442732
+          ],
+          "lead_rmse": [
+            257.4873401486082,
+            363.22194588720896,
+            426.5549993631779,
+            481.2004912202993
+          ],
+          "lead_r2": [
+            0.8490835967640818,
+            0.7004442328708496,
+            0.587838836301868,
+            0.4713681086327999
+          ]
+        },
+        "PersistenceLast10": {
+          "windows": 37741,
+          "mae": 240.90173026201313,
+          "mse": 150245.21704845663,
+          "rmse": 387.61477919250785,
+          "r2": 0.6583807846743694,
+          "mbe": -0.6509192102299717,
+          "nmae_pct_rated": 11.751303915220152,
+          "nrmse_pct_rated": 18.908038009390626,
+          "hit_5pct_capacity_pct": 44.951114172915396,
+          "hit_10pct_capacity_pct": 62.04989268964787,
+          "lead_mse": [
+            57393.99679005419,
+            128510.34728661361,
+            181091.18901896072,
+            233985.33509820054
+          ],
+          "lead_mae": [
+            144.15101198451947,
+            225.35822474957814,
+            274.7681844162542,
+            319.32949989770003
+          ],
+          "lead_rmse": [
+            239.57044222953337,
+            358.4833988996054,
+            425.54810423612594,
+            483.72030668372867
+          ],
+          "lead_r2": [
+            0.8693554933197001,
+            0.7082091823913712,
+            0.5897823758438919,
+            0.4658172311761174
+          ]
+        }
+      }
+    },
+    "T23": {
+      "metrics": {
+        "TSMixer-upstream": {
+          "mae": 188.8387609217214,
+          "mse": 91180.31324174594,
+          "rmse": 301.9602936916829,
+          "r2": 0.772536531958664,
+          "mbe": -9.065702634989607,
+          "nmae_pct_rated": 9.211646874230311,
+          "nrmse_pct_rated": 14.729770423984533,
+          "hit_5pct_capacity_pct": 50.05451797962249,
+          "hit_10pct_capacity_pct": 69.50544727364858,
+          "lead_mae": [
+            120.04705832485887,
+            176.38602479714518,
+            215.0873681877861,
+            243.83459237709533
+          ],
+          "lead_mse": [
+            36835.62029854656,
+            77908.63808894041,
+            111510.62543003629,
+            138466.3691494605
+          ],
+          "lead_rmse": [
+            191.92590610750798,
+            279.12091313028003,
+            333.9301390285859,
+            372.107875881318
+          ],
+          "lead_r2": [
+            0.9085130250137264,
+            0.8039016589509383,
+            0.7220898055131356,
+            0.6557614936678448
+          ],
+          "seeds": 3
+        },
+        "iTransformer_last10": {
+          "mae": 210.9388645275865,
+          "mse": 116131.77924897894,
+          "rmse": 340.778078391684,
+          "r2": 0.7102912205648199,
+          "mbe": -29.737566559942366,
+          "nmae_pct_rated": 10.289700708662757,
+          "nrmse_pct_rated": 16.623320897155313,
+          "hit_5pct_capacity_pct": 47.98916879309409,
+          "hit_10pct_capacity_pct": 66.11311689016776,
+          "lead_mae": [
+            131.76183023070055,
+            197.1529762357467,
+            239.58218205799878,
+            275.2584695859011
+          ],
+          "lead_mse": [
+            46825.758378845254,
+            99496.55476287508,
+            141602.84023233198,
+            176601.96362186284
+          ],
+          "lead_rmse": [
+            216.37338579001076,
+            315.4195543382393,
+            376.29945684008976,
+            420.2344832226999
+          ],
+          "lead_r2": [
+            0.8837009679544412,
+            0.7495642356522384,
+            0.6470930665387538,
+            0.5609533452350761
+          ],
+          "seeds": 3
+        },
+        "iTransformer_upstream": {
+          "mae": 213.6752567339223,
+          "mse": 117133.70287299975,
+          "rmse": 342.19769706194637,
+          "r2": 0.7077917663062224,
+          "mbe": -14.69488284820702,
+          "nmae_pct_rated": 10.423183255313285,
+          "nrmse_pct_rated": 16.692570588387625,
+          "hit_5pct_capacity_pct": 47.72743724776951,
+          "hit_10pct_capacity_pct": 65.83057350199975,
+          "lead_mae": [
+            143.45200942030894,
+            198.4004997345428,
+            239.6499485266908,
+            273.19856925414643
+          ],
+          "lead_mse": [
+            52336.20291816182,
+            99125.80283829157,
+            142134.506404599,
+            174938.29933094597
+          ],
+          "lead_rmse": [
+            228.73867391111344,
+            314.82702889282746,
+            376.9427506127754,
+            418.15689581356224
+          ],
+          "lead_r2": [
+            0.8700149244550842,
+            0.7504974291868062,
+            0.6457680318277833,
+            0.565089348179771
+          ],
+          "seeds": 3
+        },
+        "TimeXer_last10": {
+          "mae": 215.96771051167184,
+          "mse": 111164.21813634173,
+          "rmse": 333.40639698994136,
+          "r2": 0.7226835741136822,
+          "mbe": -21.03629338914872,
+          "nmae_pct_rated": 10.535010268862042,
+          "nrmse_pct_rated": 16.263726682436168,
+          "hit_5pct_capacity_pct": 46.09619595707331,
+          "hit_10pct_capacity_pct": 66.09682936098594,
+          "lead_mae": [
+            141.04482957725278,
+            202.7380741551458,
+            243.27122983003483,
+            276.8167084842548
+          ],
+          "lead_mse": [
+            46194.748514005194,
+            95678.76905552745,
+            134967.23560038468,
+            167816.11937545004
+          ],
+          "lead_rmse": [
+            214.92812597161776,
+            309.3057141775848,
+            367.37631537525607,
+            409.6410722331529
+          ],
+          "lead_r2": [
+            0.8852681788023332,
+            0.7591737149353573,
+            0.6636305235451215,
+            0.582795659140105
+          ],
+          "seeds": 3
+        },
+        "TimeXer_upstream": {
+          "mae": 214.4665384430297,
+          "mse": 106338.37382386408,
+          "rmse": 326.09412625339354,
+          "r2": 0.7347223930705047,
+          "mbe": -13.222920855387876,
+          "nmae_pct_rated": 10.461782363074619,
+          "nrmse_pct_rated": 15.907030548946024,
+          "hit_5pct_capacity_pct": 45.128671480536404,
+          "hit_10pct_capacity_pct": 65.80478491412852,
+          "lead_mae": [
+            144.96935567467614,
+            200.951118018085,
+            239.23658271421004,
+            272.709097365147
+          ],
+          "lead_mse": [
+            47305.76775555708,
+            90634.4644319626,
+            127735.76204375231,
+            159677.50106418369
+          ],
+          "lead_rmse": [
+            217.49307134410859,
+            301.0540547159908,
+            357.3994890985396,
+            399.59249008014285
+          ],
+          "lead_r2": [
+            0.8825087902339496,
+            0.7718703785235199,
+            0.6816530233275412,
+            0.6030289174272042
+          ],
+          "seeds": 3
+        }
+      },
+      "comparisons": {
+        "iTransformer_upstream_gain": {
+          "candidate": "iTransformer_upstream",
+          "reference": "iTransformer_last10",
+          "question": "descriptive",
+          "absolute_error": {
+            "loss": "absolute_error",
+            "units": "kW",
+            "gain_definition": "mean reference loss - mean candidate loss; positive favours candidate",
+            "estimand": "window_uniform",
+            "candidate_mean_loss": 213.6752567339223,
+            "reference_mean_loss": 210.9388645275865,
+            "gain": -2.7363922063358146,
+            "ci95_low": -5.925143631566287,
+            "ci95_high": 0.6988784226871447,
+            "probability_gain_positive": 0.0588,
+            "bootstrap": {
+              "block_length_issue_times": 8,
+              "replicates": 5000,
+              "seed": 2024
+            },
+            "newey_west": {
+              "statistic": -1.6131453856569276,
+              "p_value_two_sided": 0.10671292548981179,
+              "lag": 7,
+              "time_points": 2879
+            },
+            "windows": 36838,
+            "issue_time_clusters": 2879,
+            "candidate_better_window_pct": 42.13855258157337
+          },
+          "rmse_difference": {
+            "units": "kW",
+            "rmse_candidate_kw": 342.24801368744244,
+            "rmse_reference_kw": 340.78113100490015,
+            "rmse_gain_kw": -1.4668826825422911,
+            "ci95_low_kw": -6.988506628104586,
+            "ci95_high_kw": 4.201456801806218,
+            "probability_gain_positive": 0.328,
+            "block_length_issue_times": 8,
+            "replicates": 5000,
+            "seed": 2024,
+            "method": "issue-time moving-block bootstrap of squared-error sums; sqrt per arm per replicate; NOT a reuse of the MAE-difference interval"
+          },
+          "per_lead_mae_gain_kw": [
+            -11.690179189608429,
+            -1.2475234987958104,
+            -0.0677664686925068,
+            2.059900331753542
+          ]
+        },
+        "TimeXer_upstream_gain": {
+          "candidate": "TimeXer_upstream",
+          "reference": "TimeXer_last10",
+          "question": "descriptive",
+          "absolute_error": {
+            "loss": "absolute_error",
+            "units": "kW",
+            "gain_definition": "mean reference loss - mean candidate loss; positive favours candidate",
+            "estimand": "window_uniform",
+            "candidate_mean_loss": 214.4665384430297,
+            "reference_mean_loss": 215.96771051167184,
+            "gain": 1.501172068642126,
+            "ci95_low": -1.0362208656305774,
+            "ci95_high": 4.311496735854804,
+            "probability_gain_positive": 0.8842,
+            "bootstrap": {
+              "block_length_issue_times": 8,
+              "replicates": 5000,
+              "seed": 2024
+            },
+            "newey_west": {
+              "statistic": 1.0779168933489827,
+              "p_value_two_sided": 0.2810708457178895,
+              "lag": 7,
+              "time_points": 2879
+            },
+            "windows": 36838,
+            "issue_time_clusters": 2879,
+            "candidate_better_window_pct": 48.79743742874206
+          },
+          "rmse_difference": {
+            "units": "kW",
+            "rmse_candidate_kw": 326.09565134154127,
+            "rmse_reference_kw": 333.4129843547515,
+            "rmse_gain_kw": 7.317333013210202,
+            "ci95_low_kw": 3.1825334194466253,
+            "ci95_high_kw": 11.886495662859058,
+            "probability_gain_positive": 0.9996,
+            "block_length_issue_times": 8,
+            "replicates": 5000,
+            "seed": 2024,
+            "method": "issue-time moving-block bootstrap of squared-error sums; sqrt per arm per replicate; NOT a reuse of the MAE-difference interval"
+          },
+          "per_lead_mae_gain_kw": [
+            -3.9245260974226803,
+            1.7869561370611775,
+            4.034647115823753,
+            4.107611119106268
+          ]
+        },
+        "iTransformer_last10_vs_TSMixer": {
+          "candidate": "iTransformer_last10",
+          "reference": "TSMixer-upstream",
+          "question": "descriptive",
+          "absolute_error": {
+            "loss": "absolute_error",
+            "units": "kW",
+            "gain_definition": "mean reference loss - mean candidate loss; positive favours candidate",
+            "estimand": "window_uniform",
+            "candidate_mean_loss": 210.9388645275865,
+            "reference_mean_loss": 188.83876092172142,
+            "gain": -22.10010360586512,
+            "ci95_low": -26.123172480637773,
+            "ci95_high": -18.329652439556156,
+            "probability_gain_positive": 0.0,
+            "bootstrap": {
+              "block_length_issue_times": 8,
+              "replicates": 5000,
+              "seed": 2024
+            },
+            "newey_west": {
+              "statistic": -10.864284923850965,
+              "p_value_two_sided": 1.705540462269015e-27,
+              "lag": 7,
+              "time_points": 2879
+            },
+            "windows": 36838,
+            "issue_time_clusters": 2879,
+            "candidate_better_window_pct": 42.72490363211901
+          },
+          "rmse_difference": {
+            "units": "kW",
+            "rmse_candidate_kw": 340.78113100490015,
+            "rmse_reference_kw": 301.9607809662472,
+            "rmse_gain_kw": -38.82035003865292,
+            "ci95_low_kw": -45.41126115454024,
+            "ci95_high_kw": -32.52391403996612,
+            "probability_gain_positive": 0.0,
+            "block_length_issue_times": 8,
+            "replicates": 5000,
+            "seed": 2024,
+            "method": "issue-time moving-block bootstrap of squared-error sums; sqrt per arm per replicate; NOT a reuse of the MAE-difference interval"
+          },
+          "per_lead_mae_gain_kw": [
+            -11.714771905841046,
+            -20.766951438602316,
+            -24.494813870212035,
+            -31.423877208804708
+          ]
+        },
+        "iTransformer_upstream_vs_TSMixer": {
+          "candidate": "iTransformer_upstream",
+          "reference": "TSMixer-upstream",
+          "question": "descriptive",
+          "absolute_error": {
+            "loss": "absolute_error",
+            "units": "kW",
+            "gain_definition": "mean reference loss - mean candidate loss; positive favours candidate",
+            "estimand": "window_uniform",
+            "candidate_mean_loss": 213.6752567339223,
+            "reference_mean_loss": 188.83876092172142,
+            "gain": -24.83649581220093,
+            "ci95_low": -28.684846119616026,
+            "ci95_high": -20.96509243756296,
+            "probability_gain_positive": 0.0,
+            "bootstrap": {
+              "block_length_issue_times": 8,
+              "replicates": 5000,
+              "seed": 2024
+            },
+            "newey_west": {
+              "statistic": -12.564874484929536,
+              "p_value_two_sided": 3.293973615442188e-36,
+              "lag": 7,
+              "time_points": 2879
+            },
+            "windows": 36838,
+            "issue_time_clusters": 2879,
+            "candidate_better_window_pct": 37.36359194310223
+          },
+          "rmse_difference": {
+            "units": "kW",
+            "rmse_candidate_kw": 342.24801368744244,
+            "rmse_reference_kw": 301.9607809662472,
+            "rmse_gain_kw": -40.28723272119521,
+            "ci95_low_kw": -46.54387806487208,
+            "ci95_high_kw": -34.12369498820428,
+            "probability_gain_positive": 0.0,
+            "block_length_issue_times": 8,
+            "replicates": 5000,
+            "seed": 2024,
+            "method": "issue-time moving-block bootstrap of squared-error sums; sqrt per arm per replicate; NOT a reuse of the MAE-difference interval"
+          },
+          "per_lead_mae_gain_kw": [
+            -23.40495109544971,
+            -22.014474937398028,
+            -24.56258033890496,
+            -29.363976877051023
+          ]
+        },
+        "TimeXer_last10_vs_TSMixer": {
+          "candidate": "TimeXer_last10",
+          "reference": "TSMixer-upstream",
+          "question": "descriptive",
+          "absolute_error": {
+            "loss": "absolute_error",
+            "units": "kW",
+            "gain_definition": "mean reference loss - mean candidate loss; positive favours candidate",
+            "estimand": "window_uniform",
+            "candidate_mean_loss": 215.96771051167184,
+            "reference_mean_loss": 188.83876092172142,
+            "gain": -27.128949589950444,
+            "ci95_low": -30.957487335846626,
+            "ci95_high": -23.451416664591157,
+            "probability_gain_positive": 0.0,
+            "bootstrap": {
+              "block_length_issue_times": 8,
+              "replicates": 5000,
+              "seed": 2024
+            },
+            "newey_west": {
+              "statistic": -14.15873218235775,
+              "p_value_two_sided": 1.649430737633359e-45,
+              "lag": 7,
+              "time_points": 2879
+            },
+            "windows": 36838,
+            "issue_time_clusters": 2879,
+            "candidate_better_window_pct": 35.9302893751018
+          },
+          "rmse_difference": {
+            "units": "kW",
+            "rmse_candidate_kw": 333.4129843547515,
+            "rmse_reference_kw": 301.9607809662472,
+            "rmse_gain_kw": -31.452203388504245,
+            "ci95_low_kw": -37.57190938430404,
+            "ci95_high_kw": -25.56396872306941,
+            "probability_gain_positive": 0.0,
+            "block_length_issue_times": 8,
+            "replicates": 5000,
+            "seed": 2024,
+            "method": "issue-time moving-block bootstrap of squared-error sums; sqrt per arm per replicate; NOT a reuse of the MAE-difference interval"
+          },
+          "per_lead_mae_gain_kw": [
+            -20.997771252393438,
+            -26.352049358001175,
+            -28.18386164224806,
+            -32.98211610715928
+          ]
+        },
+        "TimeXer_upstream_vs_TSMixer": {
+          "candidate": "TimeXer_upstream",
+          "reference": "TSMixer-upstream",
+          "question": "descriptive",
+          "absolute_error": {
+            "loss": "absolute_error",
+            "units": "kW",
+            "gain_definition": "mean reference loss - mean candidate loss; positive favours candidate",
+            "estimand": "window_uniform",
+            "candidate_mean_loss": 214.4665384430297,
+            "reference_mean_loss": 188.83876092172142,
+            "gain": -25.627777521308325,
+            "ci95_low": -29.334389763655867,
+            "ci95_high": -21.805918049999075,
+            "probability_gain_positive": 0.0,
+            "bootstrap": {
+              "block_length_issue_times": 8,
+              "replicates": 5000,
+              "seed": 2024
+            },
+            "newey_west": {
+              "statistic": -13.456927869136893,
+              "p_value_two_sided": 2.803312218114688e-41,
+              "lag": 7,
+              "time_points": 2879
+            },
+            "windows": 36838,
+            "issue_time_clusters": 2879,
+            "candidate_better_window_pct": 35.53667408654107
+          },
+          "rmse_difference": {
+            "units": "kW",
+            "rmse_candidate_kw": 326.09565134154127,
+            "rmse_reference_kw": 301.9607809662472,
+            "rmse_gain_kw": -24.134870375294042,
+            "ci95_low_kw": -30.009190343297547,
+            "ci95_high_kw": -18.2167484941084,
+            "probability_gain_positive": 0.0,
+            "block_length_issue_times": 8,
+            "replicates": 5000,
+            "seed": 2024,
+            "method": "issue-time moving-block bootstrap of squared-error sums; sqrt per arm per replicate; NOT a reuse of the MAE-difference interval"
+          },
+          "per_lead_mae_gain_kw": [
+            -24.92229734981598,
+            -24.56509322094009,
+            -24.14921452642417,
+            -28.874504988052863
+          ]
+        }
+      },
+      "windows": 36838,
+      "scope": "descriptive only; no Holm; previously opened tests",
+      "persistence": {
+        "PersistenceHour": {
+          "windows": 36838,
+          "mae": 217.09631899846067,
+          "mse": 127258.07328987388,
+          "rmse": 356.73249542181304,
+          "r2": 0.6825349501703581,
+          "mbe": -1.6290586002632133,
+          "nmae_pct_rated": 10.590064341388326,
+          "nrmse_pct_rated": 17.401585142527466,
+          "hit_5pct_capacity_pct": 48.33392149410935,
+          "hit_10pct_capacity_pct": 65.81383354145176,
+          "lead_mse": [
+            51233.87712695513,
+            107131.10148048153,
+            154455.32279486806,
+            196211.991757191
+          ],
+          "lead_mae": [
+            136.3864013440066,
+            201.22622882055077,
+            246.3146062502688,
+            284.45803957901927
+          ],
+          "lead_rmse": [
+            226.34901618287438,
+            327.3088777905077,
+            393.0080441859531,
+            442.9582280048436
+          ],
+          "lead_r2": [
+            0.8727527214914715,
+            0.7303478562788104,
+            0.6150617160300574,
+            0.5122012414866897
+          ]
+        },
+        "PersistenceLast10": {
+          "windows": 36838,
+          "mae": 211.9489158469248,
+          "mse": 126191.15385272693,
+          "rmse": 355.23394242770064,
+          "r2": 0.6851965465903083,
+          "mbe": -2.7939840280057964,
+          "nmae_pct_rated": 10.338971504728038,
+          "nrmse_pct_rated": 17.328484996473204,
+          "hit_5pct_capacity_pct": 49.774010532602205,
+          "hit_10pct_capacity_pct": 67.2009881101037,
+          "lead_mse": [
+            45400.2607960271,
+            108499.77221445371,
+            153963.94063222015,
+            196900.64176820556
+          ],
+          "lead_mae": [
+            124.47543967717662,
+            197.72538525350168,
+            243.15549526378845,
+            282.43934319323176
+          ],
+          "lead_rmse": [
+            213.07336951394723,
+            329.39303607461665,
+            392.38239082841136,
+            443.73487779101333
+          ],
+          "lead_r2": [
+            0.8872414122484502,
+            0.7269028716537685,
+            0.616286353698999,
+            0.5104892022916603
+          ]
+        }
+      }
+    }
+  },
+  "chronos": "SKIPPED: verification not available at launch",
+  "artifacts": {
+    "evaluation/T22/iTransformer_last10_s2024.npz": "382e150f54282d45498b6499300d48bea374c1ee0baa2fd38222a78c1bf06ab0",
+    "evaluation/T22/iTransformer_last10_s2025.npz": "f2d1b3648ed68b293dd4d245bbb0abe038f00e6124395f0481770aa04217d744",
+    "evaluation/T22/cohort.npz": "42803f96afc18a5e3f73faffb7d250b30d368e279831a1c5e6291c3b323fb874",
+    "evaluation/T22/TimeXer_last10_s2026.npz": "0a9584a35f9e8b6d4d75bb6b9de497a29f78eef1e508585dcf0e4ecbabcf2be3",
+    "evaluation/T22/iTransformer_upstream_s2026.npz": "bb5fdb41ee760623c046a2985dd632c94d443fa6e2161aede82d47048e24599d",
+    "evaluation/T22/TimeXer_upstream_s2025.npz": "54ee27be98f4b832aa7a2766d3a2fcb14895b10ab80b1efca5d215334387fe4b",
+    "evaluation/T22/TimeXer_upstream_s2026.npz": "1158303406c6dcb579d5d45a50f7daf8f0c364eb84e23f755c58e3b57bec4348",
+    "evaluation/T22/iTransformer_upstream_s2025.npz": "3af212424cbd86df90f23067587551ebfd340c3932b5da954cfe2f635cbf3262",
+    "evaluation/T22/iTransformer_upstream_s2024.npz": "0d603b51b0b66fea40b6a3f4348cc0b5e8bb0ed30f706990f2dc79fa9309e7cc",
+    "evaluation/T22/iTransformer_last10_s2026.npz": "790d11fffa8156dd4d514d4c3dfcb6d69d1fe94fc04e5e055179dee1f40306da",
+    "evaluation/T22/TimeXer_last10_s2024.npz": "0958b6ba7f685e868a7e574f65a2c0709289c91389d74429df6f528df420fc56",
+    "evaluation/T22/TimeXer_upstream_s2024.npz": "319086d1caaae17e6e94c8a9babe5c42036fef2f2155b395a1e94f5749fd8d90",
+    "evaluation/T22/TimeXer_last10_s2025.npz": "d5eeeab797e18ecf40d14d711c5da1d0640f5cc197e802053816737399dddf34",
+    "evaluation/Kelmarsh/iTransformer_last10_s2024.npz": "77af70406c4fbf7c37f54834fcf0ae119e33f4ce3d8b087759be2f8851c29195",
+    "evaluation/Kelmarsh/iTransformer_last10_s2025.npz": "7b8623ebc166da603fd19bcdef88c5a6c2a1221e142b724d495a5b577c18371c",
+    "evaluation/Kelmarsh/cohort.npz": "64502738c58b9c10ead64732f990a0accc7380f3d80f9520c3444a2eacfb5a56",
+    "evaluation/Kelmarsh/TimeXer_last10_s2026.npz": "430bbbbf7ff90be8b2957d9fd1e277c019d3c53e5c0953b0466315614900bb5c",
+    "evaluation/Kelmarsh/iTransformer_upstream_s2026.npz": "87f37a61d8509ac63a0ab74d8b781e8f5d78bc2a26643a05b3d41cf138acc7b9",
+    "evaluation/Kelmarsh/TimeXer_upstream_s2025.npz": "d3a2ec0d19e29c644b7b16c8fffc9672c59efddd37922f383d75c4b4803f349f",
+    "evaluation/Kelmarsh/TimeXer_upstream_s2026.npz": "1d81a8aa08880583c43883ac24b07f9777e432a268e3369e250e1ef716c8e24c",
+    "evaluation/Kelmarsh/iTransformer_upstream_s2025.npz": "5a0ab12c0ae861104664a45b9a85adbc4d21955c796e7ad1bc8c148506bd6fc6",
+    "evaluation/Kelmarsh/iTransformer_upstream_s2024.npz": "e389b9d5e13204e519d70528e697cf5c09ddbe2c043ad3c9ca2f802271ecf0d5",
+    "evaluation/Kelmarsh/iTransformer_last10_s2026.npz": "1026d534a4cbcb9ff4156ed3beb1035b5151175f5cb3a67bb080abd9600e02e2",
+    "evaluation/Kelmarsh/TimeXer_last10_s2024.npz": "587ec213278cdf5e6a445a7d4a43e3505a2f51b9cf6ff66e0ceeb6b34230b6f3",
+    "evaluation/Kelmarsh/TimeXer_upstream_s2024.npz": "a093597ce8facde7066893aaf48ff32e49e0afcdbdb7ea58c02e1745a0c2db80",
+    "evaluation/Kelmarsh/TimeXer_last10_s2025.npz": "c53cd7a7a60e63ff3c39c102e215450b369dbf157c6d9a28b107c789b2794bbe",
+    "evaluation/T23/iTransformer_last10_s2024.npz": "65a932fe343e01dac2026e6defebba5e11da98d3122919e4fe09c0fcab703f85",
+    "evaluation/T23/iTransformer_last10_s2025.npz": "5ae722459a6ffab063ff06a4e5d0c04e240aab558718645efb9a736dd31850f0",
+    "evaluation/T23/cohort.npz": "4ce5251e8110eb7c24ac214021e4aa68e7ceb2f4efd7b35fccbb4841e58cdf34",
+    "evaluation/T23/TimeXer_last10_s2026.npz": "1b3fc019fb123eff1cb963a5dc9863ceccce432a45a696a06deed342441134d3",
+    "evaluation/T23/iTransformer_upstream_s2026.npz": "06cb777102fb696968f9495dda7648f166f6f40bbd463ef96886cd7c21af8e8f",
+    "evaluation/T23/TimeXer_upstream_s2025.npz": "6ab0a8171deeb9da7b711aa223a55e44771fe46b972c7419b2f713ffb6714c69",
+    "evaluation/T23/TimeXer_upstream_s2026.npz": "9dbd78cb74c6dfac570c5230cbc55b9d1c52922ee12464bb8dae3c5bb2589b8a",
+    "evaluation/T23/iTransformer_upstream_s2025.npz": "78548b3097f8e4db6b642b58f79a7891a18be42e32bda72102f72cdc82c88a53",
+    "evaluation/T23/iTransformer_upstream_s2024.npz": "20895118640585eb48483dd80aaa861d393caacbadb4b1fcaf5b0cf32af74b95",
+    "evaluation/T23/iTransformer_last10_s2026.npz": "2a87a959c52d24689e23dd50f378e7a67e922d6a7923252e7188afe61818ff14",
+    "evaluation/T23/TimeXer_last10_s2024.npz": "0ba9efa5a8ed77b21521afce7069af948c320f8515f7b1cd3261d736a0e5e2e3",
+    "evaluation/T23/TimeXer_upstream_s2024.npz": "473d7a06309782f6eb7fc39d7cb2d6d5df4b3ebbd8df15657d849b68020bc4be",
+    "evaluation/T23/TimeXer_last10_s2025.npz": "1110abd5f225eccf189e838eee4e6f305d72a2915019c3bcefc384e3c6436d53"
+  },
+  "formal_count": 36,
+  "reused_formal": 0
+}
