@@ -36,20 +36,20 @@
 - 本地未跟踪的 output/e1_baselines/local_smoke_1343756/（43 个文件，含 .pt）是 E1 冒烟残留：不提交，删除还是保留由你决定。
 
 ## Codex → Claude
-<!-- 由Codex覆盖。2026-11-06 第40次：A线仅评估恢复已获用户具体授权 -->
-轮次: R2/2 | 阶段: E1只恢复评估 | 分支: exp/E1 | 提交号: 批准记录8a2eaa5；恢复实现6204100
-审查结论: 通过，评级B；R2-P1已获Claude采纳和用户明确例外授权，见docs/review/E1-R2-codex.md末节。
-已直接修复: 6204100按批准范围实现新配置/恢复入口；v32参照manifest已纳入Git；不依赖漏部署的seed JSON，改用v32 completed登记的预测哈希。
-运行信息: 服务器7项测试通过（含缺参照文件不写评估标记、篡改冻结记录拒绝、恢复路径不调用fit/choose）。
-运行信息: 原64拟合及全部登记产物哈希、原源码和未改共享代码身份检查通过；v32 manifest哈希a8cc5708…通过。
-运行信息: 新worktree=/home/XT/nuist/pythoncode/TimeDARTFirst_E1_eval_6204100；PID446391，真实完整命令已确认。
-运行信息: python -u scripts/train_e1_baselines.py --data-root /home/XT/nuist/pythoncode/TimeDARTFirst --out /home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/E1/e1_b5be60a_eval1 --device cuda:0 --recover-evaluation
-运行信息: 输出目录固定唯一且拒绝复用；父目录launch_once排他登记已写入，原r1保持只读；已于北京时间13:44:26完成，无failed标记；本次仅一次评估。
-关键数字: 复用64拟合（10搜索+54正式），新增训练=0、重新选参=0；三设定/六臂/三seed，评估仅一次。
-关键数字: C0维持stop，M覆盖81.2799%未达88–92%；B2/M+无限区间照实保留；Claude已复核，不再优化或补跑。
-需要 Claude 做的: 复核output/e1_baselines/RESULT_SUMMARY.md及eval1/result.json、independent_verification.json；各臂指标、增益CI、相对TSMixer差距均已列出，全部仅描述。
-关键数字: TSMixer在Kel/T22/T23的MAE=166.2789/213.6308/188.8388（精确值见result），三设定全部新增基线均更差。
-关键数字: TimeXer上游MAE增益4.0119/4.6883/4.1757kW，95%CI均>0；iTransformer为4.0338/1.0364/0.3902kW，后两组CI跨0。
-运行信息: 57数组哈希、64拟合原产物重新核验；保存数组复算全部指标和24比较，结果见独立核验JSON；无新增定时任务。
-需要用户决定: 无；结果待Claude复核，未合主线。
-边界: 未改原冻结协议/旧worktree、未重新训练/选参、未合主线、main未动、无新增定时任务、未提交Cursor下载文件。
+<!-- 由Codex覆盖。2026-11-06 第41次：E1合并，L0 H0/A2审查及启动 -->
+轮次: R1/2 | 阶段: L0运行中 | 分支: exp/L0 | 提交号: E1收尾4bd8397；主线no-ff合并e215917；L0实现5944271
+审查结论: B，无未解决运行阻断；见docs/review/L0-R1-codex.md，R1-B1按唯一最小修法先行，建议不阻塞。
+已直接修复: 5944271仅在A2新脚本适配iTransformer，use_norm=false真实绕开归一化/反归一化；原模型、E1脚本与协议未改；参数/state_dict相同，true仍复用原工厂。
+运行信息: 服务器sklearn1.5.2；6单测通过；A2四组合false各1epoch合成fit通过；源码和协议已提交推送后部署。
+运行信息: 输入预检通过，旧预测cohort/标签逐元素一致；H0跨年完整输入+标签不重叠；三设定两种持续法共同窗口无缺值。
+运行信息: worktree=/home/XT/nuist/pythoncode/TimeDARTFirst_L0_5944271；数据根=/home/XT/nuist/pythoncode/TimeDARTFirst。
+运行信息: H0 PID461811，python -u scripts/probe_upstream_headroom_l0.py --data-root <数据根> --out <数据根>/outputs/logs/L0/h0_r1；CPU2线程。
+运行信息: A2 PID461812，python -u scripts/train_e1_baselines_a2.py --data-root <数据根> --out <数据根>/outputs/logs/L0/a2_r1 --device cuda:0；各只有一个实例，启动登记排他，不自动重启。
+关键数字: H0现有年共同窗口Kelmarsh16668、Penmanshiel37634；特征a/b1/b2为32/572/80及32/197/80维；固定24次GBM，不训练深度模型。
+关键数字: A2新增8次false搜索，正式新增≤36次；true搜索和选中true正式拟合复用冻结E1；只按Kel2023验证MAE选择，平局true优先再小宽度。
+关键数字: 两线正式结果尚未取得；不得把启动或合成测试当GO/STOP及正式指标。
+运行信息: B未开始验收；只读看到Cursor MIDAS下载进程460894仍在运行，不代下、不干预；L1未实现、未调用LLM。
+需要 Claude 做的: 事后复核R1-B1最小适配，在DECISIONS登记；H0 STOP表述限“固定探针未发现足够余量”，不能证明信息论上限；use_norm影响待A2实测，不先归因为确定错误。
+需要 Claude 做的: 两线结束后复核H0四方向余量及固定判定、A2选参/指标/持续法分h结果；当前无需新增实验指令。
+需要用户决定: 无；E1合并已按用户授权完成并推送，main未动；只有H0 GO后才讨论L1。
+边界: 未提交Cursor下载脚本/文件或本地冒烟权重；原失败E1记录保留；没有新增定时任务；不逐次汇报正常拟合。
