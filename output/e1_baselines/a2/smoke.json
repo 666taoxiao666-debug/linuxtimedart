@@ -1,0 +1,21 @@
+{
+  "passed": true,
+  "records": {
+    "iTransformer_last10": {
+      "epochs": 1,
+      "parameters": 101956
+    },
+    "iTransformer_upstream": {
+      "epochs": 1,
+      "parameters": 101956
+    },
+    "TimeXer_last10": {
+      "epochs": 1,
+      "parameters": 136836
+    },
+    "TimeXer_upstream": {
+      "epochs": 1,
+      "parameters": 136836
+    }
+  }
+}

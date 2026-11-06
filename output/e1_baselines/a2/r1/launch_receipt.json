@@ -1,0 +1,11 @@
+{
+  "stage": "A2",
+  "commit": "5944271",
+  "pid": 461812,
+  "run": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/L0/a2_r1",
+  "worktree": "/home/XT/nuist/pythoncode/TimeDARTFirst_L0_5944271",
+  "instances": 1,
+  "automatic_restart": false,
+  "tests_passed": 6,
+  "status": "LAUNCHED"
+}

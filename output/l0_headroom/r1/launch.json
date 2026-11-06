@@ -1,0 +1,12 @@
+{
+  "utc": "2026-11-06T10:56:23.695216+00:00",
+  "argv": [
+    "scripts/probe_upstream_headroom_l0.py",
+    "--data-root",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst",
+    "--out",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/L0/h0_r1"
+  ],
+  "protocol_sha256": "a4bcee552856568296eab4af9e9417b4cefc35690c13b29b5c9fabd113d2542d",
+  "source_sha256": "760230fafa7ecd096c2310a6f7cf238615517ddab651887801b7e38c2f5b94ef"
+}

@@ -1,0 +1,15 @@
+{
+  "commit": "5944271",
+  "passed": true,
+  "log_lines": [
+    "PREFLIGHT_START",
+    "LOAD_OK",
+    "Kelmarsh existing cohort aligned 16668 stations 36",
+    "features {'a': (66672, 32), 'b1': (66672, 572), 'b2': (66672, 80)}",
+    "Penmanshiel existing cohort aligned 37634 stations 11",
+    "features {'a': (150536, 32), 'b1': (150536, 197), 'b2': (150536, 80)}",
+    "ALL_PREFLIGHT_PASSED"
+  ],
+  "new_predictions": false,
+  "probe_fits": 0
+}
