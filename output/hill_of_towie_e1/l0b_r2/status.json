@@ -1,7 +1,7 @@
 {
   "pid": 508698,
   "process_present_at_query": false,
-  "status": "REMOTE_COMPLETED_LOCAL_RETRIEVAL_INCOMPLETE",
+  "status": "LOCAL_VERIFIED",
   "command": null,
   "cwd": null,
   "exit_code": null,
@@ -18,9 +18,15 @@
     "station_registration.json": "cf955e4e72b9bfe0d0e474c9990770ca6902988ea6b921a54f2aebac91ba4a3f",
     "run.log": "8c2203bc6d26a99e7de33a861964993051de8c14320310e87a133f6d4722f6d3"
   },
-  "local_verification_completed": false,
+  "local_verification_completed": true,
+  "verified_date_local": "2026-11-08",
+  "verification": "All six files match remote SHA256; three copies byte-identical to r1; source matches launch receipt; unresolved empty; all 62 station qualifications/pressure flags recomputed; gate and qualified IDs/station records match.",
+  "parsed_year_evidence": "Inventory saves count 414, not a per-file parsed path list. All 414 unsealed manifest files are 2016-2023; source hash matches launch and inventory; reviewed loader rejects other years and verifies parsed paths against approved development manifest. Headers only 2016-2023. No per-path runtime audit is claimed.",
+  "qualified_station_ids": [44, 48, 67, 105, 113, 132, 137, 150, 161, 177, 212, 235],
+  "conflicts": "Station 137 year 2016: 2 hours; all other station-year counts zero.",
   "r1_copies_locally_verified": ["download_manifest.json", "download_plan.json", "station_registration.json"],
   "handoff_47_transfer": "Two read-only tar/gzip/base64 SSH stream attempts failed during banner exchange; no remote files modified. Tailscale warmup also timed out. Three r1 copies matched recorded remote SHA256 and were copied locally.",
   "retrieval_failure": "SCP connection reset; compressed retry timed out. Partial manifest retained as .partial, not an accepted result.",
-  "pending": ["Retrieve five JSON files and log", "Verify local hashes and r1 copies", "Check unresolved and parsed-year evidence", "Recompute gate from annual completeness", "Report station 137, conflicts and qualified IDs"]
+  "pending": [],
+  "retrieval_resolution": "Three files received in a read-only in-memory compressed stream (27802 bytes), extracted locally and individually SHA256 verified. No rerun or remote writes. Prior failure entries retained as history."
 }

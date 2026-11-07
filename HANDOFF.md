@@ -29,23 +29,18 @@
 需要用户决定: 无（取回彻底失败时，再请用户决定是否改用别的传输方式）
 
 ## Codex → Claude
-<!-- 由Codex覆盖。第47次：三个副本本地核验通过，另外三个文件因SSH握手失败未取回 -->
+<!-- 由Codex覆盖。2026-11-08 第47次收尾：LOCAL_VERIFIED -->
 轮次: R2/2 | 阶段: L0-B | 分支: exp/L0-B | 提交号: 本轮见git log
-审查结论: 第47次交接及DECISIONS增量通过；执行减少传输方案，见docs/review/L0-R2-codex.md；本地整体验收未完成。
-已直接修复: 无；本轮只读查询和结果记录，未改代码。
-运行信息: 任一站年冲突小时/完整公历年小时数>1%报错；平年8760、闰年8784，与完整率分母一致；原始文件及冻结screen/utils不改。
-运行信息: 本地13单测通过，包含4项指定测试（冲突整小时缺测、一致重复保留一行、1%边界与超限报错、干净输入逐元素同原加载器）。
-运行信息: 2026-11-07 13:34:07北京时间已启动唯一r2，PID508698；脱离SSH、.launch_once防重复标记已创建；本轮一次只读预算已使用，不重复启动。
-运行信息: 本次已确认PID508698退出，5个结果JSON均存在，日志有完成门槛输出；未恢复到原始退出码，不能补写为0。
-关键数字: 脚本SHA256=ec2eb4ba69a6bb1f6dc1359c1aef44391b03869cc39a721bea8be4b08cf77e4f。
-关键数字: 测试SHA256=31976ba0b7c97a839c7227697d644deaf2220b99947a3201a0e23b237fe54840。
-运行信息: r2计划新目录outputs/audits/hill_of_towie_l0b_readonly_r2，本地output/hill_of_towie_e1/l0b_r2；将输出各站年冲突数、137完整率/资格/气压及qualified_stations.json SHA256。
-运行信息: 日志为outputs/audits/hill_of_towie_l0b_readonly_r2.log；标记为同级hill_of_towie_l0b_readonly_r2.launch_once，在输出目录外。原命令/cwd因proc已消失仍未恢复。
-关键数字: 远端日志：512 MIDAS文件及风机字节核验通过；12合格站、11有气压、象限[1,2,3]、passed=true。
-关键数字: 远端qualified_stations SHA256=5909e1436559dd4334649c41c66881853ace75bc68a80f4fc9bfb30fcc60a979；其余远端哈希见l0b_r2/status.json。
-运行信息: 第47次三个副本已从r1复制到r2，逐个SHA256等于remote_sha256（dddffa24/70717870/cf955e4e）；不是从.partial恢复。
-运行信息: 仅请求inventory、qualified和run.log的tar/gzip/base64只读流，两次均SSH banner exchange超时；Tailscale预热也超时。远端未写文件、未重跑。
-运行信息: 按第47次约定停止本轮连接尝试；status仍为REMOTE_COMPLETED_LOCAL_RETRIEVAL_INCOMPLETE；.partial保留且不提交，待全部验收后再删除。
-需要 Claude 做的: 复核三个副本核验及连接阻塞；站137完整率/冲突数、冻结ID、inventory内部哈希及门槛重算仍待另外三个文件取回，不冻结站点。
-需要用户决定: SSH连续握手失败；请决定等待连接恢复后继续原方式，或指定可用的其他传输通道。无需新清点实例。
-边界: l0b_r1保留不动；不训练、不评估、不解封2024–2026，不修改下载逻辑；未合主线，main未动。
+审查结论: 本地验收通过；第47次完成，见docs/review/L0-R2-codex.md及L0B_RESULT_SUMMARY.md。
+已直接修复: 无；只取回既有元数据、验收及交接，未改运行代码。
+运行信息: 仅传inventory、qualified、run.log，内存压缩流27802字节；三个副本从r1复用；6文件SHA256均等于远端登记，副本字节相同。
+运行信息: PID508698原实例已完成；原命令/cwd/退出码不可恢复的出处限制保留，按Claude第47次接受；无重跑、无远端写入。
+运行信息: 本地目录output/hill_of_towie_e1/l0b_r2；status=LOCAL_VERIFIED；源码SHA256与启动回执和inventory一致。
+关键数字: 重算62站逐年资格/气压标记及门槛一致；12合格、11有气压、象限[1,2,3]，passed=true，unresolved为空。
+关键数字: 冻结ID=44,48,67,105,113,132,137,150,161,177,212,235。
+关键数字: qualified_stations SHA256=5909e1436559dd4334649c41c66881853ace75bc68a80f4fc9bfb30fcc60a979。
+关键数字: 137合格/有气压；2016–2023风速%=99.9772,99.9543,100,99.9886,100,99.9543,99.7260,99.7945；气压逐年值见报告/JSON。
+关键数字: 仅137的2016年2个冲突小时，其余站年全0；未超1%。512 MIDAS文件及风机字节核验记录保留。
+运行信息: inventory只存解析数414，没有逐文件parsed列表；414非封存清单均为2016–2023，哈希一致源码强制年份/白名单，表头也仅这些年；此证据边界如实记录。
+需要 Claude 做的: 复核本地验收、站137和冻结站点集合，以及parsed路径列表缺失的审计限制；决定后续方案，未经用户批准不合主线。
+需要用户决定: 无；等待Claude复核。未训练/评估/读取封存观测，main未动。
