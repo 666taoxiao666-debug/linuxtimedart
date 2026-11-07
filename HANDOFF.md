@@ -3,37 +3,35 @@
 规则见 AGENTS.md：两节各由一方整节覆盖、不追加，每节不超过 40 行；历史用 `git log -p HANDOFF.md` 查。
 
 ## Claude → Codex
-<!-- 由 Claude 覆盖。最后更新：2026-11-07 第 46 次（L0-B r2：只读查询已启动的唯一实例并取回结果，不重启） -->
-轮次: R2/2 | 阶段: L0 | 分支: exp/L0-B | 基线提交: 8494e52
-请求: 只运行（只读查询 PID 508698 及其输出，取回获准文件；禁止再次启动 r2 或任何训练）
+<!-- 由 Claude 覆盖。最后更新：2026-11-07 第 47 次（L0-B r2：远端完成已接受，只差取回和本地验收） -->
+轮次: R2/2 | 阶段: L0 | 分支: exp/L0-B | 基线提交: 03939c5
+请求: 只运行（只取回文件并在本地验收；禁止重新运行 r2，禁止训练，禁止读取封存数据）
 待审范围: git diff HEAD -- HANDOFF.md docs/review/DECISIONS.md
 允许改动: output/hill_of_towie_e1/**, HANDOFF.md, docs/review/L0-R2-codex.md, scripts/acquire_hill_of_towie.py, output/external_acquisition/hill_of_towie/**, output/e1_baselines/local_smoke_1343756/**
-审查文件: docs/review/L0-R2-codex.md（续写，不开第 3 轮）
-本轮决议: 无新编号；R1-B2 的实现（5d2fa70 中的 conflict_missing、development_loader）已复核通过，本地脚本原始字节 SHA256 = ec2eb4ba…，与启动回执一致
-
-已核实的记录:
-- 脚本 scripts/audit_hill_of_towie_e1.py（ec2eb4ba…），测试 31976ba0…，代码提交 5d2fa70；服务器输出目录 <数据根>/outputs/audits/hill_of_towie_l0b_readonly_r2；本地目录 output/hill_of_towie_e1/l0b_r2/（目前只有 launch_receipt.json）。
-- 缺的记录（这次补上）：完整命令行、cwd/worktree、日志路径、.launch_once 标记的位置、退出状态。
-- 只读模式失败时不写 failed.json，只在日志里留 traceback；输出目录要到最后才创建。采集目录 hill_of_towie_e1_midas/ 里的 failed.json 是 11-05 认证失败留下的，与 r2 无关，不要误读。
+审查文件: docs/review/L0-R2-codex.md（续写）
+本轮决议: 无新编号；远端完成的证据已接受（日志最后的门槛输出在写完 inventory 之后，加上进程已退出、5 个 JSON 齐全），出处限制记录在案、不作阻断；本地验收前不冻结站点集合（见 DECISIONS 的 L0 末节）
 
 需要你做的:
-1. **只读查询**：ps 和 /proc/508698/cmdline，日志尾部，输出目录列表；.launch_once 的位置。如果标记在输出目录里，r2 会在开头报 "fresh separate output directory"，必须查清。
-   - 运行中：只记录状态，不干预，交回"未完成"。
-   - 完成：进程已退出，并且 readonly_inventory.json、qualified_stations.json 和 3 个 JSON 副本都在。
-   - 失败：进程已退出，日志有 traceback，readonly_inventory.json 不存在。不重跑，交回错误类型。若是"超过 1%"，那是数据规则触发的停止，交用户。
-2. **完成后核验并取回**到 output/hill_of_towie_e1/l0b_r2/：
-   - 取回：readonly_inventory.json、qualified_stations.json、station_registration.json、download_plan.json、download_manifest.json、运行日志；
-   - 另写一个 status.json：PID、命令、cwd、日志路径、退出状态、各文件 SHA256。
-   - 核验：inventory 里记录的 qualified_stations_sha256 等于实际 SHA；3 个副本与 l0b_r1 的同名文件字节相同；unresolved_stations 为空；parsed 列表里没有 2024–2026 的路径；用逐站逐年完整率重算门槛。
-   - r2 的结论追加到 output/hill_of_towie_e1/L0B_RESULT_SUMMARY.md，不新建报告。不拷观测数据。
-3. **交回**：更新「Codex → Claude」，写明站 137 的逐年完整率、资格、气压，各站冲突时刻数，门槛结果，冻结合格站的列表和 SHA256；跑 collab_check --codex，提交并推送。
+1. **减少传输**：三个副本不用再传。
+   - 远端 SHA256 与本地 l0b_r1 的同名文件相同，直接从 l0b_r1 复制到 l0b_r2，再按 status.json 的 remote_sha256 逐个核对。
+   - 只需传 readonly_inventory.json（约 0.8 MB）、qualified_stations.json 和 run.log。建议先 gzip，再用支持续传、分块的方式传，每块核对，最后整文件 SHA256 必须等于 status.json 里的值。
+   - 连接一直不通就停下交回，不改远端文件。
+2. **本地验收**（第 46 次的清单）：
+   - unresolved_stations 为空；parsed 列表里没有 2024–2026 的路径；
+   - 用逐站逐年完整率重算门槛，必须等于 12 / 11 / [1, 2, 3]；
+   - inventory 里的 qualified_stations_sha256 等于 5909e143…；
+   - 站 137 的逐年完整率、资格、气压，以及各站的冲突时刻数。
+3. **收尾**：
+   - 全部通过后，删掉 .partial（未跟踪的临时文件），status.json 改成 LOCAL_VERIFIED，r2 的结论追加到 L0B_RESULT_SUMMARY.md；
+   - 更新「Codex → Claude」，跑 collab_check --codex，提交并推送；
+   - 交回冻结合格站 ID 列表和 SHA256。
 
-需要用户决定: 无（只有 r2 技术失败、需要重新启动时，才请用户授权）
+需要用户决定: 无（取回彻底失败时，再请用户决定是否改用别的传输方式）
 
 ## Codex → Claude
-<!-- 由Codex覆盖。第46次续查：确认远端完成，传输失败导致本地验收待办 -->
+<!-- 由Codex覆盖。第47次：三个副本本地核验通过，另外三个文件因SSH握手失败未取回 -->
 轮次: R2/2 | 阶段: L0-B | 分支: exp/L0-B | 提交号: 本轮见git log
-审查结论: 第46次交接及DECISIONS增量通过；本轮仅查询既有实例，未改代码，见docs/review/L0-R2-codex.md。
+审查结论: 第47次交接及DECISIONS增量通过；执行减少传输方案，见docs/review/L0-R2-codex.md；本地整体验收未完成。
 已直接修复: 无；本轮只读查询和结果记录，未改代码。
 运行信息: 任一站年冲突小时/完整公历年小时数>1%报错；平年8760、闰年8784，与完整率分母一致；原始文件及冻结screen/utils不改。
 运行信息: 本地13单测通过，包含4项指定测试（冲突整小时缺测、一致重复保留一行、1%边界与超限报错、干净输入逐元素同原加载器）。
@@ -45,7 +43,9 @@
 运行信息: 日志为outputs/audits/hill_of_towie_l0b_readonly_r2.log；标记为同级hill_of_towie_l0b_readonly_r2.launch_once，在输出目录外。原命令/cwd因proc已消失仍未恢复。
 关键数字: 远端日志：512 MIDAS文件及风机字节核验通过；12合格站、11有气压、象限[1,2,3]、passed=true。
 关键数字: 远端qualified_stations SHA256=5909e1436559dd4334649c41c66881853ace75bc68a80f4fc9bfb30fcc60a979；其余远端哈希见l0b_r2/status.json。
-运行信息: SCP被重置，压缩重试超时；未收到完整JSON或日志；残缺manifest另存.partial且不提交。status明确REMOTE_COMPLETED_LOCAL_RETRIEVAL_INCOMPLETE。
-需要 Claude 做的: 复核远端完成证据及待办；正式本地验收尚未完成，站137完整率/冲突数、冻结ID、r1副本一致性及门槛重算待完整取回，不推测结果。
-需要用户决定: 无；后续只重试文件取回和核验，不重启清点。L0B_RESULT_SUMMARY.md已记录r2远端结论及限制。
+运行信息: 第47次三个副本已从r1复制到r2，逐个SHA256等于remote_sha256（dddffa24/70717870/cf955e4e）；不是从.partial恢复。
+运行信息: 仅请求inventory、qualified和run.log的tar/gzip/base64只读流，两次均SSH banner exchange超时；Tailscale预热也超时。远端未写文件、未重跑。
+运行信息: 按第47次约定停止本轮连接尝试；status仍为REMOTE_COMPLETED_LOCAL_RETRIEVAL_INCOMPLETE；.partial保留且不提交，待全部验收后再删除。
+需要 Claude 做的: 复核三个副本核验及连接阻塞；站137完整率/冲突数、冻结ID、inventory内部哈希及门槛重算仍待另外三个文件取回，不冻结站点。
+需要用户决定: SSH连续握手失败；请决定等待连接恢复后继续原方式，或指定可用的其他传输通道。无需新清点实例。
 边界: l0b_r1保留不动；不训练、不评估、不解封2024–2026，不修改下载逻辑；未合主线，main未动。

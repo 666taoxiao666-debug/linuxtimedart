@@ -19,6 +19,8 @@
     "run.log": "8c2203bc6d26a99e7de33a861964993051de8c14320310e87a133f6d4722f6d3"
   },
   "local_verification_completed": false,
+  "r1_copies_locally_verified": ["download_manifest.json", "download_plan.json", "station_registration.json"],
+  "handoff_47_transfer": "Two read-only tar/gzip/base64 SSH stream attempts failed during banner exchange; no remote files modified. Tailscale warmup also timed out. Three r1 copies matched recorded remote SHA256 and were copied locally.",
   "retrieval_failure": "SCP connection reset; compressed retry timed out. Partial manifest retained as .partial, not an accepted result.",
   "pending": ["Retrieve five JSON files and log", "Verify local hashes and r1 copies", "Check unresolved and parsed-year evidence", "Recompute gate from annual completeness", "Report station 137, conflicts and qualified IDs"]
 }
