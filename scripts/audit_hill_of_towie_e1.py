@@ -258,6 +258,62 @@ def coverage_gate(stations):
             "quadrants": quadrants, "passed": len(qualified) >= 8 and len(pressure) >= 5 and len(quadrants) >= 3}
 
 
+
+def conflict_missing(frame, year):
+    """R1-B2: mask all three input fields at conflicting v1 station-times."""
+    import calendar
+    import numpy as np
+    import pandas as pd
+    from scripts.screen_kelmarsh_upstream_observations import column
+    data = frame.copy()
+    fields = [column(data, 'wind_speed', 'mean_wind_speed'),
+              column(data, 'wind_direction', 'mean_wind_dir')]
+    pressure = column(data, 'msl_pressure', required=False)
+    if pressure:
+        fields.append(pressure)
+    time_col = column(data, 'ob_time', 'ob_end_time')
+    sid_col = column(data, 'src_id')
+    version = column(data, 'version_num')
+    v1 = pd.to_numeric(data[version], errors='coerce') == 1
+    times = pd.to_datetime(data[time_col], utc=True, errors='coerce')
+    valid = v1 & times.notna() & (times.dt.minute == 0) & (times.dt.second == 0)
+    if (times[v1].dropna().dt.year != year).any():
+        raise ValueError('Row year differs from filename')
+    keys = pd.DataFrame({'sid': pd.to_numeric(data[sid_col], errors='coerce'), 'time': times})
+    values = data[fields].apply(pd.to_numeric, errors='coerce')
+    groups = pd.concat([keys, values], axis=1).loc[valid].groupby(['sid', 'time'])
+    different = groups[fields].nunique(dropna=False)
+    bad = different[(different > 1).any(axis=1)].index
+    counts = {}
+    hours = (366 if calendar.isleap(year) else 365) * 24
+    for sid in keys.loc[v1, 'sid'].dropna().unique():
+        count = sum(int(k[0] == sid) for k in bad)
+        counts[str(int(sid))] = count
+        if count / hours > .01:
+            raise ValueError(f'Station {int(sid)} year {year}: conflicting hours exceed 1%')
+    for sid, time in bad:
+        mask = v1 & (keys.sid == sid) & (keys.time == time)
+        data.loc[mask, fields] = np.nan
+    # Original loader collapses identical hourly values and enforces all other rules.
+    data.attrs = frame.attrs.copy()
+    return data, counts
+
+
+def development_loader(screen, conflicts):
+    import types
+    def read(path):
+        year = int(re.search(r'_(\d{4})\.csv$', Path(path).name)[1])
+        if year not in range(2016, 2024):
+            raise ValueError('Protected year parsing forbidden')
+        frame, counts = conflict_missing(screen.read_badc_csv(path), year)
+        for sid, count in counts.items():
+            conflicts.setdefault(sid, {})[str(year)] = count
+        return frame
+    return types.FunctionType(screen.load_observations.__code__,
+                              {**screen.load_observations.__globals__, 'YEARS': tuple(range(2016, 2024)),
+                               'read_badc_csv': read}, argdefs=screen.load_observations.__defaults__)
+
+
 def readonly_inventory(args):
     """No network, fitting, extraction or writes to acquisition/data paths."""
     import csv
@@ -303,21 +359,15 @@ def readonly_inventory(args):
         raise ValueError("Byte total mismatch")
     print('[VERIFIED] MIDAS 512 files', flush=True)
     # Reuse the reviewed parsing rules, scoped to development 2016-2023 only.
-    loader = types.FunctionType(screen.load_observations.__code__, {**screen.load_observations.__globals__, 'YEARS': tuple(range(2016, 2024))})
-    loader.__defaults__ = screen.load_observations.__defaults__
+    conflicts = {}
+    loader = development_loader(screen, conflicts)
     approved = {str(Path(f['path']).resolve()) for f in manifest['files'] if not f['sealed']}
     if any(str(p.resolve()) not in approved for p in development.rglob('*.csv')):
         raise ValueError('Unregistered file in development tree')
     observations, parsed, skipped, unresolved = {}, [], [], {}
     for station in reg['stations']:
         sid = station['src_id']
-        try:
-            obs, reads, skips = loader(development / str(sid), [sid])
-        except ValueError as exc:
-            if 'conflicting duplicate observations' not in str(exc):
-                raise
-            unresolved[str(sid)] = str(exc)
-            continue
+        obs, reads, skips = loader(development / str(sid), [sid])
         observations.update(obs); parsed.extend(reads); skipped.extend(skips)
     approved = {f['path'] for f in manifest['files'] if not f['sealed']}
     if any(f['path'] not in approved for f in parsed):
@@ -376,6 +426,11 @@ def readonly_inventory(args):
     out.mkdir(parents=True)
     for name in ['station_registration.json', 'download_plan.json', 'download_manifest.json']:
         (out / name).write_bytes((audit / name).read_bytes())
+    result['conflict_counts_by_station_year'] = {str(st['src_id']): {str(y): conflicts.get(str(st['src_id']), {}).get(str(y), 0) for y in range(2016, 2024)} for st in reg['stations']}
+    result['conflict_rule'] = 'R1-B2: conflicting v1 hourly values mask wind speed/direction/pressure; >1% of calendar hours in any station-year aborts'
+    station_set = {'qualified_station_ids': sorted(st['src_id'] for st in rows if st['qualified']), 'development_years': list(range(2016, 2024)), 'minimum_annual_wind_completeness': .85, 'stations': [st for st in rows if st['qualified']]}
+    save(out / 'qualified_stations.json', station_set)
+    result['qualified_stations_sha256'] = sha(out / 'qualified_stations.json')
     save(out / 'readonly_inventory.json', result)
     print(json.dumps(result['gate']), flush=True)
 
