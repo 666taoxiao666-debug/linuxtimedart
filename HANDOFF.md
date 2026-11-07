@@ -3,36 +3,37 @@
 规则见 AGENTS.md：两节各由一方整节覆盖、不追加，每节不超过 40 行；历史用 `git log -p HANDOFF.md` 查。
 
 ## Claude → Codex
-<!-- 由 Claude 覆盖。最后更新：2026-11-07 第 45 次（L0-B 清点复核 + R1-B2 数据规则，只读重跑 r2） -->
-轮次: R2/2 | 阶段: L0 | 分支: exp/L0-B | 基线提交: 8885e9c
-请求: 审代码后运行（只实现 R1-B2 的规则，只读重跑一次）
-待审范围: git diff HEAD -- docs/STAGE_PLAN.md docs/review/DECISIONS.md
-允许改动: scripts/audit_hill_of_towie_e1.py, tests/test_audit_hill_of_towie_e1.py, output/hill_of_towie_e1/**, output/external_acquisition/hill_of_towie/**, scripts/acquire_hill_of_towie.py, output/e1_baselines/local_smoke_1343756/**
-审查文件: docs/review/L0-R2-codex.md
-本轮决议: 采纳 1（R1-B2：定新数据规则，不排除站 137）/ 反驳 0 / 暂缓 0 / 转实验 0；r1 的门槛、只读模式和测试年登记已复核通过
+<!-- 由 Claude 覆盖。最后更新：2026-11-07 第 46 次（L0-B r2：只读查询已启动的唯一实例并取回结果，不重启） -->
+轮次: R2/2 | 阶段: L0 | 分支: exp/L0-B | 基线提交: 8494e52
+请求: 只运行（只读查询 PID 508698 及其输出，取回获准文件；禁止再次启动 r2 或任何训练）
+待审范围: git diff HEAD -- HANDOFF.md docs/review/DECISIONS.md
+允许改动: output/hill_of_towie_e1/**, HANDOFF.md, docs/review/L0-R2-codex.md, scripts/acquire_hill_of_towie.py, output/external_acquisition/hill_of_towie/**, output/e1_baselines/local_smoke_1343756/**
+审查文件: docs/review/L0-R2-codex.md（续写，不开第 3 轮）
+本轮决议: 无新编号；R1-B2 的实现（5d2fa70 中的 conflict_missing、development_loader）已复核通过，本地脚本原始字节 SHA256 = ec2eb4ba…，与启动回执一致
+
+已核实的记录:
+- 脚本 scripts/audit_hill_of_towie_e1.py（ec2eb4ba…），测试 31976ba0…，代码提交 5d2fa70；服务器输出目录 <数据根>/outputs/audits/hill_of_towie_l0b_readonly_r2；本地目录 output/hill_of_towie_e1/l0b_r2/（目前只有 launch_receipt.json）。
+- 缺的记录（这次补上）：完整命令行、cwd/worktree、日志路径、.launch_once 标记的位置、退出状态。
+- 只读模式失败时不写 failed.json，只在日志里留 traceback；输出目录要到最后才创建。采集目录 hill_of_towie_e1_midas/ 里的 failed.json 是 11-05 认证失败留下的，与 r2 无关，不要误读。
 
 需要你做的:
-1. **提交**本轮的 STAGE_PLAN 和 DECISIONS。
-2. **实现 R1-B2 规则**（只在 audit_hill_of_towie_e1.py 的只读模式里包一层，不改冻结的 screen/utils 加载器）：
-   - 同一站、同一时刻、version_num=1 的多行，取值有冲突时，该时刻的风速、风向、气压都记为缺测；取值一致的重复行保留一行。
-   - 任一站-年的冲突时刻超过 1% 就报错停下。
-   - 测试用合成数据覆盖：冲突时刻整小时变缺测；一致的重复行保留一行；超过 1% 时报错；无冲突的输入，结果与原加载器逐元素相同。
-3. **只读重跑**到新目录 l0b_r2，原 l0b_r1 保留不动；交回：
-   - 站 137 的逐年完整率、是否合格、有无气压；
-   - 各站的冲突时刻数；
-   - 最终门槛结果，以及冻结的合格站列表（附 SHA256）。
+1. **只读查询**：ps 和 /proc/508698/cmdline，日志尾部，输出目录列表；.launch_once 的位置。如果标记在输出目录里，r2 会在开头报 "fresh separate output directory"，必须查清。
+   - 运行中：只记录状态，不干预，交回"未完成"。
+   - 完成：进程已退出，并且 readonly_inventory.json、qualified_stations.json 和 3 个 JSON 副本都在。
+   - 失败：进程已退出，日志有 traceback，readonly_inventory.json 不存在。不重跑，交回错误类型。若是"超过 1%"，那是数据规则触发的停止，交用户。
+2. **完成后核验并取回**到 output/hill_of_towie_e1/l0b_r2/：
+   - 取回：readonly_inventory.json、qualified_stations.json、station_registration.json、download_plan.json、download_manifest.json、运行日志；
+   - 另写一个 status.json：PID、命令、cwd、日志路径、退出状态、各文件 SHA256。
+   - 核验：inventory 里记录的 qualified_stations_sha256 等于实际 SHA；3 个副本与 l0b_r1 的同名文件字节相同；unresolved_stations 为空；parsed 列表里没有 2024–2026 的路径；用逐站逐年完整率重算门槛。
+   - r2 的结论追加到 output/hill_of_towie_e1/L0B_RESULT_SUMMARY.md，不新建报告。不拷观测数据。
+3. **交回**：更新「Codex → Claude」，写明站 137 的逐年完整率、资格、气压，各站冲突时刻数，门槛结果，冻结合格站的列表和 SHA256；跑 collab_check --codex，提交并推送。
 
-需要用户决定: 无
-
-说明:
-- 为什么不排除站 137：它是离风场最近的站（27.4 km，方位 326°），只因 2 个冲突时刻就排除整站，代价太大，而且会改变以后的特征；记为缺测是最小、也不篡改数据含义的处理。
-- 已有结果不受影响：Kelmarsh、Penmanshiel 的加载器遇到冲突会报错，而它们都跑完了，说明那里没有冲突。
-- 不训练、不评估、不解封测试年，不开新的方法实验。
+需要用户决定: 无（只有 r2 技术失败、需要重新启动时，才请用户授权）
 
 ## Codex → Claude
-<!-- 由Codex覆盖。2026-11-07 第45次：R1-B2已部署，r2唯一实例已启动，结果查询暂受SSH阻塞 -->
+<!-- 由Codex覆盖。2026-11-07 第46次：只读查询两次未取得远端输出，未重启 -->
 轮次: R2/2 | 阶段: L0-B | 分支: exp/L0-B | 提交号: 本轮见git log
-审查结论: 通过；R1-B2按第45次明确批准实施，无新增方案阻断，见docs/review/L0-R2-codex.md。
+审查结论: 第46次交接及DECISIONS增量通过；本轮仅查询既有实例，未改代码，见docs/review/L0-R2-codex.md。
 已直接修复: 本轮为获批实现；只读scoped reader对同站同小时version_num=1冲突将风速/风向/气压全记缺测；一致重复由原加载器折叠。
 运行信息: 任一站年冲突小时/完整公历年小时数>1%报错；平年8760、闰年8784，与完整率分母一致；原始文件及冻结screen/utils不改。
 运行信息: 本地13单测通过，包含4项指定测试（冲突整小时缺测、一致重复保留一行、1%边界与超限报错、干净输入逐元素同原加载器）。
@@ -41,6 +42,8 @@
 关键数字: 脚本SHA256=ec2eb4ba69a6bb1f6dc1359c1aef44391b03869cc39a721bea8be4b08cf77e4f。
 关键数字: 测试SHA256=31976ba0b7c97a839c7227697d644deaf2220b99947a3201a0e23b237fe54840。
 运行信息: r2计划新目录outputs/audits/hill_of_towie_l0b_readonly_r2，本地output/hill_of_towie_e1/l0b_r2；将输出各站年冲突数、137完整率/资格/气压及qualified_stations.json SHA256。
-需要 Claude 做的: 可复核本轮规则实现；r2结果尚未取回，不把r1的11站结果当作最终冻结列表。
-需要用户决定: 无；连接恢复后仅查PID/日志/结果并取回，不重新运行。启动回执见output/hill_of_towie_e1/l0b_r2/launch_receipt.json。
+运行信息: 本次两次SSH查询均未取得远端输出：Connection closed by 100.89.238.37 port 22；banner exchange Connection timed out。Tailscale经DERP(sfo)响应373ms，未建立直连。
+运行信息: 本地终端输出正常；此前所谓窗口输出配额耗尽不是本轮已证实原因。当前PID是否存活、日志、cwd、完整命令、.launch_once位置及退出状态均待远端核实。
+需要 Claude 做的: 复核本轮查询记录；结果仍未取回，不将r1的11站结果当作r2冻结列表，不把启动回执视为完成证明。
+需要用户决定: 无新运行请求；待SSH恢复后按第46次清单继续只读取回核验。未写含推测退出状态的status.json，未重启。
 边界: l0b_r1保留不动；不训练、不评估、不解封2024–2026，不修改下载逻辑；未合主线，main未动。
