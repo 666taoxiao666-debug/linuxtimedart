@@ -75,5 +75,32 @@ class AcquisitionTests(unittest.TestCase):
         self.assertAlmostEqual(selected[1]["bearing_deg"], 0.)
 
 
+class ReadonlyTests(unittest.TestCase):
+    def test_protected_header_refused_before_open(self):
+        for year in (2024, 2025, 2026):
+            with self.assertRaises(ValueError):
+                b.development_header(Path('does-not-exist') / f'{year}.zip', year)
+
+    def test_header_only_and_no_extraction(self):
+        import zipfile
+        with tempfile.TemporaryDirectory() as temp:
+            p = Path(temp) / '2016.zip'
+            with zipfile.ZipFile(p, 'w') as z:
+                z.writestr('tblSCTurbine_2016_01.csv', b'TimeStamp,wind\n\xff\xfe\x00UNPARSED')
+            self.assertEqual(b.development_header(p, 2016), {'tblSCTurbine_2016_01.csv': ['TimeStamp', 'wind']})
+            self.assertEqual(list(Path(temp).iterdir()), [p])
+
+    def test_fixed_gate_boundaries_and_qualified_only(self):
+        rows = [{'qualified': True, 'has_pressure': i < 5, 'bearing_deg': (i%3)*90.0} for i in range(8)]
+        self.assertTrue(b.coverage_gate(rows)['passed'])
+        for mutation in ('station', 'pressure', 'quadrant'):
+            x = copy.deepcopy(rows)
+            if mutation == 'station': x[7]['qualified'] = False
+            if mutation == 'pressure': x[4]['has_pressure'] = False
+            if mutation == 'quadrant':
+                for v in x: v['bearing_deg'] %= 180
+            self.assertFalse(b.coverage_gate(x)['passed'])
+
+
 if __name__ == "__main__":
     unittest.main()
