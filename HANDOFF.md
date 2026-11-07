@@ -31,19 +31,21 @@
 需要用户决定: 无（只有 r2 技术失败、需要重新启动时，才请用户授权）
 
 ## Codex → Claude
-<!-- 由Codex覆盖。2026-11-07 第46次：只读查询两次未取得远端输出，未重启 -->
+<!-- 由Codex覆盖。第46次续查：确认远端完成，传输失败导致本地验收待办 -->
 轮次: R2/2 | 阶段: L0-B | 分支: exp/L0-B | 提交号: 本轮见git log
 审查结论: 第46次交接及DECISIONS增量通过；本轮仅查询既有实例，未改代码，见docs/review/L0-R2-codex.md。
-已直接修复: 本轮为获批实现；只读scoped reader对同站同小时version_num=1冲突将风速/风向/气压全记缺测；一致重复由原加载器折叠。
+已直接修复: 无；本轮只读查询和结果记录，未改代码。
 运行信息: 任一站年冲突小时/完整公历年小时数>1%报错；平年8760、闰年8784，与完整率分母一致；原始文件及冻结screen/utils不改。
 运行信息: 本地13单测通过，包含4项指定测试（冲突整小时缺测、一致重复保留一行、1%边界与超限报错、干净输入逐元素同原加载器）。
 运行信息: 2026-11-07 13:34:07北京时间已启动唯一r2，PID508698；脱离SSH、.launch_once防重复标记已创建；本轮一次只读预算已使用，不重复启动。
-运行信息: 新脚本/测试已传输且服务器SHA256与下列值一致，服务器13测试通过；后续多次只读状态查询SSH超时，完成/失败暂未确认。
+运行信息: 本次已确认PID508698退出，5个结果JSON均存在，日志有完成门槛输出；未恢复到原始退出码，不能补写为0。
 关键数字: 脚本SHA256=ec2eb4ba69a6bb1f6dc1359c1aef44391b03869cc39a721bea8be4b08cf77e4f。
 关键数字: 测试SHA256=31976ba0b7c97a839c7227697d644deaf2220b99947a3201a0e23b237fe54840。
 运行信息: r2计划新目录outputs/audits/hill_of_towie_l0b_readonly_r2，本地output/hill_of_towie_e1/l0b_r2；将输出各站年冲突数、137完整率/资格/气压及qualified_stations.json SHA256。
-运行信息: 本次两次SSH查询均未取得远端输出：Connection closed by 100.89.238.37 port 22；banner exchange Connection timed out。Tailscale经DERP(sfo)响应373ms，未建立直连。
-运行信息: 本地终端输出正常；此前所谓窗口输出配额耗尽不是本轮已证实原因。当前PID是否存活、日志、cwd、完整命令、.launch_once位置及退出状态均待远端核实。
-需要 Claude 做的: 复核本轮查询记录；结果仍未取回，不将r1的11站结果当作r2冻结列表，不把启动回执视为完成证明。
-需要用户决定: 无新运行请求；待SSH恢复后按第46次清单继续只读取回核验。未写含推测退出状态的status.json，未重启。
+运行信息: 日志为outputs/audits/hill_of_towie_l0b_readonly_r2.log；标记为同级hill_of_towie_l0b_readonly_r2.launch_once，在输出目录外。原命令/cwd因proc已消失仍未恢复。
+关键数字: 远端日志：512 MIDAS文件及风机字节核验通过；12合格站、11有气压、象限[1,2,3]、passed=true。
+关键数字: 远端qualified_stations SHA256=5909e1436559dd4334649c41c66881853ace75bc68a80f4fc9bfb30fcc60a979；其余远端哈希见l0b_r2/status.json。
+运行信息: SCP被重置，压缩重试超时；未收到完整JSON或日志；残缺manifest另存.partial且不提交。status明确REMOTE_COMPLETED_LOCAL_RETRIEVAL_INCOMPLETE。
+需要 Claude 做的: 复核远端完成证据及待办；正式本地验收尚未完成，站137完整率/冲突数、冻结ID、r1副本一致性及门槛重算待完整取回，不推测结果。
+需要用户决定: 无；后续只重试文件取回和核验，不重启清点。L0B_RESULT_SUMMARY.md已记录r2远端结论及限制。
 边界: l0b_r1保留不动；不训练、不评估、不解封2024–2026，不修改下载逻辑；未合主线，main未动。
