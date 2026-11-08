@@ -3,30 +3,32 @@
 规则见 AGENTS.md：两节各由一方整节覆盖、不追加，每节不超过 40 行；历史用 `git log -p HANDOFF.md` 查。
 
 ## Claude → Codex
-<!-- 由 Claude 覆盖。最后更新：2026-11-07 第 47 次（L0-B r2：远端完成已接受，只差取回和本地验收） -->
-轮次: R2/2 | 阶段: L0 | 分支: exp/L0-B | 基线提交: 03939c5
-请求: 只运行（只取回文件并在本地验收；禁止重新运行 r2，禁止训练，禁止读取封存数据）
-待审范围: git diff HEAD -- HANDOFF.md docs/review/DECISIONS.md
-允许改动: output/hill_of_towie_e1/**, HANDOFF.md, docs/review/L0-R2-codex.md, scripts/acquire_hill_of_towie.py, output/external_acquisition/hill_of_towie/**, output/e1_baselines/local_smoke_1343756/**
-审查文件: docs/review/L0-R2-codex.md（续写）
-本轮决议: 无新编号；远端完成的证据已接受（日志最后的门槛输出在写完 inventory 之后，加上进程已退出、5 个 JSON 齐全），出处限制记录在案、不作阻断；本地验收前不冻结站点集合（见 DECISIONS 的 L0 末节）
+<!-- 由 Claude 覆盖。最后更新：2026-11-08 第 48 次（L0-B 验收通过；新阶段 G0：GFS 数值预报的可行性与下载核验） -->
+轮次: R1/2 | 阶段: G0 | 分支: exp/G0 | 基线提交: f6c709e
+请求: 审方案（G0 的数据规则和门槛；下载由 Cursor 做，你只审方案，下载完成后再写只读核验）
+待审范围: git diff HEAD -- docs/STAGE_PLAN.md docs/review/DECISIONS.md
+允许改动: scripts/audit_gfs_g0.py, tests/test_audit_gfs_g0.py, output/gfs_g0/**, scripts/acquire_gfs_g0.py, output/external_acquisition/gfs_g0/**, output/hill_of_towie_e1/**, scripts/acquire_hill_of_towie.py, output/external_acquisition/hill_of_towie/**, output/e1_baselines/local_smoke_1343756/**
+审查文件: docs/review/G0-R1-codex.md
+本轮决议: L0-B 本地验收已复核通过（12 站冻结，5909e143…），详见 DECISIONS 的 L0 末节；G0 是新阶段，暂无编号
 
 需要你做的:
-1. **减少传输**：三个副本不用再传。
-   - 远端 SHA256 与本地 l0b_r1 的同名文件相同，直接从 l0b_r1 复制到 l0b_r2，再按 status.json 的 remote_sha256 逐个核对。
-   - 只需传 readonly_inventory.json（约 0.8 MB）、qualified_stations.json 和 run.log。建议先 gzip，再用支持续传、分块的方式传，每块核对，最后整文件 SHA256 必须等于 status.json 里的值。
-   - 连接一直不通就停下交回，不改远端文件。
-2. **本地验收**（第 46 次的清单）：
-   - unresolved_stations 为空；parsed 列表里没有 2024–2026 的路径；
-   - 用逐站逐年完整率重算门槛，必须等于 12 / 11 / [1, 2, 3]；
-   - inventory 里的 qualified_stations_sha256 等于 5909e143…；
-   - 站 137 的逐年完整率、资格、气压，以及各站的冲突时刻数。
-3. **收尾**：
-   - 全部通过后，删掉 .partial（未跟踪的临时文件），status.json 改成 LOCAL_VERIFIED，r2 的结论追加到 L0B_RESULT_SUMMARY.md；
-   - 更新「Codex → Claude」，跑 collab_check --codex，提交并推送；
-   - 交回冻结合格站 ID 列表和 SHA256。
+1. **提交**本轮的 STAGE_PLAN 和 DECISIONS。用户同意后，把 exp/L0-B 用 --no-ff 合回主线，再从主线拉 exp/G0。
+2. **审 G0 方案**，有阻断按 v2 写 G0-R1-codex.md。重点看三处：
+   - 因果可用规则：只用"C + 6 h ≤ t0"的最新一次起报；
+   - 封存规则：有效时刻 ≥2024 的文件只存原始字节，不解码；
+   - 门槛：2016–2023 每年完整周期 ≥95%，区域覆盖全部冻结站点。
+   - G1 预告只看有没有硬伤，比如四个臂的信息量是否可比、Q3 能否作为方法主张的判定，不实现。
+3. **不下载、不安装。** 等 Cursor 交回探查报告和清单（output/external_acquisition/gfs_g0/）后，再写 scripts/audit_gfs_g0.py 做只读核验：
+   - 清单和哈希；
+   - 门槛；
+   - 站点是否在裁剪区域内；
+   - ≥2024 的文件只核对字节哈希。
 
-需要用户决定: 无（取回彻底失败时，再请用户决定是否改用别的传输方式）
+需要用户决定: 是否同意把 exp/L0-B 合回主线；Cursor 探查后，下载量是否在可接受范围（超过 500 GB 下载或 20 GB 存储时，交用户决定）
+
+说明:
+- 方向是用户 2026-11-08 选的：引入数值天气预报。依据是本地诊断，上游信息的增益集中在天气变化的窗口，而变化窗口贡献了 h4 MAE 的约 70%。
+- 可行性核查的结论：CEDA UKV 每年约 4 TB，不可行；Open-Meteo 的拼接预报有前视，不可行；GFS 待 Cursor 探查。
 
 ## Codex → Claude
 <!-- 由Codex覆盖。2026-11-08 第47次收尾：LOCAL_VERIFIED -->
