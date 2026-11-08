@@ -228,16 +228,229 @@ def acquire(args, audit, record):
         raise
 
 
+
+def development_header(archive, year):
+    """Read one header per development CSV; never open protected archives."""
+    import zipfile
+    import csv
+    if year not in range(2016, 2024) or Path(archive).name != f"{year}.zip":
+        raise ValueError("Protected or mismatched year; header read forbidden")
+    headers = {}
+    with zipfile.ZipFile(archive) as z:
+        for name in z.namelist():
+            if not name.endswith(".csv") or not name.startswith(("tblSCTurbine_", "tblSCTurGrid_", "tblSCTurTemp_")):
+                continue
+            with z.open(name) as stream:
+                line = stream.readline(65537)
+            if len(line) > 65536:
+                raise ValueError("Oversized header")
+            headers[name] = next(csv.reader([line.decode("cp1252").lstrip("\ufeff").strip()]))
+    if not headers:
+        raise ValueError("No approved SCADA headers")
+    return headers
+
+
+def coverage_gate(stations):
+    qualified = [s for s in stations if s["qualified"]]
+    pressure = [s for s in qualified if s["has_pressure"]]
+    quadrants = sorted({int(s["bearing_deg"] // 90) for s in qualified})
+    return {"qualified_stations": len(qualified), "with_pressure": len(pressure),
+            "quadrants": quadrants, "passed": len(qualified) >= 8 and len(pressure) >= 5 and len(quadrants) >= 3}
+
+
+
+def conflict_missing(frame, year):
+    """R1-B2: mask all three input fields at conflicting v1 station-times."""
+    import calendar
+    import numpy as np
+    import pandas as pd
+    from scripts.screen_kelmarsh_upstream_observations import column
+    data = frame.copy()
+    fields = [column(data, 'wind_speed', 'mean_wind_speed'),
+              column(data, 'wind_direction', 'mean_wind_dir')]
+    pressure = column(data, 'msl_pressure', required=False)
+    if pressure:
+        fields.append(pressure)
+    time_col = column(data, 'ob_time', 'ob_end_time')
+    sid_col = column(data, 'src_id')
+    version = column(data, 'version_num')
+    v1 = pd.to_numeric(data[version], errors='coerce') == 1
+    times = pd.to_datetime(data[time_col], utc=True, errors='coerce')
+    valid = v1 & times.notna() & (times.dt.minute == 0) & (times.dt.second == 0)
+    if (times[v1].dropna().dt.year != year).any():
+        raise ValueError('Row year differs from filename')
+    keys = pd.DataFrame({'sid': pd.to_numeric(data[sid_col], errors='coerce'), 'time': times})
+    values = data[fields].apply(pd.to_numeric, errors='coerce')
+    groups = pd.concat([keys, values], axis=1).loc[valid].groupby(['sid', 'time'])
+    different = groups[fields].nunique(dropna=False)
+    bad = different[(different > 1).any(axis=1)].index
+    counts = {}
+    hours = (366 if calendar.isleap(year) else 365) * 24
+    for sid in keys.loc[v1, 'sid'].dropna().unique():
+        count = sum(int(k[0] == sid) for k in bad)
+        counts[str(int(sid))] = count
+        if count / hours > .01:
+            raise ValueError(f'Station {int(sid)} year {year}: conflicting hours exceed 1%')
+    for sid, time in bad:
+        mask = v1 & (keys.sid == sid) & (keys.time == time)
+        data.loc[mask, fields] = np.nan
+    # Original loader collapses identical hourly values and enforces all other rules.
+    data.attrs = frame.attrs.copy()
+    return data, counts
+
+
+def development_loader(screen, conflicts):
+    import types
+    def read(path):
+        year = int(re.search(r'_(\d{4})\.csv$', Path(path).name)[1])
+        if year not in range(2016, 2024):
+            raise ValueError('Protected year parsing forbidden')
+        frame, counts = conflict_missing(screen.read_badc_csv(path), year)
+        for sid, count in counts.items():
+            conflicts.setdefault(sid, {})[str(year)] = count
+        return frame
+    return types.FunctionType(screen.load_observations.__code__,
+                              {**screen.load_observations.__globals__, 'YEARS': tuple(range(2016, 2024)),
+                               'read_badc_csv': read}, argdefs=screen.load_observations.__defaults__)
+
+
+def readonly_inventory(args):
+    """No network, fitting, extraction or writes to acquisition/data paths."""
+    import csv
+    import io
+    import types
+    import pandas as pd
+    from scripts import screen_kelmarsh_upstream_observations as screen
+    audit, out, root = args.audit_root, args.readonly_out, args.data_root.resolve()
+    if out.resolve() == audit.resolve() or out.exists():
+        raise ValueError("Use a fresh separate output directory")
+    for proc in Path('/proc').iterdir():
+        if not proc.name.isdigit():
+            continue
+        try:
+            argv = (proc / 'cmdline').read_bytes().split(b'\0')
+        except OSError:
+            continue
+        if b'--download-midas' in argv and any(a.endswith(b'audit_hill_of_towie_e1.py') for a in argv[1:3]):
+            raise ValueError("Acquisition still active")
+    plan = json.loads((audit / 'download_plan.json').read_text())
+    manifest = json.loads((audit / 'download_manifest.json').read_text())
+    reg = json.loads((audit / 'station_registration.json').read_text())
+    validate_plan(plan)
+    if any(plan[k] != v for k, v in reg.items()):
+        raise ValueError("Station registration mismatch")
+    if manifest['status'] != 'AVAILABLE_FILES_VERIFIED' or not (len(plan['files']) == len(manifest['files']) == manifest['planned_files'] == 512):
+        raise ValueError("Acquisition gate failed")
+    if manifest['plan_sha256'] != sha(audit / 'download_plan.json'):
+        raise ValueError("Plan hash mismatch")
+    expected = {(f['src_id'], f['year']): f for f in plan['files']}
+    seen = set()
+    development = root / 'datasets/upstream_observations/hill_of_towie_midas_v202607/development'
+    sealed = root / 'datasets/upstream_observations/sealed/hill_of_towie_midas_v202607'
+    for f in manifest['files']:
+        key = (f['src_id'], f['year']); item = expected[key]
+        target = (sealed if item['sealed'] else development) / str(item['src_id']) / item['name']
+        if key in seen or Path(f['path']).resolve() != target.resolve() or f['sealed'] != item['sealed']:
+            raise ValueError("Duplicate/path/sealed identity mismatch")
+        seen.add(key)
+        if not (target.stat().st_size == f['bytes'] == item['size'] and sha(target, 'md5') == f['md5'] == item['md5'] and sha(target) == f['sha256']):
+            raise ValueError("MIDAS file hash mismatch")
+    if sum(f['bytes'] for f in manifest['files']) != manifest['planned_bytes']:
+        raise ValueError("Byte total mismatch")
+    print('[VERIFIED] MIDAS 512 files', flush=True)
+    # Reuse the reviewed parsing rules, scoped to development 2016-2023 only.
+    conflicts = {}
+    loader = development_loader(screen, conflicts)
+    approved = {str(Path(f['path']).resolve()) for f in manifest['files'] if not f['sealed']}
+    if any(str(p.resolve()) not in approved for p in development.rglob('*.csv')):
+        raise ValueError('Unregistered file in development tree')
+    observations, parsed, skipped, unresolved = {}, [], [], {}
+    for station in reg['stations']:
+        sid = station['src_id']
+        obs, reads, skips = loader(development / str(sid), [sid])
+        observations.update(obs); parsed.extend(reads); skipped.extend(skips)
+    approved = {f['path'] for f in manifest['files'] if not f['sealed']}
+    if any(f['path'] not in approved for f in parsed):
+        raise ValueError("Unregistered development input")
+    rows = []
+    for station in reg['stations']:
+        frame = observations.get(station['src_id'])
+        wind, pressure = {}, {}
+        for year in range(2016, 2024):
+            hours = pd.date_range(f'{year}-01-01', f'{year+1}-01-01', freq='h', inclusive='left')
+            wind[str(year)] = 0.0 if frame is None else float(frame.wind_speed.reindex(hours).notna().mean())
+            pressure[str(year)] = 0.0 if frame is None else float(frame.msl_pressure.reindex(hours).notna().mean())
+        rows.append({**station, 'unresolved': str(station['src_id']) in unresolved, 'wind_completeness': None if str(station['src_id']) in unresolved else wind, 'pressure_completeness': None if str(station['src_id']) in unresolved else pressure,
+                     'qualified': None if str(station['src_id']) in unresolved else all(v >= .85 for v in wind.values()), 'has_pressure': any(v > 0 for v in pressure.values())})
+    turbine_manifest_path = root / 'output/external_acquisition/hill_of_towie/manifest.json'
+    tm = json.loads(turbine_manifest_path.read_text())
+    record = json.loads(args.record.read_text())
+    registered = {f['key']: f for f in record['files']}
+    directory = root / 'datasets/external_validation/sealed/hill_of_towie'
+    checked = []
+    for f in tm['files']:
+        if f['download_status'] == 'SKIPPED_NOT_REQUIRED':
+            continue
+        item = registered[f['name']]; path = directory / safe_name(f['name'])
+        if not (path.stat().st_size == item['size'] == f['actual_bytes'] and sha(path, 'md5') == item['checksum'].removeprefix('md5:') == f['official_md5'] and sha(path) == f['sha256']):
+            raise ValueError('Turbine file hash mismatch')
+        checked.append(f['name'])
+    if any(f'{year}.zip' not in checked for year in YEARS):
+        raise ValueError('Missing year archive')
+    print('[VERIFIED] turbine bytes', flush=True)
+    headers = {str(y): development_header(directory / f'{y}.zip', y) for y in range(2016, 2024)}
+    metadata = {}
+    for name in ['Hill_of_Towie_turbine_fields_description.csv', 'Hill_of_Towie_AeroUp_install_dates.csv']:
+        if name not in checked:
+            raise ValueError('Missing metadata')
+        metadata[name] = list(csv.DictReader(io.StringIO((directory / name).read_text(encoding='cp1252'))))
+    mapping = {'Wspd': ['wtc_AcWindSp_mean'], 'Etmp': ['wtc_AmbieTmp_mean'],
+               'Ndir_sin': ['wtc_NacelPos_mean'], 'Ndir_cos': ['wtc_NacelPos_mean'],
+               'Pab_mean': ['wtc_PitcPosA_mean', 'wtc_PitcPosB_mean', 'wtc_PitcPosC_mean'],
+               'rotor_speed': ['wtc_MainSRpm_mean'], 'power_last10': ['wtc_ActPower_mean'], 'wind_last10': ['wtc_AcWindSp_mean']}
+    columns = {c for year in headers.values() for cols in year.values() for c in cols}
+    missing_by_year = {year: {k: [c for c in v if c not in {x for cols in hs.values() for x in cols}] for k,v in mapping.items() if not set(v) <= {x for cols in hs.values() for x in cols}} for year,hs in headers.items()}
+    missing = {k: [c for c in v if c not in columns] for k, v in mapping.items() if not set(v) <= columns}
+    gate = coverage_gate(rows)
+    if unresolved:
+        gate['passed'] = None
+        gate['status'] = 'BLOCKED_UNRESOLVED_DUPLICATES'
+    result = {'status': 'COMPLETED_WITH_BLOCKER' if unresolved else 'COMPLETED', 'utc': datetime.now(timezone.utc).isoformat(),
+              'source_sha256': sha(__file__), 'midas_verified_files': len(seen), 'midas_bytes': manifest['planned_bytes'],
+              'development_rule': 'Each full calendar year 2016-2023 >=85%; missing years count zero; original version_num=1 parsing; no imputation',
+              'pressure_rule': 'At least one valid positive development pressure observation; per-year coverage reported, no extra pressure threshold imposed',
+              'gate': gate, 'unresolved_stations': unresolved, 'stations': rows, 'parsed_development_files': len(parsed),
+              'turbine_hash_verified': checked, 'test_years': [2024, 2025], 'protected_partial_years': [2026],
+              'headers': headers, 'missing_by_year': missing_by_year, 'scada_mapping': mapping, 'missing_inputs': missing, 'metadata': metadata,
+              'limitations': ['Headers only do not establish value availability or temporal alignment.', 'No formal confirmation protocol, training or test-value parsing.']}
+    out.mkdir(parents=True)
+    for name in ['station_registration.json', 'download_plan.json', 'download_manifest.json']:
+        (out / name).write_bytes((audit / name).read_bytes())
+    result['conflict_counts_by_station_year'] = {str(st['src_id']): {str(y): conflicts.get(str(st['src_id']), {}).get(str(y), 0) for y in range(2016, 2024)} for st in reg['stations']}
+    result['conflict_rule'] = 'R1-B2: conflicting v1 hourly values mask wind speed/direction/pressure; >1% of calendar hours in any station-year aborts'
+    station_set = {'qualified_station_ids': sorted(st['src_id'] for st in rows if st['qualified']), 'development_years': list(range(2016, 2024)), 'minimum_annual_wind_completeness': .85, 'stations': [st for st in rows if st['qualified']]}
+    save(out / 'qualified_stations.json', station_set)
+    result['qualified_stations_sha256'] = sha(out / 'qualified_stations.json')
+    save(out / 'readonly_inventory.json', result)
+    print(json.dumps(result['gate']), flush=True)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--data-root", type=Path, required=True)
     parser.add_argument("--record", type=Path, default=ROOT / "output/external_acquisition/hill_of_towie/record_22662930.json")
     parser.add_argument("--audit-root", type=Path, required=True)
     parser.add_argument("--download-midas", action="store_true")
+    parser.add_argument("--readonly-out", type=Path)
     args = parser.parse_args()
+    if args.readonly_out and args.download_midas:
+        parser.error("Read-only and download modes are mutually exclusive")
     if sha(args.record) != RECORD_SHA:
         raise ValueError("Pinned record hash differs")
     record = json.loads(args.record.read_text(encoding="utf-8"))
+    if args.readonly_out:
+        readonly_inventory(args)
+        return 0
     args.audit_root.mkdir(parents=True, exist_ok=True)
     import fcntl
     with (args.audit_root / ".acquire.lock").open("a") as lock:

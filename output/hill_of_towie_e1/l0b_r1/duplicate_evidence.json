@@ -1,0 +1,15 @@
+[
+  {
+    "file": "midas-open_uk-hourly-weather-obs_dv-202607_moray-in-grampian-region_00137_lossiemouth_qcv-1_2016.csv",
+    "conflicting_times": 2,
+    "first_times": [
+      "2016-07-31 00:00:00",
+      "2016-07-31 09:00:00"
+    ],
+    "fields": [
+      "wind_speed",
+      "wind_direction",
+      "msl_pressure"
+    ]
+  }
+]

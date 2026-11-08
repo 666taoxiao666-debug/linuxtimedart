@@ -1,0 +1,32 @@
+{
+  "pid": 508698,
+  "process_present_at_query": false,
+  "status": "LOCAL_VERIFIED",
+  "command": null,
+  "cwd": null,
+  "exit_code": null,
+  "provenance_limit": "Process exited; /proc unavailable. Exact command, cwd and exit code were not recovered.",
+  "log_path": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/audits/hill_of_towie_l0b_readonly_r2.log",
+  "launch_once_path": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/audits/hill_of_towie_l0b_readonly_r2.launch_once",
+  "launch_once_outside_output_directory": true,
+  "remote_log_gate": {"qualified_stations": 12, "with_pressure": 11, "quadrants": [1, 2, 3], "passed": true},
+  "remote_sha256": {
+    "download_manifest.json": "dddffa24458d81e15436ad7f6dbeb653b729558b56f0043d9c5b45966f109094",
+    "download_plan.json": "70717870f60c1098e3b592926dc8be52898eb70e2392582b3df58b3a6a9f76df",
+    "qualified_stations.json": "5909e1436559dd4334649c41c66881853ace75bc68a80f4fc9bfb30fcc60a979",
+    "readonly_inventory.json": "140d0867ad291285262188490b08a2491d37ba770f5959ba7d5161ab1984bdd1",
+    "station_registration.json": "cf955e4e72b9bfe0d0e474c9990770ca6902988ea6b921a54f2aebac91ba4a3f",
+    "run.log": "8c2203bc6d26a99e7de33a861964993051de8c14320310e87a133f6d4722f6d3"
+  },
+  "local_verification_completed": true,
+  "verified_date_local": "2026-11-08",
+  "verification": "All six files match remote SHA256; three copies byte-identical to r1; source matches launch receipt; unresolved empty; all 62 station qualifications/pressure flags recomputed; gate and qualified IDs/station records match.",
+  "parsed_year_evidence": "Inventory saves count 414, not a per-file parsed path list. All 414 unsealed manifest files are 2016-2023; source hash matches launch and inventory; reviewed loader rejects other years and verifies parsed paths against approved development manifest. Headers only 2016-2023. No per-path runtime audit is claimed.",
+  "qualified_station_ids": [44, 48, 67, 105, 113, 132, 137, 150, 161, 177, 212, 235],
+  "conflicts": "Station 137 year 2016: 2 hours; all other station-year counts zero.",
+  "r1_copies_locally_verified": ["download_manifest.json", "download_plan.json", "station_registration.json"],
+  "handoff_47_transfer": "Two read-only tar/gzip/base64 SSH stream attempts failed during banner exchange; no remote files modified. Tailscale warmup also timed out. Three r1 copies matched recorded remote SHA256 and were copied locally.",
+  "retrieval_failure": "SCP connection reset; compressed retry timed out. Partial manifest retained as .partial, not an accepted result.",
+  "pending": [],
+  "retrieval_resolution": "Three files received in a read-only in-memory compressed stream (27802 bytes), extracted locally and individually SHA256 verified. No rerun or remote writes. Prior failure entries retained as history."
+}
