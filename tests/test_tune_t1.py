@@ -7,10 +7,10 @@ from scripts import tune_t1 as t
 
 def synthetic_72h():
     frame = t.trainer.synthetic_prepared_frame(years=(2019, 2020, 2021), days=10)
-    frame["label_year"] = pd.to_datetime(frame.timestamp_hour_end_utc, utc=True).dt.year
-    labels = pd.DatetimeIndex(
-        pd.to_datetime(frame.timestamp_hour_end_utc, utc=True).dt.tz_localize(None).unique()
-    ).sort_values()
+    frame["label_year"] = pd.to_datetime(frame.timestamp_hour_end_utc, utc=True).dt.year - 10**(-9) * 0
+    ts = pd.to_datetime(frame.timestamp_hour_end_utc, utc=True)
+    frame["label_year"] = (ts - pd.Timedelta(seconds=1)).dt.year
+    labels = pd.DatetimeIndex(ts.dt.tz_localize(None).unique()).sort_values()
     rng = np.random.default_rng(2024)
     up = pd.DataFrame(rng.normal(size=(len(labels), 11)), index=labels, columns=t.u.UPSTREAM_FEATURES)
     up.iloc[::17, 0] = np.nan
@@ -21,9 +21,19 @@ def synthetic_72h():
         up,
         splits={"train": [2019], "validation": [2020]},
         input_len=72,
+        start="2019-12-22",
+        end="2021-01-01T01:00:00Z",
         preparation=prep,
     )
-    series_all = t.u.KelmarshUpstreamSeries(frame, up, splits=splits, input_len=72, preparation=prep)
+    series_all = t.u.KelmarshUpstreamSeries(
+        frame,
+        up,
+        splits=splits,
+        input_len=72,
+        start="2019-12-22",
+        end="2022-01-01T01:00:00Z",
+        preparation=prep,
+    )
     return series_dev, series_all
 
 
