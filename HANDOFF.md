@@ -3,23 +3,26 @@
 规则见 AGENTS.md：两节各由一方整节覆盖、不追加，每节不超过 40 行；历史用 `git log -p HANDOFF.md` 查。
 
 ## Claude → Codex
-<!-- 由 Claude 覆盖。最后更新：2026-11-09 第 56 次（M2 R2：R1-B1 的 W4 改为过去固定窗口拟合；S1–S5 写清；Optuna 交 Cursor） -->
-轮次: R2/2 | 阶段: M2 | 分支: exp/M2 | 基线提交: fec8edc
-请求: 审方案后实现并运行（只审改动；CW1 无阻断就正式运行一次；T1 等 Cursor 交回 Optuna 版本后再运行）
+<!-- 由 Claude 覆盖。最后更新：2026-11-09 第 57 次（CW1 STOP 已复核；新阶段 M3：C 线第 2 轮 CW2 = 上游变化特征的误差尺度模型；T1 照常运行） -->
+轮次: R1/2 | 阶段: M3 | 分支: exp/M2 | 基线提交: d841847
+请求: 审方案后实现并运行（只审 CW2；无阻断就正式运行一次，CPU、2 个线程；不要打断 T1）
 待审范围: git diff HEAD -- docs/STAGE_PLAN.md docs/review/DECISIONS.md
-允许改动: scripts/pilot_conformal_cw1.py, tests/test_pilot_conformal_cw1.py, output/conformal_cw1/**, scripts/tune_t1.py, configs/t1_tuning_protocol.json, tests/test_tune_t1.py, output/t1_tuning/**, scripts/llm_encoder_search_l1.py, models/ProgramEncoder.py, tests/test_llm_encoder_search_l1.py, configs/l1_llm_encoder_protocol.json, output/l1_llm_encoder/**, output/external_acquisition/llm_weights/**, output/conformal_c0b/**, output/external_acquisition/gfs_g0/**, output/hill_of_towie_e1/**, scripts/acquire_hill_of_towie.py, output/external_acquisition/hill_of_towie/**, output/e1_baselines/local_smoke_1343756/**
-审查文件: docs/review/M2-R2-codex.md
-本轮决议: 采纳 6（R1-B1、S1–S5）/ 反驳 0 / 暂缓 0 / 转实验 0
+允许改动: scripts/pilot_conformal_cw2.py, tests/test_pilot_conformal_cw2.py, output/conformal_cw2/**, output/conformal_cw1/**, scripts/tune_t1.py, configs/t1_tuning_protocol.json, tests/test_tune_t1.py, output/t1_tuning/**, scripts/llm_encoder_search_l1.py, models/ProgramEncoder.py, tests/test_llm_encoder_search_l1.py, configs/l1_llm_encoder_protocol.json, output/l1_llm_encoder/**, output/external_acquisition/llm_weights/**, output/conformal_c0b/**, output/external_acquisition/gfs_g0/**, output/hill_of_towie_e1/**, scripts/acquire_hill_of_towie.py, output/external_acquisition/hill_of_towie/**, output/e1_baselines/local_smoke_1343756/**
+审查文件: docs/review/M3-R1-codex.md
+本轮决议: CW1 的 STOP_CW1 已独立复核并接受（DECISIONS 的 M2 末节）；按事先规则第 2 轮换方向，M3 暂无编号
 
 需要你做的:
-1. **提交**本轮的 STAGE_PLAN 和 DECISIONS。
-2. **只审改动部分**，这是第 2 轮，也是最后一轮；仍有分歧就写明，交用户决定：
-   - R1-B1：W4 的填充值、标准化、k-means 和功率四分位边界，只用"源校准年 + 目标风场上一年"的无标签特征拟合，然后冻结；测试要求历史相同、未来后缀不同时结果完全相同。
-   - S1–S5：W4 的状态键和半径来源；W2 的拟合登记；挑选、W3 平局和 CI 的规则；W4 两个对照的差值方向；T1 的回顾性措辞。
-3. **运行**：
-   - CW1 无阻断就实现并正式运行一次（CPU、2 个线程），交回内容同第 55 次。
-   - T1 等 output/t1_tuning/optuna_install.json 显示 timedart 环境里 Optuna 能导入、版本已登记、已有包没有变化之后，再按方案实现并运行（GPU）。如果安装改动了已有包，停下交用户。
-   - L1 仍然等权重。
+1. **提交**本轮的 STAGE_PLAN 和 DECISIONS。M3 仍在 exp/M2 分支上继续，不新建分支：T1 正在这个分支的代码上运行，换分支会打乱记录。
+2. **审 CW2**，有阻断按 v2 写 M3-R1-codex.md。重点看：
+   - σ̂ 只用源校准年拟合；三个臂只有特征不同；
+   - 标准化分数和 F、A 的衔接；
+   - 4 组挑选数据的合格条件（覆盖率都在范围内、并且都比 min(N-P, B3-A) 好）；
+   - J3 的数据身份和因果截止（Penmanshiel 2022 → Kelmarsh 2022-12 → Kelmarsh 2023）；
+   - C3 用 min(N-P, B3-A) 作对照，并要求 CI 下界 > 0。
+   - 没有阻断就实现并正式运行一次。
+3. **交回**：
+   - CW2：4 组挑选数据上各臂的覆盖率和 Winkler；所选候选；J3 上所有方法的覆盖率、宽度、Winkler、截顶占比，C1–C3 的判定和 CI；σ̂ 的特征重要性。
+   - T1：跑完时按 M2 的要求一并交回；如果到时还没跑完，就写当前进度，不要等。
 
 需要用户决定: 无
 
