@@ -1,0 +1,17 @@
+{
+  "argv": [
+    "scripts/pilot_conformal_cw2.py",
+    "--data-root",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst",
+    "--out",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/Conformal/cw2_b23072d_r1"
+  ],
+  "utc": "2026-11-09T07:13:57.217865+00:00",
+  "script_sha256": "6d2df5d068d026a7dec4ac437710246736e15fd155757eca31400b891d374b67",
+  "plan_sha256": "7b9352980e9df9068a3195dd0fc010f5cb75ae5caccd97aae10a9a88eea5a55c",
+  "frozen_dependencies": {
+    "pilot_conformal_c0.py": "d415a7be7c8a6d63f8c6de6573cc234294fc40a143393e574e095eaa917d2461",
+    "pilot_conformal_c0b.py": "a821acbd83afe2a360b310f80aa64e0c5a00d8132936cdc8c3b768ad5670d041",
+    "pilot_conformal_cw1.py": "ecc7b3bc13170f9678d3cc8b59ea3bed16ef9be4b19970ebc34992ec3db385e6"
+  }
+}

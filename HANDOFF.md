@@ -27,15 +27,15 @@
 需要用户决定: 无
 
 ## Codex → Claude
-<!-- 由Codex覆盖。2026-11-09 第56次：M2 R2通过；CW1已完成并验收（STOP_CW1）；T1已在服务器GPU正式运行 -->
-轮次: R2/2 | 阶段: M2 | 分支: exp/M2 | 提交号: CW1实现0b3eaf9；T1实现a99037f；CW1结果与交接见git log
-审查结论: 通过（0条阻断）；R1-B1与S1–S5全部按要求修订；docs/review/M2-R2-codex.md。
-已直接修复: 无。
-运行信息: CW1（0b3eaf9）8项单测+smoke通过；正式运行outputs/logs/Conformal/cw1_0b3eaf9_r1耗时424.5s完成，verify_saved.py核对74数组/374输入/55源码SHA256及CI一致（output/conformal_cw1/）。
-运行信息: T1（a99037f）核对Optuna 5.0.0（existing_packages_changed=false），4项单测+smoke通过；已在RTX 3090独立启动唯一实例PID 674567（outputs/logs/Tuning/t1_a99037f_r1），正运行180次搜索+60次正式拟合。
-关键数字: CW1挑选（Penmanshiel 2022/2023）两年相对B3-A改善均值：W1 -3.4903%，W2 +0.0495%，W3 +0.3603%（h1,h2选B3-A；h3,h4选M-A），W4 -0.1990%（2022/2023覆盖88.07%/88.42%）；选中W3并冻结selection_freeze.json（a041b917…）。
-关键数字: CW1判定J1（正向Penmanshiel 2024）：B3-A覆盖89.6746%/Winkler 1358.6229，W3覆盖89.6950%/Winkler 1361.4740；C1/C2通过，C3不通过（B3-A−W3均值-2.8511 kW，95% CI [-7.7841,+2.3752]）。
-关键数字: CW1判定J2（反向Kelmarsh 2024）：B3-A覆盖90.2497%/Winkler 1154.7523，W3覆盖90.3050%/Winkler 1185.0708；C1/C2通过，C3不通过（B3-A−W3均值-30.3185 kW，95% CI [-37.1175,-23.6942]）。
-关键数字: CW1结论STOP_CW1（两组均过C1/C2实用门槛，均未过C3新意门槛）；详情见output/conformal_cw1/RESULT_SUMMARY.md与r1/result.json。
-需要 Claude 做的: 复核CW1结果与验证记录（output/conformal_cw1/），按STAGE_PLAN规则（两组都没过C3→第2轮换方向）准备CW2或等T1完成后统一交接；L1继续等权重。
-需要用户决定: 无（T1正在后台GPU运行，完成后将回收结果并再次更新交接）。
+<!-- 由Codex覆盖。2026-11-09 第57次：M3 R1通过；CW2完成验收（STOP_AT_SELECTION，J3未触碰）；T1正在运行 -->
+轮次: R1/2 | 阶段: M3 | 分支: exp/M2 | 提交号: 审查与实现6bde55d；anchor维度修复b23072d；CW2结果见git log
+审查结论: 通过（0条阻断，1条建议）；docs/review/M3-R1-codex.md。
+已直接修复: descriptive_strata兼容二维anchor[:,0]（b23072d，发生在任何seed结果写出前）。
+运行信息: CW2（b23072d）5项单测+smoke通过；CPU（2线程）正式运行outputs/logs/Conformal/cw2_b23072d_r1耗时961.4s完成；output/conformal_cw2/verify_saved.py只读核对60数组/374输入/56源码SHA256一致。
+运行信息: T1（a99037f）PID 674567在RTX 3090正常独立运行（outputs/logs/Tuning/t1_a99037f_r1），已完成TSMixerBasicSmall第26/60次trial（当前最优trial 22验证MAE 147.8260 kW），未被打断。
+关键数字: CW2挑选4组覆盖率/Winkler(kW)：2022 B3-A 89.41%/1422.88、N-P 89.49%/1509.18、N-R 89.50%/1496.07、N-Rs 89.48%/1513.13；2023 B3-A 89.46%/1283.99、N-P 89.56%/1317.56、N-R 89.58%/1297.39、N-Rs 89.57%/1312.52。
+关键数字: CW2挑选J1(K→P 2024)：B3-A 89.67%/1358.62、N-P 89.70%/1421.99、N-R 89.66%/1420.04、N-Rs 89.65%/1409.93；J2(P→K 2024)：B3-A 90.25%/1154.75、N-P 90.23%/1206.53、N-R 90.06%/1181.46、N-Rs 90.09%/1190.54。
+关键数字: CW2选择与J3：N-R相对N-P在4组全降Winkler（-13.11/-20.17/-1.94/-25.07 kW），但N-R与N-Rs在4组均未低于min(N-P,B3-A)=B3-A（相对改善均值-3.2552%/-3.8602%）；selected=null，STOP_AT_SELECTION，J3未运行且保持未触碰。
+关键数字: σ̂特征重要性（源校准年4时效均值MAE降幅kW）：pred_power占主导（39.9–60.1），上游变化与状态特征次之（N-Rs中|grad_magnitude_change3| 2.93–4.71、|local_dp3| 2.03–3.88、|upwind_dws3| 1.99–3.10；N-R中regional_ws 2.29–4.98）。
+需要 Claude 做的: 复核CW2结果与验证记录（output/conformal_cw2/），按STAGE_PLAN规则决定C线收束或下一轮设计；T1完成后我将继续同步。
+需要用户决定: 无。
