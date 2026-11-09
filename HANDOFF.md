@@ -27,15 +27,22 @@
 需要用户决定: 无
 
 ## Codex → Claude
-<!-- 由Codex覆盖。2026-11-09 第57次：M3 R1通过；CW2完成验收（STOP_AT_SELECTION，J3未触碰）；T1正在运行 -->
-轮次: R1/2 | 阶段: M3 | 分支: exp/M2 | 提交号: 审查与实现6bde55d；anchor维度修复b23072d；CW2结果见git log
-审查结论: 通过（0条阻断，1条建议）；docs/review/M3-R1-codex.md。
-已直接修复: descriptive_strata兼容二维anchor[:,0]（b23072d，发生在任何seed结果写出前）。
-运行信息: CW2（b23072d）5项单测+smoke通过；CPU（2线程）正式运行outputs/logs/Conformal/cw2_b23072d_r1耗时961.4s完成；output/conformal_cw2/verify_saved.py只读核对60数组/374输入/56源码SHA256一致。
-运行信息: T1（a99037f）PID 674567在RTX 3090正常独立运行（outputs/logs/Tuning/t1_a99037f_r1），已完成TSMixerBasicSmall第26/60次trial（当前最优trial 22验证MAE 147.8260 kW），未被打断。
-关键数字: CW2挑选4组覆盖率/Winkler(kW)：2022 B3-A 89.41%/1422.88、N-P 89.49%/1509.18、N-R 89.50%/1496.07、N-Rs 89.48%/1513.13；2023 B3-A 89.46%/1283.99、N-P 89.56%/1317.56、N-R 89.58%/1297.39、N-Rs 89.57%/1312.52。
-关键数字: CW2挑选J1(K→P 2024)：B3-A 89.67%/1358.62、N-P 89.70%/1421.99、N-R 89.66%/1420.04、N-Rs 89.65%/1409.93；J2(P→K 2024)：B3-A 90.25%/1154.75、N-P 90.23%/1206.53、N-R 90.06%/1181.46、N-Rs 90.09%/1190.54。
-关键数字: CW2选择与J3：N-R相对N-P在4组全降Winkler（-13.11/-20.17/-1.94/-25.07 kW），但N-R与N-Rs在4组均未低于min(N-P,B3-A)=B3-A（相对改善均值-3.2552%/-3.8602%）；selected=null，STOP_AT_SELECTION，J3未运行且保持未触碰。
-关键数字: σ̂特征重要性（源校准年4时效均值MAE降幅kW）：pred_power占主导（39.9–60.1），上游变化与状态特征次之（N-Rs中|grad_magnitude_change3| 2.93–4.71、|local_dp3| 2.03–3.88、|upwind_dws3| 1.99–3.10；N-R中regional_ws 2.29–4.98）。
-需要 Claude 做的: 复核CW2结果与验证记录（output/conformal_cw2/），按STAGE_PLAN规则决定C线收束或下一轮设计；T1完成后我将继续同步。
-需要用户决定: 无。
+<!-- 由Codex覆盖。2026-11-09：用户限定，仅收尾Hill of Towie l0b_r2 -->
+轮次: R2/2 | 阶段: L0-B只读收尾 | 分支: exp/M2（当前分支，仅记录） | 提交号: 原验收f6c709e；本轮见git log
+审查结论: 既有结果本地复核通过；原验收已获Claude接受；本次SSH超时，未获得新的远端状态证据。
+已直接修复: 无；未修改脚本、冻结协议或原始结果。
+脚本路径: /home/XT/nuist/pythoncode/TimeDARTFirst/scripts/audit_hill_of_towie_e1.py；启动提交5d2fa70；SHA256 ec2eb4ba69a6bb1f6dc1359c1aef44391b03869cc39a721bea8be4b08cf77e4f。
+服务器run目录: /home/XT/nuist/pythoncode/TimeDARTFirst/outputs/audits/hill_of_towie_l0b_readonly_r2；日志为同路径加.log。
+本地结果目录: D:/Users/XT/Desktop/moxing/gpt/v2/TimeDARTFirst/output/hill_of_towie_e1/l0b_r2。
+批准范围: 第47次仅取readonly_inventory.json、qualified_stations.json、run.log；download_manifest.json/download_plan.json/station_registration.json复用r1。本次仅查询PID508698及既有元数据、验收和交接，不重启、不训练、不读取封存原始数据。
+运行信息: 本次查询PID/真实命令/日志尾/目录及哈希时，SSH使用180秒连接超时及原keepalive参数，最终Connection timed out；未截断连接、未获得输出。
+运行信息: 历史status.json记录PID508698已退出、inventory=COMPLETED、日志最终gate通过；原始命令/cwd/退出码无法恢复，不能伪造命令或退出码0。脚本以inventory和日志为完成证据，不生成独立completed.json。
+运行信息: 六文件此前已全部取回；本轮零传输，HEAD Git原始blob SHA256全部等于历史remote_sha256；工作区因core.autocrlf=true为CRLF，原始哈希不同、规范化LF后匹配。三个复用副本与本地r1字节一致。
+关键数字: 本地逐站逐年重算62站；12合格、11有气压、象限[1,2,3]，passed=true，unresolved为空。
+关键数字: 冻结ID=44,48,67,105,113,132,137,150,161,177,212,235。
+关键数字: qualified_stations SHA256(LF/Git字节)=5909e1436559dd4334649c41c66881853ace75bc68a80f4fc9bfb30fcc60a979。
+关键数字: 仅137站2016年2个冲突小时，其余站年0，均不超1%；414非封存清单文件及表头年份为2016–2023。
+审计限制: inventory只有解析数量，没有逐文件parsed列表；本次只复核元数据，不声称恢复缺失列表或获得最新远端状态。
+证据: output/hill_of_towie_e1/l0b_r2/closeout_recheck.json；原始结果及status.json保持不变。
+需要 Claude 做的: 复核本轮收尾记录与换行哈希说明；既有L0-B验收结论保留，本次SSH超时不代表任务失败。
+需要用户决定: 无；若要求实时远端再确认需连接恢复。按用户要求本轮到此停止，不处理其他任务。
