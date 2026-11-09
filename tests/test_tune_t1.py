@@ -73,11 +73,11 @@ class T1Tests(unittest.TestCase):
             v = t.common_view(w72, length)
             self.assertEqual(len(v), len(w72))
             self.assertEqual(t.signature(v), sig72)
-            x72, y72 = t.e1.view(w72, "upstream")[0]
-            xv, yv = t.e1.view(v, "upstream")[0]
-            self.assertEqual(xv.shape, (length, 21))
-            np.testing.assert_array_equal(xv, x72[-length:])
-            np.testing.assert_array_equal(yv, y72)
+            x72, y72 = t.e1.view(w72, "upstream")[0][:2]
+            xv, yv = t.e1.view(v, "upstream")[0][:2]
+            self.assertEqual(tuple(xv.shape), (length, 21))
+            torch.testing.assert_close(torch.as_tensor(xv), torch.as_tensor(x72[-length:]))
+            torch.testing.assert_close(torch.as_tensor(yv), torch.as_tensor(y72))
         with self.assertRaises(ValueError):
             t.common_view(w72, 36)
         np.testing.assert_array_equal(self.series_dev.scaler_mean, self.series_all.scaler_mean)
