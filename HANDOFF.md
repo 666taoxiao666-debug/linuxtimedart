@@ -26,13 +26,17 @@
 需要用户决定: 无
 
 ## Codex → Claude
-<!-- 由Codex覆盖。2026-11-09 第53次：M1 R2通过，C0b运行前冻结 -->
-轮次: R2/2 | 阶段: M1 | 分支: exp/M1 | 提交号: 本轮见git log
+<!-- 由Codex覆盖。2026-11-09 第53次：M1 R2通过，C0b单次完成并验收STOP -->
+轮次: R2/2 | 阶段: M1 | 分支: exp/M1 | 提交号: 实现35e8e12；本轮结果见git log
 审查结论: 通过，无遗留阻断；docs/review/M1-R2-codex.md；R1-B1及S1–S6已核对本轮改动。
 已直接修复: 无额外设计变更；按用户及第53次批准实现scripts/pilot_conformal_c0b.py和tests/test_pilot_conformal_c0b.py；冻结C0未改。
-运行信息: 本地7项合成测试通过；正式预算尚未使用，下一步服务器测试及--smoke通过后只启动一个正式实例。
-运行信息: 2022选S/A/S+A，selection_freeze落盘并核对输入/源码后才计算2023；2023仅选中M、匹配B3和B0/B1/B2-A。
-关键数字: F反例5000残差输出最大值5000且cap=true；M/B3共用κ和F；α界[.005,.5]，各机组/步长按真实区间延迟反馈。
-关键数字: 两校准截止2021/2022年末23:00；非有限值技术失败；C1–C3阈值及年份不变，无点模型训练。
-需要 Claude 做的: 待C0b正式结果回来复核实现/结果；L1待Cursor交权重revision与环境，当前未实现/运行L1。
-需要用户决定: 无；exp/M1不合主线，main不动；正式失败不自动补跑。
+运行信息: 本地/服务器各7测试通过，服务器--smoke通过；正式一次PID660408已完成退出，169.806秒，无重启/补跑。
+运行信息: /home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/Conformal/c0b_35e8e12_r1；python scripts/pilot_conformal_c0b.py --data-root /home/XT/nuist/pythoncode/TimeDARTFirst --out <该run目录>；CPU线程2。
+运行信息: 2022选A，selection_freeze SHA256 def24a5d386820514ec845464ff8b922621a7854af47cff20a7b065aa5f5f307早于2023计算；评估只运行选中臂及规定对照。
+运行信息: 只读验收30数组/286输入/54源码哈希；保存数组重算指标一致，2022的9预测包与旧C0逐元素一致；本地output/conformal_c0b/{RESULT_SUMMARY.md,verification.json,r1/}。
+关键数字: 2023三seed均值，M-A覆盖89.5002%、宽854.9699、Winkler1280.1556、cap0.007465%；B3-A覆盖89.4561%、宽855.2339、Winkler1283.9894、cap0%。
+关键数字: B0/B1/B2-A覆盖82.8470%/94.4837%/89.3204%，Winkler1636.8964/1610.8071/1497.0523；均cap0%，各h详见seed JSON。
+关键数字: C1=true，C2=false，C3=false，STOP；相对匹配B3改善0.298583%，不足5%/3%门槛；有效负结果，C线不再优化。
+关键数字: 每seed 2022/2023评估窗口37741/36838；两校准截止2021/2022年末23:00；无点模型训练，不解封Hill of Towie。
+需要 Claude 做的: 复核35e8e12实现、验收和STOP结论，在DECISIONS登记C0b有效负结果；L1继续等Cursor模型revision/环境，未实现/运行。完整摘要见RESULT_SUMMARY.md。
+需要用户决定: 无；只提交推送exp/M1，不合主线，main不动；未创建定时任务。

@@ -1,0 +1,10 @@
+[C0b] 2022 seed 2024 complete
+[C0b] 2022 seed 2025 complete
+[C0b] 2022 seed 2026 complete
+/home/XT/nuist/pythoncode/TimeDARTFirst_M1_35e8e12/utils/kelmarsh_upstream_v31.py:314: RuntimeWarning: Mean of empty slice.
+  shares = {name: float(missing[np.isin(self.label_year, years)].mean()) for name, years in self.splits.items()}
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/numpy/core/_methods.py:129: RuntimeWarning: invalid value encountered in scalar divide
+  ret = ret.dtype.type(ret / rcount)
+[C0b] 2023 seed 2024 complete
+[C0b] 2023 seed 2025 complete
+[C0b] 2023 seed 2026 complete

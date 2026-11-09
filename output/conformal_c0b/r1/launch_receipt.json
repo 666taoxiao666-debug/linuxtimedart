@@ -1,0 +1,15 @@
+{
+  "pid": 660408,
+  "cwd": "/home/XT/nuist/pythoncode/TimeDARTFirst_M1_35e8e12",
+  "command": [
+    "/home/XT/miniconda3/envs/timedart/bin/python",
+    "-u",
+    "scripts/pilot_conformal_c0b.py",
+    "--data-root",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst",
+    "--out",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/Conformal/c0b_35e8e12_r1"
+  ],
+  "out": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/Conformal/c0b_35e8e12_r1",
+  "code": "35e8e12"
+}

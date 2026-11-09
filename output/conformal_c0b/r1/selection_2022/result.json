@@ -1,0 +1,82 @@
+{
+  "status": "COMPLETED",
+  "year": 2022,
+  "seeds": [
+    2024,
+    2025,
+    2026
+  ],
+  "mean_90": {
+    "B0": {
+      "coverage": 0.7855934748240198,
+      "width_kw": 746.9999271418837,
+      "winkler_kw": 1833.2424721944237,
+      "cap_fraction": 0.0
+    },
+    "B1": {
+      "coverage": 0.9137233600946804,
+      "width_kw": 1242.1126403014048,
+      "winkler_kw": 1639.9800682644843,
+      "cap_fraction": 0.0
+    },
+    "B2-A": {
+      "coverage": 0.8927625129169868,
+      "width_kw": 1098.5232024984164,
+      "winkler_kw": 1595.9884925658816,
+      "cap_fraction": 0.0
+    },
+    "M-S": {
+      "coverage": 0.9448323220547062,
+      "width_kw": 1287.445989154874,
+      "winkler_kw": 1539.817826745656,
+      "cap_fraction": 0.0
+    },
+    "B3-S": {
+      "coverage": 0.9317055721893962,
+      "width_kw": 1213.757225947368,
+      "winkler_kw": 1542.3091442679297,
+      "cap_fraction": 0.0
+    },
+    "M-A": {
+      "coverage": 0.8944097047419696,
+      "width_kw": 969.1157319988007,
+      "winkler_kw": 1425.5136167916814,
+      "cap_fraction": 0.00019872287432765425
+    },
+    "B3-A": {
+      "coverage": 0.8941314927179107,
+      "width_kw": 961.9497803507141,
+      "winkler_kw": 1422.8802611191807,
+      "cap_fraction": 0.0
+    },
+    "M-S+A": {
+      "coverage": 0.9037253914840625,
+      "width_kw": 1030.20237096787,
+      "winkler_kw": 1437.6197072432622,
+      "cap_fraction": 0.0
+    },
+    "B3-S+A": {
+      "coverage": 0.9023784920025083,
+      "width_kw": 1030.318398686395,
+      "winkler_kw": 1477.6480035779005,
+      "cap_fraction": 0.0
+    }
+  },
+  "artifacts": {
+    "intervals_s2025.npz": "577483a59f7b388f16fca015f49aa8ea2cc85da654de9617bfc72aa8ec8656a3",
+    "evaluation_s2025.npz": "141259caf24c33fb667b8fee17404bd69409310de67b92fdd379680ec9c1e57e",
+    "evaluation_s2024.npz": "ea405e7071a618bc31e7d73ac71c7397c8790ed129ff7f4659c3f2f32e16319b",
+    "source_s2024.npz": "af7504673f072d9db2da4047e2facde3f1f39a074c4d39dfb7c87832e9fbf764",
+    "target_month_s2025.npz": "9971a836402ee30bcdf64d288cdea6b7308debaa36ded878e52d191fab63ac00",
+    "target_month_s2026.npz": "8ad9b767fce6890e603fa87bdf2d249eb7ccb55ff2c273435281dc81eaf234ed",
+    "caps_s2026.npz": "6ec4e208206ae9a8d0a64e591526cff6670987c25c0ad128d5db84704feeb167",
+    "intervals_s2026.npz": "694a4d40ceab2e213db1877970089d5fcece89787d55a97eb8aaef1682fd3d00",
+    "source_s2025.npz": "86a346947010b8fe8004e49bd31912427f3801ed487664d3a4f7da00e15d5155",
+    "intervals_s2024.npz": "39232e85f7f6da2ec3f8d30ff52634dc4e74819cd43704bda55538dfcf9a7d31",
+    "caps_s2024.npz": "66f45132d56bf15f9c05e54cb7cd8a9d16ceb43d570b9c8dd5597881a8b0556e",
+    "evaluation_s2026.npz": "c43081bf8059b6449898adac40bcb65bd9c014dae7ddacbf834900fc6cac9b81",
+    "source_s2026.npz": "75666833494fa22859a251e79622502da55dacf584c09ec4971068697d213b71",
+    "target_month_s2024.npz": "61901abd2da096129f7cb77d387c253514ea031fc19bde48dfa0cd4ce45e3ce2",
+    "caps_s2025.npz": "4c63a55a52eacf0385af1ccb7694e25020a31382ce65edcdba0617f3fd3a706c"
+  }
+}

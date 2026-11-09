@@ -1,0 +1,58 @@
+{
+  "status": "COMPLETED",
+  "year": 2023,
+  "seeds": [
+    2024,
+    2025,
+    2026
+  ],
+  "mean_90": {
+    "B0": {
+      "coverage": 0.8284696961470944,
+      "width_kw": 796.5351380434317,
+      "winkler_kw": 1636.8963741664593,
+      "cap_fraction": 0.0
+    },
+    "B1": {
+      "coverage": 0.9448373056807281,
+      "width_kw": 1352.4709357756303,
+      "winkler_kw": 1610.8071152284435,
+      "cap_fraction": 0.0
+    },
+    "B2-A": {
+      "coverage": 0.8932035760175182,
+      "width_kw": 1006.1293965570045,
+      "winkler_kw": 1497.0522983729643,
+      "cap_fraction": 0.0
+    },
+    "M-A": {
+      "coverage": 0.895001990698011,
+      "width_kw": 854.9698814331235,
+      "winkler_kw": 1280.155575378786,
+      "cap_fraction": 7.465117541668929e-05
+    },
+    "B3-A": {
+      "coverage": 0.8945608701160035,
+      "width_kw": 855.2338829496952,
+      "winkler_kw": 1283.9893536151335,
+      "cap_fraction": 0.0
+    }
+  },
+  "artifacts": {
+    "intervals_s2025.npz": "6908186d39f64542d8b255336469734c7687196aa7e00eed88dd30fffbba7b6e",
+    "evaluation_s2025.npz": "a50e5cadf0a3caf6a7c3982cef39c99827e53d97745cc4fb8be4ff0e9f1fffaf",
+    "evaluation_s2024.npz": "2c4e1a092b79e2ac133c9b40dc60ca3b2cb0694a9926a5df084946398e32f4e3",
+    "source_s2024.npz": "3e41abecfefa446122320b70c0e18f2e79a8455d35acd5600948bf1ff543d4d6",
+    "target_month_s2025.npz": "c540cc3e1f733fb32ffa20b252886e349b10476d74fa93528c97fc676e39b321",
+    "target_month_s2026.npz": "d861c80febd16d4b92c511a623ab5bc543b0c11d13659dbcb552ae9917042ca1",
+    "caps_s2026.npz": "b3b8aee5169bf355f02ef8ab0d84cccb8d4cd24b1a98ca6ed087f1788f981cf7",
+    "intervals_s2026.npz": "ec32919df2efaa576a2d27c789aade07d7ca62e84035ed7d9c9babe6afff7c5d",
+    "source_s2025.npz": "01fcd91131c4fbd2af59b7b5791213adf42b50a244c2d15f0d931ff9d06322e3",
+    "intervals_s2024.npz": "1a92e6eeae8902b66ac070f73071713526d1d000d87035b6eaa131e2013a7ac8",
+    "caps_s2024.npz": "d627296190b73533bfa3bd754d10a9eabe136909ad76d85e63b319808434629d",
+    "evaluation_s2026.npz": "5146850185419092b6a33f92555a651a210578b4f4e5012a0b7a190dbaa93f8f",
+    "source_s2026.npz": "95b38968dc19a3a4fe5759a53cf4581c117360044236500c28f235942e370187",
+    "target_month_s2024.npz": "06781de7efc895254891dc47aad92b3ef541ad5a13f181d9754b8f5ce2ff7fd1",
+    "caps_s2025.npz": "25737037476b72fc119b9de4cebed0f7e92ec9ebea444b952d841fcac0e2fffa"
+  }
+}
