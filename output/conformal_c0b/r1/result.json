@@ -1,0 +1,48 @@
+{
+  "status": "COMPLETED",
+  "selected": "A",
+  "mean_90": {
+    "B0": {
+      "coverage": 0.8284696961470944,
+      "width_kw": 796.5351380434317,
+      "winkler_kw": 1636.8963741664593,
+      "cap_fraction": 0.0
+    },
+    "B1": {
+      "coverage": 0.9448373056807281,
+      "width_kw": 1352.4709357756303,
+      "winkler_kw": 1610.8071152284435,
+      "cap_fraction": 0.0
+    },
+    "B2-A": {
+      "coverage": 0.8932035760175182,
+      "width_kw": 1006.1293965570045,
+      "winkler_kw": 1497.0522983729643,
+      "cap_fraction": 0.0
+    },
+    "M-A": {
+      "coverage": 0.895001990698011,
+      "width_kw": 854.9698814331235,
+      "winkler_kw": 1280.155575378786,
+      "cap_fraction": 7.465117541668929e-05
+    },
+    "B3-A": {
+      "coverage": 0.8945608701160035,
+      "width_kw": 855.2338829496952,
+      "winkler_kw": 1283.9893536151335,
+      "cap_fraction": 0.0
+    }
+  },
+  "C1": true,
+  "C2": false,
+  "C3": false,
+  "decision": "stop",
+  "eligible_comparators": [
+    "B1",
+    "B2-A",
+    "B3-A"
+  ],
+  "best_comparator_winkler": 1283.9893536151335,
+  "scope": "development evidence only; empirical coverage, no finite-sample guarantee; no second optimization",
+  "selection_freeze_sha256": "def24a5d386820514ec845464ff8b922621a7854af47cff20a7b065aa5f5f307"
+}

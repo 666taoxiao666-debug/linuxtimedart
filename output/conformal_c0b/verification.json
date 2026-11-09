@@ -1,0 +1,56 @@
+{
+  "status": "PASSED",
+  "arrays_hashed": 30,
+  "input_files_hashed": 286,
+  "source_files_hashed": 54,
+  "old_C0_packs_exactly_equal": [
+    "source_s2024",
+    "target_month_s2024",
+    "evaluation_s2024",
+    "source_s2025",
+    "target_month_s2025",
+    "evaluation_s2025",
+    "source_s2026",
+    "target_month_s2026",
+    "evaluation_s2026"
+  ],
+  "selected": "A",
+  "flags": {
+    "C1": true,
+    "C2": false,
+    "C3": false
+  },
+  "means": {
+    "B0": {
+      "coverage": 0.8284696961470944,
+      "width_kw": 796.5351380434317,
+      "winkler_kw": 1636.8963741664593,
+      "cap_fraction": 0.0
+    },
+    "B1": {
+      "coverage": 0.9448373056807281,
+      "width_kw": 1352.4709357756303,
+      "winkler_kw": 1610.8071152284435,
+      "cap_fraction": 0.0
+    },
+    "B2-A": {
+      "coverage": 0.8932035760175182,
+      "width_kw": 1006.1293965570045,
+      "winkler_kw": 1497.0522983729643,
+      "cap_fraction": 0.0
+    },
+    "M-A": {
+      "coverage": 0.895001990698011,
+      "width_kw": 854.9698814331235,
+      "winkler_kw": 1280.155575378786,
+      "cap_fraction": 7.465117541668929e-05
+    },
+    "B3-A": {
+      "coverage": 0.8945608701160035,
+      "width_kw": 855.2338829496952,
+      "winkler_kw": 1283.9893536151335,
+      "cap_fraction": 0.0
+    }
+  },
+  "no_inference": true
+}

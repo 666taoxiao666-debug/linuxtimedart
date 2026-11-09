@@ -1,0 +1,15 @@
+{
+  "kind": "synthetic_review_counterexample_not_formal_run",
+  "implementation": "scripts.pilot_conformal_c0.weighted_quantile",
+  "source_errors": "arange(1,5001,dtype=float)",
+  "source_count": 5000,
+  "source_weight_each": 0.05,
+  "source_weight_sum": 250.0,
+  "test_weight": 20.0,
+  "alpha_before_clipping": -0.01,
+  "alpha_after_clipping": 0.005,
+  "quantile_threshold": 268.65,
+  "radius": "positive_infinity",
+  "unweighted_B3_500_neighbours_radius": 499.0,
+  "conclusion": "Positive clipped alpha does not guarantee a finite weighted conformal radius. No real data, fitting, inference or evaluation was performed."
+}

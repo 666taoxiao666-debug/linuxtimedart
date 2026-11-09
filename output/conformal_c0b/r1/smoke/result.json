@@ -1,0 +1,15 @@
+{
+  "status": "PASSED",
+  "smoke": true,
+  "methods": [
+    "B0",
+    "B1",
+    "B2-A",
+    "M-S",
+    "B3-S",
+    "M-A",
+    "B3-A",
+    "M-S+A",
+    "B3-S+A"
+  ]
+}
