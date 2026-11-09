@@ -1,0 +1,16 @@
+{
+  "python_path": "/home/XT/miniconda3/envs/timedart/bin/python",
+  "optuna_version": "5.0.0",
+  "new_packages": [
+    {"name": "Mako", "version": "1.4.3"},
+    {"name": "SQLAlchemy", "version": "2.0.57"},
+    {"name": "alembic", "version": "1.20.1"},
+    {"name": "colorlog", "version": "6.12.0"},
+    {"name": "greenlet", "version": "3.5.6"},
+    {"name": "optuna", "version": "5.0.0"},
+    {"name": "tomli", "version": "2.5.0"}
+  ],
+  "existing_packages_changed": false,
+  "minimal_study_success": true,
+  "timestamp": "2026-11-09T03:20:16.953804+00:00"
+}
