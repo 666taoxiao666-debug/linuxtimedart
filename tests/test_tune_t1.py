@@ -1,5 +1,3 @@
-import tempfile
-from pathlib import Path
 import unittest
 import numpy as np
 import pandas as pd
@@ -9,6 +7,7 @@ from scripts import tune_t1 as t
 
 def synthetic_72h():
     frame = t.trainer.synthetic_prepared_frame(years=(2019, 2020, 2021), days=10)
+    frame["label_year"] = pd.to_datetime(frame.timestamp_hour_end_utc, utc=True).dt.year
     labels = pd.DatetimeIndex(
         pd.to_datetime(frame.timestamp_hour_end_utc, utc=True).dt.tz_localize(None).unique()
     ).sort_values()
