@@ -199,7 +199,7 @@ def intervals(source, target_month, test, year, methods, scale_bundle=None):
 def descriptive_strata(radii, caps, truth, prediction, anchor, features):
     """Descriptive only: ramp vs calm windows (|dP| >= 205 kW) and upstream missingness."""
     error = np.abs(truth - prediction)
-    prev = np.c_[anchor, truth[:, :-1]]
+    prev = np.c_[anchor[:, 0] if anchor.ndim == 2 else anchor, truth[:, :-1]]
     ramp_mask = np.abs(truth - prev) >= RAMP_THRESHOLD_KW
     miss_mask = np.broadcast_to((~np.isfinite(features[:, :11]).all(axis=1))[:, None], truth.shape)
     out = {}

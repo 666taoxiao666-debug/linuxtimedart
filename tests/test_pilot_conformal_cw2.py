@@ -17,7 +17,7 @@ def pack(n, date, seed=0):
     return {
         "prediction": pred,
         "truth": truth,
-        "anchor": pred[:, 0] - 10.0,
+        "anchor": np.repeat((pred[:, 0] - 10.0)[:, None], 4, axis=1),
         "issue": issue,
         "times": issue[:, None] + np.arange(1, 5) * np.timedelta64(1, "h"),
         "turbines": np.ones(n, int),
