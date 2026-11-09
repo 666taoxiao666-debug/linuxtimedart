@@ -3,30 +3,32 @@
 规则见 AGENTS.md：两节各由一方整节覆盖、不追加，每节不超过 40 行；历史用 `git log -p HANDOFF.md` 查。
 
 ## Claude → Codex
-<!-- 由 Claude 覆盖。最后更新：2026-11-08 第 49 次（G0 R2：R1-B1 不下载 f000，完整周期规则写清） -->
-轮次: R2/2 | 阶段: G0 | 分支: exp/G0 | 基线提交: 61e2b0c
-请求: 审方案（只审本轮改动；无阻断就放行 G0-b 正式下载清单）
+<!-- 由 Claude 覆盖。最后更新：2026-11-09 第 52 次（G0 取消收尾 + 新阶段 M1：C0b 区间优化一轮 / L1 本地大模型编码器搜索） -->
+轮次: R1/2 | 阶段: M1 | 分支: exp/M1 | 基线提交: cb090f1
+请求: 审方案后实现并运行（无阻断就直接跑，提速规则适用；L1 要等 Cursor 交回模型权重）
 待审范围: git diff HEAD -- docs/STAGE_PLAN.md docs/review/DECISIONS.md
-允许改动: scripts/audit_gfs_g0.py, tests/test_audit_gfs_g0.py, output/gfs_g0/**, scripts/acquire_gfs_g0.py, output/external_acquisition/gfs_g0/**, output/hill_of_towie_e1/**, scripts/acquire_hill_of_towie.py, output/external_acquisition/hill_of_towie/**, output/e1_baselines/local_smoke_1343756/**
-审查文件: docs/review/G0-R2-codex.md
-本轮决议: 采纳 5（R1-B1、S1–S4）/ 反驳 0 / 暂缓 3（S5–S7，留到 G1 正式协议）/ 转实验 0
+允许改动: scripts/pilot_conformal_c0b.py, tests/test_pilot_conformal_c0b.py, output/conformal_c0b/**, scripts/llm_encoder_search_l1.py, models/ProgramEncoder.py, tests/test_llm_encoder_search_l1.py, configs/l1_llm_encoder_protocol.json, output/l1_llm_encoder/**, output/external_acquisition/llm_weights/**, output/external_acquisition/gfs_g0/**, output/hill_of_towie_e1/**, scripts/acquire_hill_of_towie.py, output/external_acquisition/hill_of_towie/**, output/e1_baselines/local_smoke_1343756/**
+审查文件: docs/review/M1-R1-codex.md
+本轮决议: G0 已由用户取消（DECISIONS 的 G0 末节），第 50 次的核验请求作废；M1 是新阶段，暂无编号
 
 需要你做的:
-1. **提交**本轮的 STAGE_PLAN 和 DECISIONS。
-2. **只审改动部分**：
-   - R1-B1：不下载 f000，步长改为 f003–f018 共 6 档；
-   - 完整周期 = 6 步长 × 3 必需字段的消息全部取到（字节数 > 0，SHA256 已登记），开发部分还要能解码、裁剪成功；封存部分只凭索引和字节清单判定；
-   - 门槛分母 = 天数 × 4，缺周期不剔除；
-   - 封存按有效时刻 C + f 判断；
-   - 区域在 0–360 经度下分成两段；
-   - 时效 7–15 h 及推导；缺周期记缺测，不回退。
-   - 这是第 2 轮，也是最后一轮。仍有分歧就写明，交用户决定，不开第 3 轮。
-3. **不下载、不安装。** 等 Cursor 交回 probe_report.json 和 manifest.json 后，再写 audit_gfs_g0.py 做只读核验。核验口径按本轮的完整周期定义，测试要用合成周期覆盖 f000 被排除、跨年封存、缺周期留在分母、两段经度、100 m 缺失这几种情况。
+1. **提交与合并**：
+   - 先在 exp/G0 上提交本轮的 STAGE_PLAN 和 DECISIONS；
+   - 用户同意后，把 exp/G0 用 --no-ff 合回主线（只有文档，作为存档）；
+   - 再从主线拉 exp/M1。不写 GFS 核验，不下载、不安装。
+2. **审 M1 方案**，有阻断按 v2 写审查文件；没有阻断就实现并各运行一次：
+   - C0b：CPU，导入冻结的 C0 代码只加变体。严格因果切分，校准标签 ≤ 2022-12-31 23:00。在 2022 上选、在 2023 上评估，C1–C3 按事先设定判定。
+   - L1：GPU。等 Cursor 交回权重的 revision 哈希和推理环境后才启动。程序要过 AST 白名单和超时；输入截断到起报 − 1 h；全部提示词、输出和程序都存档；搜索结果冻结后才做正式训练和评估。
+3. **交回**：
+   - C0b：所选变体、2023 年各方法的覆盖率、宽度、Winkler，以及 C1–C3 判定；
+   - L1：各组的搜索最优值，正式阶段的 MAE/RMSE 和 CI，判定结果；
+   - 还要交回前 10 名程序的文本，供我人工抽查因果性。
 
-需要用户决定: 无（Cursor 探查后，如果超过 500 GB 下载或 20 GB 开发存储，交用户决定）
+需要用户决定: 是否把 exp/G0 合回主线（只有文档）
 
 说明:
-- 给 Cursor 的指令已同步改成 6 档步长、不要 f000，用户会转达；如果 Cursor 已经下了 f000，清单里标 EXCLUDED_NOT_USED，不解码、不统计。
+- 用户 2026-11-09 决定：C0 做一轮优化；大模型编码器并行做，用本地开源模型；不下载 GFS。
+- 关键是 C3（情形加权比同样修过的 B3 好 ≥3%）和 L1 对 R* 的比较；只赢弱对照，不算方法创新。
 
 ## Codex → Claude
 <!-- 由Codex覆盖。2026-11-08 第49次：G0 R2通过 -->
