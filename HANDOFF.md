@@ -24,16 +24,15 @@
 需要用户决定: 无
 
 ## Codex → Claude
-<!-- 由Codex覆盖。2026-11-09 第55次：M1已合并；M2 R1有1条CW1阻断，T1缺Optuna -->
-轮次: R1/2 | 阶段: M2 | 分支: exp/M2 | 提交号: 文档1931292；主线合并f4711a7；本轮审查见git log
-审查结论: CW1需修改，1条阻断R1-B1；T1回顾性开发方案通过但环境缺依赖；docs/review/M2-R1-codex.md。
-已直接修复: 无；W4拟合时间范围可改为过去固定窗口或在线更新，涉及不同方法/年份，不适用唯一最小修法先行。
-运行信息: 按用户明确授权以--no-ff合并exp/M1至codex/self-evolving-wiki并推送，父3b36b9a/1931292；从f4711a7创建exp/M2，main仍202d9f6。
-运行信息: 仅本地合成反例及服务器只读依赖查询；CW1/T1未实现、未部署、未启动正式实例，未消耗运行预算，无新真实数据推理。
-关键数字: STAGE_PLAN:36的W4使用整个目标年特征拟合聚类会前视；相同过去、仅改未来，scaler均值3.213812→18.130939，查询0/2从异组变同组。
-关键数字: 反例脚本/输出在output/conformal_cw1/review_future_features.{py,json}；推荐只用已到达的校准期拟合并冻结，需Claude明确目标年份。
-关键数字: timedart的find_spec('optuna')=None；按第55次规则暂停T1，需Cursor安装并交回版本，output/t1_tuning/environment_preflight.json；未自行安装。
-关键数字: 核对P2反向模型登记、A2两种upstream模型use_norm=false；T1保持180搜索+60完整拟合，L1继续等权重。
-需要 Claude 做的: 决议R1-B1并修改W4拟合范围后交R2（最后一轮）；明确状态保留h、CW1选择/CI细节。T1仅作回顾性开发比较，不能称2021年初即可部署的前瞻验证。
-需要 Claude 做的: 将Optuna依赖交Cursor处理，回传timedart导入和版本证据；不改冻结C0/C0b，不在阻断解决前启动CW1，不因缺依赖更换T1搜索器。
-需要用户决定: 无；M1合并已获本轮授权且完成，无需重复同意。C0b原STOP不改；M2是新批准的开发阶段，尚未运行。
+<!-- 由Codex覆盖。2026-11-09 第56次：M2 R2通过；CW1已完成并验收（STOP_CW1）；T1已在服务器GPU正式运行 -->
+轮次: R2/2 | 阶段: M2 | 分支: exp/M2 | 提交号: CW1实现0b3eaf9；T1实现a99037f；CW1结果与交接见git log
+审查结论: 通过（0条阻断）；R1-B1与S1–S5全部按要求修订；docs/review/M2-R2-codex.md。
+已直接修复: 无。
+运行信息: CW1（0b3eaf9）8项单测+smoke通过；正式运行outputs/logs/Conformal/cw1_0b3eaf9_r1耗时424.5s完成，verify_saved.py核对74数组/374输入/55源码SHA256及CI一致（output/conformal_cw1/）。
+运行信息: T1（a99037f）核对Optuna 5.0.0（existing_packages_changed=false），4项单测+smoke通过；已在RTX 3090独立启动唯一实例PID 674567（outputs/logs/Tuning/t1_a99037f_r1），正运行180次搜索+60次正式拟合。
+关键数字: CW1挑选（Penmanshiel 2022/2023）两年相对B3-A改善均值：W1 -3.4903%，W2 +0.0495%，W3 +0.3603%（h1,h2选B3-A；h3,h4选M-A），W4 -0.1990%（2022/2023覆盖88.07%/88.42%）；选中W3并冻结selection_freeze.json（a041b917…）。
+关键数字: CW1判定J1（正向Penmanshiel 2024）：B3-A覆盖89.6746%/Winkler 1358.6229，W3覆盖89.6950%/Winkler 1361.4740；C1/C2通过，C3不通过（B3-A−W3均值-2.8511 kW，95% CI [-7.7841,+2.3752]）。
+关键数字: CW1判定J2（反向Kelmarsh 2024）：B3-A覆盖90.2497%/Winkler 1154.7523，W3覆盖90.3050%/Winkler 1185.0708；C1/C2通过，C3不通过（B3-A−W3均值-30.3185 kW，95% CI [-37.1175,-23.6942]）。
+关键数字: CW1结论STOP_CW1（两组均过C1/C2实用门槛，均未过C3新意门槛）；详情见output/conformal_cw1/RESULT_SUMMARY.md与r1/result.json。
+需要 Claude 做的: 复核CW1结果与验证记录（output/conformal_cw1/），按STAGE_PLAN规则（两组都没过C3→第2轮换方向）准备CW2或等T1完成后统一交接；L1继续等权重。
+需要用户决定: 无（T1正在后台GPU运行，完成后将回收结果并再次更新交接）。

@@ -1,0 +1,16 @@
+{
+  "pid": 674567,
+  "cmd": [
+    "/home/XT/miniconda3/envs/timedart/bin/python",
+    "scripts/tune_t1.py",
+    "--data-root",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst",
+    "--out",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/Tuning/t1_a99037f_r1",
+    "--device",
+    "cuda:0"
+  ],
+  "cwd": "/home/XT/nuist/pythoncode/TimeDARTFirst_T1_a99037f",
+  "out": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/Tuning/t1_a99037f_r1",
+  "utc": "2026-11-09T06:46:52.979062+00:00"
+}
