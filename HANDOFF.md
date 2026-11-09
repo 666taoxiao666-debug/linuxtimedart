@@ -25,17 +25,16 @@
 需要用户决定: 是否同意把 exp/M1 合回主线
 
 ## Codex → Claude
-<!-- 由Codex覆盖。2026-11-09 第53次：M1 R2通过，C0b单次完成并验收STOP -->
-轮次: R2/2 | 阶段: M1 | 分支: exp/M1 | 提交号: 实现35e8e12；本轮结果见git log
-审查结论: 通过，无遗留阻断；docs/review/M1-R2-codex.md；R1-B1及S1–S6已核对本轮改动。
-已直接修复: 无额外设计变更；按用户及第53次批准实现scripts/pilot_conformal_c0b.py和tests/test_pilot_conformal_c0b.py；冻结C0未改。
-运行信息: 本地/服务器各7测试通过，服务器--smoke通过；正式一次PID660408已完成退出，169.806秒，无重启/补跑。
-运行信息: /home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/Conformal/c0b_35e8e12_r1；python scripts/pilot_conformal_c0b.py --data-root /home/XT/nuist/pythoncode/TimeDARTFirst --out <该run目录>；CPU线程2。
-运行信息: 2022选A，selection_freeze SHA256 def24a5d386820514ec845464ff8b922621a7854af47cff20a7b065aa5f5f307早于2023计算；评估只运行选中臂及规定对照。
-运行信息: 只读验收30数组/286输入/54源码哈希；保存数组重算指标一致，2022的9预测包与旧C0逐元素一致；本地output/conformal_c0b/{RESULT_SUMMARY.md,verification.json,r1/}。
-关键数字: 2023三seed均值，M-A覆盖89.5002%、宽854.9699、Winkler1280.1556、cap0.007465%；B3-A覆盖89.4561%、宽855.2339、Winkler1283.9894、cap0%。
-关键数字: B0/B1/B2-A覆盖82.8470%/94.4837%/89.3204%，Winkler1636.8964/1610.8071/1497.0523；均cap0%，各h详见seed JSON。
-关键数字: C1=true，C2=false，C3=false，STOP；相对匹配B3改善0.298583%，不足5%/3%门槛；有效负结果，C线不再优化。
-关键数字: 每seed 2022/2023评估窗口37741/36838；两校准截止2021/2022年末23:00；无点模型训练，不解封Hill of Towie。
-需要 Claude 做的: 复核35e8e12实现、验收和STOP结论，在DECISIONS登记C0b有效负结果；L1继续等Cursor模型revision/环境，未实现/运行。完整摘要见RESULT_SUMMARY.md。
-需要用户决定: 无；只提交推送exp/M1，不合主线，main不动；未创建定时任务。
+<!-- 由Codex覆盖。2026-11-09 第55次：M1已合并；M2 R1有1条CW1阻断，T1缺Optuna -->
+轮次: R1/2 | 阶段: M2 | 分支: exp/M2 | 提交号: 文档1931292；主线合并f4711a7；本轮审查见git log
+审查结论: CW1需修改，1条阻断R1-B1；T1回顾性开发方案通过但环境缺依赖；docs/review/M2-R1-codex.md。
+已直接修复: 无；W4拟合时间范围可改为过去固定窗口或在线更新，涉及不同方法/年份，不适用唯一最小修法先行。
+运行信息: 按用户明确授权以--no-ff合并exp/M1至codex/self-evolving-wiki并推送，父3b36b9a/1931292；从f4711a7创建exp/M2，main仍202d9f6。
+运行信息: 仅本地合成反例及服务器只读依赖查询；CW1/T1未实现、未部署、未启动正式实例，未消耗运行预算，无新真实数据推理。
+关键数字: STAGE_PLAN:36的W4使用整个目标年特征拟合聚类会前视；相同过去、仅改未来，scaler均值3.213812→18.130939，查询0/2从异组变同组。
+关键数字: 反例脚本/输出在output/conformal_cw1/review_future_features.{py,json}；推荐只用已到达的校准期拟合并冻结，需Claude明确目标年份。
+关键数字: timedart的find_spec('optuna')=None；按第55次规则暂停T1，需Cursor安装并交回版本，output/t1_tuning/environment_preflight.json；未自行安装。
+关键数字: 核对P2反向模型登记、A2两种upstream模型use_norm=false；T1保持180搜索+60完整拟合，L1继续等权重。
+需要 Claude 做的: 决议R1-B1并修改W4拟合范围后交R2（最后一轮）；明确状态保留h、CW1选择/CI细节。T1仅作回顾性开发比较，不能称2021年初即可部署的前瞻验证。
+需要 Claude 做的: 将Optuna依赖交Cursor处理，回传timedart导入和版本证据；不改冻结C0/C0b，不在阻断解决前启动CW1，不因缺依赖更换T1搜索器。
+需要用户决定: 无；M1合并已获本轮授权且完成，无需重复同意。C0b原STOP不改；M2是新批准的开发阶段，尚未运行。

@@ -1,0 +1,11 @@
+{
+  "checked_date_local": "2026-11-09",
+  "host": "XT@100.89.238.37",
+  "python": "/home/XT/miniconda3/envs/timedart/bin/python",
+  "probe": "importlib.util.find_spec('optuna')",
+  "optuna_available": false,
+  "origin": null,
+  "status": "WAITING_FOR_CURSOR_INSTALL",
+  "installation_attempted": false,
+  "formal_runs_started": 0
+}

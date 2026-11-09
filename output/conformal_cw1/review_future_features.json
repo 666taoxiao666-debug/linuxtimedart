@@ -1,0 +1,43 @@
+{
+  "synthetic_only": true,
+  "no_project_data": true,
+  "same_calibration_and_issue_prefix": true,
+  "seed": 2024,
+  "mean_with_future_a": 3.2138121546961327,
+  "mean_with_future_b": 18.130939226519335,
+  "query_values": [
+    0.0,
+    1.0,
+    2.0,
+    3.0,
+    4.0,
+    5.0,
+    6.0,
+    7.0
+  ],
+  "groups_a": [
+    1,
+    1,
+    2,
+    2,
+    0,
+    0,
+    3,
+    3
+  ],
+  "groups_b": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1
+  ],
+  "changed_pair": [
+    0.0,
+    2.0
+  ],
+  "conclusion": "Changing only future target features changes past-query group membership."
+}
