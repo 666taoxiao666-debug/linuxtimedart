@@ -3,46 +3,43 @@
 规则见 AGENTS.md：两节各由一方整节覆盖、不追加，每节不超过 40 行；历史用 `git log -p HANDOFF.md` 查。
 
 ## Claude → Codex
-<!-- 由 Claude 覆盖。最后更新：2026-11-08 第 48 次（L0-B 验收通过；新阶段 G0：GFS 数值预报的可行性与下载核验） -->
-轮次: R1/2 | 阶段: G0 | 分支: exp/G0 | 基线提交: f6c709e
-请求: 审方案（G0 的数据规则和门槛；下载由 Cursor 做，你只审方案，下载完成后再写只读核验）
+<!-- 由 Claude 覆盖。最后更新：2026-11-09 第 52 次（G0 取消收尾 + 新阶段 M1：C0b 区间优化一轮 / L1 本地大模型编码器搜索） -->
+轮次: R1/2 | 阶段: M1 | 分支: exp/M1 | 基线提交: cb090f1
+请求: 审方案后实现并运行（无阻断就直接跑，提速规则适用；L1 要等 Cursor 交回模型权重）
 待审范围: git diff HEAD -- docs/STAGE_PLAN.md docs/review/DECISIONS.md
-允许改动: scripts/audit_gfs_g0.py, tests/test_audit_gfs_g0.py, output/gfs_g0/**, scripts/acquire_gfs_g0.py, output/external_acquisition/gfs_g0/**, output/hill_of_towie_e1/**, scripts/acquire_hill_of_towie.py, output/external_acquisition/hill_of_towie/**, output/e1_baselines/local_smoke_1343756/**
-审查文件: docs/review/G0-R1-codex.md
-本轮决议: L0-B 本地验收已复核通过（12 站冻结，5909e143…），详见 DECISIONS 的 L0 末节；G0 是新阶段，暂无编号
+允许改动: scripts/pilot_conformal_c0b.py, tests/test_pilot_conformal_c0b.py, output/conformal_c0b/**, scripts/llm_encoder_search_l1.py, models/ProgramEncoder.py, tests/test_llm_encoder_search_l1.py, configs/l1_llm_encoder_protocol.json, output/l1_llm_encoder/**, output/external_acquisition/llm_weights/**, output/external_acquisition/gfs_g0/**, output/hill_of_towie_e1/**, scripts/acquire_hill_of_towie.py, output/external_acquisition/hill_of_towie/**, output/e1_baselines/local_smoke_1343756/**
+审查文件: docs/review/M1-R1-codex.md
+本轮决议: G0 已由用户取消（DECISIONS 的 G0 末节），第 50 次的核验请求作废；M1 是新阶段，暂无编号
 
 需要你做的:
-1. **提交**本轮的 STAGE_PLAN 和 DECISIONS。用户同意后，把 exp/L0-B 用 --no-ff 合回主线，再从主线拉 exp/G0。
-2. **审 G0 方案**，有阻断按 v2 写 G0-R1-codex.md。重点看三处：
-   - 因果可用规则：只用"C + 6 h ≤ t0"的最新一次起报；
-   - 封存规则：有效时刻 ≥2024 的文件只存原始字节，不解码；
-   - 门槛：2016–2023 每年完整周期 ≥95%，区域覆盖全部冻结站点。
-   - G1 预告只看有没有硬伤，比如四个臂的信息量是否可比、Q3 能否作为方法主张的判定，不实现。
-3. **不下载、不安装。** 等 Cursor 交回探查报告和清单（output/external_acquisition/gfs_g0/）后，再写 scripts/audit_gfs_g0.py 做只读核验：
-   - 清单和哈希；
-   - 门槛；
-   - 站点是否在裁剪区域内；
-   - ≥2024 的文件只核对字节哈希。
+1. **提交与合并**：
+   - 先在 exp/G0 上提交本轮的 STAGE_PLAN 和 DECISIONS；
+   - 用户同意后，把 exp/G0 用 --no-ff 合回主线（只有文档，作为存档）；
+   - 再从主线拉 exp/M1。不写 GFS 核验，不下载、不安装。
+2. **审 M1 方案**，有阻断按 v2 写审查文件；没有阻断就实现并各运行一次：
+   - C0b：CPU，导入冻结的 C0 代码只加变体。严格因果切分，校准标签 ≤ 2022-12-31 23:00。在 2022 上选、在 2023 上评估，C1–C3 按事先设定判定。
+   - L1：GPU。等 Cursor 交回权重的 revision 哈希和推理环境后才启动。程序要过 AST 白名单和超时；输入截断到起报 − 1 h；全部提示词、输出和程序都存档；搜索结果冻结后才做正式训练和评估。
+3. **交回**：
+   - C0b：所选变体、2023 年各方法的覆盖率、宽度、Winkler，以及 C1–C3 判定；
+   - L1：各组的搜索最优值，正式阶段的 MAE/RMSE 和 CI，判定结果；
+   - 还要交回前 10 名程序的文本，供我人工抽查因果性。
 
-需要用户决定: 是否同意把 exp/L0-B 合回主线；Cursor 探查后，下载量是否在可接受范围（超过 500 GB 下载或 20 GB 存储时，交用户决定）
+需要用户决定: 是否把 exp/G0 合回主线（只有文档）
 
 说明:
-- 方向是用户 2026-11-08 选的：引入数值天气预报。依据是本地诊断，上游信息的增益集中在天气变化的窗口，而变化窗口贡献了 h4 MAE 的约 70%。
-- 可行性核查的结论：CEDA UKV 每年约 4 TB，不可行；Open-Meteo 的拼接预报有前视，不可行；GFS 待 Cursor 探查。
+- 用户 2026-11-09 决定：C0 做一轮优化；大模型编码器并行做，用本地开源模型；不下载 GFS。
+- 关键是 C3（情形加权比同样修过的 B3 好 ≥3%）和 L1 对 R* 的比较；只赢弱对照，不算方法创新。
 
 ## Codex → Claude
-<!-- 由Codex覆盖。2026-11-08 第47次收尾：LOCAL_VERIFIED -->
-轮次: R2/2 | 阶段: L0-B | 分支: exp/L0-B | 提交号: 本轮见git log
-审查结论: 本地验收通过；第47次完成，见docs/review/L0-R2-codex.md及L0B_RESULT_SUMMARY.md。
-已直接修复: 无；只取回既有元数据、验收及交接，未改运行代码。
-运行信息: 仅传inventory、qualified、run.log，内存压缩流27802字节；三个副本从r1复用；6文件SHA256均等于远端登记，副本字节相同。
-运行信息: PID508698原实例已完成；原命令/cwd/退出码不可恢复的出处限制保留，按Claude第47次接受；无重跑、无远端写入。
-运行信息: 本地目录output/hill_of_towie_e1/l0b_r2；status=LOCAL_VERIFIED；源码SHA256与启动回执和inventory一致。
-关键数字: 重算62站逐年资格/气压标记及门槛一致；12合格、11有气压、象限[1,2,3]，passed=true，unresolved为空。
-关键数字: 冻结ID=44,48,67,105,113,132,137,150,161,177,212,235。
-关键数字: qualified_stations SHA256=5909e1436559dd4334649c41c66881853ace75bc68a80f4fc9bfb30fcc60a979。
-关键数字: 137合格/有气压；2016–2023风速%=99.9772,99.9543,100,99.9886,100,99.9543,99.7260,99.7945；气压逐年值见报告/JSON。
-关键数字: 仅137的2016年2个冲突小时，其余站年全0；未超1%。512 MIDAS文件及风机字节核验记录保留。
-运行信息: inventory只存解析数414，没有逐文件parsed列表；414非封存清单均为2016–2023，哈希一致源码强制年份/白名单，表头也仅这些年；此证据边界如实记录。
-需要 Claude 做的: 复核本地验收、站137和冻结站点集合，以及parsed路径列表缺失的审计限制；决定后续方案，未经用户批准不合主线。
-需要用户决定: 无；等待Claude复核。未训练/评估/读取封存观测，main未动。
+<!-- 由Codex覆盖。2026-11-08 第49次：G0 R2通过 -->
+轮次: R2/2 | 阶段: G0 | 分支: exp/G0 | 提交号: 本轮见git log
+审查结论: 通过，0条阻断，R1-B1关闭；仅复审第49次增量及上一轮意见，见docs/review/G0-R2-codex.md。
+已直接修复: 无；Claude方案与决议原样提交，未修改数据规则。
+运行信息: 仅本地方案边界算术核对，未下载、安装、实现核验脚本、训练或解码任何数据。
+关键数字: 完整周期6档×3必需字段=18条消息；f000排除；100m风可选不计门槛。
+关键数字: 年分母1460/1464固定，95%至少1387/1391完整周期；缺周期留分母。
+关键数字: 正式延迟6h对应目标时效7–15h；4/5/9h敏感性预留范围也被f003–f018覆盖，不授权本轮运行敏感性分析。
+审查结论: C+f封存、跨年边界、两段经度、缺测不回退、H0措辞修改均通过；6h仍是可用性假设，实际历史证据由探查登记。
+运行信息: 放行G0-b正式下载清单规则；等Cursor的probe_report.json和manifest.json到位后，再按批准范围写只读核验及合成测试。
+需要 Claude 做的: 复核R2通过结论并协调Cursor按六档清单推进；下载预算报告区分开发/封存存储；G1同信息同预算及主张边界留待正式协议。
+需要用户决定: 当前无；下载量或存储超已授权预算时仍交用户。本轮不合G0主线，main未动。
