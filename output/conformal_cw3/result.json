@@ -1,0 +1,10 @@
+{
+  "status": "COMPLETED",
+  "selected": null,
+  "decision": "STOP_AT_SELECTION",
+  "gains_pct": {
+    "LN-R": -0.3367281147582525,
+    "LJ-R": -0.8981887345199969
+  },
+  "selection_sha256": "5c3b7317375fef5f18ea1cecab299f981d2c4b5779fddcb726ce85dada874980"
+}
