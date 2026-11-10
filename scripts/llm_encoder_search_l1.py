@@ -342,12 +342,15 @@ def fit_arm(farm_data: L1FarmData, source: str | None, seed: int, train_cfg: dic
 def verify_llm_weights(data_root: Path, protocol: dict) -> dict:
     manifest_path = ROOT / protocol["llm"]["manifest_path"]
     manifest = read_json(manifest_path)
-    if manifest.get("revision") != protocol["llm"]["revision"]:
+    rev = manifest.get("revision_commit_sha") or manifest.get("revision")
+    if rev != protocol["llm"]["revision"]:
         raise ValueError("LLM manifest revision mismatch")
+    wsum = manifest.get("weights_summary", manifest)
     weights_dir = data_root / protocol["llm"]["weights_dir"]
     verified = 0
-    for item in manifest["files"]:
-        fpath = weights_dir / item["path"]
+    for item in wsum["files"]:
+        rel = item.get("relative_path") or item["path"]
+        fpath = weights_dir / rel
         if not fpath.is_file() or fpath.stat().st_size != int(item["size_bytes"]):
             raise ValueError(f"Missing or size-mismatched weight file: {fpath}")
         if sha(fpath) != item["sha256"]:
@@ -356,9 +359,9 @@ def verify_llm_weights(data_root: Path, protocol: dict) -> dict:
     return {
         "manifest_sha256": sha(manifest_path),
         "weights_dir": str(weights_dir),
-        "revision": manifest["revision"],
+        "revision": rev,
         "verified_files": verified,
-        "total_bytes": int(manifest["total_bytes"]),
+        "total_bytes": int(wsum.get("total_size_bytes") or wsum["total_bytes"]),
     }
 
 
