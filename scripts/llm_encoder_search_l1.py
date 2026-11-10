@@ -742,10 +742,11 @@ def run_formal_phase(farms: dict[str, L1FarmData], protocol: dict, out: Path, se
     })
     save(out / "test_evaluation_started.json", {"started_at_utc": now_utc()})
 
-    boot = pfs.CircularBlockBootstrap(block_hours=48, n_boot=2000, seed=20261101)
     summary_by_farm = {}
     for fk in ("Kelmarsh", "Penmanshiel"):
-        truth = farms[fk].split_pack("eval")["truth"]
+        eval_pack = farms[fk].split_pack("eval")
+        truth = eval_pack["truth"]
+        issues = eval_pack["issue"]
         arm_out = {}
         mean_preds = {}
         for ak in arm_sources:
@@ -762,9 +763,13 @@ def run_formal_phase(farms: dict[str, L1FarmData], protocol: dict, out: Path, se
                 "seeds": [{"seed": r["seed"], "best_epoch": r["best_epoch"], "val_mae": r["validation_mae"], **r["outputs"]["eval"]["metrics"], "learned_P": r["learned_P"]} for r in runs],
             }
         comparisons = {}
+        cand_err = np.abs(mean_preds["L_star"] - truth).mean(axis=1)
         for ref in ("H", "P", "R_star", "L_blind_star"):
-            nw = pfs.newey_west_mae(truth, mean_preds[ref], mean_preds["L_star"])
-            bt = boot.ci(truth, mean_preds[ref], mean_preds["L_star"])
+            ref_err = np.abs(mean_preds[ref] - truth).mean(axis=1)
+            diff_df = pd.DataFrame({"issue": issues, "gain": ref_err - cand_err}).groupby("issue", sort=True)["gain"].mean()
+            series = diff_df.to_numpy(dtype=np.float64)
+            nw = pfs.newey_west_mean_test(series, max_lag=12)
+            bt = pfs.moving_block_bootstrap_mean(series, block_length=12, replicates=2000, seed=2024)
             comparisons[f"L_star_vs_{ref}"] = {"newey_west": nw, "bootstrap": bt}
         summary_by_farm[fk] = {"arms": arm_out, "comparisons": comparisons}
 
