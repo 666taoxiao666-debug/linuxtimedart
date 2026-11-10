@@ -1,0 +1,212 @@
+{
+  "script_sha256": "fc2ff700ccafa82aea91f57aebb7a467657072e240b947f8d651fda8e15d95c1",
+  "thresholds": {
+    "M1_rel_min": 0.1,
+    "M2_auc_min": 0.05,
+    "change": 0.1,
+    "ramp": 0.3,
+    "warn": 0.1
+  },
+  "bootstrap": {
+    "block": 8,
+    "reps": 5000,
+    "seed": 2024
+  },
+  "folds": [
+    {
+      "fold": "T24",
+      "windows": 13449,
+      "seeds": [
+        2024,
+        2025,
+        2026
+      ],
+      "rated_kw": 2050.0,
+      "inputs_sha256": {
+        "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/Penmanshiel/p3_v35_2894746_r2/T24/evaluation/cohort.npz": "f06dc95b3624a9b87c339d1f856bae3f56e2fb8070e1d75712816c7ebe606255",
+        "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/Penmanshiel/p3_v35_2894746_r2/T24/evaluation/P-upstream_s2024.npz": "3452c21bd3704b73d1b1650cf7597480cfbb1e903eccbf201d9d92014630c86a",
+        "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/Penmanshiel/p3_v35_2894746_r2/T24/evaluation/P-upstream_s2025.npz": "29ff85e4b5a9ff77213b19e879c3a8c1a7f4a1078d9aa1719e9b8ad0ef9c19e0",
+        "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/Penmanshiel/p3_v35_2894746_r2/T24/evaluation/P-upstream_s2026.npz": "f433f57bce8a5d2175bbc55c13a07bd1d3c0ba9d5a03fda3c8a17d04f806f46f",
+        "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/Penmanshiel/p3_v35_2894746_r2/T24/evaluation/P-last10_s2024.npz": "d3d5fe27dcecd198b20153b1933eae7f4ac4a456684ffd948c0f05f4bfc48aee",
+        "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/Penmanshiel/p3_v35_2894746_r2/T24/evaluation/P-last10_s2025.npz": "7cfa151f9ebf1184bed44f60b951214eced0e83e8d89627f825dbfde3936321e",
+        "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/Penmanshiel/p3_v35_2894746_r2/T24/evaluation/P-last10_s2026.npz": "89b5762eaba0d9fcc621051a2189dc5ede154608154c145991e702600b54acef"
+      },
+      "overall_mae": {
+        "candidate": 195.37923837877838,
+        "reference": 212.06630888650017
+      },
+      "M1": {
+        "cells": 16506,
+        "cell_share": 0.4091010484050859,
+        "reference_mae": 441.92693706986677,
+        "candidate_mae": 384.64390826322193,
+        "gain_kw": 57.283028806644886,
+        "relative_gain": 0.12962103913930162,
+        "ci95_low_kw": 49.18327247640836,
+        "ci95_high_kw": 65.58014272437539,
+        "pass": true,
+        "total_time_clusters": 2743,
+        "zero_event_clusters": 855,
+        "finite_replicates": 5000
+      },
+      "M2": {
+        "event_rate_up": 0.07889062383820358,
+        "event_rate_down": 0.0799315934270206,
+        "candidate": {
+          "auc_up": 0.8276400469031933,
+          "auc_down": 0.8493789303152521,
+          "auc_mean": 0.8385094886092227
+        },
+        "reference": {
+          "auc_up": 0.7256466764072251,
+          "auc_down": 0.8304083956984074,
+          "auc_mean": 0.7780275360528163
+        },
+        "gain": 0.060481952556406426,
+        "ci95_low": 0.039555980899045905,
+        "ci95_high": 0.08138425542975095,
+        "finite_replicates": 5000,
+        "pass": true
+      },
+      "M3": {
+        "status": "UNAVAILABLE",
+        "reason": "upstream missing mask not stored",
+        "adopt": null
+      },
+      "descriptive": {
+        "strata": [
+          {
+            "h": 1,
+            "stratum": "calm",
+            "share": 0.7579745706000446,
+            "mae_candidate": 74.11355447558833,
+            "mae_reference": 71.81644676813127
+          },
+          {
+            "h": 1,
+            "stratum": "change_10_30",
+            "share": 0.20953230723473865,
+            "mae_candidate": 243.7314926380552,
+            "mae_reference": 263.48645184599724
+          },
+          {
+            "h": 1,
+            "stratum": "ramp_30",
+            "share": 0.03249312216521674,
+            "mae_candidate": 529.2724329482371,
+            "mae_reference": 580.0614996245955
+          },
+          {
+            "h": 2,
+            "stratum": "calm",
+            "share": 0.6432448509182839,
+            "mae_candidate": 89.9861291667606,
+            "mae_reference": 85.42432328691204
+          },
+          {
+            "h": 2,
+            "stratum": "change_10_30",
+            "share": 0.2751877463008402,
+            "mae_candidate": 278.1632833891204,
+            "mae_reference": 312.24731312082514
+          },
+          {
+            "h": 2,
+            "stratum": "ramp_30",
+            "share": 0.0815674027808759,
+            "mae_candidate": 642.9233007940244,
+            "mae_reference": 743.4718059233015
+          },
+          {
+            "h": 3,
+            "stratum": "calm",
+            "share": 0.5885939475053907,
+            "mae_candidate": 107.04734452405803,
+            "mae_reference": 100.01965198070506
+          },
+          {
+            "h": 3,
+            "stratum": "change_10_30",
+            "share": 0.2924380994869507,
+            "mae_candidate": 281.1247047950713,
+            "mae_reference": 313.976799615867
+          },
+          {
+            "h": 3,
+            "stratum": "ramp_30",
+            "share": 0.11896795300765856,
+            "mae_candidate": 623.3799136068276,
+            "mae_reference": 747.0940020213228
+          },
+          {
+            "h": 4,
+            "stratum": "calm",
+            "share": 0.5408580563610678,
+            "mae_candidate": 118.5305748668361,
+            "mae_reference": 117.54511805833205
+          },
+          {
+            "h": 4,
+            "stratum": "change_10_30",
+            "share": 0.3003197263737081,
+            "mae_candidate": 286.3027031306306,
+            "mae_reference": 313.92796584830546
+          },
+          {
+            "h": 4,
+            "stratum": "ramp_30",
+            "share": 0.1588222172652242,
+            "mae_candidate": 634.2299781479423,
+            "mae_reference": 760.7930412605609
+          }
+        ],
+        "slopes": [
+          {
+            "h": 1,
+            "mz_slope_candidate": 0.8957751260766177,
+            "amplitude_slope_candidate": 0.336778874848645,
+            "mz_slope_reference": 0.952752232988956,
+            "amplitude_slope_reference": 0.2618908207284648
+          },
+          {
+            "h": 2,
+            "mz_slope_candidate": 0.9685519068261456,
+            "amplitude_slope_candidate": 0.28440612993817554,
+            "mz_slope_reference": 1.0130915556999645,
+            "amplitude_slope_reference": 0.16709886392634354
+          },
+          {
+            "h": 3,
+            "mz_slope_candidate": 0.9779418968511767,
+            "amplitude_slope_candidate": 0.32208100951771795,
+            "mz_slope_reference": 1.0478802275916368,
+            "amplitude_slope_reference": 0.18525668198109357
+          },
+          {
+            "h": 4,
+            "mz_slope_candidate": 1.0000472528376747,
+            "amplitude_slope_candidate": 0.33667681445779113,
+            "mz_slope_reference": 1.0641870068804467,
+            "amplitude_slope_reference": 0.20150365484144228
+          }
+        ],
+        "h4_warning": {
+          "candidate": {
+            "pod": 0.6418539325842697,
+            "warning_rate": 0.30887054799613356,
+            "false_warning_ratio": 0.3490611458834858,
+            "csi": 0.2787151860134174
+          },
+          "reference": {
+            "pod": 0.477059925093633,
+            "warning_rate": 0.2586065878503978,
+            "false_warning_ratio": 0.4321449108683151,
+            "csi": 0.2217627856365615
+          }
+        }
+      }
+    }
+  ],
+  "decision": null,
+  "role": "descriptive"
+}

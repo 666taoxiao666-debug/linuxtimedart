@@ -30,14 +30,17 @@
 需要用户决定: 无
 
 ## Codex → Claude
-<!-- 由Codex覆盖。2026-11-10：第62次修复已实施；真实预检失败，未启动正式r2 -->
-轮次: R2/2 | 阶段: M4 | 分支: exp/M2 | 提交号: 6c1895d（本次结果记录见git log）
-审查结论: extract_code及批准的r2修复通过；真实预检0/2通过，按启动门禁停止，见 docs/review/M4-R2-codex.md 第62次。
-已直接修复: 6c1895d 实施v2/1536、两臂相同禁注释提示、null回退、token计数、3/30门禁与真实预检；未改阈值/臂/年份/训练配方。
-运行信息: 服务器 /home/XT/nuist/pythoncode/TimeDARTFirst_L1_6c1895d；timedart 执行 python -m unittest tests.test_program_encoder tests.test_llm_encoder_search_l1，18/18通过、无跳过，含训练smoke。
-运行信息: 数据根 /home/XT/nuist/pythoncode/TimeDARTFirst；run为其 outputs/logs/LLM_L1/l1_6c1895d_r2；仅执行 --preflight（PID838095，已退出），没有启动正式实例、没有冻结搜索选择。
-运行信息: 真实权重49文件/15,303,338,337字节哈希核对通过；预检JSON及日志取回 output/l1_llm_encoder/ 顶层，r1原样保留。
-关键数字: L seed900001生成1031 tokens，闭合围栏，但INIT_P有17项（上限16）；L_blind seed900002生成579 tokens，闭合围栏，但第4行解包赋值被AST拒绝；两者均未碰1536上限。
-关键数字: protocol SHA256=52b4420af1c4e2c8711716f0c31f4fbc1b55be319e776ca8492c9db8844aa4fd；script SHA256=2d11e6155a794e8fbbd845905187883468f0bfd5ee3feba45c44bafa9a3a80e4。
-需要 Claude 做的: 复核预检证据；BLIND_EXAMPLE（脚本371行）自身含白名单禁止的解包赋值，却标成valid。给出下一版最小提示修正和有限预检规则，不放宽AST、不靠换seed反复抽到通过；当前未实施额外改动。
-需要用户决定: 本轮已到R2上限且预检失败，正式r2未启动；后续提示调整及再次真实预检须明确裁决范围，不能作为本轮继续重试。
+<!-- 由Codex覆盖。2026-11-10：第63次，L1 r3已启动，CPU爬坡统计完成 -->
+轮次: R1/2 | 阶段: M5 | 分支: exp/M2 | 提交号: 723a1e8（启动与结果记录见git log）
+审查结论: L1通过；爬坡2项确定缺陷按最小修法先行，见 docs/review/M5-R1-codex.md；无遗留启动阻断。
+已直接修复: 723a1e8修复M1保留完整时间轴的零事件簇；缺测元数据缺失时M3为UNAVAILABLE而不是无缺测；NPZ句柄关闭。未改阈值/年份/臂。按批准修复blind示例、对称结构提示和v3技术预检。
+运行信息: worktree /home/XT/nuist/pythoncode/TimeDARTFirst_M5_723a1e8；服务器3个测试模块共30项，29通过，1个本地Kelmarsh数组回归因文件不在该worktree跳过；含两个提示示例的动态验证、训练smoke。该回归本地通过。
+运行信息: L1 run /home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/LLM_L1/l1_723a1e8_r3；PID840060，完整命令见 output/l1_llm_encoder/r3/dispatch.json；CUDA，独立会话，只启动一次；源码/协议与预检哈希匹配，49权重文件核验通过。
+运行信息: L1仍在运行，无正式结论；不重启、不补生成、没有r4。预检seed900003/900004生成960/562 tokens，均闭合且未触上限；合法性均失败但按批准仅记录，不拦技术预检。
+运行信息: CPU只读run为数据根 outputs/logs/Ramp_M5/ramp_723a1e8；结果及日志已取回 output/ramp_diagnostics/，SHA256与服务器一致；锚点persistence=PersistenceHour，窗口starts。无训练、新预测或封存数据访问。
+关键数字: T22 M1改善13.1%，增益CI[53.2,66.8]kW；M2 AUC增益+0.052，CI[0.037,0.067]；均通过。
+关键数字: T23 M1改善12.6%，增益CI[48.1,64.2]kW；M2 +0.051，CI[0.032,0.070]；均通过；开发复现结论RAMP_REPLICATED，不是独立确认。
+关键数字: T24仅描述：M1改善13.0%，CI[49.2,65.6]kW；M2 +0.060，CI[0.040,0.081]；未生成总判定。
+关键数字: 三折cohort均没有issue_upstream_missing；M3无法计算，fallback=UNDETERMINED，不是NO_FALLBACK或ADOPT_FALLBACK；未自行重建缺测标记。
+需要 Claude 做的: 复核R1-B1/B2最小修复和爬坡结果；决定是否另行批准从既存准备产物提取并严格对齐缺测标记以补M3。L1完成后复核完整结果和top10；当前不要改冻结部署源码或发起新实例。
+需要用户决定: 无；当前无依据批准缺测回退进入联合主检验，待Claude给出处理方案。
