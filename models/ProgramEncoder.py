@@ -80,6 +80,14 @@ BIN_OPS = (ast.Add, ast.Sub, ast.Mult, ast.Div, ast.Pow)
 UNARY_OPS = (ast.USub, ast.UAdd)
 CMP_OPS = (ast.Gt, ast.Lt, ast.GtE, ast.LtE, ast.Eq, ast.NotEq)
 
+# Structural rules that validate_source enforces but the r1/r2 prompts never stated (L1 r2 preflight, R2-B1).
+# Neutral wording: shown to both L and L-blind.
+PROGRAM_STRUCTURE_TEXT = (
+    "Inside encode, every statement is either `name = expression` with exactly one plain name on the left "
+    "(no tuple unpacking such as `a, b = x, y`) or the single final `return`. "
+    "Index P only as P[i] with 0 <= i < len(INIT_P)."
+)
+
 PROGRAM_RULES_TEXT = (
     "Rules: define INIT_P (a list of 1-16 numbers) and def encode(obs, geo, P) returning a tensor [B, 24, K] with "
     "1 <= K <= 11. obs is [B, 24, S, 7] with channels ws_z, dir_sin, dir_cos, p_anom_z, dp3_z, valid_ws, valid_p "
@@ -89,7 +97,8 @@ PROGRAM_RULES_TEXT = (
     "No imports, loops, if, lambdas, comprehensions, nested functions, in-place ops or item assignment. "
     "Every sum/mean/amax/amin/softmax/logsumexp/cumsum/std/var/prod/stack/cat/unsqueeze/squeeze/wmean must pass "
     "an explicit constant dim that is not 0. Never mix samples across the batch axis. The output must not depend "
-    "on station order and must work for any S. Use dtype=obs.dtype, device=obs.device when creating tensors."
+    "on station order and must work for any S. Use dtype=obs.dtype, device=obs.device when creating tensors. "
+    + PROGRAM_STRUCTURE_TEXT
 )
 
 

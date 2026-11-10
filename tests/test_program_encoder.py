@@ -79,6 +79,12 @@ class StaticValidation(unittest.TestCase):
                 with self.assertRaises(pe.ProgramRejected):
                     pe.validate_source(src)
 
+    def test_rules_text_states_structure_rules(self):
+        # R2-B1: the prompt must state the single-name assignment rule that validate_source enforces
+        self.assertIn(pe.PROGRAM_STRUCTURE_TEXT, pe.PROGRAM_RULES_TEXT)
+        with self.assertRaises(pe.ProgramRejected):
+            pe.validate_source(body(["a, b = obs[..., 0], obs[..., 1]", "return torch.stack([a, b], dim=-1)"]))
+
     def test_torch_nn_functional_chain_allowed(self):
         pe.validate_source(body(["return torch.nn.functional.softplus(obs[..., 0:3, 0])"]))
 

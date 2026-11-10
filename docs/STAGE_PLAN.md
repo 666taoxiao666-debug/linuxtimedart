@@ -2,90 +2,88 @@
 
 作者：Claude（Codex 只提意见，不改本文件）。上限 150 行：要加新内容时，先删旧内容。
 内容只从现有代码和结果中提取；拿不准的地方标「待确认」；事先设定的阈值标「事先设定」。
-存档：CW3 的方案原文（含区间线的数据暴露清单）见 `git show af938db:docs/STAGE_PLAN.md`；L1 的原始规则见 `git show a1ebfa0:docs/STAGE_PLAN.md` 的 L1 条；CW3 结果复核见 DECISIONS.md 的 M4 一节。
+存档：M4（CW3 结果、L1 r2 修法）见 `git show 0bbf21a:docs/STAGE_PLAN.md`；CW3 方案原文和区间线暴露清单见 `git show af938db:docs/STAGE_PLAN.md`；L1 原始规则见 `git show a1ebfa0:docs/STAGE_PLAN.md` 的 L1 条。
 
 ## 阶段名
 
-M4（续）：CW3 已结束；L1 修复技术缺陷后完整重跑一次（r2，GPU）。
-- CW3：2026-11-10 完成，STOP_AT_SELECTION，两个候选都不合格，C 线按事先规则结束。J3、J4 没有计算。
-- T1：已完成，RETAIN_EXISTING；5 个 seed 的集成作为单独的改进进入 Hill of Towie 联合确认。
-- L1 r1：H、P、R 都跑完（R 30/30 合法，最好的 R_15 短训练验证 MAE 152.21 kW），但 L、L-blind 的 60 个候选全部失败。原因是技术缺陷，不是方法结果（见下）。没有冻结搜索选择，也没有进入正式阶段。
+M5：L1 最后一次运行（r3，GPU）+ Penmanshiel 只读爬坡复现（CPU）。两条线并行。
+- 用户 2026-11-10 裁决：M4 已到两轮上限，授权 L1 最后跑一次；无论结果如何，跑完 L1 就关闭。并行只做 Penmanshiel 只读统计。
+- 已结束：CW3（STOP_AT_SELECTION，C 线结束）；T1（RETAIN_EXISTING，种子集成进入联合确认）。
 
 ## 目标
 
-1. **CW3 告诉我们的事（只作描述）**：
-   - 挑选数据上，LN-R 相对 min(匹配对照, B3-A) 的平均改善是 −0.34%，LJ-R 是 −0.90%。
-   - 上游尺度相对匹配对照的 Winkler 差在 4 组里符号不一致：LN-R 减 LN-P 是 +9.5、−12.1、+16.8、−11.9 kW。
-   - 所以 CW2 里"上游尺度有稳定增益"的信号，叠加到功率近邻之后不再稳定。R1-S1 的假设（两者可以叠加）不成立。
-   - 爬坡窗口的覆盖率，所有方法都在 76–79%；上游尺度最多只提高约 1 个点。
-   - 论文里照实写 C 线已经成立的实用结论：有界 ACI + F + 功率近邻（B3-A）比 B0、B1、B2-A 低 10% 以上。
-2. **L1 r2**：在修好截断缺陷的前提下，按原规则完整跑一次 L1。检验的问题不变：大模型写的上游编码程序，能否在两个风场上同时赢过手工特征 H、专家程序 P 和随机语法程序 R*。
+1. **L1 r3**：问题不变。大模型写的上游编码程序，能否在两个风场上同时赢过手工特征 H、专家程序 P 和随机语法程序 R*。
+   - 已知的描述性证据（r1，单 seed 短训练）：R 的 30 个程序里，13 个离最好的（R_15，152.21 kW）不到 1%；前 10 名只差 0.66 kW。通道数 ≤9 的明显更差（157–160 kW）。
+   - r2 预检里，L 的输出基本是专家程序的改写。这些都提示 L1 通过的概率低，跑完主要是补齐"同预算下大模型搜索 vs 随机搜索 vs 手工特征"的对照。
+2. **Penmanshiel 只读统计**：检验 Kelmarsh 2024 上看到的"上游增益集中在爬坡"能否在第二个风场复现，并决定 Hill of Towie 协议要不要加"上游缺测时回退"的规则。零训练、不碰新数据。
 
 ## 假设与判定标准
 
-**L1 r1 的技术缺陷（确定缺陷，已核实）**
-- max_new_tokens = 512，但专家程序约 620 个 token，R 的程序有 2400–2580 个字符。
-- 60 个大模型输出全部在 return 之前被截断，没有一个带闭合的代码围栏。
-- extract_code 遇到未闭合的围栏会返回整段文字，所以都报"line 1 syntax error"，掩盖了真正的截断原因。
-- 全部失败时，回退记录的 val_mae = inf，写 JSON 时报错，进程中断。
-- 我用修好的 extract_code 重新解析 r1 的 60 个输出：仍然 0 个合法，报的都是括号未闭合或缺 return。这确认根因是 token 上限，不是提取逻辑。
-
-**r2 的修法（只修技术缺陷，事先设定）**
-- `max_new_tokens` 改为 1536（约 5000 个字符，是 R 程序长度的 2 倍左右）。
-- L 和 L-blind 的提示词末尾各加同一句："Do not write comments or docstrings."（两臂相同）。
-- `models/ProgramEncoder.py` 的 extract_code：未闭合的围栏取围栏之后的全部文字（Claude 已改，加了测试）。
-- 全部失败时，回退记录的 val_mae 记为 null，不再用 inf。
-- 协议 JSON 的 `protocol_id` 改为 `l1_llm_encoder_v2`，加一条 `supersedes` 说明 r1 是因为 max_new_tokens 失败的技术运行。
+**L1 r3 的修法（只修确定缺陷，事先设定）**
+- R2-B1 的两个原因：
+  - 给 L-blind 看的 BLIND_EXAMPLE 本身用了解包赋值，违反白名单（我本地复核：validate_source 拒绝，line 4）；
+  - 两臂的规则文字都没写"每行只能给一个名字赋值"，但白名单强制执行这一条。
+- 修法：
+  - Claude（已改）：`models/ProgramEncoder.py` 新增 PROGRAM_STRUCTURE_TEXT，写清单名赋值、唯一的末尾 return、P[i] 的下标范围，并接在 PROGRAM_RULES_TEXT 末尾（L 用）。
+  - Codex：BLIND_EXAMPLE 的三行解包改成逐行单变量赋值，其余不变；L-blind 的规则文字末尾接同一个 pe.PROGRAM_STRUCTURE_TEXT；加测试，要求 EXPERT_PROGRAM 和 BLIND_EXAMPLE 都通过 validate_source 和 check_program。
+  - 协议 protocol_id 改为 l1_llm_encoder_v3，supersedes 写明 v2 因 BLIND_EXAMPLE 缺陷停在预检。
+- **预检只查技术项（我改正自己的规则）**：
+  - r2 的预检要求唯一的生成必须合法。但协议本来就规定不合法的程序照样占名额，合法率正是要测的结果，所以用 1 个样本卡合法性是错的。
+  - r3 用新种子 900003（L）和 900004（L-blind），都不在搜索种子范围内。两个输出都闭合围栏、并且 n_new_tokens < 1536，就算通过。validate_source 的结果只记录，不卡启动。
+  - 预检不通过 → L1 关闭，记为"技术上未完成"，不再修。
 - 不变的部分：
-  - 判定阈值（L* 比 H 好 ≥1.5%，比 R*、P 都好 ≥0.5%，两个风场都要满足）；
-  - 臂（H、P、R、L、L-blind）、预算（每臂 30 个）、温度、top_p、种子；
-  - 数据年份、训练配方、语法 R、"失败照样占名额、不补生成"的规则。
+  - 判定阈值（两个风场上，L* 比 H 好 ≥1.5%，比 R*、P 都好 ≥0.5%）；
+  - 臂、预算（每臂 30 个）、温度、top_p、搜索种子；
+  - 数据年份、训练配方、语法 R、"失败照样占名额、不补生成"；
+  - max_new_tokens 1536 和"不写注释"；
+  - 搜索中 ≥3/30 碰到上限就判技术失败。触发时 L1 关闭，记为"技术上未完成"，不再有 r4。
+- 正式阶段的统计和三档结论按 a1ebfa0 的 L1 条。top-10 程序的因果性抽查由 Claude 在结果交回后做。
 
-**r2 的运行规则（事先设定）**
-- 从头完整重跑：H、P、R、L、L-blind 的搜索，然后进入正式阶段。不复用 r1 的 R 结果，保证所有结果在同一份代码和哈希下产生。R 只多花约 33 分钟。
-- 启动前做真实大模型预检：用一个不在搜索种子里的种子，L 和 L-blind 各生成 1 个第 1 代程序。两个输出都要带闭合围栏，并通过 validate_source，才正式启动。预检的输出只存档，不进入搜索。
-- 每个候选记录 `n_new_tokens` 和 `hit_max_new_tokens`。
-- **技术有效性门槛**：L 或 L-blind 里，有 ≥3 个（10%）候选碰到 token 上限，就判为技术失败。这时只跑完搜索、存档，不冻结选择、不进入正式阶段，交回给我。
-- 碰到上限的候选不到 3 个，就照常继续；碰到上限的那几个按"失败照样占名额"处理。
-- 合法程序很少，如果是因为违反规则（不是截断），属于真实结果，照常继续。
-- 正式阶段的统计和三档结论，按 a1ebfa0 的 L1 条，不变。
-- top-10 程序做因果性抽查（只用起报时刻 −1 h 之前的观测），由 Claude 在结果交回后做。
+**Penmanshiel 只读复现（事先设定，阈值在 Penmanshiel 运行前固定）**
+- 脚本：`scripts/ramp_diagnostics.py`（Claude 写，纯 numpy）。本地在 Kelmarsh 2024 上复算，与我 11-10 的诊断数字一致（tests/test_ramp_diagnostics.py 有回归测试）。
+- 数据：P3 r2 的 T22、T23 两折，候选 P-upstream，参照 P-last10，各 3 个 seed 的平均预测；锚点是 PersistenceHour；额定 2050 kW。
+- 判定（每折单独算）：
+  - M1：h2–h4 中真实变化 ≥10% 额定的格子，MAE 相对改善 ≥10%，且 kW 增益的 95% CI 下界 > 0。
+  - M2：h4 上 ±30% 额定的爬坡，用预测变化做得分；上爬、下爬 AUC 的平均值提升 ≥0.05，且 CI 下界 > 0。
+  - M3：上游缺测窗口改用 P-last10 的预测；全体 MAE 的增益 > 0，且 CI 下界 > 0。
+  - CI：起报时刻的移动块 bootstrap（块长 8，5000 次，seed 2024），整簇重抽。
+- 结论（事先设定）：
+  - T22、T23 都过 M1 和 M2 → RAMP_REPLICATED：论文主线用"上游观测 → 爬坡"的写法，爬坡指标进 Hill of Towie 协议当次要终点。
+  - 否则 → 爬坡分析只作为 Kelmarsh 的描述。
+  - 两折都过 M3 → ADOPT_FALLBACK：回退规则进 Hill of Towie 的主检验；否则不加。
+- 参考（只作描述，不进判定）：Kelmarsh 2024 上，M1 是 17.9%（[63.6, 77.4] kW）通过，M2 是 +0.069（[+0.049, +0.089]）通过；M3 是 +0.12 kW（[−0.02, +0.37]），不采纳，缺测窗口只占 0.6%。
+- T22、T23 是 P3 的测试年，已经用过，这里只是开发数据上的复现，不是独立确认。T24 只作描述，单独输出，不进判定。
 
 ## 实验配置表
 
 | 线 | 内容 | 规模 |
 |---|---|---|
-| CW3 | 已结束：STOP_AT_SELECTION，C 线收尾 | — |
-| T1 | 已完成：RETAIN_EXISTING，种子集成进入联合确认 | — |
-| L1 r2 | 预检 2 个生成；搜索 H、P、R30、L30、L-blind30（Kelmarsh）；正式 5 臂 × 3 seed × 2 风场 | GPU，约 4–5 小时（待确认） |
+| L1 r3 | 预检 2 个生成；搜索 H、P、R30、L30、L-blind30（Kelmarsh）；正式 5 臂 × 3 seed × 2 风场 | GPU，约 4–5 小时（待确认） |
+| 只读复现 | T22、T23 判定；T24 描述；只读已有预测 | CPU，每折约 1 分钟 |
 
-- L1 r2 只运行一个实例。正式阶段开始前写 search_selection_freeze.json，冻结后不再改选择。
+- L1 r3 只运行一个实例；正式阶段开始前写 search_selection_freeze.json。
+- 只读复现先核对 cohort.npz 的键名（truth、PersistenceHour、issue_upstream_missing、times、window_starts）。名字不同就用命令行参数指定；没有 PersistenceHour 就停下交回，不用别的锚点替代。
 
 ## 改动文件清单（= HANDOFF「允许改动」）
 
-- Claude（已改）：`models/ProgramEncoder.py`（只改 extract_code）、`tests/test_program_encoder.py`（extract_code 测试）。
-- Codex：
-  - `configs/l1_llm_encoder_protocol.json`（max_new_tokens、两句提示词、protocol_id、supersedes）；
-  - `scripts/llm_encoder_search_l1.py`（回退 val_mae 用 null；记录 n_new_tokens 和 hit_max_new_tokens；技术有效性门槛；真实大模型预检）；
-  - `tests/test_llm_encoder_search_l1.py`（全部失败时 JSON 能写出；门槛的真值表）；
-  - `output/l1_llm_encoder/**`（r2 写在顶层；r1 留在 r1_failed_max_tokens_512/）。
+- Claude（已改）：`models/ProgramEncoder.py`（PROGRAM_STRUCTURE_TEXT）、`tests/test_program_encoder.py`、`scripts/ramp_diagnostics.py`、`tests/test_ramp_diagnostics.py`（新文件：现有脚本里没有爬坡分层统计，冻结的 utils 不宜改，所以单独写）。
+- Codex：`scripts/llm_encoder_search_l1.py`（BLIND_EXAMPLE、L-blind 规则文字、预检门槛）、`tests/test_llm_encoder_search_l1.py`、`configs/l1_llm_encoder_protocol.json`、`output/l1_llm_encoder/**`、`output/ramp_diagnostics/**`。
 
 ## 本阶段不做什么
 
-- 不改 L1 的判定阈值、臂、预算、数据年份和训练配方。
-- C 线不开第 4 轮。不碰 Hill of Towie 封存年。
-- 不在看到正式结果后改选择或重跑。
+- 不改 L1 的判定阈值、臂、预算、年份、训练配方；没有 r4。
+- 只读复现不训练、不改已有预测文件、不碰 Hill of Towie。
+- 不在看到结果后改 M1–M3 的阈值。
 
 ## 风险（≤5 条）
 
-1. 1536 个 token 仍可能不够：后几代提示词里给的程序更长，大模型可能写得更长。有技术有效性门槛兜底。
-2. 7B 模型在白名单规则下合法率可能很低，L 的有效名额变少。这算真实结果，如实报告。
-3. 搜索只在 Kelmarsh 上做，R 的最好程序（152.21 kW）已经很接近，L 要比 R* 好 0.5% 不容易。之前的估计不变：L1 通过的概率低。
-4. r1 的 H、P 短训练数字没有存下来（写 JSON 时崩溃），r2 要一起交回。
+1. 7B 模型在白名单下的合法率可能很低，L 的有效名额少。这算真实结果，照实报告合法率和被拒原因。
+2. 后几代提示词里的程序更长，生成可能碰到 1536 的上限，由 3/30 门槛兜底。
+3. M1 按真实变化事后分层，只能说明"增益在哪里"，不能当成可部署的开关。
+4. Penmanshiel 缺测在时间上成片出现时，M3 的 CI 会偏宽，可能判不出采纳。
 
 ## 存档引用
 
-- CW3：`output/conformal_cw3/result.json`、`selection_freeze.json`、4 组的 `seed_*.json`。
-- L1 r1（技术失败）：`output/l1_llm_encoder/r1_failed_max_tokens_512/`。
-- CW2：`output/conformal_cw2/RESULT_SUMMARY.md`；CW1：`output/conformal_cw1/`；C0b：`output/conformal_c0b/`。
+- L1：r1 `output/l1_llm_encoder/r1_failed_max_tokens_512/`；r2 预检 `output/l1_llm_encoder/preflight.json`、`R2_PREFLIGHT.md`。
+- CW3：`output/conformal_cw3/result.json`；P3：`output/penmanshiel_hourly/p3_v35/r2/`。
 - 冻结站点：Kelmarsh v32 的 36 站；Penmanshiel 的 11 站；Hill of Towie `output/hill_of_towie_e1/l0b_r2/qualified_stations.json`（5909e143…）。

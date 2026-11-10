@@ -3,6 +3,7 @@ from __future__ import annotations
 import importlib.util
 import tempfile
 import unittest
+from unittest.mock import patch
 from pathlib import Path
 import numpy as np
 import pandas as pd
@@ -17,6 +18,29 @@ from scripts import llm_encoder_search_l1 as l1
 
 
 class TestLlmEncoderSearchL1(unittest.TestCase):
+    def test_prompt_examples_static(self):
+        for source in (pe.EXPERT_PROGRAM, l1.BLIND_EXAMPLE):
+            pe.validate_source(source)
+        protocol = l1.read_json(l1.PROTOCOL)
+        for blind in (False, True):
+            self.assertIn(pe.PROGRAM_STRUCTURE_TEXT, l1.build_llm_prompt(protocol, blind, 1, 1, [])[1])
+
+    @unittest.skipUnless(HAS_TORCH, "torch required")
+    def test_prompt_examples_dynamic(self):
+        for source in (pe.EXPERT_PROGRAM, l1.BLIND_EXAMPLE):
+            self.assertEqual(pe.check_program(source)["status"], "OK")
+
+    def test_preflight_checks_transport_not_legality(self):
+        protocol = l1.read_json(l1.PROTOCOL)
+        for tokens, expected in ((100, 0), (1536, 1)):
+            rows = [{"slot": i, "raw_output": "```python\ninvalid source\n```", "n_new_tokens": tokens}
+                    for i in (1, 2)]
+            with tempfile.TemporaryDirectory() as tmp, patch.object(l1, "verify_llm_weights", return_value={"weights_dir": tmp}), patch.object(l1, "run_llm_worker_batch", return_value=rows):
+                self.assertEqual(l1.preflight(protocol, Path(tmp), ROOT, "unused"), expected)
+                record = l1.read_json(Path(tmp) / "preflight.json")
+                self.assertEqual([r["seed"] for r in record["requests"]], [900003, 900004])
+                self.assertFalse(record["outputs"][0]["source_valid"])
+
     def test_all_failed_fallback_is_json_serializable(self):
         best = l1.select_best_record([{"status": "FAILED"}], pe.EXPERT_PROGRAM)
         self.assertIsNone(best["val_mae"])

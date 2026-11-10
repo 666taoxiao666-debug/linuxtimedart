@@ -368,9 +368,16 @@ def verify_llm_weights(data_root: Path, protocol: dict) -> dict:
 BLIND_EXAMPLE = """INIT_P = [0.5, -0.5, 0.2, 0.0]
 
 def encode(obs, geo, P):
-    x0, x1, x2, x3, x4 = obs[..., 0], obs[..., 1], obs[..., 2], obs[..., 3], obs[..., 4]
-    m0, m1 = obs[..., 5], obs[..., 6]
-    g0, g1, g2 = geo[:, 0], geo[:, 1], geo[:, 2]
+    x0 = obs[..., 0]
+    x1 = obs[..., 1]
+    x2 = obs[..., 2]
+    x3 = obs[..., 3]
+    x4 = obs[..., 4]
+    m0 = obs[..., 5]
+    m1 = obs[..., 6]
+    g0 = geo[:, 0]
+    g1 = geo[:, 1]
+    g2 = geo[:, 2]
     w0 = torch.exp(-g0 / (F.softplus(P[0]) + 0.05)) * m0
     w1 = torch.sigmoid(torch.exp(P[1]) * (g1 * wmean(x1, m0, dim=2).unsqueeze(-1) + g2 * wmean(x2, m0, dim=2).unsqueeze(-1) - P[2])) * w0
     c0 = wmean(x0, w0, dim=2)
@@ -398,7 +405,8 @@ def build_llm_prompt(protocol: dict, blind: bool, gen: int, slot: int, history: 
             "k in 0..23), wmean(x, w, dim=...) (weighted mean), safe_div(a, b). No imports, loops, if, lambdas, "
             "comprehensions, nested functions, in-place ops or item assignment. Every sum/mean/amax/amin/softmax/"
             "logsumexp/cumsum/std/var/prod/stack/cat/unsqueeze/squeeze/wmean must pass an explicit constant dim != 0. "
-            "Never mix samples across dim=0. Output must be invariant to permutations of dim=2 and work for any S."
+            "Never mix samples across dim=0. Output must be invariant to permutations of dim=2 and work for any S. "
+            + pe.PROGRAM_STRUCTURE_TEXT
         )
         lines = [
             f"Generation {gen}, candidate {slot} (variation style {slot % 3 + 1}).",
@@ -693,8 +701,14 @@ def run_search_phase(
 
     counts = {arm: sum(bool(r.get("hit_max_new_tokens")) for r in rows)
               for arm, rows in arm_records.items()}
+    failures = {arm: {reason: sum(r.get("failure_reason") == reason for r in rows)
+                     for reason in sorted({r["failure_reason"] for r in rows if r.get("failure_reason")})}
+                for arm, rows in arm_records.items()}
     save(out / "search_diagnostics.json", {"H_short_val_mae": h_fit["validation_mae"],
-         "P_short_val_mae": p_rec["val_mae"], "hit_max_new_tokens_counts": counts})
+         "P_short_val_mae": p_rec["val_mae"], "hit_max_new_tokens_counts": counts,
+         "failure_reasons": failures,
+         "completed_counts": {arm: sum(r["status"] == "COMPLETE" for r in rows)
+                              for arm, rows in arm_records.items()}})
     if token_limit_failed(counts):
         save(out / "audit/failed.json", {"reason": "token_limit_gate", "counts": counts})
         raise RuntimeError("Token limit gate failed; formal phase forbidden")
@@ -875,7 +889,7 @@ def preflight(protocol, out, data_root, llm_python):
     requests = []
     for slot, blind in enumerate((False, True), 1):
         system, user = build_llm_prompt(protocol, blind, 1, 1, [])
-        requests.append(dict(slot=slot, seed=900000 + slot, system=system, user=user))
+        requests.append(dict(slot=slot, seed=900002 + slot, system=system, user=user))
     cfg = protocol["llm"]
     rows = run_llm_worker_batch(Path(weights["weights_dir"]), requests,
         cfg["temperature"], cfg["top_p"], cfg["max_new_tokens"], llm_python)
@@ -883,11 +897,12 @@ def preflight(protocol, out, data_root, llm_python):
     for row in rows:
         raw = row["raw_output"]
         row["closed_fence"] = raw.count("```") >= 2
+        row["passed"] = row["closed_fence"] and row["n_new_tokens"] < cfg["max_new_tokens"]
         try:
             row["validation"] = pe.validate_source(pe.extract_code(raw))
-            row["passed"] = row["closed_fence"]
+            row["source_valid"] = True
         except Exception as exc:
-            row.update(passed=False, error=str(exc))
+            row.update(source_valid=False, error=str(exc))
         ok = ok and row["passed"]
     save(out / "preflight.json", dict(passed=bool(ok), outputs=rows, requests=requests, weights=weights,
          protocol_sha256=sha(PROTOCOL), script_sha256=sha(Path(__file__).resolve())))

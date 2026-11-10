@@ -1,6 +1,6 @@
 {
-  "protocol_id": "l1_llm_encoder_v2",
-  "supersedes": "l1_llm_encoder_v1: r1 technical failure caused by max_new_tokens=512 truncation; complete fresh r2",
+  "protocol_id": "l1_llm_encoder_v3",
+  "supersedes": "l1_llm_encoder_v2 stopped at preflight due to invalid BLIND_EXAMPLE; r3 final authorized fresh run, technical-only preflight",
   "stage": "M1_L1",
   "llm": {
     "model_name": "Qwen2.5-Coder-7B-Instruct",
