@@ -1,0 +1,13 @@
+{
+  "descriptive_only": true,
+  "importance": {
+    "dropout": 0.4156657387450602,
+    "weight_decay": 0.33344087823248014,
+    "d_model": 0.09315812442736081,
+    "learning_rate": 0.06844416496541558,
+    "loss_mae_weight": 0.06607162489723636,
+    "seq_len": 0.012108903758171235,
+    "e_layers": 0.0078235568612287,
+    "batch_size": 0.003287008113047053
+  }
+}

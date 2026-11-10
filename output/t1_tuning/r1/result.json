@@ -1,0 +1,497 @@
+{
+  "status": "COMPLETED",
+  "decision": "RETAIN_EXISTING",
+  "reports": {
+    "Kelmarsh": {
+      "TSMixerBasicSmall_existing": {
+        "ensemble": {
+          "mae": 158.09024704064845,
+          "rmse": 239.94386261872017,
+          "r2": 0.8301449990029771
+        },
+        "per_seed": [
+          {
+            "mae": 159.95622371614095,
+            "rmse": 242.6654586832383,
+            "r2": 0.826269939099173
+          },
+          {
+            "mae": 160.35049992787293,
+            "rmse": 242.1870187317045,
+            "r2": 0.8269543171984375
+          },
+          {
+            "mae": 160.39849577800624,
+            "rmse": 242.81615126794674,
+            "r2": 0.826054103184537
+          },
+          {
+            "mae": 160.0513637069075,
+            "rmse": 242.95927814212146,
+            "r2": 0.825848979514867
+          },
+          {
+            "mae": 163.0989417438327,
+            "rmse": 244.78721222023555,
+            "r2": 0.8232186283729326
+          }
+        ]
+      },
+      "TSMixerBasicSmall_tuned": {
+        "ensemble": {
+          "mae": 157.11884982598053,
+          "rmse": 242.3933697922489,
+          "r2": 0.8266593106980791
+        },
+        "per_seed": [
+          {
+            "mae": 160.16032400044165,
+            "rmse": 247.03022741099295,
+            "r2": 0.8199640466146174
+          },
+          {
+            "mae": 159.0387673979401,
+            "rmse": 244.61427434129573,
+            "r2": 0.823468326025091
+          },
+          {
+            "mae": 159.9923975955118,
+            "rmse": 245.96106731127242,
+            "r2": 0.8215190847351712
+          },
+          {
+            "mae": 159.93405643487935,
+            "rmse": 246.09662655443907,
+            "r2": 0.821322294199057
+          },
+          {
+            "mae": 159.5160881057324,
+            "rmse": 245.74382858286396,
+            "r2": 0.8218342227762652
+          }
+        ]
+      },
+      "iTransformer_existing": {
+        "ensemble": {
+          "mae": 184.19790786270457,
+          "rmse": 280.6846855434865,
+          "r2": 0.7675676988206309
+        },
+        "per_seed": [
+          {
+            "mae": 186.71283324804207,
+            "rmse": 283.9503691697563,
+            "r2": 0.7621276726050134
+          },
+          {
+            "mae": 187.29870730658882,
+            "rmse": 284.83257838651645,
+            "r2": 0.7606472789851347
+          },
+          {
+            "mae": 187.09030891877916,
+            "rmse": 283.5386367377417,
+            "r2": 0.7628170095836913
+          },
+          {
+            "mae": 187.23627511097806,
+            "rmse": 283.7844630964109,
+            "r2": 0.7624055587355629
+          },
+          {
+            "mae": 186.6731344120218,
+            "rmse": 282.9885940116025,
+            "r2": 0.7637363498069545
+          }
+        ]
+      },
+      "iTransformer_tuned": {
+        "ensemble": {
+          "mae": 183.5603941344387,
+          "rmse": 280.77183261206187,
+          "r2": 0.7674233451081129
+        },
+        "per_seed": [
+          {
+            "mae": 184.2343804195233,
+            "rmse": 281.7890663151286,
+            "r2": 0.7657350462358982
+          },
+          {
+            "mae": 185.71335307480118,
+            "rmse": 282.63006017165566,
+            "r2": 0.7643346414313775
+          },
+          {
+            "mae": 185.70539791433296,
+            "rmse": 282.7081359307776,
+            "r2": 0.7642044196623439
+          },
+          {
+            "mae": 185.22945667773203,
+            "rmse": 282.9848237457131,
+            "r2": 0.7637426452610199
+          },
+          {
+            "mae": 185.20531666554328,
+            "rmse": 282.93803776245073,
+            "r2": 0.7638207598309523
+          }
+        ]
+      },
+      "TimeXer_existing": {
+        "ensemble": {
+          "mae": 185.51940787548364,
+          "rmse": 272.1961128558416,
+          "r2": 0.7814137274574289
+        },
+        "per_seed": [
+          {
+            "mae": 189.55032084195435,
+            "rmse": 275.2050039952546,
+            "r2": 0.7765544555525251
+          },
+          {
+            "mae": 185.4722763419085,
+            "rmse": 272.5824853655893,
+            "r2": 0.7807927364612504
+          },
+          {
+            "mae": 187.19220763617355,
+            "rmse": 277.1232040492707,
+            "r2": 0.7734287348507196
+          },
+          {
+            "mae": 186.43972384641532,
+            "rmse": 277.0917577067727,
+            "r2": 0.7734801519334991
+          },
+          {
+            "mae": 189.37616978907153,
+            "rmse": 278.2535883462564,
+            "r2": 0.7715765987784414
+          }
+        ]
+      },
+      "TimeXer_tuned": {
+        "ensemble": {
+          "mae": 179.05173252976633,
+          "rmse": 271.3560026125351,
+          "r2": 0.7827609412389367
+        },
+        "per_seed": [
+          {
+            "mae": 184.2722557758666,
+            "rmse": 282.92387048959904,
+            "r2": 0.7638444111716699
+          },
+          {
+            "mae": 185.55516899320642,
+            "rmse": 280.4283812408121,
+            "r2": 0.7679919912920392
+          },
+          {
+            "mae": 185.7224111389019,
+            "rmse": 282.58184637048345,
+            "r2": 0.7644150387789648
+          },
+          {
+            "mae": 183.79706620667133,
+            "rmse": 277.659407996233,
+            "r2": 0.7725511039743305
+          },
+          {
+            "mae": 185.3377228745386,
+            "rmse": 278.8060508969988,
+            "r2": 0.7706686453260438
+          }
+        ]
+      }
+    },
+    "Penmanshiel": {
+      "TSMixerBasicSmall_existing": {
+        "ensemble": {
+          "mae": 178.8555126144354,
+          "rmse": 294.5794958220057,
+          "r2": 0.7922837255665129
+        },
+        "per_seed": [
+          {
+            "mae": 182.76090654377404,
+            "rmse": 296.95719069815664,
+            "r2": 0.788917034227845
+          },
+          {
+            "mae": 183.5549190382127,
+            "rmse": 300.7683519278725,
+            "r2": 0.7834641706523441
+          },
+          {
+            "mae": 184.6617362866679,
+            "rmse": 301.5588690692968,
+            "r2": 0.782324421500415
+          },
+          {
+            "mae": 183.39750281274075,
+            "rmse": 298.88487579167406,
+            "r2": 0.7861676670373479
+          },
+          {
+            "mae": 188.78251589215608,
+            "rmse": 308.34114324130604,
+            "r2": 0.772422955975535
+          }
+        ]
+      },
+      "TSMixerBasicSmall_tuned": {
+        "ensemble": {
+          "mae": 177.5431285336418,
+          "rmse": 298.036120830182,
+          "r2": 0.7873803985894369
+        },
+        "per_seed": [
+          {
+            "mae": 183.09949336344616,
+            "rmse": 304.28772934064375,
+            "r2": 0.7783670258879118
+          },
+          {
+            "mae": 182.14773622967417,
+            "rmse": 300.77272002657116,
+            "r2": 0.7834578810494874
+          },
+          {
+            "mae": 179.76523641554854,
+            "rmse": 300.5986086711567,
+            "r2": 0.783708512351648
+          },
+          {
+            "mae": 181.32964365071797,
+            "rmse": 305.3233748895739,
+            "r2": 0.7768557995718512
+          },
+          {
+            "mae": 180.190459460746,
+            "rmse": 300.79423956670144,
+            "r2": 0.7834268938408078
+          }
+        ]
+      },
+      "iTransformer_existing": {
+        "ensemble": {
+          "mae": 201.70983127802464,
+          "rmse": 328.24593032090905,
+          "r2": 0.7420923667404602
+        },
+        "per_seed": [
+          {
+            "mae": 210.2904334798518,
+            "rmse": 338.1515636127465,
+            "r2": 0.7262914932117317
+          },
+          {
+            "mae": 208.5038753953859,
+            "rmse": 335.9887901903625,
+            "r2": 0.729781504600368
+          },
+          {
+            "mae": 216.18472961998972,
+            "rmse": 344.4805789011563,
+            "r2": 0.7159498780163809
+          },
+          {
+            "mae": 210.44596906192643,
+            "rmse": 336.6711190998447,
+            "r2": 0.7286828661054178
+          },
+          {
+            "mae": 206.0845050755538,
+            "rmse": 334.6645357048999,
+            "r2": 0.7319073664136682
+          }
+        ]
+      },
+      "iTransformer_tuned": {
+        "ensemble": {
+          "mae": 201.05250324025113,
+          "rmse": 329.2666378601982,
+          "r2": 0.7404859031876858
+        },
+        "per_seed": [
+          {
+            "mae": 203.21144554101429,
+            "rmse": 328.8445355669885,
+            "r2": 0.7411508432065996
+          },
+          {
+            "mae": 203.63157135978048,
+            "rmse": 330.9722179841705,
+            "r2": 0.7377904071280568
+          },
+          {
+            "mae": 204.14778375428094,
+            "rmse": 332.9175122654737,
+            "r2": 0.7346990672511268
+          },
+          {
+            "mae": 203.44890242071912,
+            "rmse": 332.17355045668097,
+            "r2": 0.7358834641159399
+          },
+          {
+            "mae": 203.80924925212878,
+            "rmse": 333.4293331597935,
+            "r2": 0.733882703236242
+          }
+        ]
+      },
+      "TimeXer_existing": {
+        "ensemble": {
+          "mae": 202.8002649301762,
+          "rmse": 320.3471983331106,
+          "r2": 0.754355324063302
+        },
+        "per_seed": [
+          {
+            "mae": 209.79126281006353,
+            "rmse": 325.253695517649,
+            "r2": 0.746773020417588
+          },
+          {
+            "mae": 205.06250862363646,
+            "rmse": 327.45734035166265,
+            "r2": 0.7433300915437735
+          },
+          {
+            "mae": 203.5363811375901,
+            "rmse": 330.6975231390844,
+            "r2": 0.7382254752663131
+          },
+          {
+            "mae": 208.90115350377715,
+            "rmse": 325.7195443917557,
+            "r2": 0.7460471256235921
+          },
+          {
+            "mae": 206.3983310517182,
+            "rmse": 324.2830925635948,
+            "r2": 0.7482820955330417
+          }
+        ]
+      },
+      "TimeXer_tuned": {
+        "ensemble": {
+          "mae": 200.91931430642086,
+          "rmse": 329.02622055793273,
+          "r2": 0.7408647384168427
+        },
+        "per_seed": [
+          {
+            "mae": 212.1106040647857,
+            "rmse": 335.8701723073827,
+            "r2": 0.729972267440273
+          },
+          {
+            "mae": 207.44573983901984,
+            "rmse": 332.7209386850808,
+            "r2": 0.7350122725094623
+          },
+          {
+            "mae": 213.3733679253367,
+            "rmse": 345.53482964485767,
+            "r2": 0.714208599665578
+          },
+          {
+            "mae": 209.70226537294127,
+            "rmse": 331.4938746526391,
+            "r2": 0.7369632006756056
+          },
+          {
+            "mae": 211.4311124617689,
+            "rmse": 345.42611642947617,
+            "r2": 0.7143884044889106
+          }
+        ]
+      }
+    }
+  },
+  "attempted_search_trials": 180,
+  "formal_fits": 60,
+  "scope": "retrospective cross-farm development; not prospective 2021 deployment; no Hill of Towie access",
+  "artifacts": {
+    "evaluation/Kelmarsh/iTransformer_existing_s2027.npz": "fa91796628dcbc7f8ac8f126208b51395d7fb1c47e6b9edbc5946b55081edb39",
+    "evaluation/Kelmarsh/iTransformer_tuned_s2025.npz": "01b68261e771f0486f0cf530b71c1fcf66f7df96c07b408b40b8308bd997b257",
+    "evaluation/Kelmarsh/TimeXer_existing_s2028.npz": "cb804cf53433adcdf47865d4c5e553da3e5ecb118014147a82c4ba66d754d688",
+    "evaluation/Kelmarsh/TimeXer_tuned_s2028.npz": "9106c12ac8640edb2f74957486b0838366b19c44242589b7b13e2073fcbbe650",
+    "evaluation/Kelmarsh/TimeXer_existing_s2027.npz": "55f78d3599e8b37f75667a42c7b5d0495756e6caa9c0fde6036fa6a15603f4de",
+    "evaluation/Kelmarsh/TimeXer_existing_ensemble.npz": "deaa8700e2f9119d44d732c2594be02da69b8a5b57821d0503d00e7af1939ef7",
+    "evaluation/Kelmarsh/TSMixerBasicSmall_tuned_s2025.npz": "b0d1cb2d4cf5dceef54cf6181a950de9556707b4ea03e907ca479044a5997121",
+    "evaluation/Kelmarsh/iTransformer_tuned_s2028.npz": "2e26bc7a2d960b578f8688f06cc10edf4ed686591e849689999c2817a7fdded2",
+    "evaluation/Kelmarsh/TimeXer_existing_s2024.npz": "4e691a8b13bf4f863c8a461057815a66edd9a1c7aea98577c8ec89355ce14ec2",
+    "evaluation/Kelmarsh/iTransformer_existing_s2026.npz": "5368031a0ea5afdb2530f44f94cd36bf3495ee2474337d6ba2b1a143c0b28bb8",
+    "evaluation/Kelmarsh/TimeXer_tuned_s2026.npz": "91346315f2d2eb6cf72eeab04d857b00c3b6144e0f7b2c032d8e2fe942d2021f",
+    "evaluation/Kelmarsh/TSMixerBasicSmall_existing_s2028.npz": "8385db4b8675a363b61f7219cc9e85da4248b63d7f2cf4834ed658f1121ae652",
+    "evaluation/Kelmarsh/TimeXer_existing_s2026.npz": "6375585e5faaad0327da3bfc69d6bdf0a8517628d1ac81a18db9df1563c204cc",
+    "evaluation/Kelmarsh/TimeXer_tuned_s2024.npz": "3373f70df701e47211fef4108483238647224f6b0121d3a9e0eb81c414b37dcb",
+    "evaluation/Kelmarsh/TSMixerBasicSmall_existing_s2024.npz": "d8bfc7290ae867970c28481cbf260835696dbbafb39b62e4377607fb8b4e93b4",
+    "evaluation/Kelmarsh/TimeXer_tuned_s2027.npz": "5d66ac00f3b3b1d627b63cb2e60b579cabb73f3074951cbfe560743fd2fad49a",
+    "evaluation/Kelmarsh/iTransformer_tuned_ensemble.npz": "45f2768398c284eba674c90377bde0271d96a8c9452442dd1599fd489a64e697",
+    "evaluation/Kelmarsh/TimeXer_tuned_ensemble.npz": "bbeaf2e2131832138d1df4146daaa6339b4d9567a0afab979bb3150ad905b42e",
+    "evaluation/Kelmarsh/cohort.npz": "b9c8f1c99f01d11a7ec455ff877ee7d31548e22f431e0b76a13fe5d0411f0812",
+    "evaluation/Kelmarsh/iTransformer_existing_ensemble.npz": "6a71efce8684f39d93393b6e8c3a062ba28ca24034791537885044759c69e84f",
+    "evaluation/Kelmarsh/TSMixerBasicSmall_tuned_s2024.npz": "001bf3d46b28e79135ec2927eedaa05c19e193911ea9deda955628bfc54010d9",
+    "evaluation/Kelmarsh/TSMixerBasicSmall_tuned_s2028.npz": "54e2dd885bde66086ae45c6803cfd2341dd6e6d4f0ec1cf716a00922d336cf59",
+    "evaluation/Kelmarsh/iTransformer_existing_s2024.npz": "fdc7847fe55e5adc4d9e21a7f1b8152156873b2657bf8415926b60ac2b635507",
+    "evaluation/Kelmarsh/iTransformer_tuned_s2026.npz": "ba0aafd8343d5b5337b27e5327ef98b6d2cd42ce9b220ee98118ab3f8fa69503",
+    "evaluation/Kelmarsh/TSMixerBasicSmall_existing_ensemble.npz": "85724cc154b5d74f1de7667607026bfdbbb5982925460620de0b8d43f57e01f4",
+    "evaluation/Kelmarsh/iTransformer_tuned_s2027.npz": "16ca7cf6e43dfa2f40b882f78daebdb5dbb54c45991fd6cbd7060fbc8f5db2cc",
+    "evaluation/Kelmarsh/iTransformer_existing_s2025.npz": "02213d600b0b1f7117c4f7927a7e5900b8cbffac02b653f9f2065e47da0c9712",
+    "evaluation/Kelmarsh/iTransformer_tuned_s2024.npz": "a6708814b9b9bb5d2fddd0a8586b39aa9f9dd8e25a3c01a5abce2003d1e86b94",
+    "evaluation/Kelmarsh/TSMixerBasicSmall_existing_s2026.npz": "c522d78904b123e845c79ef7c5b3c9ce82d2c2014802840553f647b53ffe3446",
+    "evaluation/Kelmarsh/TimeXer_tuned_s2025.npz": "869975c05f5f9c7221e4fe2785625c79be98b7d03f3488060403a23632badf37",
+    "evaluation/Kelmarsh/TSMixerBasicSmall_tuned_s2026.npz": "a32c802922c66242ef15ecd7e2fcadfd8d209f032ee381d8a7945d9fb230a5cb",
+    "evaluation/Kelmarsh/TSMixerBasicSmall_tuned_ensemble.npz": "cc5cbbd8f4de08ef6a8178ff988b545f6505cc7f679e7eed3fdb161407f336f6",
+    "evaluation/Kelmarsh/TSMixerBasicSmall_existing_s2027.npz": "81e6487ae36ff6422fd96b9de3e1c387099cc665b50b27f5782287425e413ebf",
+    "evaluation/Kelmarsh/iTransformer_existing_s2028.npz": "9666d1eb7fe34054812d03116417e5b648908ea815a7488df4e82ad3747566f3",
+    "evaluation/Kelmarsh/TSMixerBasicSmall_tuned_s2027.npz": "be0fd3bfd5efd8e71066905e1d84d600961643b61c10e1dd644e6b112688011a",
+    "evaluation/Kelmarsh/TSMixerBasicSmall_existing_s2025.npz": "13e6c2ea100a7cc3697275c2c65f493952a9257e6b344b8e82d44bf1bc2f12de",
+    "evaluation/Kelmarsh/TimeXer_existing_s2025.npz": "9eee3b1e8d19c47055b25a25b21f12c4acd482291b4aea96c94c7b88f7df71a2",
+    "evaluation/Penmanshiel/iTransformer_existing_s2027.npz": "48d9fe08d79ffd9f6547cbd17566724c64942c52242e8b14f85193c3a7cfaa09",
+    "evaluation/Penmanshiel/iTransformer_tuned_s2025.npz": "605d96700b8257befb8bbd8d9b3406125f32f256ce2643fc1b225adde5b37ceb",
+    "evaluation/Penmanshiel/TimeXer_existing_s2028.npz": "a3f2436167b3f99c2a9e951b017ab0946d9dc71178c51b429120316162c2e26b",
+    "evaluation/Penmanshiel/TimeXer_tuned_s2028.npz": "6844f0da87bde10bd8e27d9c1b419282a40137dc0f49879589201325d3dfb9a7",
+    "evaluation/Penmanshiel/TimeXer_existing_s2027.npz": "6da096c092518350763ba47c1798e2f4d68e645918c8448705ea5a729f64d690",
+    "evaluation/Penmanshiel/TimeXer_existing_ensemble.npz": "8714fdae380f12f51e1f6a02211d93cea8cf7113f4f0172a11ed3eec06772ebc",
+    "evaluation/Penmanshiel/TSMixerBasicSmall_tuned_s2025.npz": "fe68a4d68b0496f4db44f1a4273ade32594c3f18a5262d126c5d616877c44e9e",
+    "evaluation/Penmanshiel/iTransformer_tuned_s2028.npz": "26d45bf179b65617413de7200acc3fc8cae0b77296070f70d4f3eb3497e66b00",
+    "evaluation/Penmanshiel/TimeXer_existing_s2024.npz": "c943b445cf8d10368d8a26c500c887959af76d58475fabf6eec7a24b5cc5c8e9",
+    "evaluation/Penmanshiel/iTransformer_existing_s2026.npz": "9f0c80ceb605d22ce7d58c3361cee27b48ca19658a4a5a704f40f7803b65e4b5",
+    "evaluation/Penmanshiel/TimeXer_tuned_s2026.npz": "71885ea4a72fbfd871e722de7bae233bbc3d5a36f8521db6cf45c2b079f79e77",
+    "evaluation/Penmanshiel/TSMixerBasicSmall_existing_s2028.npz": "b5efdbaa00675f5b0ed51960051c784afe06aaf1c11c60fc3981325b2a3dae6c",
+    "evaluation/Penmanshiel/TimeXer_existing_s2026.npz": "dd94312ab3f088d3a1e127c77d7f452426dd451848baf6247edad2334117a0b1",
+    "evaluation/Penmanshiel/TimeXer_tuned_s2024.npz": "866b70ab90c7f8b9088d15f30c54234f8e57bf2bbe1816148be7783316791881",
+    "evaluation/Penmanshiel/TSMixerBasicSmall_existing_s2024.npz": "641521ea9e2af2a3212ba36feebd61a9a51d570fb8f99a780a0db4fe992d74f9",
+    "evaluation/Penmanshiel/TimeXer_tuned_s2027.npz": "61f77735fb600c9a9540171f90d0754f10340eea2e10fc506b978c3d14a21c9b",
+    "evaluation/Penmanshiel/iTransformer_tuned_ensemble.npz": "2584f682eb14694b5be0736146d39a1fc18484b5bb99e5e080ba1d7186cbf5d0",
+    "evaluation/Penmanshiel/TimeXer_tuned_ensemble.npz": "ba73535bd23f24f9897032763d64ff2b30d6848ee1dff3cd2faf99fd739e9fc7",
+    "evaluation/Penmanshiel/cohort.npz": "271cf7a299c026f094879d3284318f96d8a0b371374850740907a3c929018b8c",
+    "evaluation/Penmanshiel/iTransformer_existing_ensemble.npz": "3a52878efc0423ca4b491b01fb15c0e104f2f601df5f72272be87d161710a170",
+    "evaluation/Penmanshiel/TSMixerBasicSmall_tuned_s2024.npz": "9971b266e46c292e09f767ae4d708e75805a21965bae0a3de2011f5349320b88",
+    "evaluation/Penmanshiel/TSMixerBasicSmall_tuned_s2028.npz": "a2303e0c68d693571c47b95adee278d62919547cfcbe427a9d62ba1f3570160d",
+    "evaluation/Penmanshiel/iTransformer_existing_s2024.npz": "1644be53e8f0f16a4a86df8e4d9e09734c233638894ce3e95d8f3e78032ac5e9",
+    "evaluation/Penmanshiel/iTransformer_tuned_s2026.npz": "31b6c4a86085108d13a8b77dc38c1ffd332414eb3595039c23111e0b75752172",
+    "evaluation/Penmanshiel/TSMixerBasicSmall_existing_ensemble.npz": "107201ea5ba92d8e2442b46f6ca2517b2223b3b3892c03d2f94b129aa9ef4684",
+    "evaluation/Penmanshiel/iTransformer_tuned_s2027.npz": "427662a39c76f77fc63b981276ad14a3a16dfec2a946e85b13efcf40ac2e550d",
+    "evaluation/Penmanshiel/iTransformer_existing_s2025.npz": "5ab5af454db71aff2cf9e2b7f86e35c64ddaef8159926cae4ffbb8117aa620a7",
+    "evaluation/Penmanshiel/iTransformer_tuned_s2024.npz": "8759507878f38cffe236a3904e0c461da9f63ccbf128b3a9ca30a3d96a887ff2",
+    "evaluation/Penmanshiel/TSMixerBasicSmall_existing_s2026.npz": "812356512a0accbeb3ed9e9a40fbf349d4fa0075e7eeb2997a0d21fdcb8e5c5a",
+    "evaluation/Penmanshiel/TimeXer_tuned_s2025.npz": "1a0c833d202e482693fc57e78dc31c7af903480eedeede11792c78eaf0082a74",
+    "evaluation/Penmanshiel/TSMixerBasicSmall_tuned_s2026.npz": "aa8e730f963a73658b759807ab2122b44546a94a075ed4a8cb637887b80c797c",
+    "evaluation/Penmanshiel/TSMixerBasicSmall_tuned_ensemble.npz": "b64315da151b91eba8fe73d49606078dd24f4ea00eb1686d71d044bc738965b1",
+    "evaluation/Penmanshiel/TSMixerBasicSmall_existing_s2027.npz": "9e12f6a79e5f2aa179738f16552ff43ab29f8533e8dce197e1ffd5fe44dc4186",
+    "evaluation/Penmanshiel/iTransformer_existing_s2028.npz": "50bb5166bec9ac3918ddf96994c374c9e5e670f13336b9fff81769647b87d946",
+    "evaluation/Penmanshiel/TSMixerBasicSmall_tuned_s2027.npz": "76c86995acc3cfc9507b3539ee96c953194a31f3386aecde071db1b1725d5571",
+    "evaluation/Penmanshiel/TSMixerBasicSmall_existing_s2025.npz": "f0a90ec995d9907d029ad8ab577e8ff530db12fe633a28cb8711c55551062673",
+    "evaluation/Penmanshiel/TimeXer_existing_s2025.npz": "c725d837641ffc65078755f5be93e730d212c2a1f264694fedddd9276a41089c"
+  }
+}
