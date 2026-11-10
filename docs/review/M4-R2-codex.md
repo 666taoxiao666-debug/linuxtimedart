@@ -26,4 +26,8 @@
 - 任一臂达到3个截断则搜索后技术失败，不冻结、不进正式；2/3边界及 JSON 回退测试通过。
 - 预检种子900001/900002不在搜索种子范围，结果不进入搜索；不复用r1，不调整阈值、数据、预算。
 - 本地18项测试通过（5项因缺torch跳过）；服务器完整测试与预检结果见交接。
+- 服务器18/18通过，无跳过，含训练smoke；真实预检0/2通过，因此本轮正式运行未启动。
+- R2-B1【阻断】【确定缺陷】真实预检不满足启动条件：L的17参数超过16，blind解包赋值被拒绝；证据 output/l1_llm_encoder/preflight.json。
+- 新运行证据：scripts/llm_encoder_search_l1.py:371 的 BLIND_EXAMPLE 本身违反 models/ProgramEncoder.py:322 单变量赋值规则，却作为valid参考；不能把这次失败解释成方法负结果。
+- 已到R2上限，交回裁决下一版提示修正及有限预检预算；没有换seed重试，没有放宽AST，没有启动正式搜索。
 - 模型封装（ProgramTSMixerModel）：fit_encoder_normalization 仅用拟合期统计固定均值/标准差；K=11 时 backbone 参数量 8126 与 v32 21通道 TSMixer 完全一致。
