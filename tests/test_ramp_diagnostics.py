@@ -2,6 +2,7 @@
 import importlib.util
 import tempfile
 import unittest
+import json
 from pathlib import Path
 
 import numpy as np
@@ -39,6 +40,28 @@ def synthetic(tmp, n=600, seed=0, missing_bad=False):
 
 
 class Auc(unittest.TestCase):
+    def test_prepared_missing_uses_issue_hour_and_checks_hash(self):
+        import pandas as pd
+        columns = ["upwind_ws", "upwind_dws3", "upwind_minus_local", "local_ws", "local_dws3", "regional_ws",
+                   "regional_dws3", "local_dp3", "grad_east", "grad_north", "grad_magnitude_change3"]
+        with tempfile.TemporaryDirectory() as d:
+            p = Path(d)
+            frame = pd.DataFrame(np.ones((6, 11)), columns=columns,
+                                 index=pd.date_range("2022-01-01", periods=6, freq="h"))
+            frame.index.name = "timestamp_hour_end_utc"
+            frame.iloc[0, 0] = np.nan
+            frame.to_csv(p / "upstream.csv")
+            (p / "prepared_complete.json").write_text(json.dumps({"artifacts": {"upstream.csv": rd.sha256(p / "upstream.csv")}}))
+            times = np.datetime64("2022-01-01T01") + np.arange(4)[None, :] * np.timedelta64(1, "h")
+            mask, _ = rd.prepared_missing(p, times)
+            self.assertTrue(mask[0])
+            mask, _ = rd.prepared_missing(p, times + np.timedelta64(1, "h"))
+            self.assertFalse(mask[0])
+            with (p / "upstream.csv").open("a") as f:
+                f.write("\n")
+            with self.assertRaisesRegex(ValueError, "SHA256"):
+                rd.prepared_missing(p, times)
+
     def test_empty_event_clusters_keep_time_axis(self):
         ci = rd.ratio_ci(np.array([1., 3.]), np.array([0, 99]), 8, 200, 2024,
                          all_issue=np.arange(100))

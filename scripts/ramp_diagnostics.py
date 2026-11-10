@@ -160,7 +160,33 @@ def warn_scores(pc, d, rated):
             "csi": float(hit.sum() / max(event.sum() + (warn & ~hit).sum(), 1))}
 
 
-def analyse_fold(name, cohort_path, cand_glob, ref_glob, rated, keys, block=8, reps=5000, seed=2024):
+def prepared_missing(prepared, target_times):
+    """Recover the frozen raw missing flag at issue time, without refilling features."""
+    import pandas as pd
+    prepared = Path(prepared)
+    manifest = prepared / "prepared_complete.json"
+    path = prepared / "upstream.csv"
+    expected = json.loads(manifest.read_text())["artifacts"]["upstream.csv"]
+    actual = sha256(path)
+    if actual != expected:
+        raise ValueError("Prepared upstream SHA256 mismatch")
+    frame = pd.read_csv(path, index_col="timestamp_hour_end_utc")
+    columns = ["upwind_ws", "upwind_dws3", "upwind_minus_local", "local_ws", "local_dws3", "regional_ws",
+               "regional_dws3", "local_dp3", "grad_east", "grad_north", "grad_magnitude_change3"]
+    if list(frame.columns) != columns:
+        raise ValueError("Frozen upstream column identity mismatch")
+    frame.index = pd.to_datetime(frame.index, utc=True)
+    times = np.asarray(target_times).astype("datetime64[ns]")
+    if times.ndim != 2 or times.shape[1] != 4 or not np.all(np.diff(times, axis=1) == np.timedelta64(1, "h")):
+        raise ValueError("Expected consecutive hourly targets")
+    issue = pd.to_datetime(times[:, 0] - np.timedelta64(1, "h"), utc=True)
+    if frame.index.has_duplicates or not issue.isin(frame.index).all():
+        raise ValueError("Issue timestamps missing or ambiguous in prepared upstream")
+    mask = ~np.isfinite(frame.reindex(issue).to_numpy(dtype=float)).all(axis=1)
+    return mask, {str(path): actual, str(manifest): sha256(manifest)}
+
+
+def analyse_fold(name, cohort_path, cand_glob, ref_glob, rated, keys, block=8, reps=5000, seed=2024, prepared=None):
     with np.load(cohort_path, allow_pickle=False) as archive:
         c = {keys[key]: archive[keys[key]] for key in ("truth", "anchor", "time", "window")}
         if keys["missing"] in archive.files:
@@ -170,6 +196,12 @@ def analyse_fold(name, cohort_path, cand_glob, ref_glob, rated, keys, block=8, r
     missing_available = keys["missing"] in c
     missing = (np.asarray(c[keys["missing"]]).astype(float) > 0.5
                if missing_available else np.zeros(len(y), dtype=bool))
+    recovered_hashes = {}
+    if prepared is not None:
+        recovered, recovered_hashes = prepared_missing(prepared, c[keys["time"]])
+        if missing_available and not np.array_equal(missing, recovered):
+            raise ValueError("Stored and recovered missing flags disagree")
+        missing, missing_available = recovered, True
     issue = np.asarray(c[keys["time"]])[:, 0].astype("datetime64[ns]").astype(np.int64)
     cand, wc, sc, hc = load_arm(cand_glob, keys["pred"], keys["window"])
     ref, wr, sr, hr = load_arm(ref_glob, keys["pred"], keys["window"])
@@ -182,7 +214,8 @@ def analyse_fold(name, cohort_path, cand_glob, ref_glob, rated, keys, block=8, r
     d = y - anchor
     dc, dr = cand - anchor, ref - anchor
     out = {"fold": name, "windows": int(len(y)), "seeds": sc, "rated_kw": rated,
-           "inputs_sha256": {str(cohort_path): sha256(cohort_path), **hc, **hr},
+           "inputs_sha256": {str(cohort_path): sha256(cohort_path), **hc, **hr, **recovered_hashes},
+           "missing_source": "frozen_prepared_upstream_at_issue" if prepared else "cohort_or_unavailable",
            "overall_mae": {"candidate": mae(cand, y), "reference": mae(ref, y)}}
 
     # M1: change cells, h2..h4 (lead index 1..3)
@@ -277,10 +310,11 @@ def main(argv=None):
     ap.add_argument("--reps", type=int, default=5000)
     ap.add_argument("--seed", type=int, default=2024)
     ap.add_argument("--descriptive", action="store_true", help="No adoption or replication decision (T24)")
+    ap.add_argument("--prepared", type=Path, help="Existing hash-locked P3 prepared directory, read-only")
     a = ap.parse_args(argv)
     keys = {"truth": a.truth_key, "anchor": a.anchor_key, "missing": a.missing_key, "time": a.time_key,
             "pred": a.pred_key, "window": a.window_key}
-    folds = [analyse_fold(n, c, cg, rg, a.rated, keys, a.block, a.reps, a.seed) for n, c, cg, rg in a.fold]
+    folds = [analyse_fold(n, c, cg, rg, a.rated, keys, a.block, a.reps, a.seed, a.prepared) for n, c, cg, rg in a.fold]
     result = {"script_sha256": sha256(__file__), "thresholds": {"M1_rel_min": M1_REL_MIN, "M2_auc_min": M2_AUC_MIN,
               "change": CHANGE, "ramp": RAMP, "warn": WARN}, "bootstrap": {"block": a.block, "reps": a.reps, "seed": a.seed},
               "folds": folds, "decision": None if a.descriptive else decide(folds),
