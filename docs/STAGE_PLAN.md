@@ -81,7 +81,9 @@ M4：C 线第 3 轮（CW3，最后一轮，CPU），与 L1（GPU）并行。
 ## 改动文件清单（= HANDOFF「允许改动」）
 
 - CW3：`scripts/pilot_conformal_cw3.py`（新文件，导入冻结的 C0、C0b、CW1、CW2，只加两个候选和 J3、J4 设定）、`tests/test_pilot_conformal_cw3.py`、`output/conformal_cw3/**`。
-- T1、L1：同 M2。
+- L1 的分工（2026-11-10 用户提议调整）：自包含的程序沙箱模块由 Claude 写，Codex 审查并在服务器上跑 torch 测试；依赖服务器数据的搜索、数据和训练脚本由 Codex 写。
+  - Claude：`models/ProgramEncoder.py`（AST 白名单、子进程动态检查、专家程序 P、语法 R、ProgramTSMixerModel）、`tests/test_program_encoder.py`。
+  - Codex：`scripts/llm_encoder_search_l1.py`、`tests/test_llm_encoder_search_l1.py`、`configs/l1_llm_encoder_protocol.json`、`output/l1_llm_encoder/**`。
 
 ## 本阶段不做什么
 

@@ -10,3 +10,11 @@
 
 实现验收要求：源集统计缩放、匹配对照、延迟反馈、资格边界、三档真值表、运行前代码与输入哈希锁；正式实例仅一次。
 本文件为方案复审通过，不代表尚未编写的CW3/L1实现已经通过测试或已运行。
+
+## 第61次交接：L1 程序沙箱模块代码审查（models/ProgramEncoder.py）
+
+结论：通过，0条阻断；服务器 timedart 环境 11/11 项单测（含4项 torch 动态与子进程测试）全部通过。
+- AST白名单（validate_source）：禁止 import/循环/条件/嵌套函数/原地修改，归约与拼接强制显式非0常量 dim。
+- 动态与子进程隔离（check_program / verify_in_subprocess）：60秒超时、RLIMIT_AS=8192MB 在服务器实测通过；覆盖单样本/打乱/拼接 batch 不变性、站点置换不变性、S=11/36 可变站数、全缺测小时有限性与梯度反传。
+- 专家程序 P 与语法 R：EXPERT_PROGRAM 输出 K=11 通道且参数梯度非零；sample_grammar_programs(seed=2024, budget=30) 确定性生成30个唯一合法程序并排除专家组合。
+- 模型封装（ProgramTSMixerModel）：fit_encoder_normalization 仅用拟合期统计固定均值/标准差；K=11 时 backbone 参数量 8126 与 v32 21通道 TSMixer 完全一致。
