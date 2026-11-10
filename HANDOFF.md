@@ -31,7 +31,7 @@
 
 ## Codex → Claude
 <!-- 由Codex覆盖。2026-11-10：第63次，L1 r3已启动，CPU爬坡统计完成 -->
-轮次: R1/2 | 阶段: M5 | 分支: exp/M2 | 提交号: 723a1e8（启动与结果记录见git log）
+轮次: R1/2 | 阶段: M5 | 分支: exp/M2 | 提交号: L1运行723a1e8；M3补齐99b4675（结果记录见git log）
 审查结论: L1通过；爬坡2项确定缺陷按最小修法先行，见 docs/review/M5-R1-codex.md；无遗留启动阻断。
 已直接修复: 723a1e8修复M1保留完整时间轴的零事件簇；缺测元数据缺失时M3为UNAVAILABLE而不是无缺测；NPZ句柄关闭。未改阈值/年份/臂。按批准修复blind示例、对称结构提示和v3技术预检。
 运行信息: worktree /home/XT/nuist/pythoncode/TimeDARTFirst_M5_723a1e8；服务器3个测试模块共30项，29通过，1个本地Kelmarsh数组回归因文件不在该worktree跳过；含两个提示示例的动态验证、训练smoke。该回归本地通过。
@@ -41,6 +41,9 @@
 关键数字: T22 M1改善13.1%，增益CI[53.2,66.8]kW；M2 AUC增益+0.052，CI[0.037,0.067]；均通过。
 关键数字: T23 M1改善12.6%，增益CI[48.1,64.2]kW；M2 +0.051，CI[0.032,0.070]；均通过；开发复现结论RAMP_REPLICATED，不是独立确认。
 关键数字: T24仅描述：M1改善13.0%，CI[49.2,65.6]kW；M2 +0.060，CI[0.040,0.081]；未生成总判定。
-关键数字: 三折cohort均没有issue_upstream_missing；M3无法计算，fallback=UNDETERMINED，不是NO_FALLBACK或ADOPT_FALLBACK；未自行重建缺测标记。
-需要 Claude 做的: 复核R1-B1/B2最小修复和爬坡结果；决定是否另行批准从既存准备产物提取并严格对齐缺测标记以补M3。L1完成后复核完整结果和top10；当前不要改冻结部署源码或发起新实例。
-需要用户决定: 无；当前无依据批准缺测回退进入联合主检验，待Claude给出处理方案。
+运行信息: 用户本轮明确授权补齐并运行M3；只读既存prepared/upstream.csv（SHA256 6b7dfc421ced15bfd927c417471019745e947877bcde27a8ad0988a0fdafa208），沿用原11特征any-nonfinite规则，首目标时刻-1h对齐。新worktree TimeDARTFirst_M3_99b4675，不改L1部署目录。
+运行信息: M3补算完成，run为数据根 outputs/logs/Ramp_M5/m3_99b4675，本地 output/ramp_diagnostics/m3_recovered/；新旧M1/M2逐字段完全相同，JSON传输哈希一致；9项本地测试通过，服务器8通过1本地数组回归跳过。
+关键数字: M3整体MAE增益T22=-0.9661，CI[-1.6898,-0.3084]kW，缺测4408/37741；T23=-0.7485，CI[-1.4889,-0.0543]，缺测5002/36838；判定NO_FALLBACK，开发复现RAMP_REPLICATED。
+关键数字: T24 M3仅描述=-0.9361，CI[-1.6449,-0.2630]kW，缺测1567/13449；不纳入总判定。旧UNDETERMINED文件保留，由m3_recovered结果补全。
+需要 Claude 做的: 复核R1-B1/B2最小修复、用户授权的M3恢复对齐和结果；按NO_FALLBACK不把缺测回退加入联合主检验。L1完成后再复核完整结果与top10；当前不改其冻结部署代码、不启动新实例。
+需要用户决定: 无。

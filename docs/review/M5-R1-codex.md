@@ -9,3 +9,5 @@
 - R1-B2【阻断】【确定缺陷】【已按最小修法先行】P3三折cohort未保存缺测字段，原脚本会在M1前KeyError；只计算可用M1/M2，M3明确UNAVAILABLE、回退判定UNDETERMINED，不把未知当作无缺测、不重建数据。证据：train_penmanshiel_p3_v35.py:273及服务器三折键名。
 - 锚点persistence对应保存的PersistenceHour，窗口键starts；按原批准CLI映射。T24增加descriptive标志，输出不生成总判定。
 - 修复NPZ句柄未关闭导致Windows测试清理失败；本地30项通过，6项torch相关跳过，待服务器验证。
+- 用户随后明确授权补齐M3：99b4675只读哈希锁定prepared/upstream.csv，按原11列任一非有限规则，首目标时刻减1h精确对齐；不读原始封存文件、不训练、不改变L1部署代码。
+- 9项本地统计测试通过，服务器8通过1跳过；补算T22/T23均不采纳回退（负增益CI均低于0）；M1/M2与首轮输出逐字段完全一致。结果见output/ramp_diagnostics/m3_recovered/。
