@@ -1,0 +1,16 @@
+{
+  "started_at_utc": "2026-11-10T03:40:47.616436+00:00",
+  "device": "cuda",
+  "llm_weights": {
+    "manifest_sha256": "99b17924334ba33558bd9123334b92cca21f4edcbc4c8327bb4cbc134701f3fa",
+    "weights_dir": "/home/XT/nuist/pythoncode/TimeDARTFirst/llm_weights/Qwen2.5-Coder-7B-Instruct",
+    "revision": "c03e6d358207e414f1eca0bb1891e29f1db0e242",
+    "verified_files": 49,
+    "total_bytes": 15303338337
+  },
+  "code_hashes": {
+    "protocol_sha256": "e815fa4806024d9b501d63b1b03331c43bb6069f0ffef748b55ee533073a17b5",
+    "script_sha256": "0b6edb0147582bde21dbe01fc6c165023f6eaa0059fee5fdcb1d1fa6e98cd479",
+    "program_encoder_sha256": "b175798013d76cedb978393636551dba61bfdecdebfe920a5184cef4151d976a"
+  }
+}

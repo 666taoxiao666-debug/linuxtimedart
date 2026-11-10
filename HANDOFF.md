@@ -3,37 +3,35 @@
 规则见 AGENTS.md：两节各由一方整节覆盖、不追加，每节不超过 40 行；历史用 `git log -p HANDOFF.md` 查。
 
 ## Claude → Codex
-<!-- 由 Claude 覆盖。最后更新：2026-11-10 第 60 次（T1 RETAIN_EXISTING 已复核、种子集成成立；仍按第 59 次做 M4 R2 + CW3；L1 现在启动） -->
-轮次: R2/2 | 阶段: M4 | 分支: exp/M2 | 基线提交: 8af6a7d
-请求: 审方案后实现并运行（M4 只审改动；无阻断就正式运行 CW3 一次；L1 核对权重后启动，二者并行）
-待审范围: git diff HEAD -- docs/STAGE_PLAN.md docs/review/DECISIONS.md
-允许改动: scripts/pilot_conformal_cw3.py, tests/test_pilot_conformal_cw3.py, output/conformal_cw3/**, scripts/llm_encoder_search_l1.py, models/ProgramEncoder.py, tests/test_llm_encoder_search_l1.py, configs/l1_llm_encoder_protocol.json, output/l1_llm_encoder/**, output/external_acquisition/llm_weights/**, output/t1_tuning/**, output/conformal_cw2/**, output/conformal_cw1/**, output/conformal_c0b/**, output/hill_of_towie_e1/**, scripts/acquire_hill_of_towie.py, output/external_acquisition/hill_of_towie/**, output/e1_baselines/local_smoke_1343756/**
-审查文件: docs/review/M4-R2-codex.md
-本轮决议: M4 R1 采纳 3（R1-B1、S1、S2，见 DECISIONS 的 M4 一节，第 59 次已写）；T1 RETAIN_EXISTING 已独立复核并接受，5 个 seed 的集成按事先条款成立（DECISIONS 的 M2 末节）
+<!-- 由 Claude 覆盖。最后更新：2026-11-10 第 61 次（L1 程序沙箱模块由 Claude 写好，交你审查并跑 torch 测试；搜索脚本分段写） -->
+轮次: R2/2 | 阶段: M4 | 分支: exp/M2 | 基线提交: aae8538
+请求: 审代码后运行（先审 Claude 写的 L1 模块，再写搜索脚本并启动 L1；CW3 照第 60 次继续）
+待审范围: git diff HEAD -- models/ProgramEncoder.py tests/test_program_encoder.py docs/STAGE_PLAN.md
+允许改动: models/ProgramEncoder.py, tests/test_program_encoder.py, scripts/llm_encoder_search_l1.py, tests/test_llm_encoder_search_l1.py, configs/l1_llm_encoder_protocol.json, output/l1_llm_encoder/**, scripts/pilot_conformal_cw3.py, tests/test_pilot_conformal_cw3.py, output/conformal_cw3/**, output/external_acquisition/llm_weights/**, output/t1_tuning/**, output/conformal_cw2/**, output/conformal_cw1/**, output/conformal_c0b/**, output/hill_of_towie_e1/**, scripts/acquire_hill_of_towie.py, output/external_acquisition/hill_of_towie/**, output/e1_baselines/local_smoke_1343756/**
+审查文件: docs/review/M4-R2-codex.md（续写 L1 代码审查）
+本轮决议: 无新编号；上一轮你写 ProgramEncoder.py 时因 Gemini 网关的 max_output_tokens 被截断，文件没生成。按用户要求改为 Claude 写这个自包含模块，你来审
 
 需要你做的:
-1. **提交**本轮的 STAGE_PLAN 和 DECISIONS，包含第 59 次没提交的 M4 R2 改动和这次的 T1 复核。
-2. **M4 R2 只审改动部分**（最后一轮，有分歧交用户）：
-   - J3、J4 降级为部分暴露的探索性判定，附暴露清单；
-   - 方法主张只能等 Hill of Towie；
-   - 结论档位的真值表。
-   - 无阻断就实现 CW3 并正式运行一次（CPU、2 个线程），交回内容同第 58 次。
-3. **L1 现在启动**（T1 已跑完，GPU 空闲）：
-   - 先只读核对 llm_weights/manifest.json 里 49 个文件的 SHA256、revision c03e6d35… 和 llm_l1 环境，再按 `git show a1ebfa0:docs/STAGE_PLAN.md` 的 L1 规则实现并运行（M1 R2 已审定，提速规则适用）。
-   - 交回：各组的搜索最优值，正式阶段两个风场的 MAE/RMSE 和 CI、判定，以及前 10 名程序的文本。
+1. **审 models/ProgramEncoder.py**（按 STAGE_PLAN M1 的 L1 规则）。本地 11 项测试里，静态的 7 项已通过，torch 的 4 项在沙箱里跳过，请在服务器 timedart 环境运行 `python -m unittest tests.test_program_encoder`。
+   - 发现确定缺陷：按"唯一最小修法先行"直接改，写进审查文件。设计上的分歧：写成 B/S 编号交我。
+   - 内容：AST 白名单、子进程检查（形状、有限、梯度、batch 不变性、站点置换不变性、可变站数、训练规模探针）、专家 P（= EXPERT_PROGRAM）、语法 R（sample_grammar_programs，排除专家组合）、ProgramTSMixerModel（布局与 H 相同，K=11 时 backbone 参数量 8126）。
+   - 子进程内存上限 8 GB（RLIMIT_AS）：如果专家程序因为 import torch 的虚拟内存就 CRASH，把上限调高作为技术修正，写进审查文件，不改语义。
+2. **写 scripts/llm_encoder_search_l1.py**（每次编辑不超过 150 行，先写骨架再逐段补，避免输出上限再次截断）：
+   - 数据构造 obs/geo；fit-period 归一化（fit_encoder_normalization）；训练接入（模型的 forward 是 (x, obs)）；Qwen 调用和代码提取（extract_code）；5 代 × 6 的进化循环；正式阶段和判定。
+   - 提示词末尾附上 PROGRAM_RULES_TEXT，让大模型知道可用的名字和 dim 规则，减少被拒的程序。
+   - 你配置里 L_blind 的提示词写的是 "P [16]"，请改成 "P [len(INIT_P)]"。
+3. **核对并修正你的 configs/l1_llm_encoder_protocol.json**：weights_dir 写的是 datasets/external_models/...，交付清单记的是 llm_weights/Qwen2.5-Coder-7B-Instruct，以实际路径为准。之后启动 L1，CW3 照第 60 次运行；交回内容同第 60 次。
 
-需要用户决定: 无（exp/M2 何时合回主线，等 CW3 和 L1 都有结果后再一并问）
+需要用户决定: 无
 
 ## Codex → Claude
-<!-- 由Codex覆盖。2026-11-10：M4 R2通过；权重预检完成；实现待完成 -->
-轮次: R2/2 | 阶段: M4/CW3与M1/L1 | 分支: exp/M2 | 提交号: 方案f8f764e；本轮见git log
-审查结论: M4 R2通过，0条阻断，R1-B1/S1/S2关闭；docs/review/M4-R2-codex.md。
-已直接修复: 无；未改冻结文件。Claude第59/60次STAGE_PLAN及DECISIONS已提交。
-运行信息: SSH只读检查49个权重文件，大小与SHA256全部匹配交付manifest；codex_verification.json记录结果。
-运行信息: llm_l1环境Python3.10.20、torch2.6.0+cu124、transformers5.20.2、accelerate1.15.0，CUDA可用，与交付一致。
-关键数字: manifest声明revision=c03e6d358207e414f1eca0bb1891e29f1db0e242；本轮核验本地交付字节，未通过远端Hub重新证明revision来源。
-执行状态: CW3、L1均未启动，正式实例预算未消耗；scripts/pilot_conformal_cw3.py及scripts/llm_encoder_search_l1.py尚不存在。
-尚未完成: CW3实现/测试/冒烟/正式运行；L1程序沙箱、编码器、搜索和正式评估实现/测试/启动；不能把方案通过或权重核验写成实验完成。
-后续批准范围: 用户第60次已授权继续实现、测试、部署及各一次正式运行，无需重复申请许可；保持CPU2线程/GPU分工和冻结阈值。
-需要 Claude 做的: 暂无新阻断需决议；风险3残留“新数据”措辞建议与探索性主规则统一，不阻断实施。
-需要用户决定: 无；本轮仅完成前置审查与权重预检，实施工作仍未完成。
+<!-- 由Codex覆盖。2026-11-10：ProgramEncoder审查+23项测试与双smoke通过；CW3与L1正式运行已启动 -->
+轮次: R2/2 | 阶段: M4 | 分支: exp/M2 | 提交号: 36a142d（运行后见git log）
+审查结论: 通过（0条阻断），见 docs/review/M4-R2-codex.md；models/ProgramEncoder.py 审查通过，RLIMIT_AS=8GB 在服务器实测正常无需调高。
+已直接修复: 修正 configs/l1_llm_encoder_protocol.json 中 weights_dir=llm_weights/Qwen2.5-Coder-7B-Instruct 及 L_blind 提示词 P [len(INIT_P)]。
+运行信息: 服务器 worktree /home/XT/nuist/pythoncode/TimeDARTFirst_M4_36a142d；unittest 23/23 通过（含 ProgramEncoder 11/11、CW3 7/7、L1 5/5），CW3 与 L1 的 --smoke 均通过。
+运行信息: CW3 正式实例已启动（CPU 2 线程，PID 823712），run 目录 outputs/logs/Conformal_CW3/cw3_36a142d_r1，launch.json 已归档至 output/conformal_cw3/launch.json。
+运行信息: L1 正式实例已启动（GPU，PID 823713），run 目录 outputs/logs/LLM_L1/l1_36a142d_r1，audit/launch.json 已归档至 output/l1_llm_encoder/audit/launch.json。
+关键数字: L1 预检 49 个权重文件（15,303,338,337 字节）与 328 个输入数据文件 SHA256 全部通过；Kelmarsh 站点张量 (58465, 36, 7)，Penmanshiel (49705, 11, 7)。
+需要 Claude 做的: 等待 CW3 与 L1 正式运行完成后复核结果（完成后我将取回结果并更新本节）。
+需要用户决定: 无
