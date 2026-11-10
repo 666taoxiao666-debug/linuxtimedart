@@ -2,104 +2,90 @@
 
 作者：Claude（Codex 只提意见，不改本文件）。上限 150 行：要加新内容时，先删旧内容。
 内容只从现有代码和结果中提取；拿不准的地方标「待确认」；事先设定的阈值标「事先设定」。
-M3 的方案原文（CW2 全部规则）见 `git show 313be77:docs/STAGE_PLAN.md`；CW2 结果和复核见 DECISIONS.md 的 M3 一节。
+存档：CW3 的方案原文（含区间线的数据暴露清单）见 `git show af938db:docs/STAGE_PLAN.md`；L1 的原始规则见 `git show a1ebfa0:docs/STAGE_PLAN.md` 的 L1 条；CW3 结果复核见 DECISIONS.md 的 M4 一节。
 
 ## 阶段名
 
-M4：C 线第 3 轮（CW3，最后一轮，CPU），与 L1（GPU）并行。
-- T1：已完成（2026-11-09 21:28），判定 RETAIN_EXISTING；按事先条款，5 个 seed 的集成在两个开发年上都有改善，作为单独的改进进入 Hill of Towie 联合确认。复核见 DECISIONS 的 M2 末节。
-- L1：规则见 `git show a1ebfa0:docs/STAGE_PLAN.md` 的 L1 条，不变。模型权重已经由 Cursor 交回（2026-11-09）：
-  - Qwen2.5-Coder-7B-Instruct，revision c03e6d35…，49 个文件共 14.25 GB；环境 llm_l1（torch 2.6.0+cu124、transformers 5.20.2）；bf16 冒烟测试通过，占显存 14.2 GB。
-  - 服务器只有一张 RTX 3090（24 GB），不满足 14B 的 34 GB 条件，按规则用 7B。
-  - T1 已跑完，GPU 空出来了，L1 现在就可以运行。
+M4（续）：CW3 已结束；L1 修复技术缺陷后完整重跑一次（r2，GPU）。
+- CW3：2026-11-10 完成，STOP_AT_SELECTION，两个候选都不合格，C 线按事先规则结束。J3、J4 没有计算。
+- T1：已完成，RETAIN_EXISTING；5 个 seed 的集成作为单独的改进进入 Hill of Towie 联合确认。
+- L1 r1：H、P、R 都跑完（R 30/30 合法，最好的 R_15 短训练验证 MAE 152.21 kW），但 L、L-blind 的 60 个候选全部失败。原因是技术缺陷，不是方法结果（见下）。没有冻结搜索选择，也没有进入正式阶段。
 
 ## 目标
 
-1. **CW2 告诉我们的事（只作描述）**：
-   - 上游变化特征第一次在区间上显出稳定的增益：N-R 在 4 组数据上都比只用预测功率的 N-P 好，Winkler 分别低 13.1、20.2、1.9、25.1 kW，反向的 J2 也一样。
-   - 但"标准化分数"这一族整体比 B3-A（预测功率近邻的局部分位数）差 3–6%。
-   - 假设（R1-S1，现有的均值差证明不了这个归因）：功率近邻抓住了"有界功率"下误差分布的形状，单纯的尺度模型抓不住；上游信息的价值在于预测"这次误差有多大"。所以两者应该叠加。CW3 就是检验这个假设。
-2. **CW3**：在 B3 的功率近邻里，再用上游变化特征预测的误差尺度做标准化，检验能否稳定地赢过 B3-A。
-3. **共用确认**：通过的话，与底座合写一份 Hill of Towie 联合确认协议，封存年只用一次。
+1. **CW3 告诉我们的事（只作描述）**：
+   - 挑选数据上，LN-R 相对 min(匹配对照, B3-A) 的平均改善是 −0.34%，LJ-R 是 −0.90%。
+   - 上游尺度相对匹配对照的 Winkler 差在 4 组里符号不一致：LN-R 减 LN-P 是 +9.5、−12.1、+16.8、−11.9 kW。
+   - 所以 CW2 里"上游尺度有稳定增益"的信号，叠加到功率近邻之后不再稳定。R1-S1 的假设（两者可以叠加）不成立。
+   - 爬坡窗口的覆盖率，所有方法都在 76–79%；上游尺度最多只提高约 1 个点。
+   - 论文里照实写 C 线已经成立的实用结论：有界 ACI + F + 功率近邻（B3-A）比 B0、B1、B2-A 低 10% 以上。
+2. **L1 r2**：在修好截断缺陷的前提下，按原规则完整跑一次 L1。检验的问题不变：大模型写的上游编码程序，能否在两个风场上同时赢过手工特征 H、专家程序 P 和随机语法程序 R*。
 
 ## 假设与判定标准
 
-**CW3（事先设定）**
-- **沿用的部分**：
-  - 点预测器（正向 K-upstream、反向 P-upstream，P2 主折，3 个 seed，只推理）；
-  - A（ACI 截断 [0.005, 0.5]，各机组各步长，按真实延迟反馈）、规则 F、非有限值的处理；
-  - 两个误差尺度模型 σ̂_R（N-R 的特征）和 σ̂_P（只用预测功率）。拟合设定和 CW2 完全相同：每个 h 一个 HGB，只用源校准年，下限 0.1 × 中位数。
-- **两个候选**：
-  - LN-R（近邻内标准化）：先按预测功率取 500 个源近邻（同 B3）；近邻内的分数 s = |r| / σ̂_R(x)；半径 = σ̂_R(x_test) × 近邻内分数的 Q_{1−α_t}。
-  - LJ-R（联合近邻）：在 [预测功率, log σ̂_R] 的二维空间里取 500 个近邻（两维各自按源校准集的标准差缩放），近邻内取 |r| 的 Q_{1−α_t}，不再标准化。
-- **对照**：
-  - LN-P：LN-R 的 σ̂_R 换成 σ̂_P，其余完全相同。它是 LN-R 的匹配对照；
-  - LJ-P：LJ-R 的 σ̂_R 换成 σ̂_P，是 LJ-R 的匹配对照；
-  - B3-A（现有最好）、B0、B1、B2-A，定义同前。
-- **挑选**：在已用过的 4 组数据上挑：Penmanshiel 2022、2023，J1（Penmanshiel 2024），J2（Kelmarsh 2024，反向）。
-  - 合格条件：4 组的覆盖率都在 [88%, 92%] 之内，并且 4 组都比 min(匹配对照, B3-A) 的 Winkler 低。
-  - 合格的候选里，取相对 min(匹配对照, B3-A) 改善百分比（4 组等权平均）最大的；平局取 LN-R。
-  - 都不合格：CW3 停在挑选阶段，C 线到此结束。
-  - 选完先写 selection_freeze.json，再计算判定数据。
-- **判定数据：部分暴露的探索性判定（R1-B1）**。我之前写的"对区间方法从没用过"不成立：J3、J4 的评估年在 CW1、CW2 里当过源校准，标签参与过残差和尺度模型的拟合，也影响了挑选。
-  - 所以 J3、J4 的结果只算探索性的开发证据，不能叫独立确认。任何方法主张都要等 Hill of Towie 封存年的联合确认，那才是唯一的独立检验。
-  - 区间线的数据暴露清单（风场、年份：用途）：
-    - Kelmarsh 2021：源校准（C0；C0b、CW1、CW2 的 2022 挑选），密度比的无标签特征。J4 的目标月 2021-12 在这一年里。
-    - Kelmarsh 2022：源校准（C0b 的 2023 评估；CW1、CW2 的 2023 挑选）。CW3 里用作 J4 的评估年。
-    - Kelmarsh 2023：源校准（CW1、CW2 的 J1）；目标月 2023-12（CW1、CW2 的 J2）。CW3 里用作 J3 的评估年。
-    - Kelmarsh 2024：评估（CW1、CW2 的 J2）。点预测上，Kelmarsh 2023、2024 是 v31、v32 的测试年。
-    - Penmanshiel 2020：P 模型的选择年。
-    - Penmanshiel 2021：目标月 2021-12（C0、C0b、CW1、CW2 的 2022 挑选），无标签特征。CW3 里用作 J4 的源校准。
-    - Penmanshiel 2022：评估（C0；C0b、CW1、CW2 的挑选）；目标月 2022-12。CW3 里用作 J3 的源校准。
-    - Penmanshiel 2023：评估（C0b；CW1、CW2 的挑选）；目标月 2023-12（J1）；J2 的源校准。
-    - Penmanshiel 2024：评估（CW1、CW2 的 J1）。点预测上，Penmanshiel 2022–2024 是 P3 的测试年。
-    - Hill of Towie 2024、2025：从未打开，封存。
-  - J3：源 Penmanshiel 2022，目标月 Kelmarsh 2022-12，评估 Kelmarsh 2023；截止 2022-12-31 23:00。
-  - J4：源 Penmanshiel 2021，目标月 Kelmarsh 2021-12，评估 Kelmarsh 2022；截止 2021-12-31 23:00。
-  - P-upstream 只用了 Penmanshiel 2016–2019 拟合、2020 选择。两组都要做因果断言。
-- **判定（J3、J4 各自单独算，3 个 seed 平均，h1–4 合并，90% 名义覆盖）**：
-  - C1：覆盖率在 [88%, 92%] 之内。
-  - C2：Winkler ≤ 0.95 × min(B0、B1、B2-A 中覆盖率 ≥88% 的；都不到 88% 就取三者全部)。
-  - C3：Winkler ≤ 0.97 × min(匹配对照, B3-A)，并且"较好的对照 − 候选"的 95% CI 下界 > 0。CI 的做法同 CW1、CW2。
-  - 结论分三档（事先设定）：
-    - J3、J4 都过 C1–C3（两组都 ≥3%，并且 CI 下界 > 0）→ 探索性证据支持方法主张，进入 Hill of Towie 联合确认；主张要等联合确认通过才成立。
-    - J3、J4 都过 C1、C2，并且两组的 CI 下界都 > 0，但不是两组都达到 3%（包括一组 4%、另一组 2% 这种情况，R1-S2）→ 记为"小幅但显著"的探索性发现。论文里写成开发阶段的发现，不作为方法主张；可以在 Hill of Towie 协议里作为次要比较，不进主检验族。
-    - 其余情况 → C 线结束。
-  - 这是最后一轮，不再优化。C 线已经成立的实用结论（有界 ACI + F + 功率近邻，比 B0、B1、B2-A 低 10% 以上）照实写进论文。
-- **只描述**：逐 h 的结果；变化窗口和平稳窗口分别的覆盖率和宽度；上游缺测子集。
+**L1 r1 的技术缺陷（确定缺陷，已核实）**
+- max_new_tokens = 512，但专家程序约 620 个 token，R 的程序有 2400–2580 个字符。
+- 60 个大模型输出全部在 return 之前被截断，没有一个带闭合的代码围栏。
+- extract_code 遇到未闭合的围栏会返回整段文字，所以都报"line 1 syntax error"，掩盖了真正的截断原因。
+- 全部失败时，回退记录的 val_mae = inf，写 JSON 时报错，进程中断。
+- 我用修好的 extract_code 重新解析 r1 的 60 个输出：仍然 0 个合法，报的都是括号未闭合或缺 return。这确认根因是 token 上限，不是提取逻辑。
+
+**r2 的修法（只修技术缺陷，事先设定）**
+- `max_new_tokens` 改为 1536（约 5000 个字符，是 R 程序长度的 2 倍左右）。
+- L 和 L-blind 的提示词末尾各加同一句："Do not write comments or docstrings."（两臂相同）。
+- `models/ProgramEncoder.py` 的 extract_code：未闭合的围栏取围栏之后的全部文字（Claude 已改，加了测试）。
+- 全部失败时，回退记录的 val_mae 记为 null，不再用 inf。
+- 协议 JSON 的 `protocol_id` 改为 `l1_llm_encoder_v2`，加一条 `supersedes` 说明 r1 是因为 max_new_tokens 失败的技术运行。
+- 不变的部分：
+  - 判定阈值（L* 比 H 好 ≥1.5%，比 R*、P 都好 ≥0.5%，两个风场都要满足）；
+  - 臂（H、P、R、L、L-blind）、预算（每臂 30 个）、温度、top_p、种子；
+  - 数据年份、训练配方、语法 R、"失败照样占名额、不补生成"的规则。
+
+**r2 的运行规则（事先设定）**
+- 从头完整重跑：H、P、R、L、L-blind 的搜索，然后进入正式阶段。不复用 r1 的 R 结果，保证所有结果在同一份代码和哈希下产生。R 只多花约 33 分钟。
+- 启动前做真实大模型预检：用一个不在搜索种子里的种子，L 和 L-blind 各生成 1 个第 1 代程序。两个输出都要带闭合围栏，并通过 validate_source，才正式启动。预检的输出只存档，不进入搜索。
+- 每个候选记录 `n_new_tokens` 和 `hit_max_new_tokens`。
+- **技术有效性门槛**：L 或 L-blind 里，有 ≥3 个（10%）候选碰到 token 上限，就判为技术失败。这时只跑完搜索、存档，不冻结选择、不进入正式阶段，交回给我。
+- 碰到上限的候选不到 3 个，就照常继续；碰到上限的那几个按"失败照样占名额"处理。
+- 合法程序很少，如果是因为违反规则（不是截断），属于真实结果，照常继续。
+- 正式阶段的统计和三档结论，按 a1ebfa0 的 L1 条，不变。
+- top-10 程序做因果性抽查（只用起报时刻 −1 h 之前的观测），由 Claude 在结果交回后做。
 
 ## 实验配置表
 
 | 线 | 内容 | 规模 |
 |---|---|---|
-| CW3 | 2 个候选 + 2 个匹配对照 + 4 个旧对照；4 组挑选数据，J3、J4 判定 | 不训练点预测器；CPU（2 个线程）约 1–2 小时（待确认） |
+| CW3 | 已结束：STOP_AT_SELECTION，C 线收尾 | — |
 | T1 | 已完成：RETAIN_EXISTING，种子集成进入联合确认 | — |
-| L1 | 权重已到，GPU 空闲，现在运行 | GPU，约 4 小时（待确认） |
+| L1 r2 | 预检 2 个生成；搜索 H、P、R30、L30、L-blind30（Kelmarsh）；正式 5 臂 × 3 seed × 2 风场 | GPU，约 4–5 小时（待确认） |
 
-- CW3 只运行一个实例；代码和选择记录在计算 J3、J4 之前冻结。
+- L1 r2 只运行一个实例。正式阶段开始前写 search_selection_freeze.json，冻结后不再改选择。
 
 ## 改动文件清单（= HANDOFF「允许改动」）
 
-- CW3：`scripts/pilot_conformal_cw3.py`（新文件，导入冻结的 C0、C0b、CW1、CW2，只加两个候选和 J3、J4 设定）、`tests/test_pilot_conformal_cw3.py`、`output/conformal_cw3/**`。
-- L1 的分工（2026-11-10 用户提议调整）：自包含的程序沙箱模块由 Claude 写，Codex 审查并在服务器上跑 torch 测试；依赖服务器数据的搜索、数据和训练脚本由 Codex 写。
-  - Claude：`models/ProgramEncoder.py`（AST 白名单、子进程动态检查、专家程序 P、语法 R、ProgramTSMixerModel）、`tests/test_program_encoder.py`。
-  - Codex：`scripts/llm_encoder_search_l1.py`、`tests/test_llm_encoder_search_l1.py`、`configs/l1_llm_encoder_protocol.json`、`output/l1_llm_encoder/**`。
+- Claude（已改）：`models/ProgramEncoder.py`（只改 extract_code）、`tests/test_program_encoder.py`（extract_code 测试）。
+- Codex：
+  - `configs/l1_llm_encoder_protocol.json`（max_new_tokens、两句提示词、protocol_id、supersedes）；
+  - `scripts/llm_encoder_search_l1.py`（回退 val_mae 用 null；记录 n_new_tokens 和 hit_max_new_tokens；技术有效性门槛；真实大模型预检）；
+  - `tests/test_llm_encoder_search_l1.py`（全部失败时 JSON 能写出；门槛的真值表）；
+  - `output/l1_llm_encoder/**`（r2 写在顶层；r1 留在 r1_failed_max_tokens_512/）。
 
 ## 本阶段不做什么
 
-- 不碰 Hill of Towie 封存年；不在 J3、J4 上挑选或调参。
-- 不改已冻结的 C0、C0b、CW1、CW2、T1 的文件和结果。
-- 不在看到判定结果后改门槛、近邻数、特征或超参数。
+- 不改 L1 的判定阈值、臂、预算、数据年份和训练配方。
+- C 线不开第 4 轮。不碰 Hill of Towie 封存年。
+- 不在看到正式结果后改选择或重跑。
 
 ## 风险（≤5 条）
 
-1. CW2 中 N-R 比 N-P 好约 1–2%。叠加到 B3 上，改善很可能也只有 1–2%，不到 3%；所以事先设了"小幅但显著"这一档，如实报告。
-2. LN 的近邻内，σ̂_P 几乎是常数，所以 LN-P ≈ B3-A。这是有意的：比较的正是"加入上游尺度信息"这一项。
-3. 看过 CW2 后才提出的方向，有数据窥探的风险。用 J3、J4 两组新数据，并在论文里披露来缓解。
-4. 已经没有完全干净的开发判定数据，J3、J4 只是部分暴露的探索性判定（R1-B1）。独立检验只能靠 Hill of Towie 封存年。
-5. 和 L1 同机运行，CW3 限 2 个线程。
+1. 1536 个 token 仍可能不够：后几代提示词里给的程序更长，大模型可能写得更长。有技术有效性门槛兜底。
+2. 7B 模型在白名单规则下合法率可能很低，L 的有效名额变少。这算真实结果，如实报告。
+3. 搜索只在 Kelmarsh 上做，R 的最好程序（152.21 kW）已经很接近，L 要比 R* 好 0.5% 不容易。之前的估计不变：L1 通过的概率低。
+4. r1 的 H、P 短训练数字没有存下来（写 JSON 时崩溃），r2 要一起交回。
 
 ## 存档引用
 
-- CW2：`output/conformal_cw2/RESULT_SUMMARY.md`、`r1/*/seed_*.json`；CW1：`output/conformal_cw1/`；C0b：`output/conformal_c0b/`。
+- CW3：`output/conformal_cw3/result.json`、`selection_freeze.json`、4 组的 `seed_*.json`。
+- L1 r1（技术失败）：`output/l1_llm_encoder/r1_failed_max_tokens_512/`。
+- CW2：`output/conformal_cw2/RESULT_SUMMARY.md`；CW1：`output/conformal_cw1/`；C0b：`output/conformal_c0b/`。
 - 冻结站点：Kelmarsh v32 的 36 站；Penmanshiel 的 11 站；Hill of Towie `output/hill_of_towie_e1/l0b_r2/qualified_stations.json`（5909e143…）。

@@ -17,6 +17,22 @@ from scripts import llm_encoder_search_l1 as l1
 
 
 class TestLlmEncoderSearchL1(unittest.TestCase):
+    def test_all_failed_fallback_is_json_serializable(self):
+        best = l1.select_best_record([{"status": "FAILED"}], pe.EXPERT_PROGRAM)
+        self.assertIsNone(best["val_mae"])
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "fallback.json"
+            l1.save(path, best)
+            self.assertTrue(l1.read_json(path)["all_failed_fallback"])
+
+    def test_token_limit_gate_boundary(self):
+        for counts, expected in [({"L": 0, "L_blind": 0}, False),
+                                 ({"L": 2, "L_blind": 2}, False),
+                                 ({"L": 3, "L_blind": 0}, True),
+                                 ({"L": 0, "L_blind": 3}, True)]:
+            with self.subTest(counts=counts):
+                self.assertEqual(l1.token_limit_failed(counts), expected)
+
     def test_build_hourly_obs_and_geo_lag1h_and_fit_only_stats(self):
         hours_mixed = pd.DatetimeIndex([
             "2019-12-31 20:00:00+00:00",

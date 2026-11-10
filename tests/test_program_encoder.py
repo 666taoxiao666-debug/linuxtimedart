@@ -92,6 +92,12 @@ class StaticValidation(unittest.TestCase):
     def test_extract_code(self):
         self.assertEqual(pe.extract_code("text\n```python\nINIT_P = [1.0]\n```\nmore"), "INIT_P = [1.0]\n")
         self.assertEqual(pe.extract_code("INIT_P = [1.0]"), "INIT_P = [1.0]\n")
+        # unclosed fence (reply truncated at max_new_tokens): keep the text after the opening fence
+        self.assertEqual(pe.extract_code("```python\r\nINIT_P = [1.0]\n\ndef encode("), "INIT_P = [1.0]\n\ndef encode(\n")
+        self.assertEqual(pe.extract_code("```python\n" + SIMPLE), SIMPLE)
+        pe.validate_source(pe.extract_code("```python\n" + SIMPLE))
+        with self.assertRaises(pe.ProgramRejected):  # truncated program still fails on its own text
+            pe.validate_source(pe.extract_code("```python\n" + SIMPLE[:-40]))
 
 
 class GrammarR(unittest.TestCase):

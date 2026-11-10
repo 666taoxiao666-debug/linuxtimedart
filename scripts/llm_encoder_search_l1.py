@@ -467,7 +467,8 @@ def _llm_worker_main() -> int:
             )
         gen_ids = out_ids[0][inputs.input_ids.shape[1]:]
         raw_out = tok.decode(gen_ids, skip_special_tokens=True)
-        results.append({"slot": req["slot"], "seed": seed, "raw_output": raw_out})
+        results.append({"slot": req["slot"], "seed": seed, "raw_output": raw_out,
+                        "n_new_tokens": int(gen_ids.numel())})
     print("LLM_WORKER_JSON:" + json.dumps(results))
     return 0
 
@@ -504,6 +505,7 @@ def evaluate_candidate(
     prompt_sys: str | None = None,
     prompt_user: str | None = None,
     spec_meta: dict | None = None,
+    rejection_reason: str | None = None,
 ) -> dict:
     t0 = time.time()
     rec = {
@@ -524,6 +526,9 @@ def evaluate_candidate(
         "learned_P": None,
         "elapsed_sec": 0.0,
     }
+    if rejection_reason:
+        rec["failure_reason"] = rejection_reason
+        return rec
     try:
         src = pe.extract_code(raw_text)
         rec["source"] = src
@@ -582,7 +587,7 @@ def select_best_record(records: list[dict], fallback_source: str) -> dict:
     return {
         "program_id": "FALLBACK_EXPERT_P",
         "slot_index": 999,
-        "val_mae": float("inf"),
+        "val_mae": None,
         "ast_sha256": info["hash"],
         "source": fallback_source,
         "n_channels": 11,
@@ -669,18 +674,30 @@ def run_search_phase(
                 float(llm_cfg["temperature"]), float(llm_cfg["top_p"]),
                 int(llm_cfg["max_new_tokens"]), llm_python
             )
-            by_slot = {int(item["slot"]): item["raw_output"] for item in batch_out}
+            by_slot = {int(item["slot"]): item for item in batch_out}
             for slot_idx in sorted(prompts_meta):
                 g, s, sys_m, usr_m, _ = prompts_meta[slot_idx]
-                raw_txt = by_slot.get(slot_idx, "")
+                generated = by_slot.get(slot_idx, {})
+                raw_txt = generated.get("raw_output", "")
+                hit_cap = generated.get("n_new_tokens", 0) >= int(llm_cfg["max_new_tokens"])
                 pid = f"{arm_key}_g{g}_s{s}"
                 rec = evaluate_candidate(
                     pid, arm_key, slot_idx, raw_txt, seen, farm_k, s_cfg, device,
                     seed=seed, prompt_sys=sys_m, prompt_user=usr_m,
+                    rejection_reason="hit_max_new_tokens" if hit_cap else None,
                 )
+                rec["n_new_tokens"] = generated.get("n_new_tokens", 0)
+                rec["hit_max_new_tokens"] = rec["n_new_tokens"] >= int(llm_cfg["max_new_tokens"])
                 arm_records[arm_key].append(rec)
             save(out / f"search_{arm_key}_candidates.json", arm_records[arm_key])
 
+    counts = {arm: sum(bool(r.get("hit_max_new_tokens")) for r in rows)
+              for arm, rows in arm_records.items()}
+    save(out / "search_diagnostics.json", {"H_short_val_mae": h_fit["validation_mae"],
+         "P_short_val_mae": p_rec["val_mae"], "hit_max_new_tokens_counts": counts})
+    if token_limit_failed(counts):
+        save(out / "audit/failed.json", {"reason": "token_limit_gate", "counts": counts})
+        raise RuntimeError("Token limit gate failed; formal phase forbidden")
     r_star = select_best_record(r_records, pe.EXPERT_PROGRAM)
     l_star = select_best_record(arm_records["L"], pe.EXPERT_PROGRAM)
     lb_star = select_best_record(arm_records["L_blind"], pe.EXPERT_PROGRAM)
@@ -849,6 +866,34 @@ def smoke(out: Path) -> int:
     return 0
 
 
+def token_limit_failed(counts):
+    return any(int(n) >= 3 for n in counts.values())
+
+
+def preflight(protocol, out, data_root, llm_python):
+    weights = verify_llm_weights(data_root, protocol)
+    requests = []
+    for slot, blind in enumerate((False, True), 1):
+        system, user = build_llm_prompt(protocol, blind, 1, 1, [])
+        requests.append(dict(slot=slot, seed=900000 + slot, system=system, user=user))
+    cfg = protocol["llm"]
+    rows = run_llm_worker_batch(Path(weights["weights_dir"]), requests,
+        cfg["temperature"], cfg["top_p"], cfg["max_new_tokens"], llm_python)
+    ok = len(rows) == 2
+    for row in rows:
+        raw = row["raw_output"]
+        row["closed_fence"] = raw.count("```") >= 2
+        try:
+            row["validation"] = pe.validate_source(pe.extract_code(raw))
+            row["passed"] = row["closed_fence"]
+        except Exception as exc:
+            row.update(passed=False, error=str(exc))
+        ok = ok and row["passed"]
+    save(out / "preflight.json", dict(passed=bool(ok), outputs=rows, requests=requests, weights=weights,
+         protocol_sha256=sha(PROTOCOL), script_sha256=sha(Path(__file__).resolve())))
+    return 0 if ok else 1
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--data-root", type=Path, default=ROOT)
@@ -856,6 +901,7 @@ def main(argv=None) -> int:
     ap.add_argument("--llm-python", type=str, default="/home/XT/miniconda3/envs/llm_l1/bin/python")
     ap.add_argument("--device", type=str, default="auto")
     ap.add_argument("--smoke", action="store_true")
+    ap.add_argument("--preflight", action="store_true")
     ap.add_argument("--llm-worker", action="store_true")
     args = ap.parse_args(argv)
     if args.llm_worker:
@@ -863,7 +909,15 @@ def main(argv=None) -> int:
     args.out.mkdir(parents=True, exist_ok=True)
     if args.smoke:
         return smoke(args.out)
+    if args.preflight:
+        return preflight(read_json(PROTOCOL), args.out, args.data_root.resolve(), args.llm_python)
 
+    check = read_json(args.out / "preflight.json")
+    if not (check.get("passed") and check.get("protocol_sha256") == sha(PROTOCOL)
+            and check.get("script_sha256") == sha(Path(__file__).resolve())):
+        raise RuntimeError("Matching successful real preflight required")
+    with (args.out / "formal_instance.lock").open("x") as lock:
+        lock.write(now_utc())
     import torch
     dev = ("cuda" if torch.cuda.is_available() else "cpu") if args.device == "auto" else args.device
     protocol = read_json(PROTOCOL)

@@ -1,5 +1,6 @@
 {
-  "protocol_id": "l1_llm_encoder_v1",
+  "protocol_id": "l1_llm_encoder_v2",
+  "supersedes": "l1_llm_encoder_v1: r1 technical failure caused by max_new_tokens=512 truncation; complete fresh r2",
   "stage": "M1_L1",
   "llm": {
     "model_name": "Qwen2.5-Coder-7B-Instruct",
@@ -10,7 +11,7 @@
     "selected_size": "7B",
     "temperature": 0.8,
     "top_p": 0.95,
-    "max_new_tokens": 512,
+    "max_new_tokens": 1536,
     "generations": 5,
     "population_per_generation": 6,
     "budget_programs_per_arm": 30,
@@ -87,8 +88,8 @@
     ]
   },
   "prompts": {
-    "L_system": "You are an expert in atmospheric physics and differentiable PyTorch modeling. Write ONLY a valid Python code block defining INIT_P (list of <=16 floats) and def encode(obs, geo, P): returning a tensor of shape [B, 24, K] with 1 <= K <= 11. Do not use imports, loops over batch, or cross-batch reductions (never reduce over dim=0). Must be permutation-invariant over station axis dim=2 and work for any station count S.",
-    "L_blind_system": "You are an expert in differentiable PyTorch tensor programming. Write ONLY a valid Python code block defining INIT_P (list of <=16 floats) and def encode(obs, geo, P): returning a tensor of shape [B, 24, K] with 1 <= K <= 11 from inputs obs [B, 24, S, 7], geo [S, 3], P [len(INIT_P)]. Do not use imports, loops over batch, or cross-batch reductions (never reduce over dim=0). Must be permutation-invariant over axis dim=2 and work for any size S."
+    "L_system": "You are an expert in atmospheric physics and differentiable PyTorch modeling. Write ONLY a valid Python code block defining INIT_P (list of <=16 floats) and def encode(obs, geo, P): returning a tensor of shape [B, 24, K] with 1 <= K <= 11. Do not use imports, loops over batch, or cross-batch reductions (never reduce over dim=0). Must be permutation-invariant over station axis dim=2 and work for any station count S. Do not write comments or docstrings.",
+    "L_blind_system": "You are an expert in differentiable PyTorch tensor programming. Write ONLY a valid Python code block defining INIT_P (list of <=16 floats) and def encode(obs, geo, P): returning a tensor of shape [B, 24, K] with 1 <= K <= 11 from inputs obs [B, 24, S, 7], geo [S, 3], P [len(INIT_P)]. Do not use imports, loops over batch, or cross-batch reductions (never reduce over dim=0). Must be permutation-invariant over axis dim=2 and work for any size S. Do not write comments or docstrings."
   },
   "search_phase": {
     "farm": "Kelmarsh",

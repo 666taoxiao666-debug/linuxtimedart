@@ -356,8 +356,12 @@ def canonical_hash(source):
 
 
 def extract_code(text):
-    """First ```python fenced block of an LLM reply (or the whole text when there is no fence)."""
-    m = re.search(r"```(?:python|py)?\s*\n(.*?)```", text, flags=re.S)
+    """First ```python fenced block of an LLM reply (or the whole text when there is no fence).
+
+    An opening fence without a closing one (reply cut at max_new_tokens) yields everything after the
+    opening fence, so the program is judged on its own text instead of failing on the fence line (L1 r1).
+    """
+    m = re.search(r"```(?:python|py)?[ \t\r]*\n(.*?)(?:```|\Z)", text, flags=re.S)
     return (m.group(1) if m else text).strip() + "\n"
 
 

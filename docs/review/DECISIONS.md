@@ -603,3 +603,19 @@ M4 方向说明（Claude，2026-11-09）：
   - 其余 → C 线结束。
   - 3% 的门槛不变。之所以加中间一档，是因为 CW2 显示效应量大约只有 1–2%，要如实记录下来。
 - **T1 照常运行；L1 等权重。**
+
+CW3 结果复核（Claude，2026-11-10，af938db）：
+
+- **接受 STOP_AT_SELECTION，C 线按事先规则结束，J3、J4 没有计算。** 我用本地 4 组 × 3 份 seed JSON 独立重算，与 result.json 一致：LN-R 平均 −0.34%，LJ-R 平均 −0.90%，两者都不满足"4 组都赢"。
+  - LN-R 减 LN-P 的 Winkler 差是 +9.5、−12.1、+16.8、−11.9 kW，符号不一致。CW2 的上游尺度信号叠加到功率近邻后不再稳定，R1-S1 的假设不成立。
+  - 爬坡窗口的覆盖率，各方法都在 76–79%，上游尺度最多提高约 1 个点（只作描述）。
+- **论文写法**：C 线的实用结论（B3-A 比 B0、B1、B2-A 低 10% 以上）照实写；CW1–CW3 的负结果作为"上游信息对区间宽度没有稳定增益"的证据。
+
+L1 r1 技术失败的复核与 r2 批准（Claude，2026-11-10）：
+
+- **同意是技术缺陷，不算方法结果。** 60 个大模型输出没有一个带闭合围栏；我用修好的 extract_code 重新解析，仍然 0 个合法，报的都是括号未闭合或缺 return。根因是 max_new_tokens = 512 小于专家程序的长度（约 620 个 token）。
+- **批准 Codex 提出的三项修复，加两项保障**（规则见 STAGE_PLAN「r2 的修法」「r2 的运行规则」）：
+  - 批准：max_new_tokens 1536 + 两臂同一句"不写注释"；extract_code（Claude 已改 models/ProgramEncoder.py:358，加了测试）；回退 val_mae 记为 null。
+  - 新增：真实大模型预检（2 个生成）；每个候选记录是否碰到上限，≥3/30 判为技术失败，不进入正式阶段。
+  - 从头完整重跑，不复用 r1 的 R 结果。协议改名 l1_llm_encoder_v2。阈值、臂、预算、年份都不变。
+  - Codex 实施：configs/l1_llm_encoder_protocol.json、scripts/llm_encoder_search_l1.py、tests/test_llm_encoder_search_l1.py、output/l1_llm_encoder/**。

@@ -3,24 +3,23 @@
 规则见 AGENTS.md：两节各由一方整节覆盖、不追加，每节不超过 40 行；历史用 `git log -p HANDOFF.md` 查。
 
 ## Claude → Codex
-<!-- 由 Claude 覆盖。最后更新：2026-11-10 第 61 次（L1 程序沙箱模块由 Claude 写好，交你审查并跑 torch 测试；搜索脚本分段写） -->
-轮次: R2/2 | 阶段: M4 | 分支: exp/M2 | 基线提交: aae8538
-请求: 审代码后运行（先审 Claude 写的 L1 模块，再写搜索脚本并启动 L1；CW3 照第 60 次继续）
-待审范围: git diff HEAD -- models/ProgramEncoder.py tests/test_program_encoder.py docs/STAGE_PLAN.md
-允许改动: models/ProgramEncoder.py, tests/test_program_encoder.py, scripts/llm_encoder_search_l1.py, tests/test_llm_encoder_search_l1.py, configs/l1_llm_encoder_protocol.json, output/l1_llm_encoder/**, scripts/pilot_conformal_cw3.py, tests/test_pilot_conformal_cw3.py, output/conformal_cw3/**, output/external_acquisition/llm_weights/**, output/t1_tuning/**, output/conformal_cw2/**, output/conformal_cw1/**, output/conformal_c0b/**, output/hill_of_towie_e1/**, scripts/acquire_hill_of_towie.py, output/external_acquisition/hill_of_towie/**, output/e1_baselines/local_smoke_1343756/**
-审查文件: docs/review/M4-R2-codex.md（续写 L1 代码审查）
-本轮决议: 无新编号；上一轮你写 ProgramEncoder.py 时因 Gemini 网关的 max_output_tokens 被截断，文件没生成。按用户要求改为 Claude 写这个自包含模块，你来审
+<!-- 由 Claude 覆盖。最后更新：2026-11-10 第 62 次（CW3 复核通过，C 线结束；L1 r1 技术失败，批准修复后完整重跑 r2） -->
+轮次: R2/2 | 阶段: M4 | 分支: exp/M2 | 基线提交: af938db
+请求: 审代码后运行（审 Claude 改的 extract_code，实施 r2 修复，预检通过后启动 L1 r2）
+待审范围: git diff HEAD -- models/ProgramEncoder.py tests/test_program_encoder.py docs/STAGE_PLAN.md docs/review/DECISIONS.md
+允许改动: models/ProgramEncoder.py, tests/test_program_encoder.py, configs/l1_llm_encoder_protocol.json, scripts/llm_encoder_search_l1.py, tests/test_llm_encoder_search_l1.py, output/l1_llm_encoder/**, scripts/acquire_hill_of_towie.py, output/external_acquisition/hill_of_towie/**, output/e1_baselines/local_smoke_1343756/**（后三项是本地历史未跟踪文件，只为通过范围检查，不要改）
+审查文件: docs/review/M4-R2-codex.md（续写一节"第 62 次"）
+本轮决议: 无新编号。CW3 的 STOP_AT_SELECTION 复核通过（本地复算一致）；L1 r1 同意是技术缺陷，批准你提的三项修复，另加两项保障。见 DECISIONS M4 节末两段
 
 需要你做的:
-1. **审 models/ProgramEncoder.py**（按 STAGE_PLAN M1 的 L1 规则）。本地 11 项测试里，静态的 7 项已通过，torch 的 4 项在沙箱里跳过，请在服务器 timedart 环境运行 `python -m unittest tests.test_program_encoder`。
-   - 发现确定缺陷：按"唯一最小修法先行"直接改，写进审查文件。设计上的分歧：写成 B/S 编号交我。
-   - 内容：AST 白名单、子进程检查（形状、有限、梯度、batch 不变性、站点置换不变性、可变站数、训练规模探针）、专家 P（= EXPERT_PROGRAM）、语法 R（sample_grammar_programs，排除专家组合）、ProgramTSMixerModel（布局与 H 相同，K=11 时 backbone 参数量 8126）。
-   - 子进程内存上限 8 GB（RLIMIT_AS）：如果专家程序因为 import torch 的虚拟内存就 CRASH，把上限调高作为技术修正，写进审查文件，不改语义。
-2. **写 scripts/llm_encoder_search_l1.py**（每次编辑不超过 150 行，先写骨架再逐段补，避免输出上限再次截断）：
-   - 数据构造 obs/geo；fit-period 归一化（fit_encoder_normalization）；训练接入（模型的 forward 是 (x, obs)）；Qwen 调用和代码提取（extract_code）；5 代 × 6 的进化循环；正式阶段和判定。
-   - 提示词末尾附上 PROGRAM_RULES_TEXT，让大模型知道可用的名字和 dim 规则，减少被拒的程序。
-   - 你配置里 L_blind 的提示词写的是 "P [16]"，请改成 "P [len(INIT_P)]"。
-3. **核对并修正你的 configs/l1_llm_encoder_protocol.json**：weights_dir 写的是 datasets/external_models/...，交付清单记的是 llm_weights/Qwen2.5-Coder-7B-Instruct，以实际路径为准。之后启动 L1，CW3 照第 60 次运行；交回内容同第 60 次。
+1. **审 extract_code 的改动**（models/ProgramEncoder.py:358，未闭合围栏取围栏之后的全部文字），在服务器跑 `python -m unittest tests.test_program_encoder`（11 项）。
+2. **按 STAGE_PLAN「r2 的修法」「r2 的运行规则」实施**（每次编辑 ≤150 行）：
+   - 协议：max_new_tokens 1536；L、L-blind 提示词末尾都加 "Do not write comments or docstrings."；protocol_id 改为 l1_llm_encoder_v2，加 supersedes。
+   - 脚本：回退 val_mae 用 null；worker 返回每个输出的 n_new_tokens，候选记录 hit_max_new_tokens；L 或 L-blind 有 ≥3/30 碰到上限，就在搜索后停下，不冻结选择、不进正式阶段。
+   - 测试：全部失败时 JSON 能写出；门槛 2/30 继续、3/30 停。
+3. **预检后启动 r2**：用搜索种子以外的种子，L、L-blind 各真实生成 1 个第 1 代程序，都要闭合围栏并通过 validate_source。通过后从头完整重跑（H、P、R、L、L-blind → 正式阶段），只跑一个实例。
+   - r2 写在 output/l1_llm_encoder/ 顶层；r1 留在 r1_failed_max_tokens_512/。
+   - 交回：预检输出；H、P 的短训练验证 MAE；各臂的合法数和碰上限数；R*、L*、L-blind* 的程序；正式阶段两个风场 5 臂的 MAE、RMSE、CI 和判定；top10_programs.json。
 
 需要用户决定: 无
 
