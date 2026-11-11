@@ -1,0 +1,227 @@
+{
+  "candidate_id": "o2:L_g7_s5",
+  "arm": "L",
+  "origin": "output/l1_llm_encoder/o2/search_L_candidates.json",
+  "program_id": "L_g7_s5",
+  "source": "INIT_P = [0.2, -0.1, 0.3, -0.1, 0.4, -0.2, 0.2, -0.1, 0.3, -0.2, 0.5, -0.4, 0.1, -0.2, 0.3, -0.1]\n\n\ndef encode(obs, geo, P):\n    ws = obs[..., 0]\n    dsin = obs[..., 1]\n    dcos = obs[..., 2]\n    pan = obs[..., 3]\n    dp3 = obs[..., 4]\n    vw = obs[..., 5]\n    vp = obs[..., 6]\n    dist = geo[:, 0]\n    bsin = geo[:, 1]\n    bcos = geo[:, 2]\n    rsin = wmean(dsin, vw, dim=2)\n    rcos = wmean(dcos, vw, dim=2)\n    rnorm = torch.sqrt(rsin * rsin + rcos * rcos) + 1e-6\n    align = bsin * (rsin / rnorm).unsqueeze(-1) + bcos * (rcos / rnorm).unsqueeze(-1)\n    cross = dist * torch.sqrt(torch.clamp(1.0 - align * align, min=0.0) + 1e-9)\n    cone = torch.sigmoid(P[0] * (align - P[1]))\n    decay = torch.exp(-dist / (P[2] + 0.05) - cross / (P[3] + 0.05))\n    wup = cone * decay * vw\n    speed = torch.relu(P[4] * ws + P[5]) + 0.05\n    tau = (dist * torch.clamp(align, min=0.0) / speed).unsqueeze(-1)\n    lags = torch.arange(6, dtype=obs.dtype, device=obs.device)\n    kern = torch.softmax(-(lags - tau) ** 2 / (2.0 * (P[6] + 0.3) ** 2), dim=-1)\n    hist = torch.stack([lag(ws, 0), lag(ws, 1), lag(ws, 2), lag(ws, 3), lag(ws, 4), lag(ws, 5)], dim=-1)\n    vhist = torch.stack([lag(vw, 0), lag(vw, 1), lag(vw, 2), lag(vw, 3), lag(vw, 4), lag(vw, 5)], dim=-1)\n    ws_adv = (kern * hist * vhist).sum(dim=-1) / ((kern * vhist).sum(dim=-1) + 1e-6)\n    nearw = torch.exp(-dist / (P[8] + 0.02))\n    local = wmean(ws, nearw * vw, dim=2)\n    up = wmean(ws, wup, dim=2)\n    upadv = wmean(ws_adv, wup, dim=2)\n    dws = ws - lag(ws, 3)\n    vd = vw * lag(vw, 3)\n    updws = wmean(dws, cone * decay * vd, dim=2)\n    reg = wmean(ws, vw, dim=2)\n    regdws = wmean(dws, vd, dim=2)\n    updp = wmean(dp3, cone * decay * vp, dim=2)\n    regdp = wmean(dp3, vp, dim=2)\n    x = dist * bsin * torch.ones_like(pan)\n    y = dist * bcos * torch.ones_like(pan)\n    dx = x - wmean(x, vp, dim=2).unsqueeze(-1)\n    dy = y - wmean(y, vp, dim=2).unsqueeze(-1)\n    dpan = pan - wmean(pan, vp, dim=2).unsqueeze(-1)\n    gx = wmean(dpan * dx, vp, dim=2) / (wmean(dx * dx, vp, dim=2) + 1e-3)\n    gy = wmean(dpan * dy, vp, dim=2) / (wmean(dy * dy, vp, dim=2) + 1e-3)\n    mass = wup.sum(dim=2) / (vw.sum(dim=2) + 1e-6)\n    feats = torch.stack([upadv, up, updws, up - local, reg, regdws, updp, regdp, gx, gy, mass], dim=-1)\n    return feats[..., :11]\n",
+  "ast_sha256": "6e26c104a02f47dfeb2a2d7552e76b1f8ab09ad30651b56bc89feb48c5d1e0e4",
+  "historical_ast_sha256": "6e26c104a02f47dfeb2a2d7552e76b1f8ab09ad30651b56bc89feb48c5d1e0e4",
+  "short_val_mae": 151.9073486328125,
+  "p_lr_multiplier": 10.0,
+  "val_mae": 147.43609619140625,
+  "best_epoch": 15,
+  "epochs_ran": 20,
+  "hit_epoch_limit": false,
+  "best_at_epoch_limit": false,
+  "history": [
+    {
+      "epoch": 0,
+      "val_mae": 1436.881591796875,
+      "val_rmse": 1895.07275390625,
+      "next_learning_rates": [
+        0.001,
+        0.01
+      ]
+    },
+    {
+      "epoch": 1,
+      "train_loss": 0.4399022947542706,
+      "val_mae": 171.46774291992188,
+      "val_rmse": 260.77850341796875,
+      "next_learning_rates": [
+        0.0009984740801978985,
+        0.009984602081996976
+      ]
+    },
+    {
+      "epoch": 2,
+      "train_loss": 0.3032501138435504,
+      "val_mae": 162.20362854003906,
+      "val_rmse": 250.5565185546875,
+      "next_learning_rates": [
+        0.0009939057285945933,
+        0.009938503261272715
+      ]
+    },
+    {
+      "epoch": 3,
+      "train_loss": 0.28936315215457126,
+      "val_mae": 158.83477783203125,
+      "val_rmse": 246.13084411621094,
+      "next_learning_rates": [
+        0.00098632311059685,
+        0.009861987752386395
+      ]
+    },
+    {
+      "epoch": 4,
+      "train_loss": 0.2805729531774334,
+      "val_mae": 154.9296417236328,
+      "val_rmse": 242.2047119140625,
+      "next_learning_rates": [
+        0.0009757729755661011,
+        0.009755527298894293
+      ]
+    },
+    {
+      "epoch": 5,
+      "train_loss": 0.27543716335896234,
+      "val_mae": 152.82684326171875,
+      "val_rmse": 238.8893280029297,
+      "next_learning_rates": [
+        0.000962320368593087,
+        0.009619778264893877
+      ]
+    },
+    {
+      "epoch": 6,
+      "train_loss": 0.2709782889584446,
+      "val_mae": 155.49209594726562,
+      "val_rmse": 240.12574768066406,
+      "next_learning_rates": [
+        0.0009460482294732421,
+        0.009455577588320897
+      ]
+    },
+    {
+      "epoch": 7,
+      "train_loss": 0.2675633171965501,
+      "val_mae": 152.12319946289062,
+      "val_rmse": 238.8501434326172,
+      "next_learning_rates": [
+        0.0009270568813552756,
+        0.00926393762094869
+      ]
+    },
+    {
+      "epoch": 8,
+      "train_loss": 0.26537838423241944,
+      "val_mae": 153.46070861816406,
+      "val_rmse": 236.289794921875,
+      "next_learning_rates": [
+        0.000905463412215599,
+        0.009046039886902862
+      ]
+    },
+    {
+      "epoch": 9,
+      "train_loss": 0.26292212849890995,
+      "val_mae": 148.7704315185547,
+      "val_rmse": 234.46690368652344,
+      "next_learning_rates": [
+        0.0008814009529720154,
+        0.008803227798172155
+      ]
+    },
+    {
+      "epoch": 10,
+      "train_loss": 0.26122547529847423,
+      "val_mae": 150.08633422851562,
+      "val_rmse": 238.38876342773438,
+      "next_learning_rates": [
+        0.000855017856687341,
+        0.008536998372026806
+      ]
+    },
+    {
+      "epoch": 11,
+      "train_loss": 0.2600438716263214,
+      "val_mae": 152.09674072265625,
+      "val_rmse": 235.3345489501953,
+      "next_learning_rates": [
+        0.000826476783923441,
+        0.00824899300140927
+      ]
+    },
+    {
+      "epoch": 12,
+      "train_loss": 0.2591981683037572,
+      "val_mae": 149.04058837890625,
+      "val_rmse": 234.5062713623047,
+      "next_learning_rates": [
+        0.0007959536998847741,
+        0.007940987335200905
+      ]
+    },
+    {
+      "epoch": 13,
+      "train_loss": 0.2572148311930849,
+      "val_mae": 148.88034057617188,
+      "val_rmse": 234.9689178466797,
+      "next_learning_rates": [
+        0.0007636367895343945,
+        0.007614880330756166
+      ]
+    },
+    {
+      "epoch": 14,
+      "train_loss": 0.256874817741903,
+      "val_mae": 148.02371215820312,
+      "val_rmse": 233.03822326660156,
+      "next_learning_rates": [
+        0.0007297252973710755,
+        0.007272682546199037
+      ]
+    },
+    {
+      "epoch": 15,
+      "train_loss": 0.2556869983164957,
+      "val_mae": 147.43609619140625,
+      "val_rmse": 233.5960693359375,
+      "next_learning_rates": [
+        0.0006944282990207194,
+        0.006916503744663625
+      ]
+    },
+    {
+      "epoch": 16,
+      "train_loss": 0.2542191047700978,
+      "val_mae": 148.76922607421875,
+      "val_rmse": 233.8701629638672,
+      "next_learning_rates": [
+        0.0006579634122155989,
+        0.0065485398869028644
+      ]
+    },
+    {
+      "epoch": 17,
+      "train_loss": 0.2539591653953733,
+      "val_mae": 148.59365844726562,
+      "val_rmse": 235.74868774414062,
+      "next_learning_rates": [
+        0.0006205554551086731,
+        0.00617105959246025
+      ]
+    },
+    {
+      "epoch": 18,
+      "train_loss": 0.2530870793700117,
+      "val_mae": 148.1160888671875,
+      "val_rmse": 234.58175659179688,
+      "next_learning_rates": [
+        0.0005824350601949142,
+        0.005786390152875955
+      ]
+    },
+    {
+      "epoch": 19,
+      "train_loss": 0.25184660032073963,
+      "val_mae": 148.52923583984375,
+      "val_rmse": 234.7496795654297,
+      "next_learning_rates": [
+        0.0005438372523852832,
+        0.005396903183160587
+      ]
+    },
+    {
+      "epoch": 20,
+      "train_loss": 0.2519246274121074,
+      "val_mae": 149.7880096435547,
+      "val_rmse": 235.92530822753906,
+      "next_learning_rates": [
+        0.0005049999999999999,
+        0.005005000000000001
+      ]
+    }
+  ]
+}

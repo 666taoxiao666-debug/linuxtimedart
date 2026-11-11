@@ -1,0 +1,15 @@
+{
+  "started_at_utc": "2026-11-11T09:41:54.997536+00:00",
+  "device": "cuda",
+  "code_hashes": {
+    "protocol_sha256": "495a5a8dc22e074efe6656f7a330064f664909f0c8aa06860ca0670985488e83",
+    "script_sha256": "f00006a58c86967acaff061ad2f71adada31d878531cddd2566f8e6dabf4474f",
+    "program_encoder_sha256": "7078eaac7976a6a9d6333721b6f8421dd835b5405847195882c0ad16c87b3aff"
+  },
+  "candidate_files_sha256_lf": {
+    "output/l1_llm_encoder/r3/search_L_candidates.json": "b22dfa42e43e5a0811dbbb329123900bc415a7285f5e18ab527544cd9fd4e7e2",
+    "output/l1_llm_encoder/o2/search_L_candidates.json": "78fe097f1eec21f39b2da6814b8925f42ec8e8cb426b738726e14d05de1c482a",
+    "output/l1_llm_encoder/o2/search_R_candidates.json": "f206471df94af3d9eb5be612b930dd4432e1aaa51f2a0cca446453c77fcc499e"
+  },
+  "llm_calls": 0
+}
