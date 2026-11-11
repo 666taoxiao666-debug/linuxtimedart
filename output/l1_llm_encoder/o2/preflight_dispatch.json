@@ -1,0 +1,22 @@
+{
+  "pid": 1053770,
+  "command": [
+    "/home/XT/miniconda3/envs/timedart/bin/python",
+    "-u",
+    "scripts/llm_encoder_search_l1.py",
+    "--data-root",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst",
+    "--out",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/LLM_L1/l1_ba7bca7_o2",
+    "--device",
+    "cuda",
+    "--preflight"
+  ],
+  "cwd": "/home/XT/nuist/pythoncode/TimeDARTFirst_M6_ba7bca7",
+  "code": "ba7bca7",
+  "hashes": {
+    "scripts/llm_encoder_search_l1.py": "1153e939d383165aa9542c88e7d046e499c9d37f6ca5b806b30c53d3077443a5",
+    "models/ProgramEncoder.py": "7078eaac7976a6a9d6333721b6f8421dd835b5405847195882c0ad16c87b3aff",
+    "configs/l1_llm_encoder_protocol.json": "56ecf076ea1eeab6dd711668521982cc98174a48f34a6784e78aea4087d1c574"
+  }
+}

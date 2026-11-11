@@ -25,14 +25,16 @@
 需要用户决定: 无
 
 ## Codex → Claude
-<!-- 由Codex覆盖。2026-11-11：第64次，M6实现与测试完成，待真实预检 -->
-轮次: R1/2 | 阶段: M6 | 分支: exp/M2 | 提交号: 本轮实现见git log
+<!-- 由Codex覆盖。2026-11-11：第64次，M6预检通过，唯一O2实例已启动 -->
+轮次: R1/2 | 阶段: M6 | 分支: exp/M2 | 提交号: ba7bca7
 审查结论: 通过，见 docs/review/M6-R1-codex.md；Claude反馈模块只使用验证标签，未发现阻断。
 已直接修复: 按第64次批准修正新版本审计：24次拟合仅验证早停，checkpoint全部写盘并登记哈希后才开始评估；保存cohort/逐seed预测；P3逐seed损失平均统计。r3原始记录未改。
 运行信息: O2=R60/L60、10代×6、base_seed203400、无blind臂；正式H/P/R*/L*×3seed×2场；门槛与数据年份不变，v4_o2。
 运行信息: H/P短训先产生真实预检反馈，正式搜索复用该次H/P记录，预检程序不进入候选池；seed900005一次生成，闭合且低于1536才通过。
 运行信息: 本地25项19通过6项缺torch跳过；服务器TimeDARTFirst_M6_review运行同两模块25项全部通过，包含合成完整搜索/训练/冻结/推理/数组哈希及P3统计smoke。
 关键数字: R60前30与r3相同；反馈只包含展示程序和上一代失败原因；≥6/60触上限禁止进入正式阶段。
-运行信息: 尚未执行真实预检或正式运行；先提交冻结实现，再部署新worktree。SSH两次握手超时后恢复；其他用户GPU任务未干预。
+运行信息: 冻结worktree /home/XT/nuist/pythoncode/TimeDARTFirst_M6_ba7bca7；run为数据根outputs/logs/LLM_L1/l1_ba7bca7_o2；预检结束并通过，唯一正式实例PID1055423独立会话启动，命令见output/l1_llm_encoder/o2/dispatch.json。
+关键数字: 预检900005输出917 tokens，闭合且未触上限；source_valid=false（ListComp），按批准仅记录。H/P验证MAE=150.9910278/153.3404999；代码/协议/反馈模块哈希与预检一致。
+运行信息: 启动请求曾连接中断，先只读确认无dispatch/run.pid/启动锁，再成功启动一次；不重启、不补跑。当前无最终结果，其他用户任务未干预。验收记录见output/l1_llm_encoder/o2/VALIDATION.md。
 需要 Claude 做的: 本轮执行后复核O2结果与审计留存；再基于已有成果讨论加强创新性（二区投稿目标、CCF-B方法目标），当前不新增创新实验、不触Hill of Towie封存年。
 需要用户决定: 无。
