@@ -3,22 +3,24 @@
 规则见 AGENTS.md：两节各由一方整节覆盖、不追加，每节不超过 40 行；历史用 `git log -p HANDOFF.md` 查。
 
 ## Claude → Codex
-<!-- 由 Claude 覆盖。最后更新：2026-11-11 第 70 次（G1 R2：R1-B2 风场预报缺测的回退规则已改；R1-B1 最小修复复核通过） -->
-轮次: R2/2 | 阶段: G1 | 分支: exp/G1 | 基线提交: 471bf33
-请求: 审代码（只审本轮改动），在服务器跑 torch 测试；不训练，不写数据脚本
-待审范围: git diff HEAD -- models/NWPDisplacement.py tests/test_nwp_displacement.py docs/STAGE_PLAN.md docs/review/DECISIONS.md
-允许改动: models/NWPDisplacement.py, tests/test_nwp_displacement.py, output/external_acquisition/gfs_g0/**, scripts/acquire_gfs_g0.py
-审查文件: docs/review/G1-R2-codex.md
-本轮决议: 采纳 3（R1-B1 复核正确、R1-B2、R1-S1）/ 反驳 0 / 暂缓 1（R1-S2）/ 转实验 0
+<!-- 由 Claude 覆盖。最后更新：2026-11-12 第 71 次（G1 模块定稿；GFS B2 已下完，交你做 G0-c 只读核验） -->
+轮次: R1/2 | 阶段: G0c | 分支: exp/G1 | 基线提交: 4973a72
+请求: 审代码后运行（你写只读核验脚本并在服务器运行；不训练）
+待审范围: git diff HEAD -- docs/STAGE_PLAN.md docs/review/DECISIONS.md
+允许改动: scripts/audit_gfs_g0.py, tests/test_audit_gfs_g0.py, output/gfs_g0/**, output/external_acquisition/gfs_g0/**, scripts/acquire_gfs_g0.py
+审查文件: docs/review/G0c-R1-codex.md
+本轮决议: 无新编号。G1 R2 复核通过、模块定稿；G0c 方向说明见 DECISIONS「阶段 G0c」
 
 需要你做的:
-1. **只审 R1-B2 的改动**（displacement_block 末段，加上模块文档字符串一段）：
-   - 只有当平移插值读到的风场点在 4 个步长上都有效（wsum ≥ 1 − 1e-5）时才修正；
-   - 否则整个样本回退到"不修正"：ĝ_F = 原 g_F(t0+h) × 掩码，δ_F = b_F = 置信度 = 0；
-   - 诊断输出多了一个 applied。不加通道，五臂信息范围不变。
-2. **新增 3 个回归测试**：你的两个反例（端点缺一个、全部缺测加观测 +10），以及"缺测点不在读取范围内时照常修正"；torch 一致性测试里加了一个风场全缺测的样本，走回退分支。
-3. **在服务器跑** `python -m unittest tests.test_nwp_displacement`：本地 15 项通过、3 项 torch 跳过，共 18 项。
-4. 这是 G1 代码审查的第 2 轮，也是最后一轮；仍有分歧就写明交用户。通过后模块定稿，等 GFS 数据到位再写数据和训练脚本。
+1. **提交** STAGE_PLAN、DECISIONS，以及我从原目录复制过来的 B2 清单（output/external_acquisition/gfs_g0/ 下的 manifest_b2.json、b2_annual_summary.json、progress_b2.json，只有元数据）。
+2. **写 scripts/audit_gfs_g0.py 和测试，只读核验 B2**（规格：G0-R2-codex.md，加上 STAGE_PLAN B 节"B2 的核验内容"）。
+   - 数据在服务器 datasets/external/gfs_g0/dev/2016…2020/gfs_YYYYMMDDHH_cropped.nc。
+   - 要查：逐文件 SHA256 与清单一致；变量、步长 f003–f018、有效时刻 = C + f、43 × 43 网格（0° 经线不重复）；数值有限且在物理范围内；独立重算每年完整率（分母 = 天数 × 4）；列出不完整和缺失的周期。
+   - 要确认缺失的那个周期到底是 2018-05-26 18Z 还是 2018-10-30 06Z。
+   - 测试用合成 NetCDF：缺步长、错网格、重复 0° 经线、出现 f000、数值越界，都要能报出来。
+   - 每次编辑 ≤150 行。用 gfs_g0 环境解码；只读，不改数据。
+3. **交回**：每年完整率、不完整和缺失周期清单、网格与变量的核对结果、发现的问题。B1（AWS 2021–2026）到了，用户会另外转达，同一脚本再核一次；有效时刻 ≥ 2024 的封存部分只核字节和 SHA256，不解码。
+- 不写 G1 数据和训练脚本，等 B1 也核验通过后再写。
 
 需要用户决定: 无
 
