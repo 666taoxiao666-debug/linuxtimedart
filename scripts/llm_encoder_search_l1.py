@@ -25,7 +25,6 @@ pe = importlib.util.module_from_spec(_pe_spec)
 _pe_spec.loader.exec_module(pe)
 
 from scripts import pilot_conformal_c0b as cb
-from utils import paired_forecast_statistics as pfs
 
 save, sha = cb.save, cb.sha
 
@@ -390,10 +389,10 @@ def encode(obs, geo, P):
 """
 
 
-def build_llm_prompt(protocol: dict, blind: bool, gen: int, slot: int, history: list[dict]) -> tuple[str, str]:
+def build_llm_prompt(protocol: dict, blind: bool, gen: int, slot: int, history: list[dict], feedback=None) -> tuple[str, str]:
     sys_msg = protocol["prompts"]["L_blind_system"] if blind else protocol["prompts"]["L_system"]
     valid_hist = [r for r in history if r.get("status") == "COMPLETE" and r.get("val_mae") is not None and math.isfinite(r["val_mae"])]
-    valid_hist.sort(key=lambda r: (r["val_mae"], r["program_id"]))
+    valid_hist.sort(key=lambda r: (r["val_mae"], r["slot_index"]))
     top_k = valid_hist[:3]
 
     if blind:
@@ -436,6 +435,12 @@ def build_llm_prompt(protocol: dict, blind: bool, gen: int, slot: int, history: 
         lines.append("Top-performing valid programs so far (lower validation_mae in kW is better):")
         for rank, item in enumerate(top_k, 1):
             lines += [f"Rank {rank} (val_mae={item['val_mae']:.4f} kW):", "```python", item["source"].strip(), "```"]
+    if feedback is not None:
+        shown = top_k or [feedback["expert"]]
+        failures = [(r["program_id"], r["failure_reason"]) for r in history
+                    if r.get("generation") == gen - 1 and r.get("failure_reason")]
+        lines.append(pe.render_feedback(feedback["target_mae"],
+            [(r["program_id"], r["val_mae"], r["breakdown"]) for r in shown], failures))
     lines += [
         pe.PROGRAM_RULES_TEXT,
         "Produce a NOVEL program distinct from all shown examples. Return ONLY one ```python ... ``` code block.",
@@ -566,10 +571,13 @@ def evaluate_candidate(
         if not math.isfinite(vmae):
             rec["failure_reason"] = "non_finite_val_mae"
         else:
-            rec["status"] = "COMPLETE"
             rec["val_mae"] = vmae
             rec["best_epoch"] = int(fit["best_epoch"])
             rec["learned_P"] = fit["learned_P"]
+            pack = farm_k.split_pack("validation")
+            rec["breakdown"] = pe.feedback_breakdown(fit["outputs"]["validation"]["prediction"],
+                pack["truth"], np.broadcast_to(pack["anchor"], pack["truth"].shape))
+            rec["status"] = "COMPLETE"
     except Exception as exc:
         rec["failure_reason"] = f"train_error: {type(exc).__name__}: {exc}"
     rec["elapsed_sec"] = round(time.time() - t0, 3)
@@ -621,7 +629,6 @@ def decide_l1(summary_by_farm: dict) -> str:
             "L_star_vs_H": gain_vs_h_pct,
             "L_star_vs_P": gain_vs_p_pct,
             "L_star_vs_R_star": gain_vs_r_pct,
-            "L_star_vs_L_blind_star": (float(fsum["arms"]["L_blind_star"]["mean_mae"]) - l_mae) / float(fsum["arms"]["L_blind_star"]["mean_mae"]) * 100.0,
         }
         if gain_vs_h_pct < 1.5 - 1e-12:
             both_beat_h = False
@@ -649,8 +656,12 @@ def run_search_phase(
     seed = int(s_cfg["seed"])
     gen_fn = generator_fn or run_llm_worker_batch
 
-    h_fit = fit_arm(farm_k, source=None, seed=seed, train_cfg=s_cfg, device_str=device, eval_splits=("validation",))
-    p_rec = evaluate_candidate("P_expert", "P", 0, pe.EXPERT_PROGRAM, set(), farm_k, s_cfg, device, seed=seed)
+    if (out / "preflight.json").exists():
+        refs = read_json(out / "preflight.json")["feedback"]
+        h_fit, p_rec = {"validation_mae": refs["target_mae"]}, refs["expert"]
+    else:
+        refs = prepare_feedback(farm_k, protocol, device)
+        h_fit, p_rec = {"validation_mae": refs["target_mae"]}, refs["expert"]
 
     r_items = pe.sample_grammar_programs(g_cfg, seed=int(g_cfg["seed"]), budget=int(g_cfg["budget"]))
     r_seen: set[str] = set()
@@ -663,8 +674,8 @@ def run_search_phase(
         r_records.append(rec)
     save(out / "search_R_candidates.json", r_records)
 
-    arm_records = {"L": [], "L_blind": []}
-    for arm_key, blind in (("L", False), ("L_blind", True)):
+    arm_records = {"L": []}
+    for arm_key, blind in (("L", False),):
         seen: set[str] = set()
         slot_counter = 0
         base_seed = int(llm_cfg["base_seed_L_blind"] if blind else llm_cfg["base_seed_L"])
@@ -673,7 +684,7 @@ def run_search_phase(
             prompts_meta = {}
             for s in range(1, int(llm_cfg["population_per_generation"]) + 1):
                 slot_counter += 1
-                sys_m, usr_m = build_llm_prompt(protocol, blind=blind, gen=g, slot=s, history=arm_records[arm_key])
+                sys_m, usr_m = build_llm_prompt(protocol, blind=blind, gen=g, slot=s, history=arm_records[arm_key], feedback=refs)
                 c_seed = base_seed + g * 100 + s
                 reqs.append({"slot": slot_counter, "seed": c_seed, "system": sys_m, "user": usr_m})
                 prompts_meta[slot_counter] = (g, s, sys_m, usr_m, c_seed)
@@ -695,6 +706,7 @@ def run_search_phase(
                     rejection_reason="hit_max_new_tokens" if hit_cap else None,
                 )
                 rec["n_new_tokens"] = generated.get("n_new_tokens", 0)
+                rec["generation"] = g
                 rec["hit_max_new_tokens"] = rec["n_new_tokens"] >= int(llm_cfg["max_new_tokens"])
                 arm_records[arm_key].append(rec)
             save(out / f"search_{arm_key}_candidates.json", arm_records[arm_key])
@@ -704,19 +716,26 @@ def run_search_phase(
     failures = {arm: {reason: sum(r.get("failure_reason") == reason for r in rows)
                      for reason in sorted({r["failure_reason"] for r in rows if r.get("failure_reason")})}
                 for arm, rows in arm_records.items()}
+    by_generation = {}
+    for g in range(1, int(llm_cfg["generations"]) + 1):
+        rows = [r for r in arm_records["L"] if r["generation"] == g]
+        by_generation[str(g)] = {"complete": sum(r["status"] == "COMPLETE" for r in rows),
+            "hit_max_new_tokens": sum(r["hit_max_new_tokens"] for r in rows),
+            "failures": [{"program_id": r["program_id"], "reason": r["failure_reason"]}
+                         for r in rows if r["failure_reason"]]}
     save(out / "search_diagnostics.json", {"H_short_val_mae": h_fit["validation_mae"],
          "P_short_val_mae": p_rec["val_mae"], "hit_max_new_tokens_counts": counts,
+         "by_generation": by_generation,
          "failure_reasons": failures,
          "completed_counts": {arm: sum(r["status"] == "COMPLETE" for r in rows)
                               for arm, rows in arm_records.items()}})
-    if token_limit_failed(counts):
+    if token_limit_failed(counts, int(llm_cfg["token_limit_failure_count"])):
         save(out / "audit/failed.json", {"reason": "token_limit_gate", "counts": counts})
         raise RuntimeError("Token limit gate failed; formal phase forbidden")
     r_star = select_best_record(r_records, pe.EXPERT_PROGRAM)
     l_star = select_best_record(arm_records["L"], pe.EXPERT_PROGRAM)
-    lb_star = select_best_record(arm_records["L_blind"], pe.EXPERT_PROGRAM)
 
-    all_valid = [r for r in ([p_rec] + r_records + arm_records["L"] + arm_records["L_blind"]) if r.get("status") == "COMPLETE" and r.get("val_mae") is not None]
+    all_valid = [r for r in ([p_rec] + r_records + arm_records["L"]) if r.get("status") == "COMPLETE" and r.get("val_mae") is not None]
     all_valid.sort(key=lambda r: (float(r["val_mae"]), r["program_id"]))
     top10 = [
         {
@@ -738,16 +757,49 @@ def run_search_phase(
         "P_short_val_mae": float(p_rec["val_mae"]),
         "R_valid_count": sum(1 for r in r_records if r["status"] == "COMPLETE"),
         "L_valid_count": sum(1 for r in arm_records["L"] if r["status"] == "COMPLETE"),
-        "L_blind_valid_count": sum(1 for r in arm_records["L_blind"] if r["status"] == "COMPLETE"),
         "R_star": r_star,
         "L_star": l_star,
-        "L_blind_star": lb_star,
     }
     save(out / "search_selection_freeze.json", {"frozen_at_utc": now_utc(), **search_summary})
     return search_summary
 
 
+def predict_checkpoint(farm, source, checkpoint, expected_sha, device):
+    import torch
+    from models.TSMixerBasicSmall import Model as TSMixer
+    if sha(checkpoint) != expected_sha:
+        raise ValueError("Frozen checkpoint hash mismatch")
+    state = torch.load(checkpoint, map_location="cpu", weights_only=True)
+    if source is None:
+        model = TSMixer(seq_len=24, channels=21, pred_len=4, blocks=2, ff_dim=32,
+            dropout=0.1, norm_eps=1e-3, target_slot=20, input_mode="full")
+    else:
+        model = pe.ProgramTSMixerModel(source, farm.geo, blocks=2, ff_dim=32, dropout=0.1, norm_eps=1e-3)
+    model.load_state_dict(state, strict=True)
+    model.to(device).eval()
+    pack = farm.split_pack("eval")
+    obs = torch.as_tensor(farm.obs_hourly, dtype=torch.float32, device=device)
+    chunks = []
+    with torch.no_grad():
+        for i in range(0, len(pack["truth"]), 512):
+            key = "x21" if source is None else "x10"
+            x = torch.as_tensor(pack[key][i:i+512], dtype=torch.float32, device=device)
+            y = model(x) if source is None else model(x, obs[pack["h_idx"][i:i+512]])
+            chunks.append(y[..., -1].cpu().numpy())
+    pred = np.concatenate(chunks) * pack["power_scale"] + pack["power_mean"]
+    return {"prediction": pred, "metrics": calc_metrics(pred, pack["truth"])}
+
+
+def save_arrays(path, **arrays):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("xb") as handle:
+        np.savez_compressed(handle, **arrays)
+    return sha(path)
+
+
 def run_formal_phase(farms: dict[str, L1FarmData], protocol: dict, out: Path, search_summary: dict, device: str) -> dict:
+    import torch
+    from utils import kelmarsh_backbone_information as kbi
     f_cfg = protocol["formal_phase"]
     seeds = [int(s) for s in f_cfg["seeds"]]
     arm_sources = {
@@ -755,20 +807,34 @@ def run_formal_phase(farms: dict[str, L1FarmData], protocol: dict, out: Path, se
         "P": pe.EXPERT_PROGRAM,
         "R_star": search_summary["R_star"]["source"],
         "L_star": search_summary["L_star"]["source"],
-        "L_blind_star": search_summary["L_blind_star"]["source"],
     }
 
     trained_runs = {fk: {ak: [] for ak in arm_sources} for fk in ("Kelmarsh", "Penmanshiel")}
+    artifacts = {}
+    if (out / "formal_selection_freeze.json").exists() or (out / "test_evaluation_started.json").exists():
+        raise RuntimeError("Formal run cannot be repeated")
     for fk in ("Kelmarsh", "Penmanshiel"):
         fdata = farms[fk]
         for ak, src in arm_sources.items():
             for sd in seeds:
-                res = fit_arm(fdata, source=src, seed=sd, train_cfg=f_cfg, device_str=device, eval_splits=("validation", "eval"))
-                trained_runs[fk][ak].append({"seed": sd, **{k: v for k, v in res.items() if k != "best_state"}})
+                res = fit_arm(fdata, source=src, seed=sd, train_cfg=f_cfg, device_str=device, eval_splits=("validation",))
+                rel = f"checkpoints/{fk}/{ak}_s{sd}.pt"
+                path = out / rel
+                path.parent.mkdir(parents=True, exist_ok=True)
+                with path.open("xb") as handle:
+                    torch.save(res["best_state"], handle)
+                artifacts[rel] = sha(path)
+                record = {"seed": sd, "checkpoint": rel, "checkpoint_sha256": artifacts[rel],
+                    **{k: v for k, v in res.items() if k not in ("best_state", "outputs")}}
+                trained_runs[fk][ak].append(record)
+                save(out / f"training/{fk}/{ak}_s{sd}.json", record)
+                del res
 
     save(out / "formal_selection_freeze.json", {
         "frozen_at_utc": now_utc(),
         "total_fits": sum(len(trained_runs[fk][ak]) for fk in trained_runs for ak in trained_runs[fk]),
+        "checkpoints": dict(artifacts),
+        "sources": arm_sources,
         "validation_summary": {
             fk: {ak: [r["validation_mae"] for r in trained_runs[fk][ak]] for ak in arm_sources}
             for fk in ("Kelmarsh", "Penmanshiel")
@@ -779,14 +845,26 @@ def run_formal_phase(farms: dict[str, L1FarmData], protocol: dict, out: Path, se
     summary_by_farm = {}
     for fk in ("Kelmarsh", "Penmanshiel"):
         eval_pack = farms[fk].split_pack("eval")
+        cohort_rel = f"predictions/{fk}/cohort.npz"
+        artifacts[cohort_rel] = save_arrays(out / cohort_rel,
+            truth=eval_pack["truth"], anchor=eval_pack["anchor"], issue=eval_pack["issue"],
+            times=eval_pack["times"], turbines=np.asarray(eval_pack["turbines"], dtype=str),
+            window_starts=eval_pack["windows"].window_starts)
         truth = eval_pack["truth"]
         issues = eval_pack["issue"]
         arm_out = {}
-        mean_preds = {}
+        losses = {}
         for ak in arm_sources:
             runs = trained_runs[fk][ak]
+            for r in runs:
+                result = predict_checkpoint(farms[fk], arm_sources[ak], out / r["checkpoint"],
+                                            r["checkpoint_sha256"], device)
+                r["outputs"] = {"eval": result}
+                rel = f"predictions/{fk}/{ak}_s{r['seed']}.npz"
+                artifacts[rel] = save_arrays(out / rel, prediction=result["prediction"])
             preds = np.stack([r["outputs"]["eval"]["prediction"] for r in runs], axis=0)
-            mean_preds[ak] = np.mean(preds, axis=0)
+            errors = preds.astype(np.float64) - truth.astype(np.float64)
+            losses[ak] = (np.abs(errors).mean(axis=0), np.square(errors).mean(axis=0))
             seed_metrics = [r["outputs"]["eval"]["metrics"] for r in runs]
             arm_out[ak] = {
                 "mean_mae": float(np.mean([m["mae"] for m in seed_metrics])),
@@ -797,18 +875,15 @@ def run_formal_phase(farms: dict[str, L1FarmData], protocol: dict, out: Path, se
                 "seeds": [{"seed": r["seed"], "best_epoch": r["best_epoch"], "val_mae": r["validation_mae"], **r["outputs"]["eval"]["metrics"], "learned_P": r["learned_P"]} for r in runs],
             }
         comparisons = {}
-        cand_err = np.abs(mean_preds["L_star"] - truth).mean(axis=1)
-        for ref in ("H", "P", "R_star", "L_blind_star"):
-            ref_err = np.abs(mean_preds[ref] - truth).mean(axis=1)
-            diff_df = pd.DataFrame({"issue": issues, "gain": ref_err - cand_err}).groupby("issue", sort=True)["gain"].mean()
-            series = diff_df.to_numpy(dtype=np.float64)
-            nw = pfs.newey_west_mean_test(series, max_lag=12)
-            bt = pfs.moving_block_bootstrap_mean(series, block_length=12, replicates=2000, seed=2024)
-            comparisons[f"L_star_vs_{ref}"] = {"newey_west": nw, "bootstrap": bt}
+        for ref in ("H", "P", "R_star"):
+            kw = dict(block_length=8, replicates=5000, seed=2024)
+            comparisons[f"L_star_vs_{ref}"] = {
+                "mae": kbi.paired_loss_statistics(losses["L_star"][0], losses[ref][0], issues, **kw),
+                "rmse": kbi.rmse_difference_bootstrap(losses["L_star"][1], losses[ref][1], issues, **kw)}
         summary_by_farm[fk] = {"arms": arm_out, "comparisons": comparisons}
 
     decision = decide_l1(summary_by_farm)
-    return {"farms": summary_by_farm, "decision": decision}
+    return {"farms": summary_by_farm, "decision": decision, "artifact_sha256": artifacts}
 
 
 class _SynthWindows:
@@ -880,20 +955,35 @@ def smoke(out: Path) -> int:
     return 0
 
 
-def token_limit_failed(counts):
-    return any(int(n) >= 3 for n in counts.values())
+def token_limit_failed(counts, threshold=6):
+    return any(int(n) >= threshold for n in counts.values())
 
 
-def preflight(protocol, out, data_root, llm_python):
+def prepare_feedback(farm, protocol, device):
+    cfg = protocol["search_phase"]
+    h = fit_arm(farm, None, int(cfg["seed"]), cfg, device, eval_splits=("validation",))
+    target = h["validation_mae"]
+    del h
+    p = evaluate_candidate("P_expert", "P", 0, pe.EXPERT_PROGRAM, set(), farm, cfg, device, seed=int(cfg["seed"]))
+    if p["status"] != "COMPLETE":
+        raise RuntimeError("Expert reference failed: " + str(p["failure_reason"]))
+    return {"target_mae": target, "expert": p}
+
+
+def preflight(protocol, out, data_root, llm_python, device="cuda"):
+    with (out / "preflight_instance.lock").open("x") as lock:
+        lock.write(now_utc())
     weights = verify_llm_weights(data_root, protocol)
-    requests = []
-    for slot, blind in enumerate((False, True), 1):
-        system, user = build_llm_prompt(protocol, blind, 1, 1, [])
-        requests.append(dict(slot=slot, seed=900002 + slot, system=system, user=user))
+    identities = {}
+    farm = load_real_farm(data_root, "Kelmarsh", protocol["search_phase"]["splits"], identities)
+    feedback = prepare_feedback(farm, protocol, device)
+    del farm
+    system, user = build_llm_prompt(protocol, False, 1, 1, [], feedback=feedback)
+    requests = [dict(slot=1, seed=900005, system=system, user=user)]
     cfg = protocol["llm"]
     rows = run_llm_worker_batch(Path(weights["weights_dir"]), requests,
         cfg["temperature"], cfg["top_p"], cfg["max_new_tokens"], llm_python)
-    ok = len(rows) == 2
+    ok = len(rows) == 1 and rows[0].get("slot") == 1
     for row in rows:
         raw = row["raw_output"]
         row["closed_fence"] = raw.count("```") >= 2
@@ -905,6 +995,7 @@ def preflight(protocol, out, data_root, llm_python):
             row.update(source_valid=False, error=str(exc))
         ok = ok and row["passed"]
     save(out / "preflight.json", dict(passed=bool(ok), outputs=rows, requests=requests, weights=weights,
+         feedback=feedback, input_hashes=identities, program_encoder_sha256=sha(ROOT / "models/ProgramEncoder.py"),
          protocol_sha256=sha(PROTOCOL), script_sha256=sha(Path(__file__).resolve())))
     return 0 if ok else 1
 
@@ -925,11 +1016,13 @@ def main(argv=None) -> int:
     if args.smoke:
         return smoke(args.out)
     if args.preflight:
-        return preflight(read_json(PROTOCOL), args.out, args.data_root.resolve(), args.llm_python)
+        return preflight(read_json(PROTOCOL), args.out, args.data_root.resolve(), args.llm_python,
+                         "cuda" if args.device == "auto" else args.device)
 
     check = read_json(args.out / "preflight.json")
     if not (check.get("passed") and check.get("protocol_sha256") == sha(PROTOCOL)
-            and check.get("script_sha256") == sha(Path(__file__).resolve())):
+            and check.get("script_sha256") == sha(Path(__file__).resolve())
+            and check.get("program_encoder_sha256") == sha(ROOT / "models/ProgramEncoder.py")):
         raise RuntimeError("Matching successful real preflight required")
     with (args.out / "formal_instance.lock").open("x") as lock:
         lock.write(now_utc())
@@ -938,6 +1031,8 @@ def main(argv=None) -> int:
     protocol = read_json(PROTOCOL)
     w_info = verify_llm_weights(args.data_root.resolve(), protocol)
     identities: dict[str, str] = {}
+    for path, digest in check["input_hashes"].items():
+        checked(Path(path), digest, identities)
     f_splits = protocol["formal_phase"]["farms"]
     farms = {
         "Kelmarsh": load_real_farm(args.data_root.resolve(), "Kelmarsh", f_splits["Kelmarsh"], identities),
@@ -949,10 +1044,12 @@ def main(argv=None) -> int:
         "program_encoder_sha256": sha(ROOT / "models/ProgramEncoder.py"),
     }
     save(args.out / "audit/launch.json", {"started_at_utc": now_utc(), "device": dev, "llm_weights": w_info, "code_hashes": code_hashes})
+    save(args.out / "audit/input_hashes.json", identities)
     s_sum = run_search_phase(farms["Kelmarsh"], protocol, args.out, dev, args.llm_python, Path(w_info["weights_dir"]))
     f_sum = run_formal_phase(farms, protocol, args.out, s_sum, dev)
     full = {
-        "stage": "M4",
+        "stage": "M6",
+        "protocol_id": protocol["protocol_id"],
         "experiment": "L1",
         "completed_at_utc": now_utc(),
         "device": dev,
@@ -961,6 +1058,7 @@ def main(argv=None) -> int:
         "input_hashes": identities,
         "search": s_sum,
         "formal": f_sum["farms"],
+        "artifact_sha256": f_sum["artifact_sha256"],
         "decision": f_sum["decision"],
     }
     save(args.out / "l1_summary.json", full)

@@ -374,6 +374,55 @@ def extract_code(text):
     return (m.group(1) if m else text).strip() + "\n"
 
 
+# --------------------------------------------------------------------------- L1 round 2 search feedback (no torch)
+FEEDBACK_CHANGE = 0.10  # change cell: |truth - anchor| >= 10% of rated power (same as scripts/ramp_diagnostics.py)
+
+
+def feedback_breakdown(pred, truth, anchor, rated=2050.0, change=FEEDBACK_CHANGE):
+    """Validation error breakdown shown to the LLM in round 2 (anchor = last observed hourly power, [window, lead])."""
+    import numpy as np
+    pred, truth, anchor = (np.asarray(a, dtype=np.float64) for a in (pred, truth, anchor))
+    if pred.ndim != 2 or pred.shape != truth.shape or truth.shape != anchor.shape:
+        raise ValueError("pred, truth and anchor must be aligned [window, lead] arrays")
+    if not (np.isfinite(pred).all() and np.isfinite(truth).all() and np.isfinite(anchor).all()):
+        raise ValueError("non-finite values in feedback inputs")
+    err = np.abs(pred - truth)
+    chg = np.abs(truth - anchor) >= change * float(rated)
+    total = float(err.sum())
+    return {"mae": float(err.mean()), "mae_by_lead": [float(v) for v in err.mean(axis=0)],
+            "mae_calm": float(err[~chg].mean()) if (~chg).any() else None,
+            "mae_change": float(err[chg].mean()) if chg.any() else None,
+            "change_cell_share": float(chg.mean()),
+            "change_error_share": float(err[chg].sum()) / total if total > 0 else None}
+
+
+def _fmt(v, nd=2):
+    return "n/a" if v is None else f"{v:.{nd}f}"
+
+
+def render_feedback(target_mae, shown, failures, max_failures=6, max_reason_chars=160):
+    """Feedback block appended to every round-2 L prompt (fixed wording, deterministic).
+
+    target_mae: validation MAE (kW) of the hand-feature arm H, short-trained in the same run.
+    shown: [(program_id, val_mae, breakdown)] for the programs whose code is shown in the prompt, best first.
+    failures: [(program_id, failure_reason)] of the previous generation in slot order (they used slots too).
+    """
+    lines = [f"Target to beat: the hand-crafted 11-feature encoder H reaches validation MAE {float(target_mae):.2f} kW "
+             "with the same backbone and training. Only programs clearly below this value are useful."]
+    for pid, val, b in shown:
+        lead = "/".join(f"{v:.1f}" for v in b["mae_by_lead"])
+        share = b["change_error_share"]
+        lines.append(f"{pid}: validation MAE {float(val):.2f} kW; by lead h1/h2/h3/h4 = {lead}; calm cells "
+                     f"{_fmt(b['mae_calm'])}; change cells (|power change| >= 10% of rated) {_fmt(b['mae_change'])}, "
+                     f"{100 * b['change_cell_share']:.0f}% of cells and "
+                     f"{'n/a' if share is None else f'{100 * share:.0f}%'} of absolute error.")
+    if failures:
+        lines.append("Programs of the previous generation that failed (each still used a slot); avoid these errors:")
+        for pid, reason in list(failures)[:max_failures]:
+            lines.append(f"- {pid}: {' '.join(str(reason).split())[:max_reason_chars]}")
+    return "\n".join(lines)
+
+
 # --------------------------------------------------------------------------- execution helpers (torch)
 def lag(x, k):
     """Causal shift along the time axis (dim=1) with edge padding: out[:, t] = x[:, max(t - k, 0)]."""

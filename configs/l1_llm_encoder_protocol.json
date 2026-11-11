@@ -1,7 +1,7 @@
 {
-  "protocol_id": "l1_llm_encoder_v3",
-  "supersedes": "l1_llm_encoder_v2 stopped at preflight due to invalid BLIND_EXAMPLE; r3 final authorized fresh run, technical-only preflight",
-  "stage": "M1_L1",
+  "protocol_id": "l1_llm_encoder_v4_o2",
+  "supersedes": "v3 STOP_L1; formal markers were late and predictions absent, CI used ensemble losses. O2 is a separately authorized final optimization round with pre-evaluation freeze and P3 statistics.",
+  "stage": "M6",
   "llm": {
     "model_name": "Qwen2.5-Coder-7B-Instruct",
     "weights_dir": "llm_weights/Qwen2.5-Coder-7B-Instruct",
@@ -12,10 +12,11 @@
     "temperature": 0.8,
     "top_p": 0.95,
     "max_new_tokens": 1536,
-    "generations": 5,
+    "generations": 10,
     "population_per_generation": 6,
-    "budget_programs_per_arm": 30,
-    "base_seed_L": 202400,
+    "budget_programs_per_arm": 60,
+    "base_seed_L": 203400,
+    "token_limit_failure_count": 6,
     "base_seed_L_blind": 202500
   },
   "interface": {
@@ -53,7 +54,7 @@
   },
   "grammar_R": {
     "seed": 2024,
-    "budget": 30,
+    "budget": 60,
     "cone_kernels": [
       "sigmoid",
       "softplus_cos",
@@ -119,8 +120,7 @@
       "H",
       "P",
       "R_star",
-      "L_star",
-      "L_blind_star"
+      "L_star"
     ],
     "seeds": [
       2024,

@@ -32,13 +32,16 @@ class TestLlmEncoderSearchL1(unittest.TestCase):
 
     def test_preflight_checks_transport_not_legality(self):
         protocol = l1.read_json(l1.PROTOCOL)
+        b = pe.feedback_breakdown([[1., 2.]], [[1., 3.]], [[1., 1.]])
+        refs = {"target_mae": 150., "expert": {"program_id": "P", "val_mae": 151., "breakdown": b}}
         for tokens, expected in ((100, 0), (1536, 1)):
             rows = [{"slot": i, "raw_output": "```python\ninvalid source\n```", "n_new_tokens": tokens}
-                    for i in (1, 2)]
-            with tempfile.TemporaryDirectory() as tmp, patch.object(l1, "verify_llm_weights", return_value={"weights_dir": tmp}), patch.object(l1, "run_llm_worker_batch", return_value=rows):
+                    for i in (1,)]
+            with tempfile.TemporaryDirectory() as tmp, patch.object(l1, "verify_llm_weights", return_value={"weights_dir": tmp}), patch.object(l1, "run_llm_worker_batch", return_value=rows), patch.object(l1, "load_real_farm"), patch.object(l1, "prepare_feedback", return_value=refs):
                 self.assertEqual(l1.preflight(protocol, Path(tmp), ROOT, "unused"), expected)
                 record = l1.read_json(Path(tmp) / "preflight.json")
-                self.assertEqual([r["seed"] for r in record["requests"]], [900003, 900004])
+                self.assertEqual([r["seed"] for r in record["requests"]], [900005])
+                self.assertIn("Target to beat", record["requests"][0]["user"])
                 self.assertFalse(record["outputs"][0]["source_valid"])
 
     def test_all_failed_fallback_is_json_serializable(self):
@@ -50,12 +53,22 @@ class TestLlmEncoderSearchL1(unittest.TestCase):
             self.assertTrue(l1.read_json(path)["all_failed_fallback"])
 
     def test_token_limit_gate_boundary(self):
-        for counts, expected in [({"L": 0, "L_blind": 0}, False),
-                                 ({"L": 2, "L_blind": 2}, False),
-                                 ({"L": 3, "L_blind": 0}, True),
-                                 ({"L": 0, "L_blind": 3}, True)]:
+        for counts, expected in [({"L": 0}, False), ({"L": 5}, False), ({"L": 6}, True)]:
             with self.subTest(counts=counts):
                 self.assertEqual(l1.token_limit_failed(counts), expected)
+
+    def test_feedback_uses_shown_programs_and_previous_generation_only(self):
+        b = pe.feedback_breakdown([[1., 2.]], [[1., 3.]], [[1., 1.]])
+        refs = {"target_mae": 150., "expert": {"program_id": "P", "val_mae": 151., "breakdown": b}}
+        history = [{"program_id": "L_g1_s1", "slot_index": 1, "generation": 1,
+                    "status": "COMPLETE", "val_mae": 149., "breakdown": b, "source": pe.EXPERT_PROGRAM},
+                   {"program_id": "bad_old", "generation": 1, "status": "FAILED", "failure_reason": "old_error"},
+                   {"program_id": "bad_prev", "generation": 2, "status": "FAILED", "failure_reason": "recent_error"}]
+        _, prompt = l1.build_llm_prompt(l1.read_json(l1.PROTOCOL), False, 3, 1, history, refs)
+        self.assertIn("L_g1_s1: validation MAE", prompt)
+        self.assertIn("recent_error", prompt)
+        self.assertNotIn("old_error", prompt)
+        self.assertLess(prompt.index("Target to beat"), prompt.index(pe.PROGRAM_RULES_TEXT))
 
     def test_build_hourly_obs_and_geo_lag1h_and_fit_only_stats(self):
         hours_mixed = pd.DatetimeIndex([
@@ -124,7 +137,20 @@ class TestLlmEncoderSearchL1(unittest.TestCase):
     def test_smoke_and_duplicate_slot_handling(self):
         with tempfile.TemporaryDirectory() as tmp:
             out = Path(tmp)
-            rc = l1.smoke(out)
+            original = l1.predict_checkpoint
+            original_fit = l1.fit_arm
+            def fit_guard(*args, **kwargs):
+                self.assertEqual(kwargs.get("eval_splits", ("validation",)), ("validation",))
+                self.assertFalse((out / "test_evaluation_started.json").exists())
+                return original_fit(*args, **kwargs)
+            def guarded(*args, **kwargs):
+                freeze = l1.read_json(out / "formal_selection_freeze.json")
+                self.assertEqual(freeze["total_fits"], 8)
+                self.assertEqual(len(freeze["checkpoints"]), 8)
+                self.assertTrue((out / "test_evaluation_started.json").is_file())
+                return original(*args, **kwargs)
+            with patch.object(l1, "predict_checkpoint", side_effect=guarded), patch.object(l1, "fit_arm", side_effect=fit_guard):
+                rc = l1.smoke(out)
             self.assertEqual(rc, 0)
             self.assertTrue((out / "smoke_summary.json").is_file())
             l_cands = l1.read_json(out / "search_L_candidates.json")
@@ -132,6 +158,14 @@ class TestLlmEncoderSearchL1(unittest.TestCase):
             self.assertEqual(l_cands[0]["status"], "COMPLETE")
             self.assertEqual(l_cands[1]["status"], "FAILED")
             self.assertEqual(l_cands[1]["failure_reason"], "duplicate_ast_sha256")
+            self.assertEqual(len(list((out / "predictions").rglob("*.npz"))), 10)
+            summary = l1.read_json(out / "smoke_summary.json")
+            for rel, digest in summary["formal"]["artifact_sha256"].items():
+                self.assertEqual(l1.sha(out / rel), digest)
+            with np.load(out / "predictions/Kelmarsh/cohort.npz", allow_pickle=False) as cohort:
+                self.assertIn("window_starts", cohort.files)
+            for arm in summary["formal"]["farms"]["Kelmarsh"]["comparisons"].values():
+                self.assertEqual(arm["mae"]["newey_west"]["lag"], 7)
 
 
 if __name__ == "__main__":

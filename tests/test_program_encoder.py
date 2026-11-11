@@ -106,6 +106,38 @@ class StaticValidation(unittest.TestCase):
             pe.validate_source(pe.extract_code("```python\n" + SIMPLE[:-40]))
 
 
+class RoundTwoFeedback(unittest.TestCase):
+    def test_breakdown_values(self):
+        truth = [[100.0, 100.0], [100.0, 900.0]]
+        anchor = [[100.0, 100.0], [100.0, 100.0]]
+        pred = [[110.0, 90.0], [100.0, 500.0]]
+        b = pe.feedback_breakdown(pred, truth, anchor, rated=2000.0)
+        self.assertAlmostEqual(b["mae"], 105.0)
+        self.assertEqual(b["mae_by_lead"], [5.0, 205.0])
+        self.assertAlmostEqual(b["mae_calm"], 20.0 / 3)
+        self.assertAlmostEqual(b["mae_change"], 400.0)
+        self.assertAlmostEqual(b["change_cell_share"], 0.25)
+        self.assertAlmostEqual(b["change_error_share"], 400.0 / 420.0)
+        with self.assertRaises(ValueError):
+            pe.feedback_breakdown([[1.0, 2.0]], truth, anchor)
+        with self.assertRaises(ValueError):
+            pe.feedback_breakdown([[float("nan"), 1.0], [1.0, 1.0]], truth, anchor)
+
+    def test_render_is_deterministic_and_bounded(self):
+        b = pe.feedback_breakdown([[110.0, 90.0], [100.0, 500.0]], [[100.0, 100.0], [100.0, 900.0]],
+                                  [[100.0, 100.0], [100.0, 100.0]], rated=2000.0)
+        fails = [(f"L_g1_s{i}", "verify_REJECTED:   " + "x" * 400) for i in range(1, 9)]
+        t1 = pe.render_feedback(150.991, [("L_g1_s2", 152.15, b)], fails)
+        t2 = pe.render_feedback(150.991, [("L_g1_s2", 152.15, b)], fails)
+        self.assertEqual(t1, t2)
+        self.assertIn("150.99 kW", t1)
+        self.assertIn("L_g1_s2: validation MAE 152.15 kW; by lead h1/h2/h3/h4 = 5.0/205.0", t1)
+        self.assertIn("95% of absolute error", t1)
+        self.assertEqual(sum(line.startswith("- L_g1_s") for line in t1.splitlines()), 6)
+        self.assertTrue(all(len(line) <= 160 + 12 for line in t1.splitlines() if line.startswith("- ")))
+        self.assertNotIn("failed", pe.render_feedback(150.0, [], []))
+
+
 class GrammarR(unittest.TestCase):
     def test_sample_is_deterministic_unique_valid_and_excludes_expert(self):
         a = pe.sample_grammar_programs(GRAMMAR, seed=2024, budget=30)
