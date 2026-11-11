@@ -25,6 +25,10 @@ Blocks (outputs are per-sample vectors, later broadcast as constant channels ove
   displacement_block  (arm M, the method)                7 ch: corrected farm trajectory
                       g_F(t0+h+delta_F) + lambda * b_F (h = 1..4), delta_F (h), b_F (m/s), confidence.
   Shift delta > 0 means the weather observed upstream arrives earlier than the forecast: o(tau) ~ g(tau + delta).
+  Missing farm forecasts (R1-B2): the correction is applied only if every farm point that the shifted linear
+  interpolation reads (all 4 horizons) is valid. Otherwise the sample gets the "no correction" state: the 4
+  trajectory channels hold the uncorrected g_F(t0+h) (0 where masked), delta_F = b_F = 0 and confidence = 0.
+  confidence = 0 always means "no correction applied" (also: no confident station, cycle missing).
 The upwind kernel is the expert program's sigmoid cone x anisotropic exponential distance (models/ProgramEncoder.py,
 init [1.386, 0.3, 0.0, 0.0]); each arm owns its kernel parameters.
 """
@@ -301,10 +305,20 @@ def displacement_block(o, b, w, ms, mf, adm, temp, lam, ws_scale=1.0, return_dia
     hat = o.relu(1.0 - o.abs(pos[..., None] - grid[None, None, :]))  # linear interpolation weights [B,4,13]
     num = o.sum(hat * (b["gF"] * fm)[:, None, :], -1)
     wsum = o.sum(hat * fm[:, None, :], -1)
-    g_hat = num / o.clip_min(wsum, EPS) + lam * b_f[:, None]
+    # R1-B2: the correction is applied only if every farm point read by the shifted interpolation (all 4 horizons)
+    # is a valid forecast; no one-sided extrapolation. Otherwise the sample falls back to the "no correction" state:
+    # g_hat = uncorrected g_F(t0+h) (0 where that forecast is masked; N's mask channels carry it), delta_F = b_F = 0,
+    # confidence = 0. confidence = 0 therefore always means "no correction applied".
+    v_h = o.ge(wsum, 1.0 - 1e-5)
+    applied = o.ge(o.sum(v_h, -1), len(HORIZONS) - 0.5) * b["cycle_ok"]
+    plain = (b["gF"] * fm)[:, _F0 + HORIZONS[0]:_F0 + HORIZONS[-1] + 1]
+    g_corr = num / o.clip_min(wsum, EPS) + lam * b_f[:, None]
+    g_hat = applied[:, None] * g_corr + (1.0 - applied[:, None]) * plain
+    d_f, b_f, conf = d_f * applied, b_f * applied, conf * applied
     out = o.cat([g_hat, d_f[:, None], b_f[:, None], conf[:, None]], -1) * b["cycle_ok"][:, None]
     if return_diagnostics:
-        return out, {"p": p, "available": A, "delta_station": dhat, "confidence_station": c, "cost": J}
+        return out, {"p": p, "available": A, "delta_station": dhat, "confidence_station": c, "cost": J,
+                     "applied": applied}
     return out
 
 

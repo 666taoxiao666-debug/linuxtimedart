@@ -125,6 +125,37 @@ class Blocks(unittest.TestCase):
         self.assertAlmostEqual(out[0, 4], 0.5, places=3)
         np.testing.assert_allclose(out[0, :4], 6.0 + 0.5 * (np.asarray(nd.HORIZONS) + 0.5), atol=1e-3)
 
+    def test_g1_r1_b2_missing_farm_endpoint_falls_back(self):
+        """Codex G1 R1-B2: a masked farm point read by the shifted interpolation must not be extrapolated over;
+        the sample falls back to no correction (uncorrected g_F(t0+h), delta_F = b_F = confidence = 0)."""
+        o = nd._NumpyOps()
+        b = shifted_station_batch(0)
+        b["oS"][0] = (b["gS"][0, :, 2:5] + b["gS"][0, :, 3:6]) / 2   # 50/50 between delta 0 and 1 -> 0.5
+        b["gF_mask"][0, nd._F0 + 2] = 0.0                              # t0+2: an endpoint for h = 1 and h = 2
+        ms, mf = nd.lead_masks(o, b["age"], b["cycle_ok"])
+        adm = nd.admissible_shifts(o, b["age"], b["cycle_ok"])
+        out = nd.displacement_block(o, b, np.ones((1, 2)), ms, mf, adm, temp=0.05, lam=0.5)
+        plain = b["gF"][0, nd._F0 + 1:nd._F0 + 5] * b["gF_mask"][0, nd._F0 + 1:nd._F0 + 5]
+        np.testing.assert_allclose(out[0, :4], plain, atol=1e-12)
+        self.assertEqual(out[0, 1], 0.0)                               # the masked t0+2 itself
+        self.assertEqual(out[0, 4:].tolist(), [0.0, 0.0, 0.0])
+
+    def test_g1_r1_b2_untouched_masked_point_keeps_correction(self):
+        b = shifted_station_batch(2)                                   # reads farm t0+3..t0+6 only
+        b["gF_mask"][0, nd._F0 + 2] = 0.0                              # t0+2 is not read
+        out, diag = nd.displacement_diagnostics_numpy(b, make_geo(2), SHARP)
+        self.assertEqual(float(diag["applied"][0]), 1.0)
+        self.assertAlmostEqual(out[0, 4], 2.0, places=2)
+        np.testing.assert_allclose(out[0, :4], 6.0 + 0.5 * (np.asarray(nd.HORIZONS) + 2), atol=1e-2)
+
+    def test_g1_r1_b2_all_farm_forecasts_missing(self):
+        """Codex G1 R1-B2 second case: farm forecasts all masked and observations +10 -> no bias trajectory."""
+        b = shifted_station_batch(1)
+        b["oS"][0] += 10.0
+        b["gF_mask"][:] = 0.0
+        out = nd.station_blocks_numpy("M", b, make_geo(2), SHARP)
+        self.assertEqual(np.abs(out[0, 28:]).max(), 0.0)
+
     def test_r2_b1_counterexample(self):
         """Swapping which station carries which pattern leaves every station average equal (I_pool cannot tell),
         while M (per-station matching) and I (per-station phi) must tell the two cases apart."""
@@ -209,6 +240,7 @@ class Torch(unittest.TestCase):
         b = make_batch(B=4, S=3, age=7, seed=11)
         b["age"] = np.asarray([6.0, 7.0, 9.0, 11.0])
         b["oS_mask"][1, 2, :] = 0.0
+        b["gF_mask"][3, :] = 0.0                       # one sample takes the R1-B2 fallback branch
         for arm in ("I_pool", "I", "M"):
             params = nd.init_params_numpy(arm, seed=5)
             ref = nd.station_blocks_numpy(arm, b, geo, params)
