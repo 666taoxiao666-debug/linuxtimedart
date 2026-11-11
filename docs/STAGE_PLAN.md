@@ -6,10 +6,11 @@
 
 ## 阶段名
 
-M7：三条线。
+G1（在 exp/G1 上实现 M7 的 C 线）。M7 的三条线如下，A 已结束，B 在下载，C 已定稿：
 - A：L1 第 3 轮（O3，调参，GPU），最后一轮。2026-11-11 完成：STOP_L1，L1 永久关闭，写成负结果（复核见 DECISIONS M7 末段）。
 - B：恢复 G0，即 GFS 数值预报的探查和下载（Cursor）。
 - C：G1 方法协议。两轮审查后按裁决定稿（R2-B1 选方案①，见 DECISIONS M7）；G0 数据核验通过前不训练。
+  - 用户 2026-11-11 同意先写自包含的方法模块：`models/NWPDisplacement.py`（I-pool、I 的 φ、M 的错位修正块，加 TSMixer 封装）和测试。本地 12 项 numpy 测试通过；torch 的 2 项（numpy 与 torch 一致、梯度、封装）交服务器跑。
 - 用户 2026-11-11 裁决：
   - L1 授权第 3 轮调参，再失败就作为负结果写进论文。
   - 新方法方向选"数值预报 + 观测修正"，推翻 11-09 的"不下载"决定。
@@ -61,6 +62,7 @@ M7：三条线。
   - 历史块（例外）：输入窗 τ = t0−23 … t0 的风场 GFS 按"τ 时已发布"的规则逐时刻取 C(τ)，时效 6–11 h。每个值在 τ ≤ t0 时都已发布。
   - 站点观测只用 ≤ t0 − 1 h 的。C(t0) 缺失：当前周期块全部置缺测标志，不回退。
 - 点位：0.25° 网格双线性插值到风场中心和每个冻结站点。站点用 10 m 风速；风场用 10 m，100 m 每个开发年可用 ≥95% 时才加一个通道。归一化只用拟合年。
+  - 站点系统偏差（事先登记，三组相同）：用拟合年里每站的平均残差 o − g_S 扣除观测，再进入站点块。o 和 g_S 都以 m/s 输入，模块内部不再标准化。
 - **五臂（R1-B2、R2-B1）**：都用 TSMixer、H 的 21 通道加下面的通道，配方同 O3 的正式配方；常数通道在 24 步上取同一个值。
   - B：H 本身。
   - N：B + 风场 GFS：历史块 1 个对齐通道；当前周期块在有效时刻 t0−5 … t0+7 共 13 个常数通道和对应掩码；时效 t0 − C；缺测标志。
@@ -110,13 +112,13 @@ M7：三条线。
 
 - A（Codex）：`scripts/llm_encoder_search_l1.py`（O3 模式）、`tests/test_llm_encoder_search_l1.py`、`configs/l1_llm_encoder_protocol.json`（v5_o3）、`output/l1_llm_encoder/o3/**`。
 - B（Cursor）：`scripts/acquire_gfs_g0.py`、`output/external_acquisition/gfs_g0/**`（只放清单和报告，不放数据）。核验阶段（Codex）：`scripts/audit_gfs_g0.py`、`tests/test_audit_gfs_g0.py`、`output/gfs_g0/**`。
-- C：本轮只改 STAGE_PLAN 和 DECISIONS。实现时的分工：Claude 写自包含模块（`models/NWPDisplacement.py`：错位匹配块和逐站编码器 φ，加测试，含 R2-B1 反例）；Codex 写 GFS 点位提取、对齐和训练脚本。
+- C：Claude 已写 `models/NWPDisplacement.py`、`tests/test_nwp_displacement.py`（含 R2-B1 反例）；Codex 写 GFS 点位提取、站点批数据（键名和形状见模块文档字符串）、对齐和训练脚本。
 
 ## 本阶段不做什么
 
 - O3 不调用大模型，不改判定阈值、年份和数据。
 - 不解码有效时刻 ≥2024 的 GFS，不碰任何风场的封存测试年；不用再分析，不下载 f000，不整文件下载 GDEX。
-- G1 在 G0 核验通过、方案审查通过之前不写代码、不训练。
+- G1 在 G0 核验通过之前不训练；Codex 的数据和训练脚本也等数据到位后再写。
 
 ## 风险（≤5 条）
 
