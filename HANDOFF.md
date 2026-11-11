@@ -3,22 +3,21 @@
 规则见 AGENTS.md：两节各由一方整节覆盖、不追加，每节不超过 40 行；历史用 `git log -p HANDOFF.md` 查。
 
 ## Claude → Codex
-<!-- 由 Claude 覆盖。最后更新：2026-11-11 第 67 次（M7 R2-B1 裁决：选方案①，I 改为逐站通用编码器，原平均对照改名 I-pool 作描述；C 定稿） -->
-轮次: R2/2 | 阶段: M7 | 分支: exp/M2 | 基线提交: 97a8202
-请求: 只提交（裁决记录，不再审方案）；O3 照常
+<!-- 由 Claude 覆盖。最后更新：2026-11-11 第 68 次（O3 复核通过：STOP_L1，L1 永久关闭；合并 exp/M2） -->
+轮次: R2/2 | 阶段: M7 | 分支: exp/M2 | 基线提交: b09d837
+请求: 提交 + 合并（按用户同意把 exp/M2 合回主线），不运行任何实验
 待审范围: git diff HEAD -- docs/STAGE_PLAN.md docs/review/DECISIONS.md
-允许改动: scripts/llm_encoder_search_l1.py, tests/test_llm_encoder_search_l1.py, configs/l1_llm_encoder_protocol.json, output/l1_llm_encoder/**, scripts/acquire_gfs_g0.py, output/external_acquisition/gfs_g0/**, scripts/acquire_hill_of_towie.py, output/external_acquisition/hill_of_towie/**, output/e1_baselines/local_smoke_1343756/**, .cursor-tmp/**（后四项是本地未跟踪文件，其中 .cursor-tmp 是 Cursor 的临时脚本，等它移走；只为通过范围检查，不要改、不要提交）
-审查文件: 无（两轮上限已到，裁决不再审）
-本轮决议: 采纳 3（R2-B1 选方案①、R2-S1、R2-S2）/ 反驳 0 / 暂缓 0 / 转实验 0
+允许改动: output/l1_llm_encoder/**, scripts/acquire_gfs_g0.py, output/external_acquisition/gfs_g0/**, scripts/acquire_hill_of_towie.py, output/external_acquisition/hill_of_towie/**, output/e1_baselines/local_smoke_1343756/**, .cursor-tmp/**（后四项是本地未跟踪文件，只为通过范围检查，不要改、不要提交）
+审查文件: 无（结果复核，无新编号）
+本轮决议: 无新编号。O3 的 STOP_L1 复核通过，复算与选择顺序都一致，见 DECISIONS M7 末段
 
 需要你做的:
-1. **提交** STAGE_PLAN 和 DECISIONS（R2-B1 的裁决）。改动只在 C 部分：
-   - 主对照 I 是"同样的逐站原料 → 两层 MLP φ（宽 16，输出 7）→ 同一组上风核汇总"；
-   - 原来的平均对照改名 I-pool，只作描述；
-   - Q3 = M 对 I，Holm 族仍是 {Q1, Q3}；共 5 臂 × 3 seed × 2 风场 = 30 次。
-   - 不进入第 3 轮。实现阶段你只核对代码是否符合定稿规格；R2-B1 的反例作为单测。
-2. **O3 照常**：跑完交回结果，我复核后按用户同意合并 exp/M2。
-3. **GFS**：B1、B2 的数据由用户转达到位后，按 G0-R2-codex.md 写 G0-c 只读核验。之前不下载、不读 Token、不写 G1 代码。
+1. **提交** STAGE_PLAN（A 线标为已完成）和 DECISIONS（O3 复核）。
+2. **合并：** 用户 2026-11-11 已同意"O3 跑完后合并"。
+   - 把 exp/M2 用 `git merge --no-ff exp/M2` 合进 codex/self-evolving-wiki，合并说明写上 M2–M7 的结论：T1 RETAIN_EXISTING（种子集成进联合确认）；CW1–CW3 STOP（C 线结束）；L1 r3/O2/O3 STOP（L1 关闭）；爬坡 RAMP_REPLICATED；NO_FALLBACK；G1 五臂方案定稿未实施。
+   - 推送主线，main 不动。不 reset、不 force push；有冲突就停下交回。
+3. **合并后从主线拉 exp/G1**，作为 G 线的工作分支。暂不实现；GFS 的 B1、B2 数据由用户转达到位后，再做 G0-c 只读核验。
+4. 交回：合并提交号、推送结果、exp/G1 的起点。
 
 需要用户决定: 无
 
