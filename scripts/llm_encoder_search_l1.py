@@ -235,6 +235,16 @@ def calc_metrics(pred_kw: np.ndarray, truth_kw: np.ndarray) -> dict:
     return {"mae": mae, "rmse": rmse, "r2": r2}
 
 
+def optimizer_groups(model, learning_rate, multiplier=1.0):
+    """Separate only the encoder P; preserve the backbone learning rate."""
+    if not math.isfinite(multiplier) or multiplier <= 0:
+        raise ValueError("Positive finite P learning-rate multiplier required")
+    if not hasattr(model, "P"):
+        return [{"params": list(model.parameters()), "lr": learning_rate}]
+    return [{"params": [p for p in model.parameters() if p is not model.P], "lr": learning_rate},
+            {"params": [model.P], "lr": learning_rate * multiplier}]
+
+
 def fit_arm(farm_data: L1FarmData, source: str | None, seed: int, train_cfg: dict, device_str: str, eval_splits=("validation",)):
     import torch
     from models.TSMixerBasicSmall import Model as TSMixer
@@ -254,7 +264,9 @@ def fit_arm(farm_data: L1FarmData, source: str | None, seed: int, train_cfg: dic
         model = pe.ProgramTSMixerModel(source, farm_data.geo, blocks=2, ff_dim=32, dropout=0.1, norm_eps=1e-3).to(device)
         model.fit_encoder_normalization(_HourWindowObs(obs_gpu, farm_data.fit_hour_windows), batch=512)
 
-    opt = torch.optim.AdamW(model.parameters(), lr=float(train_cfg["learning_rate"]), weight_decay=float(train_cfg["weight_decay"]))
+    multiplier = float(train_cfg.get("p_lr_multiplier", 1.0))
+    opt = torch.optim.AdamW(optimizer_groups(model, float(train_cfg["learning_rate"]), multiplier),
+                           lr=float(train_cfg["learning_rate"]), weight_decay=float(train_cfg["weight_decay"]))
     max_epochs = int(train_cfg["max_epochs"])
     patience = int(train_cfg["patience"])
     batch_size = int(train_cfg["batch_size"])
@@ -281,7 +293,8 @@ def fit_arm(farm_data: L1FarmData, source: str | None, seed: int, train_cfg: dic
     val_m0 = calc_metrics(val_pred0, va["truth"])
     best_mae, best_epoch, bad = val_m0["mae"], 0, 0
     best_state = {k: v.detach().cpu().clone() for k, v in model.state_dict().items()}
-    history = [{"epoch": 0, "val_mae": best_mae, "val_rmse": val_m0["rmse"]}]
+    history = [{"epoch": 0, "val_mae": best_mae, "val_rmse": val_m0["rmse"],
+                "next_learning_rates": [g["lr"] for g in opt.param_groups]}]
 
     n_tr = len(y_tr)
     for ep in range(1, max_epochs + 1):
@@ -315,7 +328,8 @@ def fit_arm(farm_data: L1FarmData, source: str | None, seed: int, train_cfg: dic
         sched.step()
         vp = predict_pack(va)
         vm = calc_metrics(vp, va["truth"])
-        history.append({"epoch": ep, "train_loss": ep_loss / max(steps, 1), "val_mae": vm["mae"], "val_rmse": vm["rmse"]})
+        history.append({"epoch": ep, "train_loss": ep_loss / max(steps, 1), "val_mae": vm["mae"], "val_rmse": vm["rmse"],
+                        "next_learning_rates": [g["lr"] for g in opt.param_groups]})
         if vm["mae"] < best_mae:
             best_mae, best_epoch, bad = vm["mae"], ep, 0
             best_state = {k: v.detach().cpu().clone() for k, v in model.state_dict().items()}
@@ -331,6 +345,10 @@ def fit_arm(farm_data: L1FarmData, source: str | None, seed: int, train_cfg: dic
     learned_p = model.P.detach().cpu().tolist() if source is not None else None
     return {
         "best_epoch": best_epoch,
+        "epochs_ran": history[-1]["epoch"],
+        "hit_epoch_limit": history[-1]["epoch"] == max_epochs,
+        "best_at_epoch_limit": best_epoch == max_epochs,
+        "p_lr_multiplier": multiplier,
         "validation_mae": best_mae,
         "history": history,
         "learned_P": learned_p,
@@ -764,6 +782,80 @@ def run_search_phase(
     return search_summary
 
 
+def o3_candidate_pool(protocol, root=ROOT):
+    cfg = protocol["o3"]
+    groups = {"L": [], "R": []}
+    identities = {}
+    for item in cfg["candidate_files"]:
+        path = root / item["path"]
+        raw = path.read_bytes().replace(b"\r\n", b"\n")
+        digest = hashlib.sha256(raw).hexdigest()
+        if digest != item["sha256_lf"]:
+            raise ValueError(f"Candidate file identity mismatch: {path}")
+        identities[item["path"]] = digest
+        for row in json.loads(raw):
+            if row.get("arm") != item["arm"] or row.get("status") != "COMPLETE":
+                continue
+            if row.get("val_mae") is None or not math.isfinite(float(row["val_mae"])):
+                continue
+            info = pe.validate_source(row["source"])
+            # ast.dump changes across Python versions; file SHA locks historical bytes.
+            groups[item["arm"]].append({"candidate_id": f"{path.parent.name}:{row['program_id']}",
+                "arm": item["arm"], "origin": item["path"], "program_id": row["program_id"],
+                "source": row["source"], "ast_sha256": info["hash"],
+                "historical_ast_sha256": row["ast_sha256"], "short_val_mae": row["val_mae"]})
+    pool = []
+    for arm in ("L", "R"):
+        seen, picked = set(), []
+        for row in sorted(groups[arm], key=lambda r: (r["short_val_mae"], r["origin"], r["program_id"])):
+            if row["ast_sha256"] in seen:
+                continue
+            seen.add(row["ast_sha256"])
+            picked.append(row)
+            if len(picked) == cfg["top_per_source"]:
+                break
+        if len(picked) != cfg["top_per_source"]:
+            raise ValueError(f"Insufficient unique candidates for {arm}")
+        pool.extend(picked)
+    pool.append({"candidate_id": "P", "arm": "P", "source": pe.EXPERT_PROGRAM,
+                 "ast_sha256": pe.validate_source(pe.EXPERT_PROGRAM)["hash"]})
+    return pool, identities
+
+
+def run_o3_search(farm, protocol, out, device, pool):
+    cfg = protocol["o3"]
+    train_cfg = {**protocol["formal_phase"], "max_epochs": cfg["max_epochs"], "patience": cfg["patience"]}
+    rerank, grid = [], []
+    rank = lambda r: (r["val_mae"], r["candidate_id"], r["p_lr_multiplier"])
+
+    def fit(candidate, multiplier, phase, index):
+        res = fit_arm(farm, candidate["source"], cfg["seed"],
+                      {**train_cfg, "p_lr_multiplier": multiplier}, device, eval_splits=("validation",))
+        row = {**candidate, "p_lr_multiplier": multiplier, "val_mae": res["validation_mae"],
+               **{k: res[k] for k in ("best_epoch", "epochs_ran", "hit_epoch_limit", "best_at_epoch_limit")}}
+        save(out / f"tuning/{phase}_{index:02d}.json", {**row, "history": res["history"]})
+        return row
+
+    for index, candidate in enumerate(pool):
+        rerank.append(fit(candidate, 1.0, "rerank", index))
+        save(out / "o3_rerank.json", rerank)
+    shortlist = []
+    for arm in ("L", "R", "P"):
+        limit = 1 if arm == "P" else cfg["rerank_top_for_grid"]
+        shortlist.extend(sorted([r for r in rerank if r["arm"] == arm], key=rank)[:limit])
+    save(out / "o3_grid_selection_freeze.json", {"frozen_at_utc": now_utc(), "shortlist": shortlist})
+    for row in shortlist:
+        for multiplier in cfg["p_lr_multipliers"]:
+            grid.append(fit(row, multiplier, "grid", len(grid)))
+            save(out / "o3_multiplier_grid.json", grid)
+    selected = {name: min([r for r in rerank + grid if r["arm"] == arm], key=rank)
+                for arm, name in (("L", "L_star"), ("R", "R_star"), ("P", "P"))}
+    summary = {**selected, "rerank_fits": len(rerank), "grid_fits": len(grid),
+               "candidate_files_sha256_lf": protocol["o3"]["candidate_files"]}
+    save(out / "search_selection_freeze.json", {"frozen_at_utc": now_utc(), **summary})
+    return summary
+
+
 def predict_checkpoint(farm, source, checkpoint, expected_sha, device):
     import torch
     from models.TSMixerBasicSmall import Model as TSMixer
@@ -817,7 +909,8 @@ def run_formal_phase(farms: dict[str, L1FarmData], protocol: dict, out: Path, se
         fdata = farms[fk]
         for ak, src in arm_sources.items():
             for sd in seeds:
-                res = fit_arm(fdata, source=src, seed=sd, train_cfg=f_cfg, device_str=device, eval_splits=("validation",))
+                arm_cfg = {**f_cfg, "p_lr_multiplier": search_summary.get(ak, {}).get("p_lr_multiplier", 1.0)}
+                res = fit_arm(fdata, source=src, seed=sd, train_cfg=arm_cfg, device_str=device, eval_splits=("validation",))
                 rel = f"checkpoints/{fk}/{ak}_s{sd}.pt"
                 path = out / rel
                 path.parent.mkdir(parents=True, exist_ok=True)
@@ -835,6 +928,7 @@ def run_formal_phase(farms: dict[str, L1FarmData], protocol: dict, out: Path, se
         "total_fits": sum(len(trained_runs[fk][ak]) for fk in trained_runs for ak in trained_runs[fk]),
         "checkpoints": dict(artifacts),
         "sources": arm_sources,
+        "p_lr_multipliers": {ak: search_summary.get(ak, {}).get("p_lr_multiplier", 1.0) for ak in arm_sources},
         "validation_summary": {
             fk: {ak: [r["validation_mae"] for r in trained_runs[fk][ak]] for ak in arm_sources}
             for fk in ("Kelmarsh", "Penmanshiel")
@@ -872,7 +966,9 @@ def run_formal_phase(farms: dict[str, L1FarmData], protocol: dict, out: Path, se
                 "mean_rmse": float(np.mean([m["rmse"] for m in seed_metrics])),
                 "mean_r2": float(np.mean([m["r2"] for m in seed_metrics])),
                 "mean_val_mae": float(np.mean([r["validation_mae"] for r in runs])),
-                "seeds": [{"seed": r["seed"], "best_epoch": r["best_epoch"], "val_mae": r["validation_mae"], **r["outputs"]["eval"]["metrics"], "learned_P": r["learned_P"]} for r in runs],
+                "seeds": [{"seed": r["seed"], "best_epoch": r["best_epoch"], "val_mae": r["validation_mae"],
+                           **{k: r[k] for k in ("epochs_ran", "hit_epoch_limit", "best_at_epoch_limit", "p_lr_multiplier")},
+                           **r["outputs"]["eval"]["metrics"], "learned_P": r["learned_P"]} for r in runs],
             }
         comparisons = {}
         for ref in ("H", "P", "R_star"):
@@ -1000,6 +1096,57 @@ def preflight(protocol, out, data_root, llm_python, device="cuda"):
     return 0 if ok else 1
 
 
+def o3_code_hashes():
+    return {"protocol_sha256": sha(PROTOCOL), "script_sha256": sha(Path(__file__).resolve()),
+            "program_encoder_sha256": sha(ROOT / "models/ProgramEncoder.py")}
+
+
+def o3_main(args, protocol):
+    pool, candidate_hashes = o3_candidate_pool(protocol)
+    code_hashes = o3_code_hashes()
+    if args.preflight:
+        if (args.out / "formal_instance.lock").exists():
+            raise RuntimeError("Cannot preflight an already launched instance")
+        checks = {r["candidate_id"]: pe.verify_in_subprocess(r["source"], timeout_sec=60,
+                  memory_mb=8192, tol=1e-5, seed=0) for r in pool}
+        passed = all(r["status"] == "OK" for r in checks.values())
+        save(args.out / "preflight.json", {"passed": passed, "created_at_utc": now_utc(),
+             "code_hashes": code_hashes, "candidate_files_sha256_lf": candidate_hashes,
+             "candidate_checks": checks, "candidate_count": len(pool), "llm_calls": 0})
+        return 0 if passed else 1
+    check = read_json(args.out / "preflight.json")
+    if not (check.get("passed") and check.get("code_hashes") == code_hashes
+            and check.get("candidate_files_sha256_lf") == candidate_hashes):
+        raise RuntimeError("Matching O3 preflight required")
+    with (args.out / "formal_instance.lock").open("x") as lock:
+        lock.write(now_utc())
+    import torch
+    dev = ("cuda" if torch.cuda.is_available() else "cpu") if args.device == "auto" else args.device
+    identities = {}
+    save(args.out / "audit/launch.json", {"started_at_utc": now_utc(), "device": dev,
+         "code_hashes": code_hashes, "candidate_files_sha256_lf": candidate_hashes, "llm_calls": 0})
+    save(args.out / "o3_candidate_pool_freeze.json", {"frozen_at_utc": now_utc(), "candidates": pool})
+    try:
+        farms = {fk: load_real_farm(args.data_root.resolve(), fk, splits, identities)
+                 for fk, splits in protocol["formal_phase"]["farms"].items()}
+        save(args.out / "audit/input_hashes.json", identities)
+        search = run_o3_search(farms["Kelmarsh"], protocol, args.out, dev, pool)
+        formal = run_formal_phase(farms, protocol, args.out, search, dev)
+        full = {"stage": "M7", "protocol_id": protocol["protocol_id"], "experiment": "L1_O3",
+                "completed_at_utc": now_utc(), "device": dev, "code_hashes": code_hashes,
+                "input_hashes": identities, "candidate_files_sha256_lf": candidate_hashes,
+                "search": search, "formal": formal["farms"], "artifact_sha256": formal["artifact_sha256"],
+                "decision": formal["decision"]}
+        save(args.out / "l1_summary.json", full)
+        save(args.out / "audit/completed.json", {"completed_at_utc": full["completed_at_utc"],
+                                                "decision": full["decision"]})
+    except Exception as exc:
+        save(args.out / "audit/failed.json", {"failed_at_utc": now_utc(),
+             "error_type": type(exc).__name__, "reason": str(exc), "restart_allowed": False})
+        raise
+    return 0
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--data-root", type=Path, default=ROOT)
@@ -1015,6 +1162,8 @@ def main(argv=None) -> int:
     args.out.mkdir(parents=True, exist_ok=True)
     if args.smoke:
         return smoke(args.out)
+    if "o3" in read_json(PROTOCOL):
+        return o3_main(args, read_json(PROTOCOL))
     if args.preflight:
         return preflight(read_json(PROTOCOL), args.out, args.data_root.resolve(), args.llm_python,
                          "cuda" if args.device == "auto" else args.device)

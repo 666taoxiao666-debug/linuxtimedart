@@ -18,12 +18,105 @@ from scripts import llm_encoder_search_l1 as l1
 
 
 class TestLlmEncoderSearchL1(unittest.TestCase):
+    def test_o3_pool_identities_budget_and_blind_exclusion(self):
+        protocol = l1.read_json(l1.PROTOCOL)
+        pool, identities = l1.o3_candidate_pool(protocol)
+        self.assertEqual(len(pool), 21)
+        self.assertEqual(len(identities), 3)
+        for arm in ("L", "R"):
+            rows = [r for r in pool if r["arm"] == arm]
+            self.assertEqual(len(rows), 10)
+            self.assertEqual(len({r["ast_sha256"] for r in rows}), 10)
+            self.assertTrue(all("blind" not in r["origin"] for r in rows))
+        broken = l1.copy.deepcopy(protocol)
+        broken["o3"]["candidate_files"][0]["sha256_lf"] = "0" * 64
+        with self.assertRaisesRegex(ValueError, "identity mismatch"):
+            l1.o3_candidate_pool(broken)
+
+    def test_o3_rerank_grid_uses_validation_only_and_all_multiplier_one_results(self):
+        protocol = l1.read_json(l1.PROTOCOL)
+        pool, _ = l1.o3_candidate_pool(protocol)
+        calls = []
+        def fake_fit(farm, source, seed, cfg, device, eval_splits):
+            self.assertEqual(eval_splits, ("validation",))
+            self.assertEqual((seed, cfg["max_epochs"], cfg["patience"]), (2024, 40, 5))
+            calls.append((source, cfg["p_lr_multiplier"]))
+            score = 100.0 + (0 if cfg["p_lr_multiplier"] == 1 else 10)
+            return {"validation_mae": score, "best_epoch": 39, "epochs_ran": 40,
+                    "hit_epoch_limit": True, "best_at_epoch_limit": False, "history": []}
+        with tempfile.TemporaryDirectory() as tmp, patch.object(l1, "fit_arm", side_effect=fake_fit), \
+                patch.object(l1, "run_llm_worker_batch", side_effect=AssertionError("No LLM calls")):
+            result = l1.run_o3_search(None, protocol, Path(tmp), "cpu", pool)
+            self.assertEqual((result["rerank_fits"], result["grid_fits"]), (21, 10))
+            self.assertEqual(len(calls), 31)
+            for arm in ("L_star", "R_star", "P"):
+                self.assertEqual(result[arm]["p_lr_multiplier"], 1)
+            self.assertTrue((Path(tmp) / "search_selection_freeze.json").exists())
+            self.assertFalse((Path(tmp) / "test_evaluation_started.json").exists())
+
+    @unittest.skipUnless(HAS_TORCH, "torch required")
+    def test_o3_optimizer_separates_only_p_and_records_epoch_cap(self):
+        import torch
+        class Model(torch.nn.Module):
+            def __init__(self):
+                super().__init__()
+                self.P = torch.nn.Parameter(torch.ones(2))
+                self.layer = torch.nn.Linear(2, 2)
+        model = Model()
+        groups = l1.optimizer_groups(model, .001, 10)
+        self.assertEqual([g["lr"] for g in groups], [.001, .01])
+        self.assertEqual([id(p) for p in groups[1]["params"]], [id(model.P)])
+        ids = [id(p) for g in groups for p in g["params"]]
+        self.assertEqual(len(ids), len(set(ids)))
+        self.assertEqual(set(ids), {id(p) for p in model.parameters()})
+        cfg = {**l1.read_json(l1.PROTOCOL)["formal_phase"], "max_epochs": 1, "p_lr_multiplier": .1}
+        result = l1.fit_arm(l1.make_synthetic_farm(), pe.EXPERT_PROGRAM, 2024, cfg, "cpu")
+        self.assertTrue(result["hit_epoch_limit"])
+        self.assertEqual(result["epochs_ran"], 1)
+        self.assertEqual(result["history"][0]["next_learning_rates"], [.001, .0001])
+        self.assertEqual(set(result["outputs"]), {"validation"})
+
     def test_prompt_examples_static(self):
         for source in (pe.EXPERT_PROGRAM, l1.BLIND_EXAMPLE):
             pe.validate_source(source)
         protocol = l1.read_json(l1.PROTOCOL)
         for blind in (False, True):
             self.assertIn(pe.PROGRAM_STRUCTURE_TEXT, l1.build_llm_prompt(protocol, blind, 1, 1, [])[1])
+
+    @unittest.skipUnless(HAS_TORCH, "torch required")
+    def test_o3_synthetic_pipeline_propagates_multiplier_and_freezes_before_eval(self):
+        protocol = l1.read_json(l1.PROTOCOL)
+        protocol["o3"].update(max_epochs=1, patience=1, rerank_top_for_grid=1)
+        protocol["formal_phase"].update(max_epochs=1, patience=1, seeds=[2024])
+        pool = [{"candidate_id": arm, "arm": arm, "source": pe.EXPERT_PROGRAM} for arm in ("L", "R", "P")]
+        farms = {"Kelmarsh": l1.make_synthetic_farm(1, 6), "Penmanshiel": l1.make_synthetic_farm(2, 4)}
+        original = l1.fit_arm
+        original_predict = l1.predict_checkpoint
+        with tempfile.TemporaryDirectory() as tmp:
+            out = Path(tmp)
+            selected = {"P": .1, "R_star": 10., "L_star": .1}
+            def guard(*args, **kwargs):
+                self.assertFalse((out / "test_evaluation_started.json").exists())
+                self.assertEqual(kwargs.get("eval_splits"), ("validation",))
+                return original(*args, **kwargs)
+            def predict_guard(*args, **kwargs):
+                freeze = l1.read_json(out / "formal_selection_freeze.json")
+                self.assertEqual(freeze["total_fits"], 8)
+                self.assertEqual(freeze["p_lr_multipliers"], {"H": 1., **selected})
+                self.assertTrue((out / "test_evaluation_started.json").exists())
+                return original_predict(*args, **kwargs)
+            with patch.object(l1, "fit_arm", side_effect=guard), \
+                    patch.object(l1, "run_llm_worker_batch", side_effect=AssertionError("No LLM")):
+                search = l1.run_o3_search(farms["Kelmarsh"], protocol, out, "cpu", pool)
+                self.assertEqual((search["rerank_fits"], search["grid_fits"]), (3, 6))
+                for arm, mult in selected.items():
+                    search[arm]["p_lr_multiplier"] = mult
+                with patch.object(l1, "predict_checkpoint", side_effect=predict_guard):
+                    formal = l1.run_formal_phase(farms, protocol, out, search, "cpu")
+            for farm, result in formal["farms"].items():
+                for arm, metrics in result["arms"].items():
+                    self.assertEqual(metrics["seeds"][0]["p_lr_multiplier"], selected.get(arm, 1.))
+            self.assertEqual(len(formal["artifact_sha256"]), 18)
 
     @unittest.skipUnless(HAS_TORCH, "torch required")
     def test_prompt_examples_dynamic(self):

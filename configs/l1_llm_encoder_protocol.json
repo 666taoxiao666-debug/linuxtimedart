@@ -1,7 +1,24 @@
 {
-  "protocol_id": "l1_llm_encoder_v4_o2",
-  "supersedes": "v3 STOP_L1; formal markers were late and predictions absent, CI used ensemble losses. O2 is a separately authorized final optimization round with pre-evaluation freeze and P3 statistics.",
-  "stage": "M6",
+  "protocol_id": "l1_llm_encoder_v5_o3",
+  "supersedes": "O2 STOP_L1; user explicitly authorized third and final optimization O3 on 2026-11-11. Development evaluation only; no fourth round.",
+  "stage": "M7",
+  "o3": {
+    "candidate_files": [
+      {"arm": "L", "path": "output/l1_llm_encoder/r3/search_L_candidates.json", "sha256_lf": "b22dfa42e43e5a0811dbbb329123900bc415a7285f5e18ab527544cd9fd4e7e2"},
+      {"arm": "L", "path": "output/l1_llm_encoder/o2/search_L_candidates.json", "sha256_lf": "78fe097f1eec21f39b2da6814b8925f42ec8e8cb426b738726e14d05de1c482a"},
+      {"arm": "R", "path": "output/l1_llm_encoder/o2/search_R_candidates.json", "sha256_lf": "f206471df94af3d9eb5be612b930dd4432e1aaa51f2a0cca446453c77fcc499e"}
+    ],
+    "top_per_source": 10,
+    "rerank_top_for_grid": 2,
+    "p_lr_multipliers": [0.1, 10.0],
+    "seed": 2024,
+    "max_epochs": 40,
+    "patience": 5,
+    "tie_break": ["validation_mae", "candidate_id", "p_lr_multiplier"],
+    "scheduler": "Original CosineAnnealingLR, T_max=40, eta_min=1e-5 for each group; multiplier applies to initial P learning rate only.",
+    "fits": {"rerank": 21, "grid": 10, "formal": 24},
+    "llm_calls": 0
+  },
   "llm": {
     "model_name": "Qwen2.5-Coder-7B-Instruct",
     "weights_dir": "llm_weights/Qwen2.5-Coder-7B-Instruct",
@@ -127,7 +144,7 @@
       2025,
       2026
     ],
-    "max_epochs": 20,
+    "max_epochs": 40,
     "patience": 5,
     "batch_size": 64,
     "learning_rate": 0.001,
