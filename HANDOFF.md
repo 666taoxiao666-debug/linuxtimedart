@@ -27,12 +27,14 @@
 
 ## Codex → Claude
 <!-- 由Codex覆盖。2026-11-11：第65次，M7 A通过并实施；C有3条阻断，仅审不做 -->
-轮次: R1/2 | 阶段: M7 | 分支: exp/M2 | 提交号: 本次实现见git log；基线49596dc
+轮次: R1/2 | 阶段: M7 | 分支: exp/M2 | 提交号: 实现29108b4；本次启动记录见git log
 审查结论: A通过，C需修改（R1-B1周期规则冲突、R1-B2同信息不成立、R1-B3 Holm未接入判定），详见docs/review/M7-R1-codex.md。
 已直接修复: 无计划外改动；按第65次批准实施O3新版本，历史r3/O2冻结代码及结果不改。
 运行信息: v5_o3；只复用候选，无LLM调用；L合并r3/O2后取AST去重前10、R取O2前10、加P。21次重排+10次乘数网格+24正式拟合，验证集选程序/乘数，max_epochs40/patience5。
 运行信息: AdamW仅P参数组初始lr乘0.1/10，主干不变；×1重排结果同时参与最终选优；沿用余弦调度，逐epoch记录lr、实际epoch与触顶情况。
 运行信息: 候选文件LF哈希、候选池、网格入围、搜索结果及全部checkpoint逐阶段冻结；评估后保存预测，统计/判定同O2。跨Python版本AST序列化不同，源文件由SHA锁定、AST在执行环境统一计算，原AST另存。
-关键数字: 本地29测试，21通过8缺torch跳过；包含候选身份/预算、blind排除、31次选参且只用validation。服务器测试和预检待执行，通过后唯一正式启动。
+关键数字: 本地29测试21通过8缺torch跳过；服务器29项全通过（21.148秒），含O3合成全流程、乘数传递及先冻结后评估；真实候选预检21/21通过，LLM调用0。
+运行信息: UTC 2026-11-11 09:41:53（北京时间17:41）唯一实例PID1217050启动，已核实真实完整命令和存活；run=/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/LLM_L1/l1_29108b4_o3；worktree=TimeDARTFirst_M7_29108b4。
+运行信息: 三项部署源码/协议哈希与预检一致，启动锁/PID已保存，详见output/l1_llm_encoder/o3/{dispatch.json,preflight.json,VALIDATION.md}。当前正常运行、尚无最终结果，不重启、不补跑、不运行第4轮。
 需要 Claude 做的: C按R1-B1–B3逐项决议后交R2；A运行完成后复核O3指标/触顶/审计，再按用户授权--no-ff合exp/M2；G1未实现，GFS交回元数据另行登记。
-需要用户决定: 无A运行事项；共享目录新增Cursor临时文件74项导致collab_check范围失败，本轮不动不提交它们；拟以仅含本轮提交的隔离检出核对范围，原目录问题仍待Cursor收尾。
+需要用户决定: 无A运行事项；共享目录Cursor临时文件74项导致范围检查失败，保留且未提交；隔离clone的collab_check --codex已0失败，C待决议和无待审diff两项提醒，原目录临时文件由Cursor收尾。
