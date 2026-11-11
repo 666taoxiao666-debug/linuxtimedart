@@ -25,16 +25,18 @@
 需要用户决定: 无
 
 ## Codex → Claude
-<!-- 由Codex覆盖。2026-11-11：第64次，M6预检通过，唯一O2实例已启动 -->
-轮次: R1/2 | 阶段: M6 | 分支: exp/M2 | 提交号: ba7bca7
-审查结论: 通过，见 docs/review/M6-R1-codex.md；Claude反馈模块只使用验证标签，未发现阻断。
-已直接修复: 按第64次批准修正新版本审计：24次拟合仅验证早停，checkpoint全部写盘并登记哈希后才开始评估；保存cohort/逐seed预测；P3逐seed损失平均统计。r3原始记录未改。
-运行信息: O2=R60/L60、10代×6、base_seed203400、无blind臂；正式H/P/R*/L*×3seed×2场；门槛与数据年份不变，v4_o2。
-运行信息: H/P短训先产生真实预检反馈，正式搜索复用该次H/P记录，预检程序不进入候选池；seed900005一次生成，闭合且低于1536才通过。
-运行信息: 本地25项19通过6项缺torch跳过；服务器TimeDARTFirst_M6_review运行同两模块25项全部通过，包含合成完整搜索/训练/冻结/推理/数组哈希及P3统计smoke。
-关键数字: R60前30与r3相同；反馈只包含展示程序和上一代失败原因；≥6/60触上限禁止进入正式阶段。
-运行信息: 冻结worktree /home/XT/nuist/pythoncode/TimeDARTFirst_M6_ba7bca7；run为数据根outputs/logs/LLM_L1/l1_ba7bca7_o2；预检结束并通过，唯一正式实例PID1055423独立会话启动，命令见output/l1_llm_encoder/o2/dispatch.json。
-关键数字: 预检900005输出917 tokens，闭合且未触上限；source_valid=false（ListComp），按批准仅记录。H/P验证MAE=150.9910278/153.3404999；代码/协议/反馈模块哈希与预检一致。
-运行信息: 启动请求曾连接中断，先只读确认无dispatch/run.pid/启动锁，再成功启动一次；不重启、不补跑。当前无最终结果，其他用户任务未干预。验收记录见output/l1_llm_encoder/o2/VALIDATION.md。
-需要 Claude 做的: 本轮执行后复核O2结果与审计留存；再基于已有成果讨论加强创新性（二区投稿目标、CCF-B方法目标），当前不新增创新实验、不触Hill of Towie封存年。
-需要用户决定: 无。
+<!-- 由Codex覆盖。2026-11-11：第64次，M6 O2正式完成，负结果与数组复算交回 -->
+轮次: R1/2 | 阶段: M6 | 分支: exp/M2 | 提交号: 运行ba7bca7、启动52fccdc；本次结果提交见git log -1
+审查结论: 实施审查通过，见docs/review/M6-R1-codex.md；正式判定STOP_L1，正常完成的负结果，不是技术失败。
+已直接修复: 本次无代码修改；ba7bca7已按第64次授权实施冻结后评估、保存预测和P3统计，r3原样保留。
+运行信息: 唯一PID1055423已退出；UTC 2026-11-11 02:20:30–06:00:22，耗时3小时39分53秒；24/24正式拟合，completed存在、failed不存在，不重启、不补跑、不第3轮。
+运行信息: worktree=/home/XT/nuist/pythoncode/TimeDARTFirst_M6_ba7bca7；run=/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/LLM_L1/l1_ba7bca7_o2；命令见output/l1_llm_encoder/o2/dispatch.json。
+运行信息: 本地output/l1_llm_encoder/o2/已归档候选、top10/选中程序、24训练记录及完整summary；checkpoint/预测数组留服务器，清单SHA256在summary。
+运行信息: verify_results.py只读复算PASS：50 artifact、328输入、3源码/协议哈希一致；24组逐seed指标、8臂均值、6组MAE/RMSE配对统计和判定一致，见verification.json；全部checkpoint冻结早于评估开始、预测晚于开始。
+关键数字: R完成60/60、L完成31/60、触token上限0；逐代完成4/4/3/5/4/5/2/2/0/2；拒绝ListComp17、重复8、非有限2、维度1、batch轴1。R*=R_15，L*=L_g3_s1。
+关键数字: Kelmarsh2022 H→L MAE160.0201→160.2644、RMSE242.1692→242.7882、R²0.825264→0.824369；MAE收益−0.15269%。
+关键数字: Penmanshiel2021 H→L MAE184.4096→185.6890、RMSE299.3950→300.7568、R²0.784805→0.782843；MAE收益−0.69376%。
+关键数字: L−H的MAE收益CI：K −0.24434 [−1.46520,0.87585]、P −1.27936 [−2.96436,0.38611]kW；两场对H/P/R共6组MAE、6组RMSE CI均跨0；所有逐seed/P/R值见summary及VALIDATION.md。
+关键数字: 预检917 tokens通过；服务器预启动25测试全通过。本轮仅数组复算，不重测、不训练、不生成新预测；开发评估不能写独立确认，不把L1写成功创新。
+需要 Claude 做的: 复核O2负结果、审计和统计口径并记录决议；按已定最后一轮关闭L1路线，随后结合既有证据设计加强创新性的方案（二区投稿目标、CCF-B方法目标），交用户审定后再实施。
+需要用户决定: 当前无运行决定；exp/M2结果待Claude复核及用户明确同意后才合主线。本轮未触Hill of Towie封存年、未启动新实验。

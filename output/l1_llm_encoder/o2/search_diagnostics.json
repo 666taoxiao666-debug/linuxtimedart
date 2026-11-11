@@ -1,0 +1,201 @@
+{
+  "H_short_val_mae": 150.99102783203125,
+  "P_short_val_mae": 153.3404998779297,
+  "hit_max_new_tokens_counts": {
+    "L": 0
+  },
+  "by_generation": {
+    "1": {
+      "complete": 4,
+      "hit_max_new_tokens": 0,
+      "failures": [
+        {
+          "program_id": "L_g1_s2",
+          "reason": "verify_REJECTED: dim=0 (batch axis) is forbidden (line 30)"
+        },
+        {
+          "program_id": "L_g1_s5",
+          "reason": "verify_REJECTED: syntax ListComp is not allowed (line 38)"
+        }
+      ]
+    },
+    "2": {
+      "complete": 4,
+      "hit_max_new_tokens": 0,
+      "failures": [
+        {
+          "program_id": "L_g2_s1",
+          "reason": "verify_REJECTED: syntax ListComp is not allowed (line 27)"
+        },
+        {
+          "program_id": "L_g2_s4",
+          "reason": "verify_REJECTED: syntax ListComp is not allowed (line 27)"
+        }
+      ]
+    },
+    "3": {
+      "complete": 3,
+      "hit_max_new_tokens": 0,
+      "failures": [
+        {
+          "program_id": "L_g3_s3",
+          "reason": "verify_FAIL: non-finite output"
+        },
+        {
+          "program_id": "L_g3_s4",
+          "reason": "verify_REJECTED: syntax ListComp is not allowed (line 27)"
+        },
+        {
+          "program_id": "L_g3_s5",
+          "reason": "verify_FAIL: RuntimeError: The size of tensor a (9) must match the size of tensor b (24) at non-singleton dimension 2"
+        }
+      ]
+    },
+    "4": {
+      "complete": 5,
+      "hit_max_new_tokens": 0,
+      "failures": [
+        {
+          "program_id": "L_g4_s3",
+          "reason": "verify_REJECTED: syntax ListComp is not allowed (line 44)"
+        }
+      ]
+    },
+    "5": {
+      "complete": 4,
+      "hit_max_new_tokens": 0,
+      "failures": [
+        {
+          "program_id": "L_g5_s3",
+          "reason": "verify_REJECTED: syntax ListComp is not allowed (line 27)"
+        },
+        {
+          "program_id": "L_g5_s5",
+          "reason": "verify_REJECTED: syntax ListComp is not allowed (line 27)"
+        }
+      ]
+    },
+    "6": {
+      "complete": 5,
+      "hit_max_new_tokens": 0,
+      "failures": [
+        {
+          "program_id": "L_g6_s3",
+          "reason": "verify_REJECTED: syntax ListComp is not allowed (line 46)"
+        }
+      ]
+    },
+    "7": {
+      "complete": 2,
+      "hit_max_new_tokens": 0,
+      "failures": [
+        {
+          "program_id": "L_g7_s1",
+          "reason": "verify_REJECTED: syntax ListComp is not allowed (line 27)"
+        },
+        {
+          "program_id": "L_g7_s2",
+          "reason": "duplicate_ast_sha256"
+        },
+        {
+          "program_id": "L_g7_s3",
+          "reason": "duplicate_ast_sha256"
+        },
+        {
+          "program_id": "L_g7_s6",
+          "reason": "verify_REJECTED: syntax ListComp is not allowed (line 27)"
+        }
+      ]
+    },
+    "8": {
+      "complete": 2,
+      "hit_max_new_tokens": 0,
+      "failures": [
+        {
+          "program_id": "L_g8_s2",
+          "reason": "verify_REJECTED: syntax ListComp is not allowed (line 26)"
+        },
+        {
+          "program_id": "L_g8_s3",
+          "reason": "verify_REJECTED: syntax ListComp is not allowed (line 26)"
+        },
+        {
+          "program_id": "L_g8_s4",
+          "reason": "verify_REJECTED: syntax ListComp is not allowed (line 26)"
+        },
+        {
+          "program_id": "L_g8_s5",
+          "reason": "duplicate_ast_sha256"
+        }
+      ]
+    },
+    "9": {
+      "complete": 0,
+      "hit_max_new_tokens": 0,
+      "failures": [
+        {
+          "program_id": "L_g9_s1",
+          "reason": "duplicate_ast_sha256"
+        },
+        {
+          "program_id": "L_g9_s2",
+          "reason": "verify_REJECTED: syntax ListComp is not allowed (line 26)"
+        },
+        {
+          "program_id": "L_g9_s3",
+          "reason": "verify_FAIL: non-finite output"
+        },
+        {
+          "program_id": "L_g9_s4",
+          "reason": "verify_REJECTED: syntax ListComp is not allowed (line 26)"
+        },
+        {
+          "program_id": "L_g9_s5",
+          "reason": "duplicate_ast_sha256"
+        },
+        {
+          "program_id": "L_g9_s6",
+          "reason": "verify_REJECTED: syntax ListComp is not allowed (line 26)"
+        }
+      ]
+    },
+    "10": {
+      "complete": 2,
+      "hit_max_new_tokens": 0,
+      "failures": [
+        {
+          "program_id": "L_g10_s1",
+          "reason": "duplicate_ast_sha256"
+        },
+        {
+          "program_id": "L_g10_s2",
+          "reason": "duplicate_ast_sha256"
+        },
+        {
+          "program_id": "L_g10_s3",
+          "reason": "verify_REJECTED: syntax ListComp is not allowed (line 26)"
+        },
+        {
+          "program_id": "L_g10_s5",
+          "reason": "duplicate_ast_sha256"
+        }
+      ]
+    }
+  },
+  "failure_reasons": {
+    "L": {
+      "duplicate_ast_sha256": 8,
+      "verify_FAIL: RuntimeError: The size of tensor a (9) must match the size of tensor b (24) at non-singleton dimension 2": 1,
+      "verify_FAIL: non-finite output": 2,
+      "verify_REJECTED: dim=0 (batch axis) is forbidden (line 30)": 1,
+      "verify_REJECTED: syntax ListComp is not allowed (line 26)": 7,
+      "verify_REJECTED: syntax ListComp is not allowed (line 27)": 7,
+      "verify_REJECTED: syntax ListComp is not allowed (line 38)": 1,
+      "verify_REJECTED: syntax ListComp is not allowed (line 44)": 1,
+      "verify_REJECTED: syntax ListComp is not allowed (line 46)": 1
+    }
+  },
+  "completed_counts": {
+    "L": 31
+  }
+}
