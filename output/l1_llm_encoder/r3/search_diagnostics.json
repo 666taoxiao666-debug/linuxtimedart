@@ -1,0 +1,36 @@
+{
+  "H_short_val_mae": 150.99102783203125,
+  "P_short_val_mae": 153.3404998779297,
+  "hit_max_new_tokens_counts": {
+    "L": 0,
+    "L_blind": 0
+  },
+  "failure_reasons": {
+    "L": {
+      "duplicate_ast_sha256": 1,
+      "verify_REJECTED: assignment target must be a single name (line 4)": 2,
+      "verify_REJECTED: dim=0 (batch axis) is forbidden (line 30)": 1,
+      "verify_REJECTED: method 'permute' is not allowed (line 103)": 1,
+      "verify_REJECTED: syntax ListComp is not allowed (line 24)": 1,
+      "verify_REJECTED: syntax ListComp is not allowed (line 26)": 7,
+      "verify_REJECTED: syntax ListComp is not allowed (line 35)": 1,
+      "verify_REJECTED: syntax ListComp is not allowed (line 36)": 1,
+      "verify_REJECTED: torch.sinh is not allowed (line 19)": 1
+    },
+    "L_blind": {
+      "verify_FAIL: IndexError: index 12 is out of bounds for dimension 0 with size 12": 1,
+      "verify_FAIL: K=12 outside 1..11": 8,
+      "verify_FAIL: K=24 outside 1..11": 1,
+      "verify_FAIL: RuntimeError: The size of tensor a (9) must match the size of tensor b (24) at non-singleton dimension 2": 1,
+      "verify_REJECTED: assignment target must be a single name (line 4)": 10,
+      "verify_REJECTED: name 'm2' is undefined or not allowed (line 24)": 1,
+      "verify_REJECTED: name 'm2' is undefined or not allowed (line 26)": 1,
+      "verify_REJECTED: name 'm2' is undefined or not allowed (line 27)": 1,
+      "verify_REJECTED: name 'm3' is undefined or not allowed (line 27)": 1
+    }
+  },
+  "completed_counts": {
+    "L": 14,
+    "L_blind": 5
+  }
+}

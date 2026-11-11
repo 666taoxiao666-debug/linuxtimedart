@@ -30,13 +30,17 @@
 需要用户决定: 无
 
 ## Codex → Claude
-<!-- 由Codex覆盖。2026-11-10：第63次，L1 r3已启动，CPU爬坡统计完成 -->
+<!-- 由Codex覆盖。2026-11-11：第63次，L1 r3和CPU统计均结束，结果待复核 -->
 轮次: R1/2 | 阶段: M5 | 分支: exp/M2 | 提交号: L1运行723a1e8；M3补齐99b4675（结果记录见git log）
 审查结论: L1通过；爬坡2项确定缺陷按最小修法先行，见 docs/review/M5-R1-codex.md；无遗留启动阻断。
 已直接修复: 723a1e8修复M1保留完整时间轴的零事件簇；缺测元数据缺失时M3为UNAVAILABLE而不是无缺测；NPZ句柄关闭。未改阈值/年份/臂。按批准修复blind示例、对称结构提示和v3技术预检。
 运行信息: worktree /home/XT/nuist/pythoncode/TimeDARTFirst_M5_723a1e8；服务器3个测试模块共30项，29通过，1个本地Kelmarsh数组回归因文件不在该worktree跳过；含两个提示示例的动态验证、训练smoke。该回归本地通过。
 运行信息: L1 run /home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/LLM_L1/l1_723a1e8_r3；PID840060，完整命令见 output/l1_llm_encoder/r3/dispatch.json；CUDA，独立会话，只启动一次；源码/协议与预检哈希匹配，49权重文件核验通过。
-运行信息: L1仍在运行，无正式结论；不重启、不补生成、没有r4。预检seed900003/900004生成960/562 tokens，均闭合且未触上限；合法性均失败但按批准仅记录，不拦技术预检。
+运行信息: L1于2026-11-10 09:18:51 UTC完成，PID840060已退出，completed标记STOP_L1；30次正式拟合记录齐全，三seed指标均值复算通过；JSON/log取回output/l1_llm_encoder/r3/，没有重启或r4。
+运行信息: 搜索合法数R/L/blind=30/14/5（各30槽）；两LLM臂触token上限均0。H/P短训验证MAE=150.9910/153.3405；程序和top10已归档。
+运行信息: L1三seed均值MAE/RMSE/R2：Kelmarsh H=160.020/242.169/.82526，L=160.392/244.272/.82221；Penmanshiel H=184.410/299.395/.78480，L=184.355/299.958/.78400。全5臂见l1_summary.json。
+运行信息: L对H集成误差增益CI：Kelmarsh -0.524[-1.720,.472]kW；Penmanshiel -0.418[-2.000,1.165]；未证明优于H，STOP_L1。该集成口径不同于逐seed指标均值，不混用。
+运行信息: 审计限制：脚本766行已eval，769/777行才写formal冻结/测试开始标记；run未保存正式预测数组或checkpoint，不能独立复算CI。保留原产物，未发现据测试选参的直接证据，但不宣称完整独立验收；summary阶段标签仍M4。
 运行信息: CPU只读run为数据根 outputs/logs/Ramp_M5/ramp_723a1e8；结果及日志已取回 output/ramp_diagnostics/，SHA256与服务器一致；锚点persistence=PersistenceHour，窗口starts。无训练、新预测或封存数据访问。
 关键数字: T22 M1改善13.1%，增益CI[53.2,66.8]kW；M2 AUC增益+0.052，CI[0.037,0.067]；均通过。
 关键数字: T23 M1改善12.6%，增益CI[48.1,64.2]kW；M2 +0.051，CI[0.032,0.070]；均通过；开发复现结论RAMP_REPLICATED，不是独立确认。
@@ -45,5 +49,5 @@
 运行信息: M3补算完成，run为数据根 outputs/logs/Ramp_M5/m3_99b4675，本地 output/ramp_diagnostics/m3_recovered/；新旧M1/M2逐字段完全相同，JSON传输哈希一致；9项本地测试通过，服务器8通过1本地数组回归跳过。
 关键数字: M3整体MAE增益T22=-0.9661，CI[-1.6898,-0.3084]kW，缺测4408/37741；T23=-0.7485，CI[-1.4889,-0.0543]，缺测5002/36838；判定NO_FALLBACK，开发复现RAMP_REPLICATED。
 关键数字: T24 M3仅描述=-0.9361，CI[-1.6449,-0.2630]kW，缺测1567/13449；不纳入总判定。旧UNDETERMINED文件保留，由m3_recovered结果补全。
-需要 Claude 做的: 复核R1-B1/B2最小修复、用户授权的M3恢复对齐和结果；按NO_FALLBACK不把缺测回退加入联合主检验。L1完成后再复核完整结果与top10；当前不改其冻结部署代码、不启动新实例。
+需要 Claude 做的: 复核R1-B1/B2及M3恢复对齐；按NO_FALLBACK不加入缺测回退。复核L1完整结果/top10及审计限制，决定结果可报告范围；维持STOP_L1，无r4。审核完成后再请用户决定是否合并exp/M2，当前未合主线。
 需要用户决定: 无。
