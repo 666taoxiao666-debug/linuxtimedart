@@ -1,0 +1,82 @@
+{
+  "frozen_at_utc": "2026-11-11T05:59:45.373988+00:00",
+  "total_fits": 24,
+  "checkpoints": {
+    "checkpoints/Kelmarsh/H_s2024.pt": "f26b92b985e573abe50382458df039cdcad5e4b2d6961fcb3eb04664e927c466",
+    "checkpoints/Kelmarsh/H_s2025.pt": "fe21310d0e41638356aabafc69d2f434189f8741a024c83673def4e576b5bec6",
+    "checkpoints/Kelmarsh/H_s2026.pt": "975294bf96cfd2a2107c4e13947a0757e66b8c0023941849f973dc37e57ea03a",
+    "checkpoints/Kelmarsh/P_s2024.pt": "f1d0c70121c10a9dc3ec52c1d8491a93a81ed718571638c311060f32a079ef3b",
+    "checkpoints/Kelmarsh/P_s2025.pt": "b384bf7f8c3c7c524226f0d0de495493d28c1f44079d8336400147308bbac63d",
+    "checkpoints/Kelmarsh/P_s2026.pt": "0d8804dd2aad98a1c61f08df435c85c62602d09f8915c38b85a143d92233d52e",
+    "checkpoints/Kelmarsh/R_star_s2024.pt": "d39933c62768bc882a1d635b68b2cb830ecf96c70eded5b6bc9fb6f9c1e5e378",
+    "checkpoints/Kelmarsh/R_star_s2025.pt": "13ab3d6d84b13ed50e812f08ded2f96633e6ce835e39793d68b114b016cb8fe9",
+    "checkpoints/Kelmarsh/R_star_s2026.pt": "e9af4643a020992508c8de922fcc2b3c5ababdf3220f1cfc206b27607dbd68ed",
+    "checkpoints/Kelmarsh/L_star_s2024.pt": "03964e44fa20e3ef9e07823d5cf1da0f80c6084587797c903e055c6a2c31fcc4",
+    "checkpoints/Kelmarsh/L_star_s2025.pt": "ea347115d1fb82652b55ba3ee9f3cce0a9f82d1ad09d5b32c595a570cadf74f2",
+    "checkpoints/Kelmarsh/L_star_s2026.pt": "e78ec1940c8c88636c9c2f68355c5150a15e98e9b5d6a901956cec070896fc8d",
+    "checkpoints/Penmanshiel/H_s2024.pt": "09083d113746696d320fadbc59b7bf5ba9c1422e2e5a906c6dcbafc4d23b31ef",
+    "checkpoints/Penmanshiel/H_s2025.pt": "0668f177d5ed38372af38908f03c1a7146eb751c5fe9b4368901cc7797df8e96",
+    "checkpoints/Penmanshiel/H_s2026.pt": "c1567393d640d8dc2560b78dcc948bcf2af4c4e3999a2c16c1130bee54dfd61a",
+    "checkpoints/Penmanshiel/P_s2024.pt": "ef633eaf3888665e41e753bb62736fcb4001629a37f9ff9e8c46dbfd1c7e7c2a",
+    "checkpoints/Penmanshiel/P_s2025.pt": "7f50f588c8b8d8aec54ac4d25bfff52e475c69fb994b1efb2959614d50855ebc",
+    "checkpoints/Penmanshiel/P_s2026.pt": "de327fc73be175d2aa69b7f56f7fcee0715ca9df515c5581db809fe2f1be8a26",
+    "checkpoints/Penmanshiel/R_star_s2024.pt": "672842fbff26deffc300816c8fdcd533b228cc8290d2dae65d070f396c75307c",
+    "checkpoints/Penmanshiel/R_star_s2025.pt": "ee1b515a7fa12ff5412be2504399fa52377706a1b6ee26b13875ed955b33328e",
+    "checkpoints/Penmanshiel/R_star_s2026.pt": "e1114fd050c20391b0766a6205050b023485c44dc71ecebc5b1fdb817ebd5cda",
+    "checkpoints/Penmanshiel/L_star_s2024.pt": "b1c40633648d5ab4bdde9bccd55d98e8493350b07ba835e9aae4608de30ad726",
+    "checkpoints/Penmanshiel/L_star_s2025.pt": "0851a8d2dfc2ed5113a592b36c643e1108d924add0fb558f8c011c0220254cbc",
+    "checkpoints/Penmanshiel/L_star_s2026.pt": "8d6a788b757362fe0158cd483c1b65beadabafe2589fd405675c00770754ba2f"
+  },
+  "sources": {
+    "H": null,
+    "P": "INIT_P = [1.386, 0.3, 0.0, 0.0, 0.1, -1.0, 0.0, 0.0, -2.0]\n\n\ndef encode(obs, geo, P):\n    \"\"\"Grammar program: cone=sigmoid, distance=exp_aniso, advection=gaussian_arrival, lag=3, K=11.\"\"\"\n    ws = obs[..., 0]\n    dsin = obs[..., 1]\n    dcos = obs[..., 2]\n    pan = obs[..., 3]\n    dp3 = obs[..., 4]\n    vw = obs[..., 5]\n    vp = obs[..., 6]\n    dist = geo[:, 0]\n    bsin = geo[:, 1]\n    bcos = geo[:, 2]\n    rsin = wmean(dsin, vw, dim=2)\n    rcos = wmean(dcos, vw, dim=2)\n    rnorm = torch.sqrt(rsin * rsin + rcos * rcos) + 1e-6\n    align = bsin * (rsin / rnorm).unsqueeze(-1) + bcos * (rcos / rnorm).unsqueeze(-1)\n    cross = dist * torch.sqrt(torch.clamp(1.0 - align * align, min=0.0) + 1e-9)\n    cone = torch.sigmoid(torch.exp(P[0]) * (align - P[1]))\n    decay = torch.exp(-dist / (F.softplus(P[2]) + 0.05) - cross / (F.softplus(P[3]) + 0.05))\n    wup = cone * decay * vw\n    speed = F.softplus(P[4] * ws + P[5]) + 0.05\n    tau = (dist * torch.clamp(align, min=0.0) / speed).unsqueeze(-1)\n    lags = torch.arange(6, dtype=obs.dtype, device=obs.device)\n    kern = torch.softmax(-(lags - tau) ** 2 / (2.0 * (F.softplus(P[6]) + 0.3) ** 2), dim=-1)\n    hist = torch.stack([lag(ws, 0), lag(ws, 1), lag(ws, 2), lag(ws, 3), lag(ws, 4), lag(ws, 5)], dim=-1)\n    vhist = torch.stack([lag(vw, 0), lag(vw, 1), lag(vw, 2), lag(vw, 3), lag(vw, 4), lag(vw, 5)], dim=-1)\n    ws_adv = (kern * hist * vhist).sum(dim=-1) / ((kern * vhist).sum(dim=-1) + 1e-6)\n    nearw = torch.exp(-dist / (F.softplus(P[8]) + 0.02))\n    local = wmean(ws, nearw * vw, dim=2)\n    up = wmean(ws, wup, dim=2)\n    upadv = wmean(ws_adv, wup, dim=2)\n    dws = ws - lag(ws, 3)\n    vd = vw * lag(vw, 3)\n    updws = wmean(dws, cone * decay * vd, dim=2)\n    reg = wmean(ws, vw, dim=2)\n    regdws = wmean(dws, vd, dim=2)\n    updp = wmean(dp3, cone * decay * vp, dim=2)\n    regdp = wmean(dp3, vp, dim=2)\n    x = dist * bsin * torch.ones_like(pan)\n    y = dist * bcos * torch.ones_like(pan)\n    dx = x - wmean(x, vp, dim=2).unsqueeze(-1)\n    dy = y - wmean(y, vp, dim=2).unsqueeze(-1)\n    dpan = pan - wmean(pan, vp, dim=2).unsqueeze(-1)\n    gx = wmean(dpan * dx, vp, dim=2) / (wmean(dx * dx, vp, dim=2) + 1e-3)\n    gy = wmean(dpan * dy, vp, dim=2) / (wmean(dy * dy, vp, dim=2) + 1e-3)\n    mass = wup.sum(dim=2) / (vw.sum(dim=2) + 1e-6)\n    feats = torch.stack([upadv, up, updws, up - local, reg, regdws, updp, regdp, gx, gy, mass], dim=-1)\n    return feats[..., :11]\n",
+    "R_star": "INIT_P = [1.386, 0.3, 0.0, 0.0, 0.1, -1.0, 0.0, 0.0, -2.0]\n\n\ndef encode(obs, geo, P):\n    \"\"\"Grammar program: cone=quadratic_upwind, distance=gaussian_iso, advection=gaussian_arrival, lag=1, K=10.\"\"\"\n    ws = obs[..., 0]\n    dsin = obs[..., 1]\n    dcos = obs[..., 2]\n    pan = obs[..., 3]\n    dp3 = obs[..., 4]\n    vw = obs[..., 5]\n    vp = obs[..., 6]\n    dist = geo[:, 0]\n    bsin = geo[:, 1]\n    bcos = geo[:, 2]\n    rsin = wmean(dsin, vw, dim=2)\n    rcos = wmean(dcos, vw, dim=2)\n    rnorm = torch.sqrt(rsin * rsin + rcos * rcos) + 1e-6\n    align = bsin * (rsin / rnorm).unsqueeze(-1) + bcos * (rcos / rnorm).unsqueeze(-1)\n    cross = dist * torch.sqrt(torch.clamp(1.0 - align * align, min=0.0) + 1e-9)\n    cone = torch.clamp(align - P[1], min=0.0) ** 2\n    decay = torch.exp(-(dist / (F.softplus(P[2]) + 0.05)) ** 2)\n    wup = cone * decay * vw\n    speed = F.softplus(P[4] * ws + P[5]) + 0.05\n    tau = (dist * torch.clamp(align, min=0.0) / speed).unsqueeze(-1)\n    lags = torch.arange(6, dtype=obs.dtype, device=obs.device)\n    kern = torch.softmax(-(lags - tau) ** 2 / (2.0 * (F.softplus(P[6]) + 0.3) ** 2), dim=-1)\n    hist = torch.stack([lag(ws, 0), lag(ws, 1), lag(ws, 2), lag(ws, 3), lag(ws, 4), lag(ws, 5)], dim=-1)\n    vhist = torch.stack([lag(vw, 0), lag(vw, 1), lag(vw, 2), lag(vw, 3), lag(vw, 4), lag(vw, 5)], dim=-1)\n    ws_adv = (kern * hist * vhist).sum(dim=-1) / ((kern * vhist).sum(dim=-1) + 1e-6)\n    nearw = torch.exp(-dist / (F.softplus(P[8]) + 0.02))\n    local = wmean(ws, nearw * vw, dim=2)\n    up = wmean(ws, wup, dim=2)\n    upadv = wmean(ws_adv, wup, dim=2)\n    dws = ws - lag(ws, 1)\n    vd = vw * lag(vw, 1)\n    updws = wmean(dws, cone * decay * vd, dim=2)\n    reg = wmean(ws, vw, dim=2)\n    regdws = wmean(dws, vd, dim=2)\n    updp = wmean(dp3, cone * decay * vp, dim=2)\n    regdp = wmean(dp3, vp, dim=2)\n    x = dist * bsin * torch.ones_like(pan)\n    y = dist * bcos * torch.ones_like(pan)\n    dx = x - wmean(x, vp, dim=2).unsqueeze(-1)\n    dy = y - wmean(y, vp, dim=2).unsqueeze(-1)\n    dpan = pan - wmean(pan, vp, dim=2).unsqueeze(-1)\n    gx = wmean(dpan * dx, vp, dim=2) / (wmean(dx * dx, vp, dim=2) + 1e-3)\n    gy = wmean(dpan * dy, vp, dim=2) / (wmean(dy * dy, vp, dim=2) + 1e-3)\n    mass = wup.sum(dim=2) / (vw.sum(dim=2) + 1e-6)\n    feats = torch.stack([upadv, up, updws, up - local, reg, regdws, updp, regdp, gx, gy, mass], dim=-1)\n    return feats[..., :10]\n",
+    "L_star": "INIT_P = [0.3, -0.2, 0.4, -0.1, 0.5, -0.3, 0.2, -0.1, 0.4, -0.3, 0.6, -0.5, 0.1, -0.2, 0.3, -0.1]\n\n\ndef encode(obs, geo, P):\n    ws = obs[..., 0]\n    dsin = obs[..., 1]\n    dcos = obs[..., 2]\n    pan = obs[..., 3]\n    dp3 = obs[..., 4]\n    vw = obs[..., 5]\n    vp = obs[..., 6]\n    dist = geo[:, 0]\n    bsin = geo[:, 1]\n    bcos = geo[:, 2]\n    rsin = wmean(dsin, vw, dim=2)\n    rcos = wmean(dcos, vw, dim=2)\n    rnorm = torch.sqrt(rsin * rsin + rcos * rcos) + 1e-6\n    align = bsin * (rsin / rnorm).unsqueeze(-1) + bcos * (rcos / rnorm).unsqueeze(-1)\n    cross = dist * torch.sqrt(torch.clamp(1.0 - align * align, min=0.0) + 1e-9)\n    cone = torch.sigmoid(P[0] * (align - P[1]))\n    decay = torch.exp(-dist / (P[2] + 0.05) - cross / (P[3] + 0.05))\n    wup = cone * decay * vw\n    speed = torch.relu(P[4] * ws + P[5]) + 0.05\n    tau = (dist * torch.clamp(align, min=0.0) / speed).unsqueeze(-1)\n    lags = torch.arange(6, dtype=obs.dtype, device=obs.device)\n    kern = torch.softmax(-(lags - tau) ** 2 / (2.0 * (P[6] + 0.3) ** 2), dim=-1)\n    hist = torch.stack([lag(ws, 0), lag(ws, 1), lag(ws, 2), lag(ws, 3), lag(ws, 4), lag(ws, 5)], dim=-1)\n    vhist = torch.stack([lag(vw, 0), lag(vw, 1), lag(vw, 2), lag(vw, 3), lag(vw, 4), lag(vw, 5)], dim=-1)\n    ws_adv = (kern * hist * vhist).sum(dim=-1) / ((kern * vhist).sum(dim=-1) + 1e-6)\n    nearw = torch.exp(-dist / (P[8] + 0.02))\n    local = wmean(ws, nearw * vw, dim=2)\n    up = wmean(ws, wup, dim=2)\n    upadv = wmean(ws_adv, wup, dim=2)\n    dws = ws - lag(ws, 3)\n    vd = vw * lag(vw, 3)\n    updws = wmean(dws, cone * decay * vd, dim=2)\n    reg = wmean(ws, vw, dim=2)\n    regdws = wmean(dws, vd, dim=2)\n    updp = wmean(dp3, cone * decay * vp, dim=2)\n    regdp = wmean(dp3, vp, dim=2)\n    x = dist * bsin * torch.ones_like(pan)\n    y = dist * bcos * torch.ones_like(pan)\n    dx = x - wmean(x, vp, dim=2).unsqueeze(-1)\n    dy = y - wmean(y, vp, dim=2).unsqueeze(-1)\n    dpan = pan - wmean(pan, vp, dim=2).unsqueeze(-1)\n    gx = wmean(dpan * dx, vp, dim=2) / (wmean(dx * dx, vp, dim=2) + 1e-3)\n    gy = wmean(dpan * dy, vp, dim=2) / (wmean(dy * dy, vp, dim=2) + 1e-3)\n    mass = wup.sum(dim=2) / (vw.sum(dim=2) + 1e-6)\n    feats = torch.stack([upadv, up, updws, up - local, reg, regdws, updp, regdp, gx, gy, mass], dim=-1)\n    return feats[..., :11]\n"
+  },
+  "validation_summary": {
+    "Kelmarsh": {
+      "H": [
+        149.5448455810547,
+        148.61903381347656,
+        148.7094268798828
+      ],
+      "P": [
+        148.5868682861328,
+        149.36802673339844,
+        150.22201538085938
+      ],
+      "R_star": [
+        148.6511993408203,
+        147.67385864257812,
+        149.52127075195312
+      ],
+      "L_star": [
+        148.04345703125,
+        149.6209259033203,
+        149.11793518066406
+      ]
+    },
+    "Penmanshiel": {
+      "H": [
+        215.3038330078125,
+        218.57266235351562,
+        215.9532928466797
+      ],
+      "P": [
+        217.01295471191406,
+        217.75698852539062,
+        218.3079833984375
+      ],
+      "R_star": [
+        216.23097229003906,
+        217.33087158203125,
+        219.0078887939453
+      ],
+      "L_star": [
+        215.18128967285156,
+        220.3680419921875,
+        217.6968231201172
+      ]
+    }
+  }
+}

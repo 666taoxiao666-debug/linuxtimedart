@@ -1,0 +1,404 @@
+{
+  "verified_at_utc": "2026-11-11T13:49:40.864317+00:00",
+  "status": "PASS",
+  "run": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/LLM_L1/l1_29108b4_o3",
+  "decision": "STOP_L1",
+  "artifact_hashes_verified": 50,
+  "input_hashes_verified": 328,
+  "code_hashes_verified": 3,
+  "formal_fits": 24,
+  "seed_metric_sets_recomputed": 24,
+  "comparison_sets_recomputed": 6,
+  "checkpoint_freeze_before_evaluation": true,
+  "formal": {
+    "Kelmarsh": {
+      "arms": {
+        "H": {
+          "mean_mae": 161.16868591308594,
+          "mean_rmse": 244.16761779785156,
+          "mean_r2": 0.8223658250937457
+        },
+        "P": {
+          "mean_mae": 160.06393432617188,
+          "mean_rmse": 242.45936584472656,
+          "mean_r2": 0.8248445493552911
+        },
+        "R_star": {
+          "mean_mae": 160.04462178548178,
+          "mean_rmse": 242.95545959472656,
+          "mean_r2": 0.8241254436764542
+        },
+        "L_star": {
+          "mean_mae": 159.77226765950522,
+          "mean_rmse": 243.06583150227866,
+          "mean_r2": 0.823965551991923
+        }
+      },
+      "comparisons": {
+        "L_star_vs_H": {
+          "mae": {
+            "loss": "absolute_error",
+            "units": "kW",
+            "gain_definition": "mean reference loss - mean candidate loss; positive favours candidate",
+            "estimand": "window_uniform",
+            "candidate_mean_loss": 159.7722676753583,
+            "reference_mean_loss": 161.16869169465338,
+            "gain": 1.3964240192950668,
+            "ci95_low": 0.022659996306140573,
+            "ci95_high": 2.599831220214666,
+            "probability_gain_positive": 0.978,
+            "bootstrap": {
+              "block_length_issue_times": 8,
+              "replicates": 5000,
+              "seed": 2024
+            },
+            "newey_west": {
+              "statistic": 2.102817356919314,
+              "p_value_two_sided": 0.035481738182920664,
+              "lag": 7,
+              "time_points": 2868
+            },
+            "windows": 16949,
+            "issue_time_clusters": 2868,
+            "candidate_better_window_pct": 52.73467461207151
+          },
+          "rmse": {
+            "units": "kW",
+            "rmse_candidate_kw": 243.06718898124768,
+            "rmse_reference_kw": 244.16913825477994,
+            "rmse_gain_kw": 1.1019492735322558,
+            "ci95_low_kw": -1.1645268090888605,
+            "ci95_high_kw": 3.1308324818756694,
+            "probability_gain_positive": 0.8044,
+            "block_length_issue_times": 8,
+            "replicates": 5000,
+            "seed": 2024,
+            "method": "issue-time moving-block bootstrap of squared-error sums; sqrt per arm per replicate; NOT a reuse of the MAE-difference interval"
+          }
+        },
+        "L_star_vs_P": {
+          "mae": {
+            "loss": "absolute_error",
+            "units": "kW",
+            "gain_definition": "mean reference loss - mean candidate loss; positive favours candidate",
+            "estimand": "window_uniform",
+            "candidate_mean_loss": 159.7722676753583,
+            "reference_mean_loss": 160.06392962589675,
+            "gain": 0.2916619505384369,
+            "ci95_low": -0.825306641583246,
+            "ci95_high": 1.4305135227671641,
+            "probability_gain_positive": 0.7118,
+            "bootstrap": {
+              "block_length_issue_times": 8,
+              "replicates": 5000,
+              "seed": 2024
+            },
+            "newey_west": {
+              "statistic": 0.5063594736484347,
+              "p_value_two_sided": 0.6126043189594353,
+              "lag": 7,
+              "time_points": 2868
+            },
+            "windows": 16949,
+            "issue_time_clusters": 2868,
+            "candidate_better_window_pct": 50.4926544338899
+          },
+          "rmse": {
+            "units": "kW",
+            "rmse_candidate_kw": 243.06718898124768,
+            "rmse_reference_kw": 242.45957648567176,
+            "rmse_gain_kw": -0.6076124955759212,
+            "ci95_low_kw": -2.583411864511514,
+            "ci95_high_kw": 1.2243450785886576,
+            "probability_gain_positive": 0.2336,
+            "block_length_issue_times": 8,
+            "replicates": 5000,
+            "seed": 2024,
+            "method": "issue-time moving-block bootstrap of squared-error sums; sqrt per arm per replicate; NOT a reuse of the MAE-difference interval"
+          }
+        },
+        "L_star_vs_R_star": {
+          "mae": {
+            "loss": "absolute_error",
+            "units": "kW",
+            "gain_definition": "mean reference loss - mean candidate loss; positive favours candidate",
+            "estimand": "window_uniform",
+            "candidate_mean_loss": 159.7722676753583,
+            "reference_mean_loss": 160.044632563357,
+            "gain": 0.2723648879986909,
+            "ci95_low": -0.8442959436308833,
+            "ci95_high": 1.3777687548571074,
+            "probability_gain_positive": 0.6854,
+            "bootstrap": {
+              "block_length_issue_times": 8,
+              "replicates": 5000,
+              "seed": 2024
+            },
+            "newey_west": {
+              "statistic": 0.46943986302146723,
+              "p_value_two_sided": 0.6387552604553747,
+              "lag": 7,
+              "time_points": 2868
+            },
+            "windows": 16949,
+            "issue_time_clusters": 2868,
+            "candidate_better_window_pct": 50.93515841642575
+          },
+          "rmse": {
+            "units": "kW",
+            "rmse_candidate_kw": 243.06718898124768,
+            "rmse_reference_kw": 242.956778223931,
+            "rmse_gain_kw": -0.1104107573166857,
+            "ci95_low_kw": -2.148709506930931,
+            "ci95_high_kw": 1.786512491814228,
+            "probability_gain_positive": 0.4462,
+            "block_length_issue_times": 8,
+            "replicates": 5000,
+            "seed": 2024,
+            "method": "issue-time moving-block bootstrap of squared-error sums; sqrt per arm per replicate; NOT a reuse of the MAE-difference interval"
+          }
+        }
+      },
+      "relative_gains_pct": {
+        "L_star_vs_H": 0.8664327351615757,
+        "L_star_vs_P": 0.18221885391890374,
+        "L_star_vs_R_star": 0.17017386959845265
+      }
+    },
+    "Penmanshiel": {
+      "arms": {
+        "H": {
+          "mean_mae": 184.47604370117188,
+          "mean_rmse": 298.67760213216144,
+          "mean_r2": 0.7858418474419181
+        },
+        "P": {
+          "mean_mae": 185.7991943359375,
+          "mean_rmse": 300.02418009440106,
+          "mean_r2": 0.7839109059551118
+        },
+        "R_star": {
+          "mean_mae": 185.58434041341147,
+          "mean_rmse": 300.5147196451823,
+          "mean_r2": 0.7831907821054088
+        },
+        "L_star": {
+          "mean_mae": 186.22062174479166,
+          "mean_rmse": 301.62123616536456,
+          "mean_r2": 0.7815962743187059
+        }
+      },
+      "comparisons": {
+        "L_star_vs_H": {
+          "mae": {
+            "loss": "absolute_error",
+            "units": "kW",
+            "gain_definition": "mean reference loss - mean candidate loss; positive favours candidate",
+            "estimand": "window_uniform",
+            "candidate_mean_loss": 186.22061887870683,
+            "reference_mean_loss": 184.47603824210373,
+            "gain": -1.7445806366031258,
+            "ci95_low": -3.4044139930072372,
+            "ci95_high": -0.07459542601691403,
+            "probability_gain_positive": 0.0206,
+            "bootstrap": {
+              "block_length_issue_times": 8,
+              "replicates": 5000,
+              "seed": 2024
+            },
+            "newey_west": {
+              "statistic": -2.051715633639364,
+              "p_value_two_sided": 0.04019730650111572,
+              "lag": 7,
+              "time_points": 2780
+            },
+            "windows": 38147,
+            "issue_time_clusters": 2780,
+            "candidate_better_window_pct": 48.386504836553335
+          },
+          "rmse": {
+            "units": "kW",
+            "rmse_candidate_kw": 301.62682516200914,
+            "rmse_reference_kw": 298.68076462694944,
+            "rmse_gain_kw": -2.9460605350597007,
+            "ci95_low_kw": -5.88141361978005,
+            "ci95_high_kw": -0.1375354197200068,
+            "probability_gain_positive": 0.02,
+            "block_length_issue_times": 8,
+            "replicates": 5000,
+            "seed": 2024,
+            "method": "issue-time moving-block bootstrap of squared-error sums; sqrt per arm per replicate; NOT a reuse of the MAE-difference interval"
+          }
+        },
+        "L_star_vs_P": {
+          "mae": {
+            "loss": "absolute_error",
+            "units": "kW",
+            "gain_definition": "mean reference loss - mean candidate loss; positive favours candidate",
+            "estimand": "window_uniform",
+            "candidate_mean_loss": 186.22061887870683,
+            "reference_mean_loss": 185.7991867350145,
+            "gain": -0.42143214369231086,
+            "ci95_low": -1.730489535405781,
+            "ci95_high": 0.8583496043310139,
+            "probability_gain_positive": 0.2758,
+            "bootstrap": {
+              "block_length_issue_times": 8,
+              "replicates": 5000,
+              "seed": 2024
+            },
+            "newey_west": {
+              "statistic": -0.6226116705461547,
+              "p_value_two_sided": 0.5335397401194029,
+              "lag": 7,
+              "time_points": 2780
+            },
+            "windows": 38147,
+            "issue_time_clusters": 2780,
+            "candidate_better_window_pct": 51.87301753742103
+          },
+          "rmse": {
+            "units": "kW",
+            "rmse_candidate_kw": 301.62682516200914,
+            "rmse_reference_kw": 300.0242665995569,
+            "rmse_gain_kw": -1.6025585624522591,
+            "ci95_low_kw": -3.519387125292556,
+            "ci95_high_kw": 0.302209118443332,
+            "probability_gain_positive": 0.056,
+            "block_length_issue_times": 8,
+            "replicates": 5000,
+            "seed": 2024,
+            "method": "issue-time moving-block bootstrap of squared-error sums; sqrt per arm per replicate; NOT a reuse of the MAE-difference interval"
+          }
+        },
+        "L_star_vs_R_star": {
+          "mae": {
+            "loss": "absolute_error",
+            "units": "kW",
+            "gain_definition": "mean reference loss - mean candidate loss; positive favours candidate",
+            "estimand": "window_uniform",
+            "candidate_mean_loss": 186.22061887870683,
+            "reference_mean_loss": 185.5843472560487,
+            "gain": -0.6362716226581132,
+            "ci95_low": -2.239225041364552,
+            "ci95_high": 0.7511309826668867,
+            "probability_gain_positive": 0.164,
+            "bootstrap": {
+              "block_length_issue_times": 8,
+              "replicates": 5000,
+              "seed": 2024
+            },
+            "newey_west": {
+              "statistic": -0.8269178435208843,
+              "p_value_two_sided": 0.4082836290255822,
+              "lag": 7,
+              "time_points": 2780
+            },
+            "windows": 38147,
+            "issue_time_clusters": 2780,
+            "candidate_better_window_pct": 50.80347078407215
+          },
+          "rmse": {
+            "units": "kW",
+            "rmse_candidate_kw": 301.62682516200914,
+            "rmse_reference_kw": 300.52375791335976,
+            "rmse_gain_kw": -1.1030672486493813,
+            "ci95_low_kw": -3.3957583751161735,
+            "ci95_high_kw": 1.0091953177601924,
+            "probability_gain_positive": 0.142,
+            "block_length_issue_times": 8,
+            "replicates": 5000,
+            "seed": 2024,
+            "method": "issue-time moving-block bootstrap of squared-error sums; sqrt per arm per replicate; NOT a reuse of the MAE-difference interval"
+          }
+        }
+      },
+      "relative_gains_pct": {
+        "L_star_vs_H": -0.945693548396875,
+        "L_star_vs_P": -0.2268187493279373,
+        "L_star_vs_R_star": -0.3428529206520313
+      }
+    }
+  },
+  "metadata_sha256": {
+    "audit/completed.json": "928f59c23e4705155fe529129ec665abb6d021fef7bd592df5ce73aa9cd299ce",
+    "audit/input_hashes.json": "591d3dfa720e2930e70051c2887d5073aee20175b0a26fc56e509606ba625117",
+    "audit/launch.json": "bd011e75ff95cdb43e630bb0e78bfef26bcb7c10cc123afe443163dd6f1b61f0",
+    "dispatch.json": "f3af223af457448a7922425fb0345afedd7718a6932921fdbea377a21d2d78b6",
+    "formal_selection_freeze.json": "11ad7179d7f2399369100fbc7a336a48c9998d5c5e0d89e9b35d60da30692659",
+    "l1_summary.json": "7c10e0d092134ee177bce03e679d72f6d6a62c4b97eaa93d05d7db706c98a736",
+    "o3_candidate_pool_freeze.json": "e8c809fe7265297ba56f22b78d65b7c701fec89e0369d7c30dbfe653bed0d562",
+    "o3_grid_selection_freeze.json": "ffcb498aee3269b648ddcb9a93ec5a92bce80ff51e28c12ca106c23c4e48d58e",
+    "o3_multiplier_grid.json": "0431c983a56156aa54bf08830579c0c06a58bdb9aa9ef7ad35a696ae2ca9bc1b",
+    "o3_rerank.json": "82bba49c378de41dadfca3b6ca6136c903b6c0dfa407dd1e295ef342e89c6194",
+    "preflight.json": "464d90efa5c6692b2b67db2423d650c4138121c86bf6264e40500e831418174d",
+    "search_selection_freeze.json": "71502b75761b03977bff7298f98361f3a9bf21324e597837fab4fbabf69c934e",
+    "test_evaluation_started.json": "8603be6c8ec099280f6d490bc7340502b5c7953301db7994a69f4564158ed1f4",
+    "training/Kelmarsh/H_s2024.json": "87fdf68a27e910fa9b06d1eae0a4b3391cc874b8837875666179199bba3da055",
+    "training/Kelmarsh/H_s2025.json": "c3e17d7e7b20fd612db7cfe115c2dd488464ac12cd4ef110eee91bdf6d69c878",
+    "training/Kelmarsh/H_s2026.json": "1b1aa8f576e6257bfc422dcfd3955de47c109a111e0e8ead3c8f481adc350562",
+    "training/Kelmarsh/L_star_s2024.json": "fc2194071020423b2016e5354f2c2f39bfe0f5a2a482028504b91b86edf9a4d7",
+    "training/Kelmarsh/L_star_s2025.json": "ce3c4c0295d0730ef474cfd0372bab58beab0c07451474c5116e8120d3c085e5",
+    "training/Kelmarsh/L_star_s2026.json": "a05f7afd25f2b51330c5b9d74ed9659b2a13c21d01971983378398aeef10f21c",
+    "training/Kelmarsh/P_s2024.json": "955ed27b16eca2ed6e61a9c0d34403b1136daac1457c11fc977fb01e98c38d84",
+    "training/Kelmarsh/P_s2025.json": "da2d44f6eb0fb4bb6739caf872b27a2762bfc8d3355885c757210c7bb52450bd",
+    "training/Kelmarsh/P_s2026.json": "e879655e6a8fcc6e5954041569ebb79748abee19bed1d086b8f3f0c49eddfd96",
+    "training/Kelmarsh/R_star_s2024.json": "318f3dd6a785769618830b8ec16f75f12d45cfa1d7163e5d1e8faf37c3cdcfc4",
+    "training/Kelmarsh/R_star_s2025.json": "e6228fef708caa0aabbc663dee730dfd583e57e03430b0a652788c19870a9221",
+    "training/Kelmarsh/R_star_s2026.json": "4d92fcb9d451b0ffd0f3b8d9a329c2f3485b5aba8d19fd0610555b6f2a4ba41c",
+    "training/Penmanshiel/H_s2024.json": "c05eebb38ca1b76761e917b3199636307f5cba14f4eb46b12a9bb4e2c7feb0e3",
+    "training/Penmanshiel/H_s2025.json": "2a8a1f2392a712f9696831abd4e812b3232d4d5e49d9f0d09147432af103c603",
+    "training/Penmanshiel/H_s2026.json": "5b0e9a15e7b7ddafbbd58a144d34a684f092f33681c38ffeb223a556d63b554f",
+    "training/Penmanshiel/L_star_s2024.json": "611806bb0abc98c85ab29a1a7a04e1021de18b35e6a3ae42cbd45359ef880872",
+    "training/Penmanshiel/L_star_s2025.json": "8d7f1c314aac16d4657077b0d54ce94fdcecf1e07bcf1bff8a1e338da68ef2b2",
+    "training/Penmanshiel/L_star_s2026.json": "7f077f3411ae56505b29e2c80aecd6c9a153d20101f8c2beedd073fbd915e001",
+    "training/Penmanshiel/P_s2024.json": "fb865e45f17af16582787bbcd203c4bdee5997186ea20f94045e06a62e464a8b",
+    "training/Penmanshiel/P_s2025.json": "346daf0c6b8306352bc87f8164460a5ae2a2c7fb47a04a9a7e74f36a8094dc76",
+    "training/Penmanshiel/P_s2026.json": "23c20a40d14f0e5dd28dcc1db0c83101a6a23e3209911e18400b7a9325a339cc",
+    "training/Penmanshiel/R_star_s2024.json": "1c78c6c13b414d2f838078170921be4440d76b913c3a224169d1b981bceaa3cd",
+    "training/Penmanshiel/R_star_s2025.json": "577ddef4b8db4b0bde1b8431aa0f46d2e384d40a30be7c0485cabd9fc1182e3d",
+    "training/Penmanshiel/R_star_s2026.json": "26a7f820667ec32ba3720683a257f8985650a6b0990e6bcffd28ce76465f16f6",
+    "tuning/grid_00.json": "e473ffa73fcb98481ae3b806c0566cc2abf527fe35b3c02bead82c2da0419731",
+    "tuning/grid_01.json": "b0ecdd4e4c94d46a201250e3306bbe4a895bde605fd78382d855b358a2fb6d31",
+    "tuning/grid_02.json": "a354b8d22ccb3cc85cc8c08d0ae1ead32aa70f4d526c0bc446de133c3ae75297",
+    "tuning/grid_03.json": "8cb50f26a63fde0d505dd5196eab16a788373bb0aac6ba5bf8714917f55cd5bb",
+    "tuning/grid_04.json": "2341fd2ff18a802346fda73fa5f703fb2a19ef05924faa22f15cc205a6bc7f4c",
+    "tuning/grid_05.json": "18b42057984fc2f47f7cffee7d9b3fab63fe544ecfd18a03f1a1558e4d9b1d09",
+    "tuning/grid_06.json": "9367faee0dd5189c2e4014c5033b99f204376a3ac1fd2cb6bc4b0b84ddc7e1e3",
+    "tuning/grid_07.json": "bb82c2a0aa995cc13fcc88416a71517e0a3cc50058e779c99b625e31f084afb6",
+    "tuning/grid_08.json": "be0e3bf3c74ec64d7e0798653be417b04105befe66ccb12204ac1fd4535a5c73",
+    "tuning/grid_09.json": "de85a682849f151743fe8fde658a12a7752161d93064b46e78fd939c3c97f41c",
+    "tuning/rerank_00.json": "cc3b563196be28d5dc820571363d49b6344b0eb46b930e3cf7e76a0cbfb511a5",
+    "tuning/rerank_01.json": "cd5a82b463d9a604d8eca4ee92a8b0cb0ff891de74c5dac8fa8e819aa5d0e32b",
+    "tuning/rerank_02.json": "9d58ac81da8f8d074fd8155e7c57b3706b62c3e35e18785fb0e11c68fff4d7bc",
+    "tuning/rerank_03.json": "00ed8f36e5cf4fc827a517924cfb9924a69c157539b76105480c8b053321fa0e",
+    "tuning/rerank_04.json": "3ccd5e2ae68cc505167519a99d2862cccabb046f612ff608d507035fd610a094",
+    "tuning/rerank_05.json": "d15c173a6d297a1687691ce6b7a158e898b692a01cc4bd2ffe866e62f40e625b",
+    "tuning/rerank_06.json": "214b972e352089d8797d66850735c5c9b8246f29bd08a3a30714afe273b3534a",
+    "tuning/rerank_07.json": "02cc7f10255109934071bf564bcf56d2e90cebe1ab682c80062df0fe4adb7bff",
+    "tuning/rerank_08.json": "d8d34e68b09032949b9d41fd021bac551c6e3ffdc071fe543ff3a427c58acbce",
+    "tuning/rerank_09.json": "28bc0b25cd31f023d4cd2ebf6bcd7d2b99ae2d801dfb96ba4b9431b90b05a1f1",
+    "tuning/rerank_10.json": "5f4cd3faf46f663aa60499bd26a820c0786469af306b5567d2d550a2f42080b0",
+    "tuning/rerank_11.json": "3af5f4d90b808f2e1dc58214ffdd92506076f0903a7b67be9a9427be5cd8ec1f",
+    "tuning/rerank_12.json": "87129a0b4562dd9c5384c4671646bd29f8473d611ef3096a6b840eed9ac8cb25",
+    "tuning/rerank_13.json": "12bd20c7fc07a77adcbe4a87451f9130fb5f6da93426efd83282ea7ff76c2509",
+    "tuning/rerank_14.json": "c306e7fc55f3a9e4339d31e92dedac5d81b77e465cf2cff23c426736decdd838",
+    "tuning/rerank_15.json": "80bd6bf66e85c152f8c779c47f9ed27a83ddebebd4ebf7d4cdd93130bdb7e1b5",
+    "tuning/rerank_16.json": "055e5a3cc43854e885e1787ec01a01a576040c38b38f0eb7690bd292264e035b",
+    "tuning/rerank_17.json": "3af5509b0a5c32e62d946620e459188d213c382b825db6001fcf57e06b649309",
+    "tuning/rerank_18.json": "3cb6081497235dddcb9b53453cfce51c54428d8fbdbc621ea1ecc8f0216a348a",
+    "tuning/rerank_19.json": "e1100da907003a10454393b753f7661ce2b04992f43e66b850237361ad909899",
+    "tuning/rerank_20.json": "2f12ec16be17c514f3f532d52acfdf9101b84f9779a2fb36813ddab56108597d"
+  },
+  "statistics_utility_sha256": "1354a3905c61a2131cb975def1bccb5ef6083b75ff3615e2f115298a535bfe6c",
+  "verifier_scope": "Existing arrays and hashes only; no training or prediction generation.",
+  "total_fits": 55,
+  "tuning_fits": 31,
+  "tuning_selection_verified": true,
+  "selected_multipliers": {
+    "H": 1.0,
+    "P": 10.0,
+    "R_star": 0.1,
+    "L_star": 1.0
+  }
+}

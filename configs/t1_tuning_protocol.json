@@ -1,0 +1,37 @@
+{
+  "id": "M2-T1",
+  "scope": "retrospective cross-farm development; not prospective 2021 deployment; no Hill of Towie access",
+  "models": ["TSMixerBasicSmall", "iTransformer", "TimeXer"],
+  "trials_per_model": 60,
+  "sampler": "TPESampler(seed=2024), installed defaults, independent study per model",
+  "pruning": false,
+  "search_seed": 2024,
+  "short_epochs": 10,
+  "short_patience": 3,
+  "search_failure": "OOM or nonfinite numerical failure consumes a trial, no replacement; other errors abort",
+  "selection": "Kelmarsh 2021 validation MAE; exact ties earlier trial; no successful trial aborts",
+  "seeds": [2024, 2025, 2026, 2027, 2028],
+  "common_input_len": 72,
+  "search_space": {
+    "blocks": [2, 3, 4, 6], "ff_dim": [32, 64, 128, 256],
+    "d_model": [64, 128, 256], "e_layers": [1, 2, 3],
+    "dropout": [0.0, 0.3], "learning_rate_log": [0.0003, 0.003],
+    "weight_decay_log": [0.00001, 0.001], "batch_size": [32, 64, 128],
+    "seq_len": [24, 48, 72], "loss_mae_weight": [0.5, 0.8, 1.0]
+  },
+  "recipe": "configs/kelmarsh_upstream_protocol_v32.json",
+  "recipe_sha256_lf": "b9fbdce22a83dd0e5128aa3d9a489cbcb725c4f298f2feba6fe15f028f7a3588",
+  "existing_configuration": "TSMixer v32/P2 default 2 blocks, ff32, dropout .1, MAE .8/MSE .2; transformers A2 selected upstream use_norm=false; all other training settings v32",
+  "short_recipe": "only max_epochs=10, patience=3; cosine T_max remains v32 20; epoch0 selectable",
+  "folds": {
+    "Kelmarsh": {"train": [2016, 2017, 2018, 2019, 2020], "validation": [2021], "test": [2022]},
+    "Penmanshiel": {"train": [2016, 2017, 2018, 2019], "validation": [2020], "test": [2021]}
+  },
+  "formal_fits": 60,
+  "freeze": "tuning_freeze after 180 attempted trials; all 60 formal trained records, inputs and source hashes verified before exclusive evaluation marker",
+  "ensemble": "arithmetic mean of five prediction arrays, then compute original-scale MAE/RMSE/R2",
+  "accept": "TSMixer tuned ensemble MAE <= .98*existing ensemble MAE and RMSE <= existing ensemble RMSE in BOTH folds",
+  "otherwise": "retain existing configuration; seed-ensemble versus seed2024 is descriptive, not a replacement confirmation",
+  "operations": {"threads": 2, "formal_instances": 1, "resume": false, "retrain_after_evaluation": false},
+  "optuna_version": "5.0.0"
+}

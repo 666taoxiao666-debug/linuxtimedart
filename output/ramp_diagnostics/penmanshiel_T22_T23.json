@@ -1,0 +1,408 @@
+{
+  "script_sha256": "fc2ff700ccafa82aea91f57aebb7a467657072e240b947f8d651fda8e15d95c1",
+  "thresholds": {
+    "M1_rel_min": 0.1,
+    "M2_auc_min": 0.05,
+    "change": 0.1,
+    "ramp": 0.3,
+    "warn": 0.1
+  },
+  "bootstrap": {
+    "block": 8,
+    "reps": 5000,
+    "seed": 2024
+  },
+  "folds": [
+    {
+      "fold": "T22",
+      "windows": 37741,
+      "seeds": [
+        2024,
+        2025,
+        2026
+      ],
+      "rated_kw": 2050.0,
+      "inputs_sha256": {
+        "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/Penmanshiel/p3_v35_2894746_r2/T22/evaluation/cohort.npz": "5dd2666bf95d9290b7a1490e84a751c40ea798a201d3814bf97739879bebadb7",
+        "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/Penmanshiel/p3_v35_2894746_r2/T22/evaluation/P-upstream_s2024.npz": "37dcb202a6f1d4514135e67b03179c64fc8d4781c6de7d5990c24bac5d18ea2b",
+        "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/Penmanshiel/p3_v35_2894746_r2/T22/evaluation/P-upstream_s2025.npz": "33a1494febbf33df0ac7fc7cacea67bc6a1d0920752a4e6893e711f35eeee650",
+        "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/Penmanshiel/p3_v35_2894746_r2/T22/evaluation/P-upstream_s2026.npz": "539ed9e3651564082feb99208b04b408f318b39103c9ee2ca68819c3819777b4",
+        "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/Penmanshiel/p3_v35_2894746_r2/T22/evaluation/P-last10_s2024.npz": "de7d71bfe0b20516c6844dd94efc8ebf7b1acbd60aae3c6d41c906619aed3d9c",
+        "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/Penmanshiel/p3_v35_2894746_r2/T22/evaluation/P-last10_s2025.npz": "71c3a1b0327f879b0e78186d2497046774eb5350335cb730bf375798b70c6710",
+        "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/Penmanshiel/p3_v35_2894746_r2/T22/evaluation/P-last10_s2026.npz": "71cd593d32a7aacc2372c361ad17bae98c197bdff3247f438666b42f2b3f1e0a"
+      },
+      "overall_mae": {
+        "candidate": 209.8227881099535,
+        "reference": 227.72648539376127
+      },
+      "M1": {
+        "cells": 48906,
+        "cell_share": 0.43194403963858935,
+        "reference_mae": 459.6783658837283,
+        "candidate_mae": 399.33261820388367,
+        "gain_kw": 60.34574767984467,
+        "relative_gain": 0.13127819831988485,
+        "ci95_low_kw": 53.22913282981854,
+        "ci95_high_kw": 66.82869844177118,
+        "pass": true,
+        "total_time_clusters": 2769,
+        "zero_event_clusters": 606,
+        "finite_replicates": 5000
+      },
+      "M2": {
+        "event_rate_up": 0.0859277708592777,
+        "event_rate_down": 0.08568930341008453,
+        "candidate": {
+          "auc_up": 0.8008870347576491,
+          "auc_down": 0.8449881616340595,
+          "auc_mean": 0.8229375981958543
+        },
+        "reference": {
+          "auc_up": 0.7185989965731477,
+          "auc_down": 0.8226893868378619,
+          "auc_mean": 0.7706441917055048
+        },
+        "gain": 0.052293406490349525,
+        "ci95_low": 0.03661798550996118,
+        "ci95_high": 0.06724459767372343,
+        "finite_replicates": 5000,
+        "pass": true
+      },
+      "M3": {
+        "status": "UNAVAILABLE",
+        "reason": "upstream missing mask not stored",
+        "adopt": null
+      },
+      "descriptive": {
+        "strata": [
+          {
+            "h": 1,
+            "stratum": "calm",
+            "share": 0.737288360138841,
+            "mae_candidate": 77.88763605404164,
+            "mae_reference": 75.66171660387705
+          },
+          {
+            "h": 1,
+            "stratum": "change_10_30",
+            "share": 0.2194430460242177,
+            "mae_candidate": 247.5882300052939,
+            "mae_reference": 263.7172885108239
+          },
+          {
+            "h": 1,
+            "stratum": "ramp_30",
+            "share": 0.04326859383694126,
+            "mae_candidate": 591.5491319749215,
+            "mae_reference": 633.5661658210113
+          },
+          {
+            "h": 2,
+            "stratum": "calm",
+            "share": 0.6266659600964468,
+            "mae_candidate": 94.10385753193347,
+            "mae_reference": 90.22395934451487
+          },
+          {
+            "h": 2,
+            "stratum": "change_10_30",
+            "share": 0.2762247953154394,
+            "mae_candidate": 269.06855305252554,
+            "mae_reference": 304.66228398097695
+          },
+          {
+            "h": 2,
+            "stratum": "ramp_30",
+            "share": 0.09710924458811372,
+            "mae_candidate": 664.0972252754518,
+            "mae_reference": 755.4621136746429
+          },
+          {
+            "h": 3,
+            "stratum": "calm",
+            "share": 0.5647439124559498,
+            "mae_candidate": 109.08934042576938,
+            "mae_reference": 101.2975252564962
+          },
+          {
+            "h": 3,
+            "stratum": "change_10_30",
+            "share": 0.29861423915635515,
+            "mae_candidate": 283.32957013206857,
+            "mae_reference": 315.10254356776977
+          },
+          {
+            "h": 3,
+            "stratum": "ramp_30",
+            "share": 0.13664184838769508,
+            "mae_candidate": 653.4372508321298,
+            "mae_reference": 783.864554358666
+          },
+          {
+            "h": 4,
+            "stratum": "calm",
+            "share": 0.5127580085318354,
+            "mae_candidate": 124.60309052142553,
+            "mae_reference": 117.84030616206252
+          },
+          {
+            "h": 4,
+            "stratum": "change_10_30",
+            "share": 0.31562491719880237,
+            "mae_candidate": 284.4697306715672,
+            "mae_reference": 316.08062590557813
+          },
+          {
+            "h": 4,
+            "stratum": "ramp_30",
+            "share": 0.17161707426936224,
+            "mae_candidate": 669.9554485074281,
+            "mae_reference": 799.3530363079692
+          }
+        ],
+        "slopes": [
+          {
+            "h": 1,
+            "mz_slope_candidate": 0.971191051720602,
+            "amplitude_slope_candidate": 0.298882430108089,
+            "mz_slope_reference": 0.9875680515152471,
+            "amplitude_slope_reference": 0.24471102469616593
+          },
+          {
+            "h": 2,
+            "mz_slope_candidate": 1.075533430761188,
+            "amplitude_slope_candidate": 0.2727975458824532,
+            "mz_slope_reference": 1.1035325399414784,
+            "amplitude_slope_reference": 0.1647607625807393
+          },
+          {
+            "h": 3,
+            "mz_slope_candidate": 1.0534480725379018,
+            "amplitude_slope_candidate": 0.3018402346736372,
+            "mz_slope_reference": 1.158683411831272,
+            "amplitude_slope_reference": 0.16385386560013174
+          },
+          {
+            "h": 4,
+            "mz_slope_candidate": 1.033353789098126,
+            "amplitude_slope_candidate": 0.31539482940133157,
+            "mz_slope_reference": 1.1623101143762733,
+            "amplitude_slope_reference": 0.17656907247838996
+          }
+        ],
+        "h4_warning": {
+          "candidate": {
+            "pod": 0.618341824918944,
+            "warning_rate": 0.32640894517898306,
+            "false_warning_ratio": 0.35912005844630246,
+            "csi": 0.27077276722331145
+          },
+          "reference": {
+            "pod": 0.42859348463794966,
+            "warning_rate": 0.2483241037598368,
+            "false_warning_ratio": 0.4221084080239009,
+            "csi": 0.21234605675820392
+          }
+        }
+      }
+    },
+    {
+      "fold": "T23",
+      "windows": 36838,
+      "seeds": [
+        2024,
+        2025,
+        2026
+      ],
+      "rated_kw": 2050.0,
+      "inputs_sha256": {
+        "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/Penmanshiel/p3_v35_2894746_r2/T23/evaluation/cohort.npz": "ce816ae98b9a5e7ea75e91fb55fd4a6ad5c183cfbf2e79ef4df4691bf2c37746",
+        "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/Penmanshiel/p3_v35_2894746_r2/T23/evaluation/P-upstream_s2024.npz": "2906871993d641bf0fffd14a1640c0e903a08079df106748ac8401d20875a748",
+        "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/Penmanshiel/p3_v35_2894746_r2/T23/evaluation/P-upstream_s2025.npz": "b42aeab2c95297e42bc282236baa402f07a976ec98216b68c21223609ea4a3bb",
+        "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/Penmanshiel/p3_v35_2894746_r2/T23/evaluation/P-upstream_s2026.npz": "f32bb14608a51c74bb95b771981073cd9b998de13cd321d6450294324a6e7ffe",
+        "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/Penmanshiel/p3_v35_2894746_r2/T23/evaluation/P-last10_s2024.npz": "3f40579a81d6a1dace5051192506a3f245f6d69f191721c1e0aadd34fcf1070c",
+        "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/Penmanshiel/p3_v35_2894746_r2/T23/evaluation/P-last10_s2025.npz": "544bdad5940c4262889033be1fe2a91646a5f511ac2814738d7f3e0deeb159d5",
+        "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/Penmanshiel/p3_v35_2894746_r2/T23/evaluation/P-last10_s2026.npz": "51b51107bd09735172f0efbef54bf395ca214f9975d7cb6e670b0fdedb9b5543"
+      },
+      "overall_mae": {
+        "candidate": 185.5035265395257,
+        "reference": 201.93323003825026
+      },
+      "M1": {
+        "cells": 42062,
+        "cell_share": 0.38060336246991333,
+        "reference_mae": 444.8172272378299,
+        "candidate_mae": 388.66490065555763,
+        "gain_kw": 56.15232658227231,
+        "relative_gain": 0.12623685222571068,
+        "ci95_low_kw": 48.125472689065376,
+        "ci95_high_kw": 64.19307128113924,
+        "pass": true,
+        "total_time_clusters": 2879,
+        "zero_event_clusters": 800,
+        "finite_replicates": 5000
+      },
+      "M2": {
+        "event_rate_up": 0.07617134480699278,
+        "event_rate_down": 0.07177371192790054,
+        "candidate": {
+          "auc_up": 0.8053386548939223,
+          "auc_down": 0.8321990759851438,
+          "auc_mean": 0.8187688654395331
+        },
+        "reference": {
+          "auc_up": 0.7263789461832242,
+          "auc_down": 0.8090891258802116,
+          "auc_mean": 0.767734036031718
+        },
+        "gain": 0.05103482940781512,
+        "ci95_low": 0.0324064726988613,
+        "ci95_high": 0.06978660488836179,
+        "finite_replicates": 5000,
+        "pass": true
+      },
+      "M3": {
+        "status": "UNAVAILABLE",
+        "reason": "upstream missing mask not stored",
+        "adopt": null
+      },
+      "descriptive": {
+        "strata": [
+          {
+            "h": 1,
+            "stratum": "calm",
+            "share": 0.7743634290678104,
+            "mae_candidate": 69.22590016882283,
+            "mae_reference": 66.65288758672742
+          },
+          {
+            "h": 1,
+            "stratum": "change_10_30",
+            "share": 0.19789347955915088,
+            "mae_candidate": 239.47100415295876,
+            "mae_reference": 260.6355185067037
+          },
+          {
+            "h": 1,
+            "stratum": "ramp_30",
+            "share": 0.02774309137303871,
+            "mae_candidate": 579.4148733863765,
+            "mae_reference": 623.6097018864234
+          },
+          {
+            "h": 2,
+            "stratum": "calm",
+            "share": 0.6713176611108095,
+            "mae_candidate": 85.72496132547009,
+            "mae_reference": 83.48076961424466
+          },
+          {
+            "h": 2,
+            "stratum": "change_10_30",
+            "share": 0.25373255877083445,
+            "mae_candidate": 267.1208492002998,
+            "mae_reference": 304.3941959839316
+          },
+          {
+            "h": 2,
+            "stratum": "ramp_30",
+            "share": 0.07494978011835604,
+            "mae_candidate": 646.1242721770624,
+            "mae_reference": 752.1485520808544
+          },
+          {
+            "h": 3,
+            "stratum": "calm",
+            "share": 0.6145827677941257,
+            "mae_candidate": 98.64463770658286,
+            "mae_reference": 97.39339563572621
+          },
+          {
+            "h": 3,
+            "stratum": "change_10_30",
+            "share": 0.27392909495629514,
+            "mae_candidate": 279.6279748481882,
+            "mae_reference": 309.3771689431696
+          },
+          {
+            "h": 3,
+            "stratum": "ramp_30",
+            "share": 0.11148813724957923,
+            "mae_candidate": 666.8037628821004,
+            "mae_reference": 782.1462825011319
+          },
+          {
+            "h": 4,
+            "stratum": "calm",
+            "share": 0.572289483685325,
+            "mae_candidate": 110.06337401244825,
+            "mae_reference": 110.86210389074813
+          },
+          {
+            "h": 4,
+            "stratum": "change_10_30",
+            "share": 0.2797654595797818,
+            "mae_candidate": 286.9911527011799,
+            "mae_reference": 319.125279479869
+          },
+          {
+            "h": 4,
+            "stratum": "ramp_30",
+            "share": 0.1479450567348933,
+            "mae_candidate": 651.2432275834461,
+            "mae_reference": 764.209648727221
+          }
+        ],
+        "slopes": [
+          {
+            "h": 1,
+            "mz_slope_candidate": 0.9519113572992138,
+            "amplitude_slope_candidate": 0.32137242909630526,
+            "mz_slope_reference": 0.956416114477292,
+            "amplitude_slope_reference": 0.25748954526601586
+          },
+          {
+            "h": 2,
+            "mz_slope_candidate": 1.019634135655756,
+            "amplitude_slope_candidate": 0.2840401076221119,
+            "mz_slope_reference": 0.9222409463843155,
+            "amplitude_slope_reference": 0.16664832185915635
+          },
+          {
+            "h": 3,
+            "mz_slope_candidate": 0.997990221916857,
+            "amplitude_slope_candidate": 0.29848284109333156,
+            "mz_slope_reference": 0.9620012866380181,
+            "amplitude_slope_reference": 0.17761246116700447
+          },
+          {
+            "h": 4,
+            "mz_slope_candidate": 0.9942303898254741,
+            "amplitude_slope_candidate": 0.31823265630778924,
+            "mz_slope_reference": 0.953707476852629,
+            "amplitude_slope_reference": 0.19820750872917783
+          }
+        ],
+        "h4_warning": {
+          "candidate": {
+            "pod": 0.6152293577981651,
+            "warning_rate": 0.28470601009826807,
+            "false_warning_ratio": 0.3706140350877193,
+            "csi": 0.26642828764402066
+          },
+          "reference": {
+            "pod": 0.4521100917431193,
+            "warning_rate": 0.24230414246158857,
+            "false_warning_ratio": 0.4563074165359624,
+            "csi": 0.2068502350570853
+          }
+        }
+      }
+    }
+  ],
+  "decision": {
+    "ramp": "RAMP_REPLICATED",
+    "fallback": "UNDETERMINED"
+  },
+  "role": "development_replication"
+}

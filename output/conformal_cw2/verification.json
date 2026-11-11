@@ -1,0 +1,84 @@
+{
+  "status": "PASSED",
+  "arrays_hashed": 60,
+  "input_files_hashed": 374,
+  "source_files_hashed": 56,
+  "selected": null,
+  "decision": "STOP_AT_SELECTION",
+  "gains_pct": {
+    "N-R": -3.255235330869877,
+    "N-Rs": -3.860199281740228
+  },
+  "cohort_checks": {
+    "N-R": {
+      "selection_2022": {
+        "coverage": 0.8949705448539609,
+        "winkler_kw": 1496.0692892485913,
+        "ref_min_control_winkler_kw": 1422.8802611191807,
+        "gain_pct": -5.14372362378849,
+        "pass_coverage": true,
+        "pass_winkler": false
+      },
+      "selection_2023": {
+        "coverage": 0.8958344644117487,
+        "winkler_kw": 1297.3898529467417,
+        "ref_min_control_winkler_kw": 1283.9893536151335,
+        "gain_pct": -1.0436612495172541,
+        "pass_coverage": true,
+        "pass_winkler": false
+      },
+      "J1": {
+        "coverage": 0.8965908245966242,
+        "winkler_kw": 1420.0433199486258,
+        "ref_min_control_winkler_kw": 1358.6228886655683,
+        "gain_pct": -4.520785848336788,
+        "pass_coverage": true,
+        "pass_winkler": false
+      },
+      "J2": {
+        "coverage": 0.9006452383797346,
+        "winkler_kw": 1181.459065788984,
+        "ref_min_control_winkler_kw": 1154.7522942045823,
+        "gain_pct": -2.3127706018369776,
+        "pass_coverage": true,
+        "pass_winkler": false
+      }
+    },
+    "N-Rs": {
+      "selection_2022": {
+        "coverage": 0.8948314388419315,
+        "winkler_kw": 1513.128166746572,
+        "ref_min_control_winkler_kw": 1422.8802611191807,
+        "gain_pct": -6.342621237601965,
+        "pass_coverage": true,
+        "pass_winkler": false
+      },
+      "selection_2023": {
+        "coverage": 0.8957190944133774,
+        "winkler_kw": 1312.5214720457716,
+        "ref_min_control_winkler_kw": 1283.9893536151335,
+        "gain_pct": -2.22214602872715,
+        "pass_coverage": true,
+        "pass_winkler": false
+      },
+      "J1": {
+        "coverage": 0.8965226658735469,
+        "winkler_kw": 1409.9314477014161,
+        "ref_min_control_winkler_kw": 1358.6228886655683,
+        "gain_pct": -3.7765121921538336,
+        "pass_coverage": true,
+        "pass_winkler": false
+      },
+      "J2": {
+        "coverage": 0.9009091090134226,
+        "winkler_kw": 1190.544045590608,
+        "ref_min_control_winkler_kw": 1154.7522942045823,
+        "gain_pct": -3.099517668477965,
+        "pass_coverage": true,
+        "pass_winkler": false
+      }
+    }
+  },
+  "j3_evaluated": false,
+  "no_inference": true
+}

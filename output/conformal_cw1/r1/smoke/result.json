@@ -1,0 +1,24 @@
+{
+  "status": "PASSED",
+  "smoke": true,
+  "methods": [
+    "B0",
+    "B1",
+    "B2-A",
+    "B3-A",
+    "M-A",
+    "W1",
+    "W2",
+    "W4",
+    "B3-G"
+  ],
+  "ci": {
+    "difference": "comparator-minus-candidate",
+    "mean_gain_kw": 0.0,
+    "ci95_low_kw": 0.0,
+    "ci95_high_kw": 0.0,
+    "block_length": 8,
+    "replicates": 100,
+    "seed": 2024
+  }
+}

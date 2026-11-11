@@ -1,0 +1,287 @@
+{
+  "model_selection": {
+    "selected_model": "Qwen/Qwen2.5-Coder-7B-Instruct",
+    "selection_reason": "Single GPU free memory is 24089 MiB (~23.5 GB), which is less than 34 GB required for 14B model, hence Qwen2.5-Coder-7B-Instruct was selected.",
+    "gpu_info": {
+      "name": "NVIDIA GeForce RTX 3090",
+      "total_memory_mib": 24576,
+      "free_memory_mib_at_check": 24089
+    }
+  },
+  "revision_commit_sha": "c03e6d358207e414f1eca0bb1891e29f1db0e242",
+  "environment": {
+    "conda_env_name": "llm_l1",
+    "env_path": "/home/XT/miniconda3/envs/llm_l1",
+    "packages": {
+      "python": "3.10.20",
+      "torch": "2.6.0+cu124",
+      "cuda_available": true,
+      "cuda_version": "12.4",
+      "transformers": "5.20.2",
+      "accelerate": "1.15.0"
+    }
+  },
+  "weights_summary": {
+    "local_directory": "/home/XT/nuist/pythoncode/TimeDARTFirst/llm_weights/Qwen2.5-Coder-7B-Instruct",
+    "total_files": 49,
+    "total_size_bytes": 15303338337,
+    "total_size_gb": 14.252,
+    "files": [
+      {
+        "relative_path": "LICENSE",
+        "size_bytes": 11343,
+        "sha256": "832dd9e00a68dd83b3c3fb9f5588dad7dcf337a0db50f7d9483f310cd292e92e"
+      },
+      {
+        "relative_path": "README.md",
+        "size_bytes": 6392,
+        "sha256": "3c090be37f829adc1e4cdb78733667437732541470430ab2cd785d7f0d460077"
+      },
+      {
+        "relative_path": "config.json",
+        "size_bytes": 663,
+        "sha256": "c0242402ad6a13b331ea320feea8c7e3776ffb7a4eff0757b9cd667e116d9a28"
+      },
+      {
+        "relative_path": "generation_config.json",
+        "size_bytes": 242,
+        "sha256": "1a628a5775bc69cde01c6749a531150ca4d3189652c618a174f7077923acf3b1"
+      },
+      {
+        "relative_path": "merges.txt",
+        "size_bytes": 1671839,
+        "sha256": "599bab54075088774b1733fde865d5bd747cbcc7a547c5bc12610e874e26f5e3"
+      },
+      {
+        "relative_path": "model-00001-of-00004.safetensors",
+        "size_bytes": 4877660776,
+        "sha256": "0b6f069918b07c064cbba8ae4f00f529aa9bbf84b7cdfcb7fc2694a40f6aa8ef"
+      },
+      {
+        "relative_path": "model-00002-of-00004.safetensors",
+        "size_bytes": 4932751008,
+        "sha256": "c3d46733e7aa054ea7b063fbccd0a5a08446e7bd1814bef26936c5aa1331da62"
+      },
+      {
+        "relative_path": "model-00003-of-00004.safetensors",
+        "size_bytes": 4330865200,
+        "sha256": "9fe45dacee087385b3d2d6dd27a7413a8a56d95f145772facc148fa86fc73446"
+      },
+      {
+        "relative_path": "model-00004-of-00004.safetensors",
+        "size_bytes": 1089994880,
+        "sha256": "5aa6e5cbe642377fd441fb4e60e83cca96b2bcd9820e245b9ea06d94653f17f2"
+      },
+      {
+        "relative_path": "model.safetensors.index.json",
+        "size_bytes": 27752,
+        "sha256": "998a078123ffc97763690de7f2a677eb89168af5eaf8a5e12e6bc24d18e25bdb"
+      },
+      {
+        "relative_path": "tokenizer.json",
+        "size_bytes": 7031645,
+        "sha256": "c0382117ea329cdf097041132f6d735924b697924d6f6fc3945713e96ce87539"
+      },
+      {
+        "relative_path": "tokenizer_config.json",
+        "size_bytes": 7305,
+        "sha256": "959e7f1d9a1b7641a6d6ce05ca97b75c7894fcb66cbe5a040406458fb1128ee4"
+      },
+      {
+        "relative_path": "vocab.json",
+        "size_bytes": 2776833,
+        "sha256": "ca10d7e9fb3ed18575dd1e277a2579c16d108e32f27439684afa0e10b1440910"
+      },
+      {
+        "relative_path": ".cache/huggingface/CACHEDIR.TAG",
+        "size_bytes": 191,
+        "sha256": "f6572428f6d5e1575e73a1502895a8731f10757dfbb634909c6e154b849af91d"
+      },
+      {
+        "relative_path": ".cache/huggingface/download/-dFtyT7kcgbTHt1cy9JKqruJCR4=.5aa6e5cbe642377fd441fb4e60e83cca96b2bcd9820e245b9ea06d94653f17f2.7341862a.incomplete",
+        "size_bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "relative_path": ".cache/huggingface/download/-dFtyT7kcgbTHt1cy9JKqruJCR4=.5aa6e5cbe642377fd441fb4e60e83cca96b2bcd9820e245b9ea06d94653f17f2.75ca0751.incomplete",
+        "size_bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "relative_path": ".cache/huggingface/download/DaGOU-KRMVrY0aYktrsE34tL0Bs=.9fe45dacee087385b3d2d6dd27a7413a8a56d95f145772facc148fa86fc73446.61892f4c.incomplete",
+        "size_bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "relative_path": ".cache/huggingface/download/DaGOU-KRMVrY0aYktrsE34tL0Bs=.9fe45dacee087385b3d2d6dd27a7413a8a56d95f145772facc148fa86fc73446.92d96ab1.incomplete",
+        "size_bytes": 72146,
+        "sha256": "af5e476a5b7354180739a0c7bd27a04489241f7d781b2f206910cda38ef86779"
+      },
+      {
+        "relative_path": ".cache/huggingface/download/IO4xwqmZYzFmxznkwkiNSBwO1H0=.0b6f069918b07c064cbba8ae4f00f529aa9bbf84b7cdfcb7fc2694a40f6aa8ef.2269ce02.incomplete",
+        "size_bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "relative_path": ".cache/huggingface/download/IO4xwqmZYzFmxznkwkiNSBwO1H0=.0b6f069918b07c064cbba8ae4f00f529aa9bbf84b7cdfcb7fc2694a40f6aa8ef.83bb6029.incomplete",
+        "size_bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "relative_path": ".cache/huggingface/download/LICENSE.lock",
+        "size_bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "relative_path": ".cache/huggingface/download/LICENSE.metadata",
+        "size_bytes": 101,
+        "sha256": "c7cf6db64ae4a91c3f51024c172795a11903f9709d692d94c95f826cb5fbc638"
+      },
+      {
+        "relative_path": ".cache/huggingface/download/README.md.lock",
+        "size_bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "relative_path": ".cache/huggingface/download/README.md.metadata",
+        "size_bytes": 101,
+        "sha256": "657aed72bbe2f7f35a7c3e5ee6d42418a6db7d10fb9e75783f8101df52f9d57c"
+      },
+      {
+        "relative_path": ".cache/huggingface/download/config.json.lock",
+        "size_bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "relative_path": ".cache/huggingface/download/config.json.metadata",
+        "size_bytes": 100,
+        "sha256": "2b66c7c0846dc2bb2b44c74bf4dc6c7e521ac21657f79fcffb703f52069bfd4e"
+      },
+      {
+        "relative_path": ".cache/huggingface/download/generation_config.json.lock",
+        "size_bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "relative_path": ".cache/huggingface/download/generation_config.json.metadata",
+        "size_bytes": 101,
+        "sha256": "9b2a9f35ac1cb282c8a5982419322de5e5c148c8a3cb2a2bdfdbdafc4cdf5b9a"
+      },
+      {
+        "relative_path": ".cache/huggingface/download/merges.txt.lock",
+        "size_bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "relative_path": ".cache/huggingface/download/merges.txt.metadata",
+        "size_bytes": 99,
+        "sha256": "2ce9714690ed264bbdb844c861b202422eccbc1be682b7666933cc295209708a"
+      },
+      {
+        "relative_path": ".cache/huggingface/download/model-00001-of-00004.safetensors.lock",
+        "size_bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "relative_path": ".cache/huggingface/download/model-00001-of-00004.safetensors.metadata",
+        "size_bytes": 125,
+        "sha256": "75d1d14f49e6d2009fc62b27c5515df01c5430cdedf724c9f4ad75d342f14253"
+      },
+      {
+        "relative_path": ".cache/huggingface/download/model-00002-of-00004.safetensors.lock",
+        "size_bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "relative_path": ".cache/huggingface/download/model-00002-of-00004.safetensors.metadata",
+        "size_bytes": 125,
+        "sha256": "30f4432b6aa1f35862c843178bc6e5944b8ed8952e4cb8e3bd8d0e02144e8915"
+      },
+      {
+        "relative_path": ".cache/huggingface/download/model-00003-of-00004.safetensors.lock",
+        "size_bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "relative_path": ".cache/huggingface/download/model-00003-of-00004.safetensors.metadata",
+        "size_bytes": 125,
+        "sha256": "7d385640aad6950ee60884f05df948ca337c28a5b59adf9db2efb7f0b29246aa"
+      },
+      {
+        "relative_path": ".cache/huggingface/download/model-00004-of-00004.safetensors.lock",
+        "size_bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "relative_path": ".cache/huggingface/download/model-00004-of-00004.safetensors.metadata",
+        "size_bytes": 125,
+        "sha256": "c43b8aa8a455a986165bc32e9d813e08b552edf81b338197b43c8dff17b9a2c1"
+      },
+      {
+        "relative_path": ".cache/huggingface/download/model.safetensors.index.json.lock",
+        "size_bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "relative_path": ".cache/huggingface/download/model.safetensors.index.json.metadata",
+        "size_bytes": 101,
+        "sha256": "01d228c4c055820f02c18a139892db50da920c3e7481fe57ed7f708212413681"
+      },
+      {
+        "relative_path": ".cache/huggingface/download/t9msAuTjAZjuQnmzGOwTjiptvIU=.c3d46733e7aa054ea7b063fbccd0a5a08446e7bd1814bef26936c5aa1331da62.befa7547.incomplete",
+        "size_bytes": 30228186,
+        "sha256": "46db7d767a867828375184e8ceea44f33391d0283251fd37ece3919d12ce27e3"
+      },
+      {
+        "relative_path": ".cache/huggingface/download/t9msAuTjAZjuQnmzGOwTjiptvIU=.c3d46733e7aa054ea7b063fbccd0a5a08446e7bd1814bef26936c5aa1331da62.ef5086a0.incomplete",
+        "size_bytes": 30228186,
+        "sha256": "46db7d767a867828375184e8ceea44f33391d0283251fd37ece3919d12ce27e3"
+      },
+      {
+        "relative_path": ".cache/huggingface/download/tokenizer.json.lock",
+        "size_bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "relative_path": ".cache/huggingface/download/tokenizer.json.metadata",
+        "size_bytes": 101,
+        "sha256": "32ca53badb28a87938ccc410e8b9ec27c0db0b60152c92bca0f3759931e3d15d"
+      },
+      {
+        "relative_path": ".cache/huggingface/download/tokenizer_config.json.lock",
+        "size_bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "relative_path": ".cache/huggingface/download/tokenizer_config.json.metadata",
+        "size_bytes": 101,
+        "sha256": "c8c82f7928d4a0d1d6c3d24f6c3b9e5b5eea33839e4c453ee97bdc111d3d25c1"
+      },
+      {
+        "relative_path": ".cache/huggingface/download/vocab.json.lock",
+        "size_bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "relative_path": ".cache/huggingface/download/vocab.json.metadata",
+        "size_bytes": 101,
+        "sha256": "be2212ba4e12db8fc6661f89d6dcd4b1e60e3f49403d4bfdc893e08a33414d53"
+      },
+      {
+        "relative_path": ".cache/huggingface/trees/c03e6d358207e414f1eca0bb1891e29f1db0e242.json",
+        "size_bytes": 2344,
+        "sha256": "fd718b27fa452beb09035d1ca7356854ff65f8e77444e92d6f77fc73d0be2598"
+      }
+    ]
+  },
+  "smoke_test": {
+    "success": true,
+    "precision": "bfloat16",
+    "load_time_seconds": 19.63,
+    "generation_time_seconds": 3.46,
+    "gpu_memory_allocated_gb": 14.19,
+    "gpu_memory_peak_gb": 14.19,
+    "test_prompt": "写一个把两个 torch 张量相加的函数",
+    "generated_response": " 当然！以下是一个简单的 Python 函数，它使用 PyTorch 库将两个张量相加：\n\n```python\nimport torch\n\ndef add_tensors(tensor1, tensor2):\n    \"\"\"\n    将两个 PyTorch 张量相加。\n\n    参数:\n    tensor1 (torch.Tensor):"
+  }
+}

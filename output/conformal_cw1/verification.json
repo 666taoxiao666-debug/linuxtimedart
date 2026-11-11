@@ -1,0 +1,32 @@
+{
+  "status": "PASSED",
+  "arrays_hashed": 74,
+  "input_files_hashed": 374,
+  "source_files_hashed": 55,
+  "selected": "W3",
+  "w3_choices": [
+    "B3-A",
+    "B3-A",
+    "M-A",
+    "M-A"
+  ],
+  "gains_pct": {
+    "W1": -3.490338065597251,
+    "W2": 0.049483651742591506,
+    "W3": 0.3603204844936232,
+    "W4": -0.19899550215914313
+  },
+  "j1_verdict": {
+    "C1": true,
+    "C2": true,
+    "C3": false,
+    "pass_all": false
+  },
+  "j2_verdict": {
+    "C1": true,
+    "C2": true,
+    "C3": false,
+    "pass_all": false
+  },
+  "no_inference": true
+}

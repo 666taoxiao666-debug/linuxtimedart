@@ -1,0 +1,10 @@
+{
+  "status": "COMPLETED",
+  "selected": null,
+  "decision": "STOP_AT_SELECTION",
+  "gains_pct": {
+    "N-R": -3.255235330869877,
+    "N-Rs": -3.860199281740228
+  },
+  "selection_sha256": "4c89fdac1bb54b33742ebc98252c8ae8663d620e0e2325a104d3889b6d22626e"
+}

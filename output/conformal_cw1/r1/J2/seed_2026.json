@@ -1,0 +1,247 @@
+{
+  "seed": 2026,
+  "methods": {
+    "B0": {
+      "pooled": {
+        "n": 66952,
+        "coverage": 0.9189419285458239,
+        "width_kw": 978.5600664253927,
+        "winkler_kw": 1310.5351213139027,
+        "infinite_intervals": 0,
+        "cap_fraction": 0.0
+      },
+      "horizons": [
+        {
+          "n": 16738,
+          "coverage": 0.9120563986139324,
+          "width_kw": 638.5705468394547,
+          "winkler_kw": 907.8080269323069,
+          "infinite_intervals": 0,
+          "cap_fraction": 0.0
+        },
+        {
+          "n": 16738,
+          "coverage": 0.9185685267056996,
+          "width_kw": 917.5632793388539,
+          "winkler_kw": 1255.2109225382162,
+          "infinite_intervals": 0,
+          "cap_fraction": 0.0
+        },
+        {
+          "n": 16738,
+          "coverage": 0.9228103716095113,
+          "width_kw": 1119.0513051063685,
+          "winkler_kw": 1456.7675646068003,
+          "infinite_intervals": 0,
+          "cap_fraction": 0.0
+        },
+        {
+          "n": 16738,
+          "coverage": 0.9223324172541523,
+          "width_kw": 1239.055134416895,
+          "winkler_kw": 1622.3539711782873,
+          "infinite_intervals": 0,
+          "cap_fraction": 0.0
+        }
+      ]
+    },
+    "B1": {
+      "pooled": {
+        "n": 66952,
+        "coverage": 0.9383588242322858,
+        "width_kw": 1079.6423995940079,
+        "winkler_kw": 1341.1100940125252,
+        "infinite_intervals": 0,
+        "cap_fraction": 0.0
+      },
+      "horizons": [
+        {
+          "n": 16738,
+          "coverage": 0.9471860437328236,
+          "width_kw": 787.7127887667746,
+          "winkler_kw": 955.1161495061713,
+          "infinite_intervals": 0,
+          "cap_fraction": 0.0
+        },
+        {
+          "n": 16738,
+          "coverage": 0.9424662444736528,
+          "width_kw": 1046.623301622929,
+          "winkler_kw": 1295.6369572776496,
+          "infinite_intervals": 0,
+          "cap_fraction": 0.0
+        },
+        {
+          "n": 16738,
+          "coverage": 0.9313538057115546,
+          "width_kw": 1174.01895037545,
+          "winkler_kw": 1471.8229901657762,
+          "infinite_intervals": 0,
+          "cap_fraction": 0.0
+        },
+        {
+          "n": 16738,
+          "coverage": 0.9324292030111124,
+          "width_kw": 1310.2145576108783,
+          "winkler_kw": 1641.8642791005025,
+          "infinite_intervals": 0,
+          "cap_fraction": 0.0
+        }
+      ]
+    },
+    "B2-A": {
+      "pooled": {
+        "n": 66952,
+        "coverage": 0.9005705580117099,
+        "width_kw": 889.0094463798196,
+        "winkler_kw": 1278.734582398442,
+        "infinite_intervals": 0,
+        "cap_fraction": 0.0
+      },
+      "horizons": [
+        {
+          "n": 16738,
+          "coverage": 0.8997490739634365,
+          "width_kw": 597.3287717877591,
+          "winkler_kw": 891.6611599866027,
+          "infinite_intervals": 0,
+          "cap_fraction": 0.0
+        },
+        {
+          "n": 16738,
+          "coverage": 0.9001075397299558,
+          "width_kw": 834.978830134804,
+          "winkler_kw": 1229.6636714534934,
+          "infinite_intervals": 0,
+          "cap_fraction": 0.0
+        },
+        {
+          "n": 16738,
+          "coverage": 0.901541402796033,
+          "width_kw": 1009.0294558932411,
+          "winkler_kw": 1413.7436885064653,
+          "infinite_intervals": 0,
+          "cap_fraction": 0.0
+        },
+        {
+          "n": 16738,
+          "coverage": 0.9008842155574143,
+          "width_kw": 1114.7007277034734,
+          "winkler_kw": 1579.869809647208,
+          "infinite_intervals": 0,
+          "cap_fraction": 0.0
+        }
+      ]
+    },
+    "B3-A": {
+      "pooled": {
+        "n": 66952,
+        "coverage": 0.9014069781335883,
+        "width_kw": 826.3876847426793,
+        "winkler_kw": 1173.0306284061555,
+        "infinite_intervals": 0,
+        "cap_fraction": 0.0
+      },
+      "horizons": [
+        {
+          "n": 16738,
+          "coverage": 0.8996893296690166,
+          "width_kw": 539.472893889577,
+          "winkler_kw": 772.9637716363474,
+          "infinite_intervals": 0,
+          "cap_fraction": 0.0
+        },
+        {
+          "n": 16738,
+          "coverage": 0.9021985900346516,
+          "width_kw": 764.0895116296612,
+          "winkler_kw": 1098.9815272812257,
+          "infinite_intervals": 0,
+          "cap_fraction": 0.0
+        },
+        {
+          "n": 16738,
+          "coverage": 0.9020791014458119,
+          "width_kw": 941.7934431150219,
+          "winkler_kw": 1319.2502731809768,
+          "infinite_intervals": 0,
+          "cap_fraction": 0.0
+        },
+        {
+          "n": 16738,
+          "coverage": 0.9016608913848727,
+          "width_kw": 1060.1948903364573,
+          "winkler_kw": 1500.9269415260728,
+          "infinite_intervals": 0,
+          "cap_fraction": 0.0
+        }
+      ]
+    },
+    "W3": {
+      "pooled": {
+        "n": 66952,
+        "coverage": 0.9022135261082567,
+        "width_kw": 863.7685020741219,
+        "winkler_kw": 1205.2514200954759,
+        "infinite_intervals": 0,
+        "cap_fraction": 0.0
+      },
+      "horizons": [
+        {
+          "n": 16738,
+          "coverage": 0.8996893296690166,
+          "width_kw": 539.472893889577,
+          "winkler_kw": 772.9637716363474,
+          "infinite_intervals": 0,
+          "cap_fraction": 0.0
+        },
+        {
+          "n": 16738,
+          "coverage": 0.9021985900346516,
+          "width_kw": 764.0895116296612,
+          "winkler_kw": 1098.9815272812257,
+          "infinite_intervals": 0,
+          "cap_fraction": 0.0
+        },
+        {
+          "n": 16738,
+          "coverage": 0.9034532202174692,
+          "width_kw": 1018.519676977017,
+          "winkler_kw": 1385.113080881477,
+          "infinite_intervals": 0,
+          "cap_fraction": 0.0
+        },
+        {
+          "n": 16738,
+          "coverage": 0.9035129645118891,
+          "width_kw": 1132.9919258002317,
+          "winkler_kw": 1563.9473005828538,
+          "infinite_intervals": 0,
+          "cap_fraction": 0.0
+        }
+      ]
+    }
+  },
+  "power_edges": [
+    [
+      87.78956563255451,
+      359.43399911316476,
+      898.6638308188651
+    ],
+    [
+      92.02970527701478,
+      360.6361573883279,
+      885.2896292479072
+    ],
+    [
+      99.17766943370694,
+      360.83861708872803,
+      881.141724396896
+    ],
+    [
+      103.0586524565741,
+      357.4938059695734,
+      863.452390136287
+    ]
+  ]
+}

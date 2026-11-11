@@ -1,0 +1,16 @@
+{
+  "pid": 1055423,
+  "command": [
+    "/home/XT/miniconda3/envs/timedart/bin/python",
+    "-u",
+    "scripts/llm_encoder_search_l1.py",
+    "--data-root",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst",
+    "--out",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/LLM_L1/l1_ba7bca7_o2",
+    "--device",
+    "cuda"
+  ],
+  "cwd": "/home/XT/nuist/pythoncode/TimeDARTFirst_M6_ba7bca7",
+  "code": "ba7bca7"
+}

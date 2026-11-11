@@ -1,0 +1,227 @@
+{
+  "candidate_id": "o2:L_g7_s5",
+  "arm": "L",
+  "origin": "output/l1_llm_encoder/o2/search_L_candidates.json",
+  "program_id": "L_g7_s5",
+  "source": "INIT_P = [0.2, -0.1, 0.3, -0.1, 0.4, -0.2, 0.2, -0.1, 0.3, -0.2, 0.5, -0.4, 0.1, -0.2, 0.3, -0.1]\n\n\ndef encode(obs, geo, P):\n    ws = obs[..., 0]\n    dsin = obs[..., 1]\n    dcos = obs[..., 2]\n    pan = obs[..., 3]\n    dp3 = obs[..., 4]\n    vw = obs[..., 5]\n    vp = obs[..., 6]\n    dist = geo[:, 0]\n    bsin = geo[:, 1]\n    bcos = geo[:, 2]\n    rsin = wmean(dsin, vw, dim=2)\n    rcos = wmean(dcos, vw, dim=2)\n    rnorm = torch.sqrt(rsin * rsin + rcos * rcos) + 1e-6\n    align = bsin * (rsin / rnorm).unsqueeze(-1) + bcos * (rcos / rnorm).unsqueeze(-1)\n    cross = dist * torch.sqrt(torch.clamp(1.0 - align * align, min=0.0) + 1e-9)\n    cone = torch.sigmoid(P[0] * (align - P[1]))\n    decay = torch.exp(-dist / (P[2] + 0.05) - cross / (P[3] + 0.05))\n    wup = cone * decay * vw\n    speed = torch.relu(P[4] * ws + P[5]) + 0.05\n    tau = (dist * torch.clamp(align, min=0.0) / speed).unsqueeze(-1)\n    lags = torch.arange(6, dtype=obs.dtype, device=obs.device)\n    kern = torch.softmax(-(lags - tau) ** 2 / (2.0 * (P[6] + 0.3) ** 2), dim=-1)\n    hist = torch.stack([lag(ws, 0), lag(ws, 1), lag(ws, 2), lag(ws, 3), lag(ws, 4), lag(ws, 5)], dim=-1)\n    vhist = torch.stack([lag(vw, 0), lag(vw, 1), lag(vw, 2), lag(vw, 3), lag(vw, 4), lag(vw, 5)], dim=-1)\n    ws_adv = (kern * hist * vhist).sum(dim=-1) / ((kern * vhist).sum(dim=-1) + 1e-6)\n    nearw = torch.exp(-dist / (P[8] + 0.02))\n    local = wmean(ws, nearw * vw, dim=2)\n    up = wmean(ws, wup, dim=2)\n    upadv = wmean(ws_adv, wup, dim=2)\n    dws = ws - lag(ws, 3)\n    vd = vw * lag(vw, 3)\n    updws = wmean(dws, cone * decay * vd, dim=2)\n    reg = wmean(ws, vw, dim=2)\n    regdws = wmean(dws, vd, dim=2)\n    updp = wmean(dp3, cone * decay * vp, dim=2)\n    regdp = wmean(dp3, vp, dim=2)\n    x = dist * bsin * torch.ones_like(pan)\n    y = dist * bcos * torch.ones_like(pan)\n    dx = x - wmean(x, vp, dim=2).unsqueeze(-1)\n    dy = y - wmean(y, vp, dim=2).unsqueeze(-1)\n    dpan = pan - wmean(pan, vp, dim=2).unsqueeze(-1)\n    gx = wmean(dpan * dx, vp, dim=2) / (wmean(dx * dx, vp, dim=2) + 1e-3)\n    gy = wmean(dpan * dy, vp, dim=2) / (wmean(dy * dy, vp, dim=2) + 1e-3)\n    mass = wup.sum(dim=2) / (vw.sum(dim=2) + 1e-6)\n    feats = torch.stack([upadv, up, updws, up - local, reg, regdws, updp, regdp, gx, gy, mass], dim=-1)\n    return feats[..., :11]\n",
+  "ast_sha256": "6e26c104a02f47dfeb2a2d7552e76b1f8ab09ad30651b56bc89feb48c5d1e0e4",
+  "historical_ast_sha256": "6e26c104a02f47dfeb2a2d7552e76b1f8ab09ad30651b56bc89feb48c5d1e0e4",
+  "short_val_mae": 151.9073486328125,
+  "p_lr_multiplier": 0.1,
+  "val_mae": 147.8719024658203,
+  "best_epoch": 15,
+  "epochs_ran": 20,
+  "hit_epoch_limit": false,
+  "best_at_epoch_limit": false,
+  "history": [
+    {
+      "epoch": 0,
+      "val_mae": 1436.881591796875,
+      "val_rmse": 1895.07275390625,
+      "next_learning_rates": [
+        0.001,
+        0.0001
+      ]
+    },
+    {
+      "epoch": 1,
+      "train_loss": 0.4418644402541366,
+      "val_mae": 169.44265747070312,
+      "val_rmse": 258.9520568847656,
+      "next_learning_rates": [
+        0.0009984740801978985,
+        9.986128001799077e-05
+      ]
+    },
+    {
+      "epoch": 2,
+      "train_loss": 0.30092521348471124,
+      "val_mae": 161.30496215820312,
+      "val_rmse": 250.15309143066406,
+      "next_learning_rates": [
+        0.0009939057285945933,
+        9.94459753267812e-05
+      ]
+    },
+    {
+      "epoch": 3,
+      "train_loss": 0.2877725274488647,
+      "val_mae": 158.36495971679688,
+      "val_rmse": 245.6971893310547,
+      "next_learning_rates": [
+        0.00098632311059685,
+        9.875664641789545e-05
+      ]
+    },
+    {
+      "epoch": 4,
+      "train_loss": 0.2802090187003647,
+      "val_mae": 154.75924682617188,
+      "val_rmse": 242.22152709960938,
+      "next_learning_rates": [
+        0.0009757729755661011,
+        9.779754323328191e-05
+      ]
+    },
+    {
+      "epoch": 5,
+      "train_loss": 0.27573832153054456,
+      "val_mae": 154.099365234375,
+      "val_rmse": 240.01181030273438,
+      "next_learning_rates": [
+        0.000962320368593087,
+        9.65745789630079e-05
+      ]
+    },
+    {
+      "epoch": 6,
+      "train_loss": 0.2720439868509922,
+      "val_mae": 154.13475036621094,
+      "val_rmse": 240.29452514648438,
+      "next_learning_rates": [
+        0.0009460482294732421,
+        9.509529358847654e-05
+      ]
+    },
+    {
+      "epoch": 7,
+      "train_loss": 0.269038997114162,
+      "val_mae": 152.97828674316406,
+      "val_rmse": 240.03297424316406,
+      "next_learning_rates": [
+        0.0009270568813552756,
+        9.336880739593415e-05
+      ]
+    },
+    {
+      "epoch": 8,
+      "train_loss": 0.2674834244874229,
+      "val_mae": 158.18658447265625,
+      "val_rmse": 239.92079162597656,
+      "next_learning_rates": [
+        0.000905463412215599,
+        9.140576474687264e-05
+      ]
+    },
+    {
+      "epoch": 9,
+      "train_loss": 0.2648320759043974,
+      "val_mae": 149.22264099121094,
+      "val_rmse": 235.22071838378906,
+      "next_learning_rates": [
+        0.0008814009529720154,
+        8.921826845200139e-05
+      ]
+    },
+    {
+      "epoch": 10,
+      "train_loss": 0.2630928196743423,
+      "val_mae": 150.996337890625,
+      "val_rmse": 238.5596923828125,
+      "next_learning_rates": [
+        0.000855017856687341,
+        8.681980515339464e-05
+      ]
+    },
+    {
+      "epoch": 11,
+      "train_loss": 0.26159488525994296,
+      "val_mae": 151.04177856445312,
+      "val_rmse": 235.0431671142578,
+      "next_learning_rates": [
+        0.000826476783923441,
+        8.422516217485827e-05
+      ]
+    },
+    {
+      "epoch": 12,
+      "train_loss": 0.26044074554577507,
+      "val_mae": 152.5755157470703,
+      "val_rmse": 236.73597717285156,
+      "next_learning_rates": [
+        0.0007959536998847741,
+        8.14503363531613e-05
+      ]
+    },
+    {
+      "epoch": 13,
+      "train_loss": 0.25904575776616834,
+      "val_mae": 148.85018920898438,
+      "val_rmse": 234.1716766357422,
+      "next_learning_rates": [
+        0.0007636367895343945,
+        7.85124354122177e-05
+      ]
+    },
+    {
+      "epoch": 14,
+      "train_loss": 0.25834642546306996,
+      "val_mae": 149.98849487304688,
+      "val_rmse": 232.7910919189453,
+      "next_learning_rates": [
+        0.0007297252973710755,
+        7.54295724882796e-05
+      ]
+    },
+    {
+      "epoch": 15,
+      "train_loss": 0.2571292060085168,
+      "val_mae": 147.8719024658203,
+      "val_rmse": 233.87869262695312,
+      "next_learning_rates": [
+        0.0006944282990207194,
+        7.222075445642904e-05
+      ]
+    },
+    {
+      "epoch": 16,
+      "train_loss": 0.25573822838164556,
+      "val_mae": 148.9047088623047,
+      "val_rmse": 234.39308166503906,
+      "next_learning_rates": [
+        0.0006579634122155989,
+        6.890576474687263e-05
+      ]
+    },
+    {
+      "epoch": 17,
+      "train_loss": 0.2554338353750346,
+      "val_mae": 148.46205139160156,
+      "val_rmse": 235.65350341796875,
+      "next_learning_rates": [
+        0.0006205554551086731,
+        6.550504137351574e-05
+      ]
+    },
+    {
+      "epoch": 18,
+      "train_loss": 0.25412180751739966,
+      "val_mae": 148.59957885742188,
+      "val_rmse": 233.8225555419922,
+      "next_learning_rates": [
+        0.0005824350601949142,
+        6.203955092681039e-05
+      ]
+    },
+    {
+      "epoch": 19,
+      "train_loss": 0.25344327780698367,
+      "val_mae": 148.89854431152344,
+      "val_rmse": 234.26283264160156,
+      "next_learning_rates": [
+        0.0005438372523852832,
+        5.853065930775302e-05
+      ]
+    },
+    {
+      "epoch": 20,
+      "train_loss": 0.2529700995888958,
+      "val_mae": 148.63165283203125,
+      "val_rmse": 234.5846710205078,
+      "next_learning_rates": [
+        0.0005049999999999999,
+        5.4999999999999995e-05
+      ]
+    }
+  ]
+}

@@ -1,0 +1,510 @@
+{
+  "task": "G0_GFS_0p25_probe",
+  "generated_utc": "2026-11-11T09:15:00Z",
+  "server_root": "/home/XT/nuist/pythoncode/TimeDARTFirst",
+  "conda_env": {
+    "name": "gfs_g0",
+    "python": "3.11",
+    "packages": {
+      "xarray": "2026.9.0",
+      "cfgrib": "0.9.15.1",
+      "wgrib2": "3.8.0"
+    },
+    "untouched_envs": [
+      "timedart",
+      "llm_l1"
+    ]
+  },
+  "preexisting_gfs_check": {
+    "checked_dates_note": "2026-11-08/09 remnants check",
+    "searched_paths": [
+      "/home/XT/nuist/pythoncode/TimeDARTFirst",
+      "/home/XT/nuist/pythoncode",
+      "/home/XT",
+      "/tmp"
+    ],
+    "found_files": [],
+    "status": "NONE_FOUND",
+    "note": "No pre-existing GFS GRIB2/idx/f000 files existed on server; datasets/external/gfs_g0/{dev,sealed_raw} and output/external_acquisition/gfs_g0 were created empty during probe."
+  },
+  "aws_2021_plus": {
+    "bucket": "noaa-gfs-bdp-pds",
+    "base_url": "https://noaa-gfs-bdp-pds.s3.amazonaws.com",
+    "earliest_available_date": "2021-01-01",
+    "verified_2020_absent": [
+      "gfs.20201230/",
+      "gfs.20201231/"
+    ],
+    "latest_target_verified": "2026-04-30 18Z (f003..f018 present)",
+    "prefix_layout_transition": {
+      "2021-01-01_00Z_to_2021-03-22_06Z": {
+        "path_template": "gfs.YYYYMMDD/HH/gfs.tHHz.pgrb2.0p25.fFFF",
+        "gfs_version": "v15.3",
+        "idx_message_count": 588,
+        "sample_2021010100_f003_bytes": {
+          "PRMSL:mean sea level": 441632,
+          "UGRD:10 m above ground": 952637,
+          "VGRD:10 m above ground": 929608,
+          "UGRD:100 m above ground": 964235,
+          "VGRD:100 m above ground": 953245
+        },
+        "cycle_total_bytes_6leads": {
+          "req_3vars": 14080299,
+          "all_5vars": 25734511
+        }
+      },
+      "2021-03-22_12Z_to_2026-04-30_18Z": {
+        "path_template": "gfs.YYYYMMDD/HH/atmos/gfs.tHHz.pgrb2.0p25.fFFF",
+        "gfs_version": "v16.0+",
+        "idx_message_count": 743,
+        "sample_cycles_bytes_6leads": {
+          "2022-01-01_00Z": {
+            "req_3vars": 17084471,
+            "all_5vars": 28703081
+          },
+          "2023-01-01_00Z_server_verified": {
+            "req_3vars": 17326708,
+            "all_5vars": 28883620
+          },
+          "2024-01-01_00Z": {
+            "req_3vars": 17362025,
+            "all_5vars": 28944389
+          },
+          "2025-01-01_00Z": {
+            "req_3vars": 17283917,
+            "all_5vars": 28826329
+          },
+          "2026-04-30_18Z": {
+            "req_3vars": 16754369,
+            "all_5vars": 28336675
+          }
+        }
+      }
+    },
+    "byte_range_supported": true,
+    "idx_present": true,
+    "sample_cycle_server_test": {
+      "cycle": "2023-01-01T00:00:00Z",
+      "dims": {
+        "step": 6,
+        "latitude": 43,
+        "longitude": 43
+      },
+      "lat": [
+        49.5,
+        60.0,
+        43
+      ],
+      "lon": [
+        -8.0,
+        2.5,
+        43
+      ],
+      "unique_lon": 43,
+      "total_dl_bytes_5vars": 28883620,
+      "req_dl_bytes_3vars": 17326708,
+      "nc_5vars_uncompressed_bytes": 267994,
+      "nc_5vars_zlib4_bytes": 218338,
+      "nc_3vars_zlib4_bytes": 130069,
+      "per_lead": {
+        "f003": {
+          "PRMSL:mean sea level": {
+            "line": "1:0:d=2023010100:PRMSL:mean sea level:3 hour fcst:",
+            "start": 0,
+            "end": 989607,
+            "bytes": 989608,
+            "sha256": "fafda5d5a3ff8cda318c5e3e2751e71196cb9a95378c63a5de5293713042b65b"
+          },
+          "UGRD:10 m above ground": {
+            "line": "588:415815154:d=2023010100:UGRD:10 m above ground:3 hour fcst:",
+            "start": 415815154,
+            "end": 416772321,
+            "bytes": 957168,
+            "sha256": "5a187a08e23037a6dd500f1cdeeacc2cb0933ea16fb4508ceb7328395883d880"
+          },
+          "VGRD:10 m above ground": {
+            "line": "589:416772322:d=2023010100:VGRD:10 m above ground:3 hour fcst:",
+            "start": 416772322,
+            "end": 417706448,
+            "bytes": 934127,
+            "sha256": "40721227ed6a61574bd66fe4fa9d0a7487e19f19799bb78dcd7432edcb836981"
+          },
+          "UGRD:100 m above ground": {
+            "line": "689:489855127:d=2023010100:UGRD:100 m above ground:3 hour fcst:",
+            "start": 489855127,
+            "end": 490819021,
+            "bytes": 963895,
+            "sha256": "daed15ac0209dd9c45d979341561da67df92978a63422db67d2d0a7f010b5766"
+          },
+          "VGRD:100 m above ground": {
+            "line": "690:490819022:d=2023010100:VGRD:100 m above ground:3 hour fcst:",
+            "start": 490819022,
+            "end": 491774905,
+            "bytes": 955884,
+            "sha256": "da8566334c52f13a74e152accd226a1086d8052a4e2c659924d2454c4f0705ae"
+          }
+        },
+        "f006": {
+          "PRMSL:mean sea level": {
+            "line": "1:0:d=2023010100:PRMSL:mean sea level:6 hour fcst:",
+            "start": 0,
+            "end": 985177,
+            "bytes": 985178,
+            "sha256": "d52948753696b9a50eafa202c2e88ccf0a687cd9d3daa01e1a5db58080842ff9"
+          },
+          "UGRD:10 m above ground": {
+            "line": "588:416383394:d=2023010100:UGRD:10 m above ground:6 hour fcst:",
+            "start": 416383394,
+            "end": 417345003,
+            "bytes": 961610,
+            "sha256": "8aa167a24d6a08e6c469d2c2d8782aa5aa478d5554d23d5960fdb3cdbd730bd8"
+          },
+          "VGRD:10 m above ground": {
+            "line": "589:417345004:d=2023010100:VGRD:10 m above ground:6 hour fcst:",
+            "start": 417345004,
+            "end": 418283792,
+            "bytes": 938789,
+            "sha256": "5933f528771631a5ec046a36ffc4272e38e641e7c233aeb37040cbe9555c8ca0"
+          },
+          "UGRD:100 m above ground": {
+            "line": "689:491907414:d=2023010100:UGRD:100 m above ground:6 hour fcst:",
+            "start": 491907414,
+            "end": 492875860,
+            "bytes": 968447,
+            "sha256": "302d92034f9f0e88e9baecddde751414d58d017086e4f0d1c7ca716ce1ac1d7b"
+          },
+          "VGRD:100 m above ground": {
+            "line": "690:492875861:d=2023010100:VGRD:100 m above ground:6 hour fcst:",
+            "start": 492875861,
+            "end": 493832289,
+            "bytes": 956429,
+            "sha256": "0bca6e789b92f3317fe4312537ee0b8e7a14095e03ec4c632d7312d317147f09"
+          }
+        },
+        "f009": {
+          "PRMSL:mean sea level": {
+            "line": "1:0:d=2023010100:PRMSL:mean sea level:9 hour fcst:",
+            "start": 0,
+            "end": 987298,
+            "bytes": 987299,
+            "sha256": "920b73eced6f545567919921ccbd77795cf6acf26cb63d8082b79a0bbfc64b51"
+          },
+          "UGRD:10 m above ground": {
+            "line": "588:416092451:d=2023010100:UGRD:10 m above ground:9 hour fcst:",
+            "start": 416092451,
+            "end": 417051962,
+            "bytes": 959512,
+            "sha256": "cc671bc80ec7a0a3ff0b3d6a1cf382fe308c5ab7707cf5f6f31a12a94f4dbcc6"
+          },
+          "VGRD:10 m above ground": {
+            "line": "589:417051963:d=2023010100:VGRD:10 m above ground:9 hour fcst:",
+            "start": 417051963,
+            "end": 417988163,
+            "bytes": 936201,
+            "sha256": "431c5f74e1a338ddb316223791383d10998be8cf7f7aae3ab1d60f1ceb507ce2"
+          },
+          "UGRD:100 m above ground": {
+            "line": "689:490113002:d=2023010100:UGRD:100 m above ground:9 hour fcst:",
+            "start": 490113002,
+            "end": 491082183,
+            "bytes": 969182,
+            "sha256": "0a7abde9003cc81bbde1536be0a48616f791acc84eddfaa09e92867207eb0dab"
+          },
+          "VGRD:100 m above ground": {
+            "line": "690:491082184:d=2023010100:VGRD:100 m above ground:9 hour fcst:",
+            "start": 491082184,
+            "end": 492038869,
+            "bytes": 956686,
+            "sha256": "c0369963b14cd44dbe0e5bdb1360cfcebb3f419b3909703a3ba59b6b63943128"
+          }
+        },
+        "f012": {
+          "PRMSL:mean sea level": {
+            "line": "1:0:d=2023010100:PRMSL:mean sea level:12 hour fcst:",
+            "start": 0,
+            "end": 989469,
+            "bytes": 989470,
+            "sha256": "e282808b6d1c2b1f347695009620e07d2d4e93e3d4fe643cae498255b37a8ccb"
+          },
+          "UGRD:10 m above ground": {
+            "line": "588:418217602:d=2023010100:UGRD:10 m above ground:12 hour fcst:",
+            "start": 418217602,
+            "end": 419177863,
+            "bytes": 960262,
+            "sha256": "4cc15bab246e81fe87465c5b39a79936e52af13dd1ae78be5b83a63c6be47d54"
+          },
+          "VGRD:10 m above ground": {
+            "line": "589:419177864:d=2023010100:VGRD:10 m above ground:12 hour fcst:",
+            "start": 419177864,
+            "end": 420114639,
+            "bytes": 936776,
+            "sha256": "5625b0037de6c5578791b2acbfbc6087a90662900e583cd360bbe90165106cf1"
+          },
+          "UGRD:100 m above ground": {
+            "line": "689:494601885:d=2023010100:UGRD:100 m above ground:12 hour fcst:",
+            "start": 494601885,
+            "end": 495569878,
+            "bytes": 967994,
+            "sha256": "4dfebc66a7b9c31b1a454a919f63961c6e45887be2e0f280d94c841ce615c685"
+          },
+          "VGRD:100 m above ground": {
+            "line": "690:495569879:d=2023010100:VGRD:100 m above ground:12 hour fcst:",
+            "start": 495569879,
+            "end": 496526603,
+            "bytes": 956725,
+            "sha256": "bb804c8db54bf99e8c28edb7ebf660eeeeeb4e161abb4f1a8ba875f0056ecdf2"
+          }
+        },
+        "f015": {
+          "PRMSL:mean sea level": {
+            "line": "1:0:d=2023010100:PRMSL:mean sea level:15 hour fcst:",
+            "start": 0,
+            "end": 993097,
+            "bytes": 993098,
+            "sha256": "fd8e6527235554fc8a303c061476507805e15fd31fcecf4c3c32646c820a659c"
+          },
+          "UGRD:10 m above ground": {
+            "line": "588:415221832:d=2023010100:UGRD:10 m above ground:15 hour fcst:",
+            "start": 415221832,
+            "end": 416182765,
+            "bytes": 960934,
+            "sha256": "e1b3bceb5584f18f815ccf38a607af6855ebe71f160167704653fe6eabbc71dc"
+          },
+          "VGRD:10 m above ground": {
+            "line": "589:416182766:d=2023010100:VGRD:10 m above ground:15 hour fcst:",
+            "start": 416182766,
+            "end": 417121230,
+            "bytes": 938465,
+            "sha256": "3386b2bc30c7614eb0aa52240e1f4b94bd5b3e12311fc22bb9d03d7a24145bf6"
+          },
+          "UGRD:100 m above ground": {
+            "line": "689:489824165:d=2023010100:UGRD:100 m above ground:15 hour fcst:",
+            "start": 489824165,
+            "end": 490793972,
+            "bytes": 969808,
+            "sha256": "f44920594bfaacd031b29769e4d2d3095e50c488f3ae98d3adbaa47cb6bd5996"
+          },
+          "VGRD:100 m above ground": {
+            "line": "690:490793973:d=2023010100:VGRD:100 m above ground:15 hour fcst:",
+            "start": 490793973,
+            "end": 491752333,
+            "bytes": 958361,
+            "sha256": "989f28dbaa9ee9d3195626c1853db8d54f0c89046820f3634dcd9dda157cb7ac"
+          }
+        },
+        "f018": {
+          "PRMSL:mean sea level": {
+            "line": "1:0:d=2023010100:PRMSL:mean sea level:18 hour fcst:",
+            "start": 0,
+            "end": 995815,
+            "bytes": 995816,
+            "sha256": "798acf1f6eae124927faabc727aa9b6ff025f025e52dc4b420a64a896946b31d"
+          },
+          "UGRD:10 m above ground": {
+            "line": "588:416254620:d=2023010100:UGRD:10 m above ground:18 hour fcst:",
+            "start": 416254620,
+            "end": 417217535,
+            "bytes": 962916,
+            "sha256": "40243934b021e58ef556ce20c039caa0240e90f0263326aa1ef63dcc3a543261"
+          },
+          "VGRD:10 m above ground": {
+            "line": "589:417217536:d=2023010100:VGRD:10 m above ground:18 hour fcst:",
+            "start": 417217536,
+            "end": 418157014,
+            "bytes": 939479,
+            "sha256": "b0c1da8f9ad702c263c8c26bd6e8093f7534596a5cb42e4c853963c5b1b1b6b2"
+          },
+          "UGRD:100 m above ground": {
+            "line": "689:492242442:d=2023010100:UGRD:100 m above ground:18 hour fcst:",
+            "start": 492242442,
+            "end": 493214637,
+            "bytes": 972196,
+            "sha256": "d933b673c1a764f8dd81d0a21ff071998338527fe7d1836933c259d4536eaa24"
+          },
+          "VGRD:100 m above ground": {
+            "line": "690:493214638:d=2023010100:VGRD:100 m above ground:18 hour fcst:",
+            "start": 493214638,
+            "end": 494175942,
+            "bytes": 961305,
+            "sha256": "1232d2200995b1ba08604d52dc1af560e4ef01bd98e0719aed6277a27182bc05"
+          }
+        }
+      }
+    }
+  },
+  "ncar_gdex_2016_2020": {
+    "dataset": "d084001",
+    "url": "https://gdex.ucar.edu/datasets/d084001/",
+    "file_count_per_year_api": {
+      "2016": 136115,
+      "2017": 135776,
+      "2018": 135765,
+      "2019": 135780,
+      "2020": 136141
+    },
+    "account_required": {
+      "public_https_osdf_full_file": false,
+      "gdex_batch_subset_api": true,
+      "details": "OSDF (osdf-director.osg-htc.org) and data.gdex.ucar.edu allow anonymous HTTPS download; GDEX batch subsetting (/api/submit/, gdex_client.py) requires a registered GDEX account and API token."
+    },
+    "idx_available_for_byte_range": false,
+    "idx_probe_evidence": [
+      "OSDF .idx and .inv -> HTTP 404",
+      "data.gdex.ucar.edu .idx and .inv -> HTTP 404",
+      "THREDDS fileServer .idx -> HTTP 404",
+      "GrML XML metadata -> parameter/level inventory only, 0 byte/offset fields"
+    ],
+    "server_side_subsetting": {
+      "gdex_batch_api": "Available (/api/submit/) but requires login/token and asynchronous queue",
+      "thredds_opendap_ncss": "tds.gdex.ucar.edu exposes OPeNDAP/NCSS (not GRIB2 .idx byte-range), unstable/throttled (frequent HTTP 503 Service Temporarily Unavailable and read timeouts)"
+    },
+    "single_file_size_bytes": {
+      "pre_fv3_20160101_avg_24files": 221000000,
+      "pre_fv3_2016010100_f003_exact": 217476554,
+      "pre_fv3_20170720_avg_24files": 210400000,
+      "pre_fv3_20180101_avg_24files": 212160000,
+      "fv3_20190613_avg_24files": 339780000,
+      "fv3_20200101_avg_24files": 333050000,
+      "fv3_20201231_avg_24files": 332380000
+    },
+    "server_sample_2016010100_f003": {
+      "bytes": 217476554,
+      "download_seconds": 62.16,
+      "speed_mb_s": 3.5,
+      "total_grib2_messages": 366,
+      "contains_10m_wind": true,
+      "contains_100m_wind": true,
+      "contains_prmsl": true,
+      "messages_observed": [
+        "238:142363753:UGRD:10 m above ground",
+        "239:143192970:VGRD:10 m above ground",
+        "313:185029020:UGRD:100 m above ground",
+        "314:185831950:VGRD:100 m above ground",
+        "365:216604905:PRMSL:mean sea level"
+      ]
+    },
+    "alternative_archives_recorded_not_used": [
+      {
+        "name": "AWS S3 noaa-gfs-bdp-pds",
+        "coverage": "2021-01-01+",
+        "note": "No 2016-2020"
+      },
+      {
+        "name": "Google Cloud global-forecast-system",
+        "coverage": "2021+",
+        "note": "gfs.2016* and gfs.2020* empty"
+      },
+      {
+        "name": "Azure Blob noaagfs",
+        "coverage": "recent archive only",
+        "note": "gfs.2020* and gfs.2021* empty"
+      },
+      {
+        "name": "NCEI THREDDS model-gfs-004-files / -old",
+        "coverage": "Grid 004 = 0.5 deg",
+        "note": "Not 0.25 deg; 2016-2019 incomplete"
+      }
+    ]
+  },
+  "gfs_versions_and_release_timing": {
+    "versions": [
+      {
+        "version": "GSM v13.0.2",
+        "effective_utc": "2016-05-11 12:00 UTC",
+        "source": "NOAA EMC / NWS TIN 16-11"
+      },
+      {
+        "version": "GSM v14.0.0",
+        "effective_utc": "2017-07-19 12:00 UTC",
+        "source": "NOAA EMC / NWS SCN 17-67 (NEMSIO core)"
+      },
+      {
+        "version": "GFS v15.1",
+        "effective_utc": "2019-06-12 12:00 UTC",
+        "source": "NOAA EMC / NWS SCN 19-40 (FV3 core; file size ~212 MB -> ~340 MB)"
+      },
+      {
+        "version": "GFS v15.2",
+        "effective_utc": "2019-11-07",
+        "source": "NOAA NCO / NWS SCN 19-84"
+      },
+      {
+        "version": "GFS v16.0",
+        "effective_utc": "2021-03-22 12:00 UTC",
+        "source": "NOAA EMC / NWS SCN 21-20 (127 vertical levels, HH/atmos/ prefix, 588->743 msgs)"
+      },
+      {
+        "version": "GFS v16.3",
+        "effective_utc": "2022-11-29",
+        "source": "NOAA NCO / NWS SCN 22-104"
+      }
+    ],
+    "release_timing_evidence": {
+      "aws_2021_2026_s3_last_modified": {
+        "gfs.20210601_00Z_f018": "2021-06-01T03:41:49Z (C+3h42m)",
+        "gfs.20220101_00Z_f018": "2022-01-01T03:42:45Z (C+3h43m)",
+        "gfs.20230101_00Z_f018": "2023-01-01T03:37:50Z (C+3h38m)",
+        "gfs.20240101_00Z_f018": "2024-01-01T03:36:47Z (C+3h37m)",
+        "gfs.20250101_00Z_f018": "2025-01-01T03:39:02Z (C+3h39m)",
+        "gfs.20260430_00Z_f018": "2026-04-30T03:51:28Z (C+3h51m)",
+        "gfs.20260430_06Z_f018": "2026-04-30T09:34:23Z (C+3h34m)",
+        "gfs.20260430_12Z_f018": "2026-04-30T15:49:39Z (C+3h50m)",
+        "gfs.20260430_18Z_f018": "2026-04-30T21:36:59Z (C+3h37m)"
+      },
+      "historical_2016_2020_gdex": "GDEX Date Archived is +1 day; exact operational cycle dissemination timestamps for 2016-2020 are not preserved in GDEX metadata -> 假设 C+6h"
+    }
+  },
+  "calendar_counts": {
+    "range": "2016-01-01 00Z to 2026-04-30 18Z",
+    "total_cycles": 15092,
+    "total_lead_steps_f003_to_f018": 90552,
+    "dev_lead_steps_valid_lt_2024": 70119,
+    "dev_2016_2020_lead_steps": 43848,
+    "dev_2021_2023_lead_steps": 26271,
+    "sealed_lead_steps_valid_ge_2024": 20433,
+    "sealed_from_2023_12_31_cycles": 9
+  },
+  "estimates_gb": {
+    "total_download_gb": {
+      "actual_gdex_wholefile_plus_aws_byterange_5vars": 11275.0,
+      "actual_gdex_wholefile_plus_aws_byterange_3req_only": 11184.0,
+      "breakdown": {
+        "gdex_2016_2020_whole_files_43848_files": 11051.0,
+        "aws_2021_2026_byterange_5vars": 223.5,
+        "aws_2021_2026_byterange_3req_only": 133.4
+      }
+    },
+    "dev_cropped_storage_gb": {
+      "5vars_uncompressed_netcdf4": 3.13,
+      "5vars_zlib4_netcdf4": 2.55,
+      "3req_vars_zlib4_netcdf4": 1.52
+    },
+    "sealed_raw_storage_gb": {
+      "5vars_raw_grib2_bytes": 98.08,
+      "3req_vars_raw_grib2_bytes": 58.57
+    }
+  },
+  "budget_gates": {
+    "gate_1_total_download_le_300gb": {
+      "limit_gb": 300,
+      "estimated_gb": 11275.0,
+      "pass": false
+    },
+    "gate_2_dev_cropped_le_20gb": {
+      "limit_gb": 20,
+      "estimated_gb": 2.55,
+      "pass": true
+    },
+    "gate_3_sealed_raw_le_100gb": {
+      "limit_gb": 100,
+      "estimated_gb": 98.08,
+      "pass": true
+    },
+    "gate_4_all_2016_2026_byterange_0p25": {
+      "pass": false,
+      "reason": "NCAR GDEX d084001 (2016-2020) lacks .idx sidecar files and byte offsets; requires whole-file download (~210-340 MB/file) or login-required batch subsetting."
+    },
+    "overall_gate_pass": false,
+    "action": "STOP_AND_REPORT_ONLY"
+  }
+}

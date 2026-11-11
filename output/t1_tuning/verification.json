@@ -1,0 +1,44 @@
+{
+  "status": "PASSED",
+  "utc": "2026-11-10T01:10:41.185804+00:00",
+  "run": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/Tuning/t1_a99037f_r1",
+  "code": "/home/XT/nuist/pythoncode/TimeDARTFirst_T1_a99037f",
+  "counts": {
+    "source_files": 218,
+    "input_files": 260,
+    "freeze_links": 2,
+    "trial_metadata": 3,
+    "fit_artifacts": 1200,
+    "contract_links": 720,
+    "prediction_artifacts": 74
+  },
+  "trial_status": {
+    "TSMixerBasicSmall": {
+      "COMPLETE": 60
+    },
+    "iTransformer": {
+      "COMPLETE": 60
+    },
+    "TimeXer": {
+      "COMPLETE": 60
+    }
+  },
+  "formal_fits": 60,
+  "gates": {
+    "Kelmarsh": {
+      "mae_reduction_pct": 0.6144573956027521,
+      "rmse_change_kw": 2.4495071735287297,
+      "passes": false
+    },
+    "Penmanshiel": {
+      "mae_reduction_pct": 0.7337677556647382,
+      "rmse_change_kw": 3.4566250081763314,
+      "passes": false
+    }
+  },
+  "decision": "RETAIN_EXISTING",
+  "no_training": true,
+  "no_inference": true,
+  "result_sha256": "bd33ff0596bff1ff55f8e8f825f2d830e181093a50a339901cd2c7804786261d",
+  "downloaded_metadata_files": 737
+}

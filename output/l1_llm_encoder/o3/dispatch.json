@@ -1,0 +1,22 @@
+{
+  "pid": 1217050,
+  "command": [
+    "/home/XT/miniconda3/envs/timedart/bin/python",
+    "-u",
+    "scripts/llm_encoder_search_l1.py",
+    "--data-root",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst",
+    "--out",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/LLM_L1/l1_29108b4_o3",
+    "--device",
+    "cuda"
+  ],
+  "cwd": "/home/XT/nuist/pythoncode/TimeDARTFirst_M7_29108b4",
+  "code": "29108b4",
+  "started_at_utc": "2026-11-11T09:41:53.735932+00:00",
+  "source_sha256": {
+    "scripts/llm_encoder_search_l1.py": "f00006a58c86967acaff061ad2f71adada31d878531cddd2566f8e6dabf4474f",
+    "models/ProgramEncoder.py": "7078eaac7976a6a9d6333721b6f8421dd835b5405847195882c0ad16c87b3aff",
+    "configs/l1_llm_encoder_protocol.json": "495a5a8dc22e074efe6656f7a330064f664909f0c8aa06860ca0670985488e83"
+  }
+}

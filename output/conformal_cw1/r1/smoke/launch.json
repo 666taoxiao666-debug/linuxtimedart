@@ -1,0 +1,15 @@
+{
+  "argv": [
+    "scripts/pilot_conformal_cw1.py",
+    "--smoke",
+    "--out",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/Conformal/cw1_0b3eaf9_smoke"
+  ],
+  "utc": "2026-11-09T03:34:02.215054+00:00",
+  "script_sha256": "ecc7b3bc13170f9678d3cc8b59ea3bed16ef9be4b19970ebc34992ec3db385e6",
+  "plan_sha256": "d268670654fea8a3c01d0dd072ed10a5446efa955bee75ca08353f4ddc0b9a17",
+  "frozen_dependencies": {
+    "pilot_conformal_c0.py": "d415a7be7c8a6d63f8c6de6573cc234294fc40a143393e574e095eaa917d2461",
+    "pilot_conformal_c0b.py": "a821acbd83afe2a360b310f80aa64e0c5a00d8132936cdc8c3b768ad5670d041"
+  }
+}
