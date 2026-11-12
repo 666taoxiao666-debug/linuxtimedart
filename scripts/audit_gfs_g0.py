@@ -204,6 +204,31 @@ def audit(root, manifest_path):
         records=records)
 
 
+def derive_b2_acceptance(audit_path):
+    """Apply the approved R2 quarantine without changing the original audit."""
+    expected_sha = 'ebea2c9877bc3995456d7e7ed76041ea7c5a4f82559b9bcab294b5d0de4c861d'
+    if sha256(audit_path) != expected_sha:
+        raise ValueError('R2 decision applies only to the reviewed B2 audit')
+    report = json.loads(Path(audit_path).read_text(encoding='utf-8'))
+    rows = report['records']
+    accepted = [r['cycle'] for r in rows if r['complete']]
+    excluded = [dict(cycle=r['cycle'], cycle_ok=0,
+                     reason=(['missing_file'] if r.get('missing_file') else
+                             r['errors'] + r.get('missing_messages', [])))
+                for r in rows if not r['complete']]
+    assert len(rows) == 7308 and len(accepted) == 7300 and len(excluded) == 8
+    assert all(v['passes_95pct'] for v in report['annual'].values())
+    return dict(status='PASS_REQUIRED_WITH_QUARANTINE', conclusion='B2 必需字段通过',
+                scope='B2 2016-2020; only listed complete cycles are usable',
+                source_audit_sha256=expected_sha, source_audit_status=report['status'],
+                decision='HANDOFF 第72次 / DECISIONS 阶段G0c R1-B1采纳隔离',
+                complete_cycles=accepted, excluded_cycles=excluded, annual=report['annual'],
+                denominator=7308, complete_count=7300, incomplete_count=7, missing_count=1,
+                **{'100m_used': False},
+                all_arms_cycle_ok_zero_for_excluded=True, previous_cycle_fallback=False,
+                limitations=report['limitations'])
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--root', type=Path, required=True)

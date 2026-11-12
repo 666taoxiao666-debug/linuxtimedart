@@ -30,6 +30,20 @@ def fixture():
 
 
 class AuditTests(unittest.TestCase):
+    def test_reviewed_acceptance_partition(self):
+        path = Path(__file__).parents[1] / 'output/gfs_g0/b2/audit_b2.json'
+        result = a.derive_b2_acceptance(path)
+        self.assertEqual(len(set(result['complete_cycles'])), 7300)
+        excluded = {r['cycle'] for r in result['excluded_cycles']}
+        self.assertEqual(len(excluded), 8)
+        self.assertFalse(set(result['complete_cycles']) & excluded)
+        self.assertIn('2016011600', excluded)
+        self.assertIn('2018052618', excluded)
+        self.assertFalse(result['100m_used'])
+        with patch.object(a, 'sha256', return_value='different'):
+            with self.assertRaises(ValueError):
+                a.derive_b2_acceptance(path)
+
     def check(self, ds):
         with tempfile.TemporaryDirectory() as tmp:
             p = Path(tmp) / 'sample.nc'
