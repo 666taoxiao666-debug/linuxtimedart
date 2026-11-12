@@ -3,39 +3,37 @@
 规则见 AGENTS.md：两节各由一方整节覆盖、不追加，每节不超过 40 行；历史用 `git log -p HANDOFF.md` 查。
 
 ## Claude → Codex
-<!-- 由 Claude 覆盖。最后更新：2026-11-12 第 72 次（G0c R2：R1-B1 隔离 2016011600；100 m 按规则不用；B1 裁剪可能丢 100 m，先抽查） -->
-轮次: R2/2 | 阶段: G0c | 分支: exp/G1 | 基线提交: 3e710d1
-请求: 审改动 + 只读运行（写验收清单；抽查已下好的 B1 开发年文件）；不训练、不改数据
-待审范围: git diff HEAD -- docs/STAGE_PLAN.md docs/review/DECISIONS.md
-允许改动: scripts/audit_gfs_g0.py, tests/test_audit_gfs_g0.py, output/gfs_g0/**, output/external_acquisition/gfs_g0/**
-审查文件: docs/review/G0c-R2-codex.md
-本轮决议: 采纳 2（R1-B1 隔离不修补；R1-S1 G1 不用 100 m）/ 反驳 0 / 暂缓 0 / 转实验 0
+<!-- 由 Claude 覆盖。最后更新：2026-11-12 第 73 次（G0c 通过；文献核查后，用户同意给 G1 加"本场错位"对照 M_self 和 Q4） -->
+轮次: R1/2 | 阶段: G1b | 分支: exp/G1 | 基线提交: 3744f6b
+请求: 审方案和代码（G1 协议的改动 + Claude 改的模块和测试），在服务器跑 torch 测试；不训练，不写数据脚本
+待审范围: git diff HEAD -- docs/STAGE_PLAN.md docs/review/DECISIONS.md models/NWPDisplacement.py tests/test_nwp_displacement.py
+允许改动: models/NWPDisplacement.py, tests/test_nwp_displacement.py, output/external_acquisition/gfs_g0/**, output/gfs_g0/**
+审查文件: docs/review/G1b-R1-codex.md
+本轮决议: G0c 采纳 R2-S1（我对 B1 的推断错了，已更正；不用 100 m 的决定不变，理由改为层次无法证明）；G0c R2 复核通过。G1b 方向说明见 DECISIONS「阶段 G1b」
 
 需要你做的:
-1. **只审改动**：STAGE_PLAN B 节新增的两条和 C 节"点位"条；DECISIONS G0c 表和末段。这是 G0c 第 2 轮，也是最后一轮。
-2. **写 output/gfs_g0/b2/acceptance.json**（只读、由 audit_b2.json 派生，不改数据和清单）：
-   - 完整周期名单（7300 个，G1 只用这些）；
-   - 不完整和缺失周期及原因（7 个不完整含 2016011600 NaT，1 个缺失 2018052618）；
-   - 各年完整率；100m_used=false；结论：B2 必需字段通过。
-3. **抽查 B1**（只读；B1 还在下载，不要干扰进程）：在已完成的 2021 年开发文件里抽 3 个，报告变量名、各变量的 GRIB_paramId/GRIB_typeOfLevel、heightAboveGround 坐标值，以及有没有 100 m。
-   - 我从脚本第 728 行推断：B1 的变量名是 u/v，并且没有 100 m。
-   - 如果确认，B1 审计时把 u/v 按 GRIB 身份（paramId 131/132、heightAboveGround、层次 10）认作 u10/v10，并补一个合成测试；不要求 100 m。
-4. B1 下完由用户转达后，用同一脚本做 B1 正式核验：2021–2023 解码；2024 及以后只核字节和 SHA256。
+1. **审 G1 协议的改动**（STAGE_PLAN C 节）：
+   - 新增 M_self 臂（与 M 结构相同，错位改由风场自身 t0−3…t0−1 观测风估计，也带 28 个站点汇总通道）；
+   - 新增 Q4（M 对 M_self），Holm 族改为 {Q1, Q3, Q4}，方法档要 Q3 和 Q4 都过；
+   - 观测校准改为拟合年仿射校准 o' = (o − a)/b；共 36 次拟合。
+   - 设计分歧写成 B/S 编号交我；确定缺陷按唯一最小修法处理。
+2. **审代码**（models/NWPDisplacement.py）：self_site_batch（风场作为唯一"站"，预报取 gF 的前 8 个时刻 t0−5…t0+2，权重为 1）、station_blocks 的 M_self 分支、validate_batch 的可选键 oF/oF_mask、StationBlocks 和 G1TSMixerModel 支持 M_self。
+3. **在服务器跑** `python -m unittest tests.test_nwp_displacement`：21 项，含 3 项 torch；一致性和梯度测试已包括 M_self。
+4. B1 下完由用户转达后，再做 B1 正式核验：10 m 风身份接受 165/166（B1）或 131/132 加 level-10 过滤（B2）；2024 年以后只核字节和哈希。
 
 需要用户决定: 无
 
 ## Codex → Claude
-<!-- 由Codex覆盖。2026-11-12：第72次，G0c R2通过，B2验收清单生成，B1三文件抽查完成 -->
-轮次: R2/2 | 阶段: G0c | 分支: exp/G1 | 提交号: 本轮见git log；基线3e710d1
-审查结论: 通过，0条阻断，1条建议R2-S1；docs/review/G0c-R2-codex.md。R1-B1按决议隔离关闭，仅审本轮改动。
-已直接修复: 无；按授权新增derive_b2_acceptance及分区测试，不改变原审计FAIL、不修补时间或数据。
-运行信息: 本地从固定SHA的audit_b2.json派生output/gfs_g0/b2/acceptance.json；13项测试通过，2.685秒；未重跑B2。
-关键数字: B2必需字段通过（限验收名单）：7300完整周期，7不完整+1缺文件；所有排除周期cycle_ok=0、所有臂一致，无前周期回填，100m_used=false。
-关键数字: 2016=99.521858%、2018=99.931507%，2017/2019/2020=100%；日历分母7308不变；2016011600 NaT及2018052618缺文件均排除。
-运行信息: 服务器gfs_g0/bin/python通过SSH stdin只读抽查dev/2021的2021010100、0106、0112；仅变量属性/坐标及字节哈希，读前后大小和mtime一致，未干扰下载。
-关键数字: 三文件均有prmsl(260074/meanSea)、u10(165)、v10(166)、u100(131)、v100(132)；风均heightAboveGround，坐标共享10.0，缺逐变量GRIB_level。
-关键数字: 三文件步长f003–f018齐全且valid_time=C+f；证据/文件SHA见output/gfs_g0/b1/spotcheck_2021.md。存在100m命名字段不等于层次已认证。
-运行信息: 未确认u/v别名假设，因此未实施条件性别名适配；当前B2审计器预期131/132，不能直接用作B1正式验收。未训练、未改数据、未访问封存年。
-需要 Claude 做的: 复核acceptance.json及R2-S1，修正B1字段推断；保持本轮明确决定的不用100m。B1下载完成后，再明确165/166身份适配与测试范围并交Codex正式核验。
-需要 Claude 做的: B2按隔离规则已通过，B1全量仍未验收；不凭三个样本判全量通过，不提前写G1训练脚本。
+<!-- 由Codex覆盖。2026-11-12：第73次，G1b模块21项服务器测试通过，校准方案有1条阻断 -->
+轮次: R1/2 | 阶段: G1b | 分支: exp/G1 | 提交号: 本轮见git log；基线3744f6b
+审查结论: 模块与Q4扩展通过；方案1条阻断R1-B1，另1条暂缓R1-S1和1条建议R1-S2；docs/review/G1b-R1-codex.md。
+已直接修复: 无；本轮模型及测试均为Claude修改，Codex仅审查和合成测试，未代选校准失败策略。
+运行信息: /tmp/g1b_review_73；OPENBLAS_NUM_THREADS=2 OMP_NUM_THREADS=2 timedart/bin/python -m unittest -v tests.test_nwp_displacement；CPU合成测试，不训练。
+关键数字: 服务器21/21通过、无跳过，0.519秒；含3项torch测试及M_self numpy/torch一致性、梯度和功率通道检查。
+关键数字: M与M_self均35通道/6结构参数；Q4加入Holm三检验族正确；计划36=6臂×3seed×2风场，本轮未执行拟合。
+关键数字: 校准反例g=[1,2,3]、o=[1,0,1]，OLS a=2/3、b=0，逆变换除零；方案尚未定义退化拟合/无效斜率的处置，不能据模块测试通过放行数据准备。
+运行信息: 模型SHA256=c6d9a701d4c7d137aa8dd4dbce6287189f797b5583a9f4552994b4ca322ab9f4；测试SHA256=0b60132c7dcb8d0660161e2047025f7c471fa1dfaa85a3cd81fbca552a9a453e；两项本地/服务器一致。
+运行信息: 只复制模块/依赖及合成测试至隔离目录；不改既有部署、不读真实/封存数据、不写数据脚本、不做B1全量核验。
+需要 Claude 做的: 对G1b R1-B1决议并补全仅用拟合段的配对/退化检查及失败处置；修法不唯一，未先行实施。下一轮只复审该改动。
+需要 Claude 做的: R1-S1留到优化阶段处理M_self同步公平性；R1-S2可在后续数据入口按臂检查oF/oF_mask成对必需。B1下载完成后另行正式验收。
 需要用户决定: 无。

@@ -25,6 +25,10 @@ Blocks (outputs are per-sample vectors, later broadcast as constant channels ove
   displacement_block  (arm M, the method)                7 ch: corrected farm trajectory
                       g_F(t0+h+delta_F) + lambda * b_F (h = 1..4), delta_F (h), b_F (m/s), confidence.
   Shift delta > 0 means the weather observed upstream arrives earlier than the forecast: o(tau) ~ g(tau + delta).
+  Arm M_self (control, added 2026-11-12 after the prior-art check, cf. Liu et al. 2023 Applied Energy 336:120815):
+  the same displacement block, but the shift is estimated from the farm's OWN observed wind oF [B,3] (oF_mask)
+  against the farm forecast gF at t0-5..t0+2; it also gets the 28 pooled station channels, so M vs M_self differs
+  only in where the timing error is read (upstream stations vs the farm itself).
   Missing farm forecasts (R1-B2): the correction is applied only if every farm point that the shifted linear
   interpolation reads (all 4 horizons) is valid. Otherwise the sample gets the "no correction" state: the 4
   trajectory channels hold the uncorrected g_F(t0+h) (0 where masked), delta_F = b_F = 0 and confidence = 0.
@@ -52,7 +56,7 @@ LEAD_MIN, LEAD_MAX = 3.0, 18.0
 KERNEL_INIT = (1.386, 0.3, 0.0, 0.0)
 PHI_IN, PHI_HIDDEN, PHI_OUT = 29, 16, 7
 POOLED_OUT, DISP_OUT = 28, 7
-ARMS = ("B", "N", "I_pool", "I", "M")
+ARMS = ("B", "N", "I_pool", "I", "M", "M_self")
 TEMP_FLOOR = 0.05
 T_RAW_INIT = math.log(math.e - 1.0)  # softplus(t_raw) = 1.0 -> temperature 1.05 (m/s)^2 / ws_scale^2
 L_RAW_INIT = 0.0                     # lambda = sigmoid(0) = 0.5
@@ -61,11 +65,14 @@ _K0 = GS_OFF.index(W_OFF[0])         # index of t0-3 in the station forecast axi
 _F0 = GF_OFF.index(0)                # index of t0 in the farm forecast axis (= 5)
 BATCH_KEYS = {"oS": 3, "oS_mask": 3, "gS": 8, "gS_mask": 8, "dS": 2, "dS_mask": None,
               "gF": None, "gF_mask": None, "age": None, "cycle_ok": None}
+OPTIONAL_KEYS = ("oF", "oF_mask")    # farm's own observed wind at t0-3..t0-1 (required for arm M_self only)
+STATION_ARMS = ("I_pool", "I", "M", "M_self")
 
 
 def block_width(arm):
     """Number of station-block channels each arm appends (B and N have none)."""
-    return {"B": 0, "N": 0, "I_pool": POOLED_OUT, "I": POOLED_OUT + PHI_OUT, "M": POOLED_OUT + DISP_OUT}[arm]
+    return {"B": 0, "N": 0, "I_pool": POOLED_OUT, "I": POOLED_OUT + PHI_OUT, "M": POOLED_OUT + DISP_OUT,
+            "M_self": POOLED_OUT + DISP_OUT}[arm]
 
 
 def phi_param_count():
@@ -75,7 +82,7 @@ def phi_param_count():
 def structural_param_counts():
     """Learnable parameters outside the TSMixer backbone, per arm."""
     k = len(KERNEL_INIT)
-    return {"B": 0, "N": 0, "I_pool": k, "I": k + phi_param_count(), "M": k + 2}
+    return {"B": 0, "N": 0, "I_pool": k, "I": k + phi_param_count(), "M": k + 2, "M_self": k + 2}
 
 
 # --------------------------------------------------------------------------- array shim
@@ -322,20 +329,36 @@ def displacement_block(o, b, w, ms, mf, adm, temp, lam, ws_scale=1.0, return_dia
     return out
 
 
+def self_site_batch(o, b):
+    """Arm M_self: the farm itself as the only 'station'. Its observed wind oF (t0-3..t0-1) is matched against the
+    farm forecast gF at valid t0-5..t0+2 (the first 8 farm offsets equal GS_OFF), with weight 1."""
+    if tuple(GF_OFF[:len(GS_OFF)]) != tuple(GS_OFF):
+        raise ValueError("farm and station forecast axes are no longer aligned")
+    n = len(GS_OFF)
+    return {"oS": b["oF"][:, None, :], "oS_mask": b["oF_mask"][:, None, :],
+            "gS": b["gF"][:, None, :n], "gS_mask": b["gF_mask"][:, None, :n],
+            "gF": b["gF"], "gF_mask": b["gF_mask"], "cycle_ok": b["cycle_ok"]}
+
+
 def station_blocks(o, arm, b, geo, params, phi_fn=None, ws_scale=1.0):
-    """Station-block channels for one arm: I_pool -> 28, I -> 28 + 7 (phi), M -> 28 + 7 (displacement)."""
-    if arm not in ("I_pool", "I", "M"):
-        raise ValueError("station blocks exist only for I_pool, I and M")
+    """Station-block channels for one arm: I_pool -> 28, I -> 28 + 7 (phi), M -> 28 + 7 (upstream displacement),
+    M_self -> 28 + 7 (the same displacement structure driven by the farm's own observed wind, TLA-like control)."""
+    if arm not in STATION_ARMS:
+        raise ValueError(f"station blocks exist only for {STATION_ARMS}")
     ms, mf = lead_masks(o, b["age"], b["cycle_ok"])
     w, align = kernel_weights(o, params["kp"], geo, b["dS"], b["dS_mask"])
     parts = [pooled_block(o, b, w, ms)]
     if arm == "I":
         parts.append(phi_block(o, b, w, geo, align, ms, phi_fn))
-    elif arm == "M":
+    elif arm in ("M", "M_self"):
         temp = o.softplus(params["t_raw"]) + TEMP_FLOOR
         lam = o.sigmoid(params["l_raw"])
         adm = admissible_shifts(o, b["age"], b["cycle_ok"])
-        parts.append(displacement_block(o, b, w, ms, mf, adm, temp, lam, ws_scale))
+        if arm == "M":
+            parts.append(displacement_block(o, b, w, ms, mf, adm, temp, lam, ws_scale))
+        else:
+            ones = b["cycle_ok"][:, None] * 0.0 + 1.0
+            parts.append(displacement_block(o, self_site_batch(o, b), ones, ms, mf, adm, temp, lam, ws_scale))
     return o.cat(parts, -1)
 
 
@@ -355,6 +378,13 @@ def validate_batch(batch, n_stations):
             raise ValueError(f"{k}: non-finite values (fill masked entries with any finite number)")
         if k.endswith("_mask") or k == "cycle_ok":
             if not np.isin(a, (0.0, 1.0)).all():
+                raise ValueError(f"{k}: masks must be 0/1")
+    for k in OPTIONAL_KEYS:
+        if k in batch:
+            a = np.asarray(batch[k], dtype=float)
+            if a.shape != (B, 3) or not np.isfinite(a).all():
+                raise ValueError(f"{k}: expected finite [B, 3]")
+            if k.endswith("_mask") and not np.isin(a, (0.0, 1.0)).all():
                 raise ValueError(f"{k}: masks must be 0/1")
 
 
@@ -405,14 +435,14 @@ if _torch is not None:
 
         def __init__(self, arm, geo, ws_scale=1.0):
             super().__init__()
-            if arm not in ("I_pool", "I", "M"):
-                raise ValueError("StationBlocks is only for I_pool, I and M")
+            if arm not in STATION_ARMS:
+                raise ValueError(f"StationBlocks is only for {STATION_ARMS}")
             self.arm, self.ws_scale = arm, float(ws_scale)
             self.kp = _nn.Parameter(_torch.tensor(KERNEL_INIT, dtype=_torch.float32))
             self.register_buffer("geo", _torch.as_tensor(geo, dtype=_torch.float32).clone())
             if arm == "I":
                 self.phi = _nn.Sequential(_nn.Linear(PHI_IN, PHI_HIDDEN), _nn.ReLU(), _nn.Linear(PHI_HIDDEN, PHI_OUT))
-            if arm == "M":
+            if arm in ("M", "M_self"):
                 self.t_raw = _nn.Parameter(_torch.tensor(T_RAW_INIT, dtype=_torch.float32))
                 self.l_raw = _nn.Parameter(_torch.tensor(L_RAW_INIT, dtype=_torch.float32))
 
@@ -420,7 +450,7 @@ if _torch is not None:
             o = _TorchOps()
             b = {k: _torch.as_tensor(v, dtype=self.kp.dtype, device=self.kp.device) for k, v in batch.items()}
             params = {"kp": self.kp}
-            if self.arm == "M":
+            if self.arm in ("M", "M_self"):
                 params.update(t_raw=self.t_raw, l_raw=self.l_raw)
             phi_fn = self.phi if self.arm == "I" else None
             return station_blocks(o, self.arm, b, self.geo.to(self.kp.dtype), params, phi_fn, self.ws_scale)

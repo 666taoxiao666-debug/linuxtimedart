@@ -23,7 +23,8 @@ def make_batch(B=2, S=3, age=11, seed=0):
             "gS": rng.uniform(2, 12, (B, S, 8)), "gS_mask": np.ones((B, S, 8)),
             "dS": np.tile([[0.0, 1.0]], (B, S, 1)), "dS_mask": np.ones((B, S)),
             "gF": rng.uniform(2, 12, (B, 13)), "gF_mask": np.ones((B, 13)),
-            "age": np.full(B, float(age)), "cycle_ok": np.ones(B)}
+            "age": np.full(B, float(age)), "cycle_ok": np.ones(B),
+            "oF": rng.uniform(2, 12, (B, 3)), "oF_mask": np.ones((B, 3))}
 
 
 def make_geo(S=3):
@@ -46,7 +47,8 @@ def shifted_station_batch(delta, age=11, S=2):
 class Constants(unittest.TestCase):
     def test_widths_and_param_counts(self):
         self.assertEqual(nd.phi_param_count(), 599)
-        self.assertEqual([nd.block_width(a) for a in nd.ARMS], [0, 0, 28, 35, 35])
+        self.assertEqual([nd.block_width(a) for a in nd.ARMS], [0, 0, 28, 35, 35, 35])
+        self.assertEqual(nd.structural_param_counts()["M_self"], 6)
         self.assertEqual(nd.structural_param_counts()["M"], 6)
         self.assertEqual(nd.structural_param_counts()["I"], 603)
 
@@ -156,6 +158,41 @@ class Blocks(unittest.TestCase):
         out = nd.station_blocks_numpy("M", b, make_geo(2), SHARP)
         self.assertEqual(np.abs(out[0, 28:]).max(), 0.0)
 
+    def test_m_self_recovers_farm_shift_and_ignores_station_obs(self):
+        for delta in (-1, 0, 2):
+            b = make_batch(B=1, S=2, age=11, seed=2)
+            g = 6.0 + 0.5 * np.asarray(nd.GF_OFF, dtype=float)
+            b["gF"][0] = g
+            b["oF"][0] = 6.0 + 0.5 * (np.asarray(nd.W_OFF, dtype=float) + delta)   # farm sees the shift itself
+            out = nd.station_blocks_numpy("M_self", b, make_geo(2), SHARP)
+            self.assertAlmostEqual(out[0, 28 + 4], delta, places=2, msg=f"M_self delta_F for {delta}")
+            np.testing.assert_allclose(out[0, 28:32], 6.0 + 0.5 * (np.asarray(nd.HORIZONS) + delta), atol=1e-2)
+            b2 = {k: v.copy() for k, v in b.items()}
+            b2["oS"] += 7.0                                                     # station obs change ...
+            out2 = nd.station_blocks_numpy("M_self", b2, make_geo(2), SHARP)
+            np.testing.assert_allclose(out2[0, 28:], out[0, 28:], atol=1e-12)  # ... the self block does not
+            self.assertGreater(np.abs(out2[0, :28] - out[0, :28]).max(), 1.0)  # (pooled channels do)
+
+    def test_m_and_m_self_read_different_sources(self):
+        """Upstream stations already show a +2 h shift while the farm's own wind still matches the forecast."""
+        b = shifted_station_batch(2)
+        b["oF"][0] = b["gF"][0, nd._K0:nd._K0 + 3]                              # farm: no shift yet
+        b["oF_mask"][:] = 1.0
+        m = nd.station_blocks_numpy("M", b, make_geo(2), SHARP)
+        ms = nd.station_blocks_numpy("M_self", b, make_geo(2), SHARP)
+        np.testing.assert_allclose(m[0, :28], ms[0, :28], atol=1e-12)          # identical pooled inputs
+        self.assertAlmostEqual(m[0, 28 + 4], 2.0, places=2)
+        self.assertAlmostEqual(ms[0, 28 + 4], 0.0, places=2)
+
+    def test_m_self_without_farm_obs_falls_back(self):
+        b = make_batch(B=1, S=2, age=9)
+        b["oF_mask"][:] = 0.0
+        out = nd.station_blocks_numpy("M_self", b, make_geo(2), SHARP)
+        self.assertEqual(out[0, 32:].tolist(), [0.0, 0.0, 0.0])
+        np.testing.assert_allclose(out[0, 28:32], b["gF"][0, 6:10], atol=1e-6)
+        with self.assertRaises(ValueError):
+            nd.validate_batch(dict(b, oF=np.zeros((1, 2))), 2)
+
     def test_r2_b1_counterexample(self):
         """Swapping which station carries which pattern leaves every station average equal (I_pool cannot tell),
         while M (per-station matching) and I (per-station phi) must tell the two cases apart."""
@@ -211,7 +248,7 @@ class Blocks(unittest.TestCase):
         perm = [2, 0, 1]
         bp = {k: (v[:, perm] if v.ndim >= 2 and v.shape[1] == 3 and k.startswith(("oS", "gS", "dS")) else v)
               for k, v in b.items()}
-        for arm in ("I_pool", "I", "M"):
+        for arm in ("I_pool", "I", "M", "M_self"):
             a = nd.station_blocks_numpy(arm, b, geo, seed=1)
             c = nd.station_blocks_numpy(arm, bp, geo[perm], seed=1)
             np.testing.assert_allclose(a, c, atol=1e-9, err_msg=arm)
@@ -225,7 +262,7 @@ class Torch(unittest.TestCase):
         import torch
         with torch.no_grad():
             blk.kp.copy_(torch.as_tensor(params["kp"]))
-            if blk.arm == "M":
+            if blk.arm in ("M", "M_self"):
                 blk.t_raw.fill_(float(params["t_raw"]))
                 blk.l_raw.fill_(float(params["l_raw"]))
             if blk.arm == "I":
@@ -241,7 +278,7 @@ class Torch(unittest.TestCase):
         b["age"] = np.asarray([6.0, 7.0, 9.0, 11.0])
         b["oS_mask"][1, 2, :] = 0.0
         b["gF_mask"][3, :] = 0.0                       # one sample takes the R1-B2 fallback branch
-        for arm in ("I_pool", "I", "M"):
+        for arm in ("I_pool", "I", "M", "M_self"):
             params = nd.init_params_numpy(arm, seed=5)
             ref = nd.station_blocks_numpy(arm, b, geo, params)
             blk = nd.StationBlocks(arm, geo).double()
@@ -255,7 +292,7 @@ class Torch(unittest.TestCase):
                 self.assertTrue(torch.isfinite(p.grad).all(), f"{arm}.{name}")
                 self.assertGreater(float(p.grad.abs().sum()), 0.0, f"{arm}.{name}")
             self.assertGreater(float(blk.kp.grad.abs().sum()), 0.0)
-            if arm == "M":
+            if arm in ("M", "M_self"):
                 self.assertGreater(abs(float(blk.t_raw.grad)) + abs(float(blk.l_raw.grad)), 0.0)
 
     def test_wrapper_layout_and_normalization(self):
