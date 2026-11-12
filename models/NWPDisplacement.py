@@ -363,7 +363,7 @@ def station_blocks(o, arm, b, geo, params, phi_fn=None, ws_scale=1.0):
 
 
 # --------------------------------------------------------------------------- numpy reference
-def validate_batch(batch, n_stations):
+def validate_batch(batch, n_stations, arm=None):
     """Shape and finiteness checks for a numpy station batch (use in the data-preparation tests)."""
     import numpy as np
     B = np.asarray(batch["age"]).shape[0]
@@ -379,13 +379,81 @@ def validate_batch(batch, n_stations):
         if k.endswith("_mask") or k == "cycle_ok":
             if not np.isin(a, (0.0, 1.0)).all():
                 raise ValueError(f"{k}: masks must be 0/1")
-    for k in OPTIONAL_KEYS:
-        if k in batch:
-            a = np.asarray(batch[k], dtype=float)
-            if a.shape != (B, 3) or not np.isfinite(a).all():
-                raise ValueError(f"{k}: expected finite [B, 3]")
-            if k.endswith("_mask") and not np.isin(a, (0.0, 1.0)).all():
-                raise ValueError(f"{k}: masks must be 0/1")
+    present = [k for k in OPTIONAL_KEYS if k in batch]
+    if present and len(present) != len(OPTIONAL_KEYS):
+        raise ValueError("oF and oF_mask must be given together (missing data = mask 0, not a missing key)")
+    if arm == "M_self" and not present:
+        raise ValueError("arm M_self needs oF and oF_mask")
+    for k in present:
+        a = np.asarray(batch[k], dtype=float)
+        if a.shape != (B, 3) or not np.isfinite(a).all():
+            raise ValueError(f"{k}: expected finite [B, 3]")
+        if k.endswith("_mask") and not np.isin(a, (0.0, 1.0)).all():
+            raise ValueError(f"{k}: masks must be 0/1")
+
+
+# --------------------------------------------------------------------------- observation calibration (G1b R1-B1)
+CAL_N_MIN = 720                # valid fit-period pairs (30 days of hours)
+CAL_SD_MIN = 0.5               # m/s, both series
+CAL_R_MIN = 0.5                # Pearson correlation
+CAL_B_RANGE = (1.0 / 3.0, 3.0)  # admissible slope
+
+
+def fit_affine_calibration(o, g, n_min=CAL_N_MIN, sd_min=CAL_SD_MIN, r_min=CAL_R_MIN, b_range=CAL_B_RANGE):
+    """Per-site calibration of observed wind o to the GFS scale, fitted on FIT-PERIOD pairs only.
+
+    o, g: 1-D arrays of the same valid hours (o = observed wind, g = the causally available GFS value at that hour);
+    pairs with any non-finite value are dropped. Rule (pre-registered, identical for every arm):
+      1. n >= n_min, sd(o) >= sd_min, sd(g) >= sd_min, r >= r_min, and the reduced-major-axis slope
+         b = sd(o) / sd(g) inside b_range  ->  method "rma": a = mean(o) - b * mean(g).
+         (RMA is symmetric in o and g and never 0 when both spreads pass; OLS of o on g can give b = 0.)
+      2. otherwise, if n >= n_min                                  ->  method "offset": b = 1, a = mean(o - g).
+      3. otherwise (too few pairs)                                 ->  method "masked": the site's observations
+         are masked (mask 0 at every time) in every arm.
+    Returns a dict with a, b, method, reason and the diagnostics n, sd_o, sd_g, r.
+    """
+    import numpy as np
+    o = np.asarray(o, dtype=float).ravel()
+    g = np.asarray(g, dtype=float).ravel()
+    if o.shape != g.shape:
+        raise ValueError("o and g must be aligned 1-D arrays")
+    keep = np.isfinite(o) & np.isfinite(g)
+    o, g = o[keep], g[keep]
+    n = int(o.size)
+    out = {"n": n, "sd_o": None, "sd_g": None, "r": None, "a": None, "b": None}
+    if n < n_min:
+        return dict(out, method="masked", reason=f"n={n} < {n_min}")
+    sd_o, sd_g = float(o.std()), float(g.std())
+    r = float(np.corrcoef(o, g)[0, 1]) if sd_o > 0 and sd_g > 0 else float("nan")
+    out.update(sd_o=sd_o, sd_g=sd_g, r=r if np.isfinite(r) else None)
+    fails = []
+    if sd_o < sd_min:
+        fails.append(f"sd_o={sd_o:.3g} < {sd_min}")
+    if sd_g < sd_min:
+        fails.append(f"sd_g={sd_g:.3g} < {sd_min}")
+    if not (np.isfinite(r) and r >= r_min):
+        fails.append(f"r={r:.3g} < {r_min}")
+    if not fails:
+        b = sd_o / sd_g
+        if not b_range[0] <= b <= b_range[1]:
+            fails.append(f"b={b:.3g} outside {b_range}")
+        else:
+            return dict(out, a=float(o.mean() - b * g.mean()), b=float(b), method="rma", reason="ok")
+    return dict(out, a=float((o - g).mean()), b=1.0, method="offset", reason="; ".join(fails))
+
+
+def apply_calibration(o, mask, cal):
+    """o' = (o - a) / b on valid entries; method "masked" zeroes the mask. Returns (o', mask')."""
+    import numpy as np
+    o = np.asarray(o, dtype=float)
+    mask = np.asarray(mask, dtype=float)
+    if cal["method"] == "masked":
+        return np.zeros_like(o), np.zeros_like(mask)
+    if not (np.isfinite(cal["b"]) and np.isfinite(cal["a"])
+            and CAL_B_RANGE[0] <= cal["b"] <= CAL_B_RANGE[1]):
+        raise ValueError("calibration with an inadmissible slope")
+    out = np.where(mask > 0, (o - cal["a"]) / cal["b"], 0.0)
+    return out, mask
 
 
 def init_params_numpy(arm, seed=0):

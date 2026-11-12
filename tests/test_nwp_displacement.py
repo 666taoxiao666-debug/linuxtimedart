@@ -193,6 +193,50 @@ class Blocks(unittest.TestCase):
         with self.assertRaises(ValueError):
             nd.validate_batch(dict(b, oF=np.zeros((1, 2))), 2)
 
+    def test_g1b_r1_b1_calibration_rules(self):
+        """G1b R1-B1: Codex's OLS counterexample (b = 0) and other degenerate fits must never divide by ~0."""
+        f = lambda o, g: nd.fit_affine_calibration(o, g, n_min=3)
+        c = f([1.0, 0.0, 1.0], [1.0, 2.0, 3.0])                          # r = 0 (OLS slope would be 0)
+        self.assertEqual((c["method"], c["b"]), ("offset", 1.0))
+        self.assertAlmostEqual(c["a"], (2.0 / 3.0) - 2.0)
+        c = f([1.0, 2.0, 4.0], [5.0, 5.0, 5.0])                          # constant forecast
+        self.assertEqual(c["method"], "offset")
+        self.assertIn("sd_g", c["reason"])
+        c = nd.fit_affine_calibration([1.0, 2.0], [1.0, 2.0])             # too few pairs (default n_min)
+        self.assertEqual(c["method"], "masked")
+        o2, m2 = nd.apply_calibration(np.asarray([[3.0, 4.0]]), np.ones((1, 2)), c)
+        self.assertEqual((o2.sum(), m2.sum()), (0.0, 0.0))
+        rng = np.random.default_rng(0)
+        g = rng.uniform(2, 14, 5000)
+        o = 0.7 + 1.3 * g                                                 # hub-height-like scale, no noise
+        c = nd.fit_affine_calibration(o, g)
+        self.assertEqual(c["method"], "rma")
+        self.assertAlmostEqual(c["b"], 1.3, places=6)
+        self.assertAlmostEqual(c["a"], 0.7, places=6)
+        oc, _ = nd.apply_calibration(o, np.ones_like(o), c)
+        np.testing.assert_allclose(oc, g, atol=1e-9)
+        for bad_b in (0.0, float("nan"), float("inf"), 4.0):
+            with self.assertRaises(ValueError):
+                nd.apply_calibration(o, np.ones_like(o), dict(c, b=bad_b))
+        c = nd.fit_affine_calibration(4.0 * g, g)                         # slope 4 outside [1/3, 3]
+        self.assertEqual(c["method"], "offset")
+        o_nan = o.copy()
+        o_nan[:10] = np.nan                                               # non-finite pairs are dropped
+        self.assertEqual(nd.fit_affine_calibration(o_nan, g)["n"], 4990)
+        for cal in (nd.fit_affine_calibration(rng.normal(0, 1, 2000), rng.normal(0, 1, 2000)),
+                    nd.fit_affine_calibration(np.full(2000, 3.0), g[:2000])):
+            out, _ = nd.apply_calibration(o[:2000], np.ones(2000), cal)
+            self.assertTrue(np.isfinite(out).all())
+
+    def test_g1b_r1_s2_paired_farm_keys(self):
+        b = make_batch(B=1, S=2)
+        nd.validate_batch(b, 2, arm="M_self")
+        with self.assertRaises(ValueError):
+            nd.validate_batch({k: v for k, v in b.items() if k != "oF_mask"}, 2)
+        with self.assertRaises(ValueError):
+            nd.validate_batch({k: v for k, v in b.items() if k not in ("oF", "oF_mask")}, 2, arm="M_self")
+        nd.validate_batch({k: v for k, v in b.items() if k not in ("oF", "oF_mask")}, 2, arm="M")
+
     def test_r2_b1_counterexample(self):
         """Swapping which station carries which pattern leaves every station average equal (I_pool cannot tell),
         while M (per-station matching) and I (per-station phi) must tell the two cases apart."""

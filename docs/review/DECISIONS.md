@@ -814,6 +814,9 @@ G0c R2 复核（Claude，2026-11-12，3744f6b）：通过。acceptance.json 只�
 
 | 编号 | 类型 | 一句话摘要 | 决议 | 理由（一句） | 落实 |
 |---|---|---|---|---|---|
+| R1-B1 | 阻断 | 仿射校准没有退化拟合的处置；反例 g = [1,2,3]、o = [1,0,1] 时最小二乘 b = 0，除零 | 采纳 | 确定缺陷，反例成立。改为：只用拟合段的有效配对，用简化主轴斜率 b = sd(o)/sd(g)（对称，不会为 0）；检查 n ≥720、两个标准差 ≥0.5、r ≥0.5、b ∈ [1/3, 3]；不过就退回只扣均值，配对太少就整站置掩码，各臂相同。规则写成代码，反例和其他退化情形都有测试 | Claude 实施：models/NWPDisplacement.py 的 fit_affine_calibration、apply_calibration，tests 新增 test_g1b_r1_b1_calibration_rules；STAGE_PLAN C 节"观测校准"条 |
+| R1-S1 | 建议 | 优化轮只给 M 扩窗口和加气压，M_self 不同步，Q4 就不再只比错位来源 | 采纳 | 现在就登记：优化轮 M_self 同步扩到 5 h；风场没有本场气压观测，所以不加气压项，优化轮的 Q4 只作描述 | STAGE_PLAN C 节"优化轮"条 |
+| R1-S2 | 建议 | validate_batch 允许只给 oF 或只给 oF_mask | 采纳 | 两个键必须成对出现，缺测用掩码 0 表示；arm = "M_self" 时必须有这两个键 | models/NWPDisplacement.py 的 validate_batch(…, arm)，新增 test_g1b_r1_s2_paired_farm_keys |
 
 G1b 方向说明（Claude，2026-11-12）：
 
