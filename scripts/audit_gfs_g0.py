@@ -331,6 +331,34 @@ def derive_b2_acceptance(audit_path):
                 limitations=report['limitations'])
 
 
+def derive_b1_acceptance(audit_path, traffic_estimate):
+    """Apply only the #77 approved quarantine to the immutable independent audit."""
+    expected = '6f2dbba37d8d256a97bd4cc2761173b72409edd9c529a370a735e91ce279d2a7'
+    if sha256(audit_path) != expected:
+        raise ValueError('R2 decision applies only to the reviewed B1 audit')
+    report = json.loads(Path(audit_path).read_text(encoding='utf-8'))
+    rows = report['records']
+    accepted = [r['cycle'] for r in rows if r['complete'] and not r['errors']]
+    excluded = [dict(cycle=r['cycle'], cycle_ok=0,
+        reason=['missing_file'] if r.get('missing_file') else r['errors'] + r.get('missing_messages', []))
+        for r in rows if not r['complete'] or r['errors']]
+    quarantine = {'2021020200', '2021020312', '2021020318', '2021020412',
+                  '2021020612', '2021020618', '2021020712', '2022112918', '2022113006'}
+    if (len(rows) != 4380 or len(set(accepted)) != 4371 or {r['cycle'] for r in excluded} != quarantine
+            or report['sealed_failures'] or report['unexpected_sealed_files']
+            or not report['manifest_unchanged'] or not all(v['passes_95pct'] for v in report['annual'].values())
+            or not report['budget']['dev_storage_pass'] or not report['budget']['sealed_storage_pass']):
+        raise ValueError('Audit differs from approved quarantine or storage gates')
+    return dict(status='PASS_REQUIRED_WITH_QUARANTINE', scope='B1 development 2021-2023; sealed bytes only',
+        source_audit_sha256=expected, source_audit_status=report['status'],
+        decision='HANDOFF #77 / DECISIONS G1c R1-B1/B2', complete_cycles=accepted,
+        excluded_cycles=excluded, annual=report['annual'], complete_count=4371,
+        denominator=4380, missing_count=7, incomplete_count=2,
+        all_arms_cycle_ok_zero_for_excluded=True, previous_cycle_fallback=False,
+        budget={**report['budget'], 'download_total_verified': False, 'user_accepted_gap': '2026-11-13',
+                'log_based_estimate': traffic_estimate}, limitations=report['limitations'])
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--root', type=Path, required=True)

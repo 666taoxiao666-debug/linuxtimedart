@@ -219,6 +219,16 @@ def station_batch(hourly, indices):
                 age=hourly["age"][i], cycle_ok=hourly["cycle_ok"][i])
 
 
+def validate_lead_audit(rows):
+    reads = [(r['min_read_lead'], r['max_read_lead']) for r in rows if r['min_read_lead'] is not None]
+    if not reads or any(lo < 3 or hi > 18 or lo > hi for lo, hi in reads):
+        raise ValueError('Actual GFS read outside [3, 18] h or no audited reads')
+    if any(r['age'] < 6 or r['age'] > 11 for r in rows):
+        raise ValueError('Forecast publication lag outside [6, 11] h')
+    return dict(status='PASS', min_read_lead=min(x[0] for x in reads),
+                max_read_lead=max(x[1] for x in reads), origins=len(rows))
+
+
 def nwp_input(x21, hourly, hourly_indices):
     idx = np.asarray(hourly_indices)
     issue = idx[:, -1]
@@ -393,6 +403,7 @@ def build_packs(series, hours, hourly, bounds):
         batch = station_batch(hourly, h_idx[:, -1])
         out[split] = dict(x21=x, x50=nwp_input(x, hourly, h_idx),
             truth=series.raw[targets[keep], -1].astype(np.float32),
+            anchor=series.raw[idx[keep, -1], -1].astype(np.float32),
             issue=np.asarray(hours)[h_idx[:, -1]].astype("datetime64[ns]").astype(np.int64),
             times=times[keep].astype("datetime64[ns]").astype(np.int64),
             turbines=series.turbines[starts[keep]],
@@ -422,6 +433,7 @@ def prepare_farm(data_root, farm, bounds, accepted_pairs, out):
     station_wind = np.where(station_wind >= 0, station_wind, np.nan)
     directions = np.where(station_wind > 0, directions, np.nan)
     hourly = prepare_hourly(hours, forecasts, station_wind, wind, directions, bounds["train"])
+    lead_summary = validate_lead_audit(hourly['audit'])
     packs = build_packs(series, hours, hourly, bounds)
     geo = np.array([[s["distance_km"]/100, np.sin(np.radians(s["bearing_deg"])), np.cos(np.radians(s["bearing_deg"]))] for s in stations], dtype=np.float32)
     artifacts = {}
@@ -445,9 +457,11 @@ def prepare_farm(data_root, farm, bounds, accepted_pairs, out):
         identities[str(audit)], identities[str(acc)] = digest(audit), digest(acc)
     save_json(out/"lead_audit.json", hourly["audit"])
     save_json(out/"calibration.json", dict(stations=["farm"]+[s["src_id"] for s in stations], rules=hourly["calibration"], fit_bounds=bounds["train"]))
+    for name in ('lead_audit.json', 'calibration.json'):
+        artifacts[name] = digest(out/name)
     save_json(out/"prepared.json", dict(farm=farm, bounds=bounds, artifacts=artifacts, inputs=identities,
         scaler=scaler, nwp_mean=hourly["nwp_mean"], nwp_scale=hourly["nwp_scale"],
-        counts={s: len(p["truth"]) for s, p in packs.items()}, label_policy="unchanged"))
+        lead_audit=lead_summary, counts={s: len(p["truth"]) for s, p in packs.items()}, label_policy="unchanged"))
     return out/"prepared.json"
 
 

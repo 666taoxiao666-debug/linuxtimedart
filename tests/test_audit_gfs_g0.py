@@ -30,6 +30,18 @@ def fixture():
 
 
 class AuditTests(unittest.TestCase):
+    def test_b1_reviewed_partition_and_identity(self):
+        path = Path(__file__).parents[1] / 'output/gfs_g0/b1/audit_b1_corrected.json'
+        result = a.derive_b1_acceptance(path, {'strict_upper_bound_proven': False})
+        self.assertEqual(len(result['complete_cycles']), 4371)
+        self.assertEqual(len(result['excluded_cycles']), 9)
+        self.assertFalse(set(result['complete_cycles']) & {x['cycle'] for x in result['excluded_cycles']})
+        self.assertFalse(result['budget']['download_total_verified'])
+        self.assertEqual(result['budget']['user_accepted_gap'], '2026-11-13')
+        with patch.object(a, 'sha256', return_value='changed'):
+            with self.assertRaises(ValueError):
+                a.derive_b1_acceptance(path, {})
+
     def test_b1_identity_and_crossover(self):
         ds = fixture()
         ds.u10.attrs['GRIB_paramId'] = 165

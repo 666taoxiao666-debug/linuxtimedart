@@ -1,6 +1,7 @@
 {
   "phase": "G1c",
-  "status": "development_preflight",
+  "status": "frozen",
+  "rated_kw": {"Kelmarsh": 2050, "Penmanshiel": 2050},
   "arms": ["B", "N", "I_pool", "I", "M", "M_self", "I_w", "R_sp", "M_amp", "M_phase"],
   "seeds": [2024, 2025, 2026],
   "farms": ["Kelmarsh", "Penmanshiel"],

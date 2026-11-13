@@ -18,6 +18,7 @@ if str(ROOT) not in sys.path:
 from scripts.prepare_g1_batches import digest, save_json, nd
 
 BATCH_KEYS = ("oS", "oS_mask", "gS", "gS_mask", "gF", "gF_mask", "dS", "dS_mask", "oF", "oF_mask", "age", "cycle_ok")
+PROTOCOL_SHA256 = '92e93dd4d1b62b1654c02bbb95299019f507903f13ef6fe71d2f6687003e8ed4'
 
 
 def select_information_control(validation, candidates=("I", "I_w", "R_sp")):
@@ -130,7 +131,7 @@ def fit_one(arm, seed, train, val, config, directory, device):
     return result
 
 
-def evaluate_arrays(predictions, truth, issue, choice, stats):
+def evaluate_arrays(predictions, truth, issue, choice, stats, anchor=None, rated=None):
     from utils.kelmarsh_backbone_information import paired_loss_statistics
     losses = {a: np.mean([np.abs(p-truth) for p in ps], axis=0) for a, ps in predictions.items()}
     pairs = {"Q1": ("N", "B"), "Q3": ("M", choice), "Q4": ("M", "M_self"), "Q5": ("M", "M_amp")}
@@ -147,7 +148,33 @@ def evaluate_arrays(predictions, truth, issue, choice, stats):
         metrics[a] = [{"mae": float(np.abs(p-truth).mean()), "rmse": float(np.sqrt(np.square(p-truth).mean())),
                        "r2": float(1-np.square(p-truth).sum()/denom),
                        "lead_mae": np.abs(p-truth).mean(axis=0).tolist()} for p in ps]
-    return dict(primary=results, sensitivity=sensitivity, metrics=metrics, seed_aggregation="mean losses, not mean predictions")
+    descriptive = {}
+    for label, candidate, reference in [('Q2', 'I_pool', 'N'), ('M_phase_vs_M', 'M_phase', 'M'),
+            ('M_vs_I_pool', 'M', 'I_pool')] + [('M_vs_'+a, 'M', a) for a in ('I', 'I_w', 'R_sp') if a != choice]:
+        descriptive[label] = dict(gain=float((losses[reference]-losses[candidate]).mean()), descriptive_only=True)
+    ramps = {}
+    if anchor is not None:
+        from scripts.ramp_diagnostics import ramp_auc, warn_scores
+        delta = truth-anchor[:, None]
+        cells = np.abs(delta[:, 1:]) >= .1*rated
+        for arm, ps in predictions.items():
+            pred = np.mean(ps, axis=0)
+            change = pred-anchor[:, None]
+            auc = ramp_auc(change[:, 3], delta[:, 3], rated)
+            ramps[arm] = dict(change_cell_mae=float(np.abs(pred[:, 1:]-truth[:, 1:])[cells].mean()) if cells.any() else None,
+                h4_auc=[float(v) if np.isfinite(v) else None for v in auc],
+                warnings=warn_scores(change[:, 3], delta[:, 3], rated))
+    # Date-level version strata from the registered G0 review; exact switch day
+    # omitted because its cycle-level transition is not established here.
+    dates = np.asarray(issue).astype('datetime64[D]')
+    strata = {'before_v16_date': dates < np.datetime64('2021-03-22'),
+              'after_v16_date': dates > np.datetime64('2021-03-22')}
+    versions = {name: dict(windows=int(mask.sum()), mae={a: float(loss[mask].mean()) for a, loss in losses.items()})
+                for name, mask in strata.items() if mask.any()}
+    return dict(primary=results, sensitivity=sensitivity, metrics=metrics, descriptive=descriptive,
+        ramps=dict(descriptive_only=True, aggregation='mean seed predictions', arms=ramps),
+        version_date_strata=versions, version_boundary_day_omitted=int((dates == np.datetime64('2021-03-22')).sum()),
+        seed_aggregation="mean losses, not mean predictions")
 
 
 def mechanism_diagnostics(pack, model, geo, ws_scale):
@@ -215,7 +242,7 @@ def source_snapshot():
 def formal_gate(prepared, protocol_sha256):
     path = ROOT/"configs/g1_protocol.json"
     protocol = json.loads(path.read_text(encoding="utf-8"))
-    if digest(path) != protocol_sha256 or protocol["status"] != "frozen":
+    if protocol_sha256 != PROTOCOL_SHA256 or digest(path) != PROTOCOL_SHA256 or protocol["status"] != "frozen":
         raise ValueError("Protocol is not frozen with the supplied SHA256")
     if subprocess.check_output(["git", "diff", "HEAD", "--", "configs/g1_protocol.json"], cwd=ROOT):
         raise ValueError("Protocol must be committed before running")
@@ -229,6 +256,8 @@ def formal_gate(prepared, protocol_sha256):
         if digest(folder/"prepared.json") != complete["farms"][farm]:
             raise ValueError("Preparation identity mismatch")
         meta = json.loads((folder/"prepared.json").read_text(encoding="utf-8"))
+        if meta['lead_audit']['status'] != 'PASS' or not (3 <= meta['lead_audit']['min_read_lead'] <= meta['lead_audit']['max_read_lead'] <= 18):
+            raise ValueError('Lead audit gate failed')
         for name, expected in meta["artifacts"].items():
             if digest(folder/name) != expected:
                 raise ValueError("Prepared artifact changed: " + name)
@@ -297,7 +326,7 @@ def run_formal(prepared, directory, protocol_sha256, device):
                             for split in ("train", "val"):
                                 pack = dict(np.load(prepared/farm/(split+"_diagnostics.npz"), allow_pickle=False))
                                 diagnostics[f"{farm}/{seed}/{split}"] = mechanism_diagnostics(pack, model, test["geo"], float(test["ws_scale"]))
-                farm_results[farm] = evaluate_arrays(predictions, test["truth"], test["issue"].astype("datetime64[ns]"), selections[farm]["arm"], protocol["statistics"])
+                farm_results[farm] = evaluate_arrays(predictions, test["truth"], test["issue"].astype("datetime64[ns]"), selections[farm]["arm"], protocol["statistics"], test['anchor'], protocol['rated_kw'][farm])
             decision = joint_decisions({f: r["primary"] for f, r in farm_results.items()})
             save_json(directory/"results.json", dict(farms=farm_results, decision=decision, diagnostics=diagnostics))
             check_freeze(freeze, 60, directory)

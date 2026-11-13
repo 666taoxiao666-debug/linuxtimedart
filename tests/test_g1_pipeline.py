@@ -11,6 +11,13 @@ from scripts import train_g1 as t
 
 
 class TemporalTests(unittest.TestCase):
+    def test_actual_read_gate(self):
+        good = dict(min_read_lead=3, max_read_lead=18, age=6)
+        self.assertEqual(p.validate_lead_audit([good])['status'], 'PASS')
+        for bad in ({**good, 'min_read_lead': 2}, {**good, 'max_read_lead': 19}, {**good, 'age': 5}):
+            with self.assertRaises(ValueError):
+                p.validate_lead_audit([bad])
+
     def test_release_boundary(self):
         hours = np.arange(np.datetime64("2020-01-02T00"), np.datetime64("2020-01-03T00"), np.timedelta64(1, "h"))
         age = (hours - p.available_cycle(hours)) / np.timedelta64(1, "h")
@@ -40,6 +47,20 @@ class TemporalTests(unittest.TestCase):
 
 
 class SelectionTests(unittest.TestCase):
+    @unittest.skipIf(os.name == 'nt', 'registered statistics requires Linux fcntl')
+    def test_evaluation_report_serializable(self):
+        import json
+        rng = np.random.default_rng(7)
+        truth = rng.uniform(0, 2050, (96, 4))
+        predictions = {a: [truth+rng.normal(0, 50, truth.shape) for _ in range(3)] for a in p.nd.ARMS}
+        issue = np.datetime64('2021-03-15')+np.arange(96)*np.timedelta64(3, 'h')
+        report = t.evaluate_arrays(predictions, truth, issue, 'I',
+            dict(replicates=100, seed=2024, block_length=8, sensitivity_block_length=56),
+            anchor=np.ones(96)*1000, rated=2050)
+        json.dumps(report, allow_nan=False)
+        self.assertEqual(set(report['primary']), {'Q1', 'Q3', 'Q4', 'Q5'})
+        self.assertEqual(len(report['ramps']['arms']), 10)
+
     def test_validation_selection_only(self):
         self.assertEqual(t.select_information_control({"I": [2]*3, "I_w": [1]*3, "R_sp": [1]*3})[0], "I_w")
         with self.assertRaises(ValueError):
