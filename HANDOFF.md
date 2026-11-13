@@ -3,26 +3,23 @@
 规则见 AGENTS.md：两节各由一方整节覆盖、不追加，每节不超过 40 行；历史用 `git log -p HANDOFF.md` 查。
 
 ## Claude → Codex
-<!-- 由 Claude 覆盖。最后更新：2026-11-13 第 77 次（G1c R2：B1 两个坏周期隔离；流量计量缺口用户接受；路径 T，条件满足就正式运行） -->
-轮次: R2/2 | 阶段: G1c | 分支: exp/G1 | 基线提交: c1771e7
-请求: 审改动后运行（只审 R1-B1/B2 的处理；写 B1 验收名单；脚本收尾；门禁都过就直接跑 60 次拟合）
+<!-- 由 Claude 覆盖。最后更新：2026-11-13 第 78 次（R2-E1：导入最小修复已批准；预检后从头完整准备，门禁都过就跑 60 次拟合） -->
+轮次: R2/2 | 阶段: G1c | 分支: exp/G1 | 基线提交: cf9c9db
+请求: 修复后运行（执行失败的恢复，不是新的方案审查轮）
 待审范围: git diff HEAD -- docs/STAGE_PLAN.md docs/review/DECISIONS.md
-允许改动: scripts/prepare_g1_batches.py, scripts/train_g1.py, configs/g1_protocol.json, tests/test_g1_pipeline.py, output/g1/**, scripts/audit_gfs_g0.py, tests/test_audit_gfs_g0.py, output/gfs_g0/**, output/external_acquisition/gfs_g0/**
-审查文件: docs/review/G1c-R2-codex.md
-本轮决议: 采纳 2（R1-B1 隔离；R1-B2 如实记录、用户接受缺口）/ 反驳 0 / 暂缓 1（R1-S1，路径 A 不执行）/ 转实验 0；核验脚本两处直接修复复核正确
+允许改动: scripts/prepare_g1_batches.py, tests/test_g1_pipeline.py, scripts/train_g1.py, output/g1/**, output/gfs_g0/**, output/external_acquisition/gfs_g0/**
+审查文件: docs/review/G1c-R2-codex.md（续写一节"第 78 次执行"）
+本轮决议: 采纳 1（R2-E1，最小导入修复）；R1-B1/B2 的处理复核通过。恢复范围见 DECISIONS G1c 末段
 
 需要你做的:
-1. **只审改动**（STAGE_PLAN B 节 B1 四条、末尾两条；DECISIONS G1c 表的 R1 三行和末段）。这是 G1c 第 2 轮，也是最后一轮。
-2. **写 output/gfs_g0/b1/acceptance.json**（仿 derive_b2_acceptance，绑定 audit_b1_corrected.json 的 SHA 6f2dbba3…）：
-   - status PASS_REQUIRED_WITH_QUARANTINE；complete_cycles 只收 complete = true 的周期；
-   - excluded_cycles：7 个缺失加 2 个坏周期，各附原因，cycle_ok = 0；
-   - 各年完整率；budget 段：唯一载荷 222.5 GB、download_total_verified = false、user_accepted_gap = 2026-11-13，加上从服务器日志只读估的上限及其算法。
-   - 补一个测试，然后提交。
-3. **收尾并运行（同第 76 次第 3 条，不用再等我）：** 走路径 T；脚本补完、测试过、协议提交并锁 PROTOCOL_SHA256；准备数据时 lead_audit 任何读取超出 [3, 18] h 就停。门禁都过就一次跑完 60 次拟合（先冻结后评估），结果拷回 output/g1/。
-   - 交回：Q1/Q3/Q4/Q5 两场的增益、CI、p、max-p 和 Holm 结论；I* 选了谁；校准方法统计（rma/offset/masked 各几个）；机制诊断。
-   - 任何一步失败就停下交回。不下载、不安装。
+1. **修复：** scripts/prepare_g1_batches.py:314 改为 `from scripts.screen_kelmarsh_upstream_observations import read_badc_csv, column`，加一个导入回归测试，提交。configs/g1_protocol.json 不动，PROTOCOL_SHA256 不变；新的准备脚本 SHA 写进启动回执。
+2. **真实适配预检**（只读、不训练、不读 GFS）：跑 Penmanshiel 的 load_development 元数据部分，核对注册表哈希、11 个站坐标唯一、MIDAS 文件登记齐全、distance_km/bearing_deg 都在。
+   - 再遇到同类导入或适配的确定缺陷：修法唯一、且不改数据/年份/阈值/臂/模型的，可以按最小修法先行直接修，最多 2 处，写进审查文件；超过 2 处或修法不唯一就停下交回。
+3. **从头完整准备：** 新建运行目录，两个风场都重新准备，不复用失败那次的 Kelmarsh；失败现场 g1c_fd3ee91_r1 原样保留。
+   - 新旧 Kelmarsh 产物逐数组（np.array_equal）和 JSON 比较，不比 npz 文件哈希（zip 含写入时间）；不一致就停下交回。
+4. **门禁都过就直接跑 60 次拟合**（授权同第 76、77 次，正式拟合目前 0/60）：先冻结后评估，结果拷回 output/g1/。交回 Q1/Q3/Q4/Q5 两场的增益、CI、p、max-p、Holm 结论，I* 选了谁，两场的校准方法统计，机制诊断。任何一步失败就停下交回。不下载、不安装；manifest_b1.json 原文件不提交。
 
-需要用户决定: 无（流量缺口用户已于 2026-11-13 接受）
+需要用户决定: 无
 
 ## Codex → Claude
 <!-- 由Codex覆盖。2026-11-13：第77次G1c R2，B1通过隔离验收，真实准备技术失败后停止 -->

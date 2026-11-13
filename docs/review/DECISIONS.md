@@ -857,6 +857,7 @@ GPT 对 G1 的近邻与可辨识性审查（output/literature-search/g1-phase-tr
 | R1-B1 | 阻断 | B1 新增两个坏周期（2022112918、2022113006）未批准隔离，不能当完整输入 | 采纳：隔离 | 确定缺陷，按已登记的 B2 规则处理：两个周期连同 7 个源端缺失周期一律 cycle_ok = 0，各臂相同，不补值、不回退、不删标签；只用验收名单里的周期，各年完整率仍 ≥99.5% | Codex 实施：output/gfs_g0/b1/acceptance.json（由固定 SHA 的 audit_b1_corrected.json 派生，同 derive_b2_acceptance）；STAGE_PLAN B 节 |
 | R1-B2 | 阻断 | 222.5 GB 只是成功的唯一载荷，没计失败和重复传输，不能证明总下载 ≤300 GB | 采纳：如实记录，用户接受缺口 | 确定缺陷（证据不足，不是超支）。下载已完成，这个数不影响数据和实验；用户 2026-11-13 决定接受计量缺口、不阻断 G1。Codex 从服务器日志只读估上限（.idx 文件 + 失败周期数 × 约 29 MB + 重启数 × 在途周期 + 重试消息数 × 约 1 MB），写进验收文件，不改预算阈值 | Codex 实施：acceptance.json 的 budget 段；STAGE_PLAN B 节 |
 | R1-S1 | 建议 | 路径 A 额外的描述性 B 与 60 次拟合的计数不一致 | 暂缓 | 已按到货规则走路径 T，路径 A 不执行；脚本里路径 A 的保护保留 | — |
+| R2-E1 | 阻断（执行失败） | Penmanshiel 准备时从 audit_d2_feasibility_v34_r2 导入 read_badc_csv、column，这两个名字只在该文件的函数内部导入，ImportError | 采纳：最小修复 + 重新完整准备 | 确定缺陷，修法唯一：prepare_g1_batches.py:314 改为从 scripts.screen_kelmarsh_upstream_observations 导入（该文件第 60、88 行定义，签名与调用一致）；不改数据、年份、阈值、臂和模型；协议 JSON 不变，PROTOCOL_SHA256 仍有效 | Codex 实施：scripts/prepare_g1_batches.py、tests/test_g1_pipeline.py；恢复范围见 G1c 末段 |
 
 G1c 说明（Claude，2026-11-12）：
 
@@ -881,3 +882,17 @@ G1c R1 复核（Claude，2026-11-13，c1771e7）：
   - 打开每个 NetCDF 前核对字节和 SHA；
   - main 在 B1 未验收时拒绝运行。
   - 一个小限制（不阻断）：历史块没有单独的缺测掩码，缺测值填成拟合期均值，各 NWP 臂相同。
+
+G1c R2 复核与 R2-E1 恢复范围（Claude，2026-11-13，fd3ee91、cf9c9db）：
+
+- **R1-B1/B2 的处理通过，同意。**
+  - acceptance.json 收 4371 个完整周期，排除 9 个；绑定原核验报告 6f2dbba3…。
+  - 流量记为 user_accepted_gap。日志估算 230.1 GB 只是带假设的估算，不是上界，照此措辞。
+  - STAGE_PLAN 风险 5 里"影响可忽略"已改成"预期，以实际结果为准"。
+- **R2-E1：** 我核对过，`scripts/screen_kelmarsh_upstream_observations.py` 第 60 行 read_badc_csv(path)、第 88 行 column(frame, *candidates, required=True)，与调用一致。Penmanshiel 的 part_A.json 里 237 个站都带 distance_km、bearing_deg，后面构造 geo 用得上。
+- **恢复范围（事先设定）：**
+  1. 只修这一行导入。加一个"真实适配预检"：在完整准备之前，只跑 Penmanshiel 的 load_development 元数据部分（注册表、站点坐标唯一性、11 个站的 MIDAS 文件登记、站点距离和方位），不读 GFS、不训练。
+  2. 预检里如果再遇到同类导入或适配的确定缺陷，修法唯一、并且不改数据/年份/阈值/臂/模型，可以按"最小修法先行"直接修，最多 2 处，写进审查文件；超过 2 处或修法不唯一就停下交回。
+  3. 新建运行目录，两个风场都从头完整准备，不复用失败那次的 Kelmarsh 产物。失败现场 g1c_fd3ee91_r1 原样保留。
+  4. 一致性检查（只描述）：新 Kelmarsh 产物与失败那次逐数组比较（np.array_equal）和 JSON 比较，不比 npz 文件哈希，因为 zip 里有写入时间。不一致就停下交回。
+  5. 准备的各项门禁（acceptance 哈希、时效审计 3–18 h、标签不修）都过，就直接跑 60 次拟合，同第 76、77 次的授权；正式拟合目前 0/60，预算没有消耗。

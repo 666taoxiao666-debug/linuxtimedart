@@ -109,6 +109,12 @@ def synthetic_pack(n=18):
 
 
 class PreparationTests(unittest.TestCase):
+    def test_station_catalog_reader_import(self):
+        from scripts.screen_kelmarsh_upstream_observations import read_badc_csv, column
+        import pandas as pd
+        self.assertTrue(callable(read_badc_csv))
+        self.assertEqual(column(pd.DataFrame({'station_latitude': [55.]}), 'latitude', 'station_latitude'), 'station_latitude')
+
     def test_calibration_fit_only_and_missing_cycle(self):
         hours = np.arange(np.datetime64("2020-01-02T00"), np.datetime64("2020-02-12T00"), np.timedelta64(1, "h"))
         class Forecast:

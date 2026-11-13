@@ -268,7 +268,7 @@ def development_csv(path, last_year):
     return pd.read_csv(buffer)
 
 
-def load_development(data_root, farm, bounds, identities):
+def load_development(data_root, farm, bounds, identities, *, metadata_only=False):
     """Reuse registered parsers and H features; restrict all value access to development."""
     import pandas as pd
     from scripts import train_penmanshiel_p2_v35 as p2
@@ -311,7 +311,7 @@ def load_development(data_root, farm, bounds, identities):
         stations = [s for s in part["midas"]["stations"] if int(s["src_id"]) in p2.farm.STATIONS]
         ids = [int(s["src_id"]) for s in stations]
         reg, files = read(prepared/"input_hashes.json"), []
-        from scripts.audit_d2_feasibility_v34_r2 import read_badc_csv, column
+        from scripts.screen_kelmarsh_upstream_observations import read_badc_csv, column
         catalog_reg = read(checked(ROOT/p2.farm.D2_SUBDIR/"input_hashes.json", p2.farm.D2_SHA["input_hashes.json"], identities))
         catalogs = [(p, e) for p, e in catalog_reg.items() if "dv-202607" in Path(p).name and p.endswith("station-metadata.csv")]
         if not catalogs or len({e["sha256"] for _, e in catalogs}) != 1:
@@ -336,6 +336,15 @@ def load_development(data_root, farm, bounds, identities):
                 files.append(dict(path=f, year=year))
     else:
         raise ValueError("Unknown farm")
+    if metadata_only:
+        if farm != 'Penmanshiel' or len(stations) != 11 or len(set(ids)) != 11:
+            raise ValueError('Expected eleven unique registered Penmanshiel stations')
+        for station in stations:
+            if not np.isfinite([station[k] for k in ('lat', 'lon', 'distance_km', 'bearing_deg')]).all():
+                raise ValueError('Incomplete station geometry')
+        return dict(status='PASS_METADATA_ONLY', farm=farm, station_count=len(stations),
+                    station_ids=ids, stations=stations, midas_files=len(files),
+                    input_hashes=identities, gfs_read=False, training=False)
     frame = development_csv(csvpath, last_year)
     obs = u.load_station_observations(files, ids)
     hours = pd.date_range(bounds["train"][0], bounds["test"][1], freq="h")
