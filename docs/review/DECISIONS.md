@@ -817,6 +817,7 @@ G0c R2 复核（Claude，2026-11-12，3744f6b）：通过。acceptance.json 只�
 | R1-B1 | 阻断 | 仿射校准没有退化拟合的处置；反例 g = [1,2,3]、o = [1,0,1] 时最小二乘 b = 0，除零 | 采纳 | 确定缺陷，反例成立。改为：只用拟合段的有效配对，用简化主轴斜率 b = sd(o)/sd(g)（对称，不会为 0）；检查 n ≥720、两个标准差 ≥0.5、r ≥0.5、b ∈ [1/3, 3]；不过就退回只扣均值，配对太少就整站置掩码，各臂相同。规则写成代码，反例和其他退化情形都有测试 | Claude 实施：models/NWPDisplacement.py 的 fit_affine_calibration、apply_calibration，tests 新增 test_g1b_r1_b1_calibration_rules；STAGE_PLAN C 节"观测校准"条 |
 | R1-S1 | 建议 | 优化轮只给 M 扩窗口和加气压，M_self 不同步，Q4 就不再只比错位来源 | 采纳 | 现在就登记：优化轮 M_self 同步扩到 5 h；风场没有本场气压观测，所以不加气压项，优化轮的 Q4 只作描述 | STAGE_PLAN C 节"优化轮"条 |
 | R1-S2 | 建议 | validate_batch 允许只给 oF 或只给 oF_mask | 采纳 | 两个键必须成对出现，缺测用掩码 0 表示；arm = "M_self" 时必须有这两个键 | models/NWPDisplacement.py 的 validate_batch(…, arm)，新增 test_g1b_r1_s2_paired_farm_keys |
+| R2-B1 | 阻断 | apply_calibration 接受 b = inf 或 4 | 采纳 | 确定缺陷；Codex 已按最小修法先行，复核：只加有限性和 [1/3, 3] 检查，没改阈值，测试补了 0/NaN/inf/4 反例 | 3c2a0be |
 
 G1b 方向说明（Claude，2026-11-12）：
 
@@ -828,3 +829,35 @@ G1b 方向说明（Claude，2026-11-12）：
 - **观测校准由"扣均值"改为拟合年仿射校准** o' = (o − a)/b，各臂相同。原因是风场机舱风在轮毂高度，和 10 m 的 GFS 差一个比例。
 - 以上都在任何 G1 数据和结果出来之前登记。我对方法档通过的估计从约一成半到两成半降到约一成到两成。
 - **代码：** Claude 改了 models/NWPDisplacement.py（新增 self_site_batch、M_self 分支、可选键 oF/oF_mask），加了 3 个测试，并把 M_self 加进 numpy/torch 一致性和置换测试。本地 18 项通过，3 项 torch 跳过。
+
+## 阶段 G1c
+
+GPT 对 G1 的近邻与可辨识性审查（output/literature-search/g1-phase-transfer/papers.md §3、experiment-plan.md）不是 Codex 审查文件，没有 R 编号；下表用 G1c-编号逐条决议（Claude，2026-11-12）。
+
+| 编号 | 类型 | 一句话摘要 | 决议 | 理由（一句） | 落实 |
+|---|---|---|---|---|---|
+| G1c-C1 | 确定缺陷 | "NWP 误差七成来自时间错位"把 SEQU（任意重排）当成可平移恢复的份额 | 采纳 | 原文 SEQU 由分别排序定义，远强于 −2…+3 h 单一平移 | STAGE_PLAN 删去该动机，改为拟合年和验证年上的四种事后余量（只描述） |
+| G1c-C2a | 确定缺陷 | 线性段上平移和幅度偏差不可辨识 | 采纳 | 数学上成立；登记为边界，δ_F 称"有效平移"，归因交给新增的 Q5（M 对 M_amp） | 模块文档字符串；测试 test_linear_segment_shift_and_bias_are_confounded |
+| G1c-C2b | 建议 | 线性段且幅度未知时识别器不得给出高置信 | 反驳 | 线性段上平移和幅度修正给出同一条预报（测试已证），要避免高置信得另加曲率判据，属于新设计；归因由 Q5 在留出数据上检验 | — |
+| G1c-C2c | 确定缺陷 | 均匀 softmin 的平均是 +0.5 h，低信息时没有回到 0 | 采纳 | 实测更糟：可用集合 {0…3} 时约 +1.5 h，且弱站被按置信度归一后放大 | Claude 实施：models/NWPDisplacement.py 收缩归一；测试 test_uniform_costs_give_no_correction、test_low_confidence_shrinks_towards_zero |
+| G1c-C3 | 不确定 | 上游错位能否在 1–4 h 内转移到下游 | 转实验 | 不在文档里争；放进 G1 同一次运行的机制诊断 | 实验 G1c-mech：δ_F 对事后最佳平移的秩相关，加换日负对照（只描述） |
+| G1c-C4a | 确定缺陷 | 缺直接跨站残差转移和只修幅度的对照 | 采纳 | Tastu 2011/2014 是最近邻，必须有 | Claude 实施：R_sp、M_amp、M_phase 三臂；Q5 进检验族 |
+| G1c-C4b | 建议 | 通用对照应在固定预算内选最强 | 采纳 | 只用宽度和线性两个轴，不加注意力 | I_w（宽 64）；I* = 验证年在 {I, I_w, R_sp} 中选，评估前冻结 |
+| G1c-C4c | 建议 | 加小型跨站注意力（ORCA 式）对照、忠实复现 TLA | 暂缓 | 新代码量大；论文不主张超过 Liu 2023 或 ORCA，只把它们列为近邻 | — |
+| G1c-C5a | 建议 | 相位查询可能需要 lead 2 h（f000/f003 端点） | 反驳 | 已被 G1 R1-S2 的整窗屏蔽覆盖：δ ≥ 6 − (t0 − C)，所有读取时效 ≥3 h | models/NWPDisplacement.py admissible_shifts；test_admissible_shifts_whole_window_rule |
+| G1c-C5b | 建议 | 逐起报审计实际读取的时效和插值端点 | 采纳 | 成本低，能抓数据脚本的错位 | Codex 实施：scripts/prepare_g1_batches.py 输出审计；超出 [3, 18] h 即技术失败 |
+| G1c-C5c | 建议 | +1 h 观测延迟整批重建的敏感性 | 暂缓 | 要重建全部输入并多跑一轮；观测已按 ≤ t0 − 1 h 使用 | — |
+| G1c-S1 | 建议 | 两场合取用 p_Q = max(p_K, p_P)，再对问题做 Holm | 采纳 | 比"每场各做 Holm 再要求两场都过"更严谨（后者的族错误率可到 2α） | STAGE_PLAN 判定：Holm 族 {Q1, Q3, Q4, Q5} |
+| G1c-S2 | 建议 | 1.5% 门槛的含义 | 采纳 | 定义不变，措辞写成"点估计门槛"，不说"统计证明 >1.5%" | STAGE_PLAN 判定 |
+| G1c-S3 | 建议 | 主检验改为单侧、中心化 bootstrap，块长 24–168 h 另选 | 暂缓 | 保持与 P2、P3 同一口径；只加块长 56、滞后 55 的敏感性 | STAGE_PLAN 统计 |
+| G1c-S4 | 建议 | 5 个配对 seed | 暂缓 | 与前面各阶段一致用 3 个，逐 seed 结果照报 | — |
+| G1c-S5 | 建议 | 受限相位上限无正向空间就暂停相位路线 | 反驳 | 在 ≤6 个候选里事后挑最好的，上限永远 ≥ 0，作门槛没有区分力；决定性检验是留出数据上的 Q5 | 改为只描述的四种余量 |
+| G1c-S6 | 建议 | 事件一对一匹配验证到达前识别 | 暂缓 | 新的事件定义和匹配规则要单独审；先看 G1c-mech 的秩相关和负对照 | — |
+| G1c-S7 | 建议 | Hill of Towie 先定零样本还是重拟合 | 采纳 | 定为按冻结脚本在非封存年重拟合，封存年只评一次 | STAGE_PLAN G2 合同 |
+
+G1c 说明（Claude，2026-11-12）：
+
+- 新意定位同意 GPT 的约 5/10；近邻补上 Tastu 2014、Girard & Allard 2013、ORCA 2026、Yang 2025，写作前全文核对。
+- 模块改动由我写（本地 26 项 numpy 测试通过，3 项 torch 交服务器）：收缩归一、regional_direction 抽出、residual_transfer_block、displacement_block 的 mode（full/amp/phase）、I_w。原有测试里两处断言随收缩规则改了期望值（test_fractional_shift_interpolates_linearly：δ_F 0.5→0.2），两处为保持"清晰匹配"加了 ws_scale=0.1，都在注释里写了原因。
+- GPT 在原文件夹（停在 exp/M2）跑的协作检查失败，是旧 M7 允许范围造成的，和 G1 克隆无关。
+- 我对方法档的估计约一成（多了 Q5 和更强的 I*），Q1 约六成。

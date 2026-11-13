@@ -33,6 +33,17 @@ Blocks (outputs are per-sample vectors, later broadcast as constant channels ove
   interpolation reads (all 4 horizons) is valid. Otherwise the sample gets the "no correction" state: the 4
   trajectory channels hold the uncorrected g_F(t0+h) (0 where masked), delta_F = b_F = 0 and confidence = 0.
   confidence = 0 always means "no correction applied" (also: no confident station, cycle missing).
+  G1c (2026-11-12, after GPT's prior-art/identifiability review):
+  - Confidence shrinkage (definite-defect fix): delta_F and b_F are normalised by the kernel weight of all usable
+    stations, not by the confidence-weighted sum, i.e. delta_F = conf * (confidence-weighted mean shift). A weakly
+    informative station can no longer impose its full soft-argmin shift (near-uniform costs over the admissible
+    set {0..3} used to give ~ +1.5 h); uniform costs now give delta_F = 0.
+  - Identifiability boundary (documented, not "fixed"): on a locally linear trajectory a shift and a level bias are
+    indistinguishable (f(s+d) + b = f(s) + (v d + b)); M then reports an effective shift. Attribution to timing is
+    tested empirically by M vs M_amp (and M_phase), never asserted from delta_F alone.
+  - Extra controls: I_w (phi width 64), R_sp (direct linear transfer of pooled upstream residuals to the farm
+    trajectory with wind-direction interactions, Tastu-style, no shift), M_amp (the M block with delta fixed at 0:
+    level correction only), M_phase (the M block with lambda fixed at 0 and the b_F channel zeroed: shift only).
 The upwind kernel is the expert program's sigmoid cone x anisotropic exponential distance (models/ProgramEncoder.py,
 init [1.386, 0.3, 0.0, 0.0]); each arm owns its kernel parameters.
 """
@@ -55,8 +66,12 @@ SHIFTS = (-2, -1, 0, 1, 2, 3)
 LEAD_MIN, LEAD_MAX = 3.0, 18.0
 KERNEL_INIT = (1.386, 0.3, 0.0, 0.0)
 PHI_IN, PHI_HIDDEN, PHI_OUT = 29, 16, 7
+PHI_HIDDEN_W = 64                    # arm I_w (wider generic control, G1c)
 POOLED_OUT, DISP_OUT = 28, 7
-ARMS = ("B", "N", "I_pool", "I", "M", "M_self")
+RSP_FEATS = 3 * len(W_OFF)           # R_sp: pooled residual at each tau in W, x (1, sin, cos) of the regional wind
+ARMS = ("B", "N", "I_pool", "I", "M", "M_self", "I_w", "R_sp", "M_amp", "M_phase")
+DISP_MODES = {"M": "full", "M_self": "full", "M_amp": "amp", "M_phase": "phase"}
+PHI_ARMS = {"I": PHI_HIDDEN, "I_w": PHI_HIDDEN_W}
 TEMP_FLOOR = 0.05
 T_RAW_INIT = math.log(math.e - 1.0)  # softplus(t_raw) = 1.0 -> temperature 1.05 (m/s)^2 / ws_scale^2
 L_RAW_INIT = 0.0                     # lambda = sigmoid(0) = 0.5
@@ -66,23 +81,31 @@ _F0 = GF_OFF.index(0)                # index of t0 in the farm forecast axis (= 
 BATCH_KEYS = {"oS": 3, "oS_mask": 3, "gS": 8, "gS_mask": 8, "dS": 2, "dS_mask": None,
               "gF": None, "gF_mask": None, "age": None, "cycle_ok": None}
 OPTIONAL_KEYS = ("oF", "oF_mask")    # farm's own observed wind at t0-3..t0-1 (required for arm M_self only)
-STATION_ARMS = ("I_pool", "I", "M", "M_self")
+STATION_ARMS = ("I_pool", "I", "M", "M_self", "I_w", "R_sp", "M_amp", "M_phase")
 
 
 def block_width(arm):
-    """Number of station-block channels each arm appends (B and N have none)."""
-    return {"B": 0, "N": 0, "I_pool": POOLED_OUT, "I": POOLED_OUT + PHI_OUT, "M": POOLED_OUT + DISP_OUT,
-            "M_self": POOLED_OUT + DISP_OUT}[arm]
+    """Number of station-block channels each arm appends (B and N have none); every station arm except I_pool adds
+    the same 7 channels on top of the 28 pooled ones."""
+    if arm in ("B", "N"):
+        return 0
+    if arm == "I_pool":
+        return POOLED_OUT
+    if arm in STATION_ARMS:
+        return POOLED_OUT + DISP_OUT
+    raise KeyError(arm)
 
 
-def phi_param_count():
-    return PHI_IN * PHI_HIDDEN + PHI_HIDDEN + PHI_HIDDEN * PHI_OUT + PHI_OUT
+def phi_param_count(hidden=PHI_HIDDEN):
+    return PHI_IN * hidden + hidden + hidden * PHI_OUT + PHI_OUT
 
 
 def structural_param_counts():
     """Learnable parameters outside the TSMixer backbone, per arm."""
     k = len(KERNEL_INIT)
-    return {"B": 0, "N": 0, "I_pool": k, "I": k + phi_param_count(), "M": k + 2, "M_self": k + 2}
+    return {"B": 0, "N": 0, "I_pool": k, "I": k + phi_param_count(), "M": k + 2, "M_self": k + 2,
+            "I_w": k + phi_param_count(PHI_HIDDEN_W), "R_sp": k + RSP_FEATS * len(HORIZONS),
+            "M_amp": k + 1, "M_phase": k + 1}
 
 
 # --------------------------------------------------------------------------- array shim
@@ -215,15 +238,21 @@ def admissible_shifts(o, age, cycle_ok):
     return o.stack(cols, 1)
 
 
-def kernel_weights(o, kp, geo, dS, dS_mask):
-    """Expert upwind kernel: sigmoid cone on alignment with the regional wind-from direction x anisotropic
-    exponential decay. Returns weights [B,S] and alignment [B,S]."""
+def regional_direction(o, dS, dS_mask):
+    """Unit vector (sin, cos) [B] of the mean observed wind-from direction; (0, 0) if no station has a direction."""
     m = dS_mask
     n = o.sum(m, 1) + EPS
     rs = o.sum(dS[..., 0] * m, 1) / n
     rc = o.sum(dS[..., 1] * m, 1) / n
     rn = o.sqrt(rs * rs + rc * rc) + EPS
-    align = geo[None, :, 1] * (rs / rn)[:, None] + geo[None, :, 2] * (rc / rn)[:, None]
+    return rs / rn, rc / rn
+
+
+def kernel_weights(o, kp, geo, dS, dS_mask):
+    """Expert upwind kernel: sigmoid cone on alignment with the regional wind-from direction x anisotropic
+    exponential decay. Returns weights [B,S] and alignment [B,S]."""
+    us, uc = regional_direction(o, dS, dS_mask)
+    align = geo[None, :, 1] * us[:, None] + geo[None, :, 2] * uc[:, None]
     dist = geo[None, :, 0] + 0.0 * align
     cross = dist * o.sqrt(o.clip_min(1.0 - align * align, 0.0) + 1e-9)
     cone = o.sigmoid(o.exp(kp[0]) * (align - kp[1]))
@@ -268,8 +297,36 @@ def phi_block(o, b, w, geo, align, ms, phi_fn):
     return o.sum(ww * z, 1) / o.clip_min(o.sum(ww, 1), EPS)
 
 
-def displacement_block(o, b, w, ms, mf, adm, temp, lam, ws_scale=1.0, return_diagnostics=False):
-    """[B,7]: per-station soft shift matching -> farm shift delta_F, bias b_F -> corrected farm trajectory."""
+def residual_transfer_block(o, b, w, ms, mf, beta, us, uc):
+    """[B,7] arm R_sp (G1c): direct linear transfer of upstream residuals to the farm trajectory, no shift.
+    rbar_k = kernel-weighted mean of o - gS at tau_k in W (the same residuals I_pool pools); features
+    x = [rbar_k, rbar_k * sin(theta), rbar_k * cos(theta)]_k (theta = regional wind-from direction, Tastu-style
+    direction-conditioned coefficients); correction Delta_h = x . beta[:, h] (beta [9,4], init 0 = no correction).
+    Applied per horizon only where g_F(t0+h) is valid and at least one residual exists; otherwise the plain g_F(t0+h).
+    Channels: corrected g_F(t0+h) (4), mean applied Delta (1), residual coverage (1), applied flag (1)."""
+    _, _, rm, r, _ = _station_parts(o, b, ms)
+    ww = w[..., None]
+    den = o.sum(ww * rm, 1)                                          # [B,3]
+    rbar = o.sum(ww * r, 1) / o.clip_min(den, EPS)                   # r is already masked
+    x = o.cat([rbar, rbar * us[:, None], rbar * uc[:, None]], -1)    # [B,9]
+    delta = o.sum(x[:, :, None] * beta[None, :, :], 1)               # [B,4]
+    has_r = o.ge(o.sum(o.ge(den, EPS), -1), 0.5) * b["cycle_ok"]
+    fm = b["gF_mask"] * mf
+    plain = (b["gF"] * fm)[:, _F0 + HORIZONS[0]:_F0 + HORIZONS[-1] + 1]
+    app = fm[:, _F0 + HORIZONS[0]:_F0 + HORIZONS[-1] + 1] * has_r[:, None]
+    g_hat = plain + app * delta
+    mean_d = o.sum(app * delta, -1) / o.clip_min(o.sum(app, -1), 1.0)
+    cov = o.sum(den, -1) / o.clip_min(len(W_OFF) * o.sum(w, 1), EPS)
+    out = o.cat([g_hat, mean_d[:, None], cov[:, None], has_r[:, None]], -1)
+    return out * b["cycle_ok"][:, None]
+
+
+def displacement_block(o, b, w, ms, mf, adm, temp, lam, ws_scale=1.0, return_diagnostics=False, mode="full"):
+    """[B,7]: per-station soft shift matching -> farm shift delta_F, bias b_F -> corrected farm trajectory.
+    mode "full" (M, M_self); "amp" (M_amp: only delta = 0 is admissible, each station with a valid delta-0 match
+    has confidence 1, so b_F is the kernel-weighted mean residual); "phase" (M_phase: lambda = 0 and b_F output 0)."""
+    if mode not in ("full", "amp", "phase"):
+        raise ValueError(f"unknown displacement mode {mode!r}")
     om = b["oS_mask"]
     gm = b["gS_mask"] * ms[:, None, :]
     n_obs = o.sum(om, -1)
@@ -287,6 +344,8 @@ def displacement_block(o, b, w, ms, mf, adm, temp, lam, ws_scale=1.0, return_dia
         J.append(o.sum((diff / ws_scale) ** 2, -1) / o.clip_min(n_d, EPS))
         E.append(o.sum(diff, -1) / o.clip_min(n_d, EPS))
     J, E, A = o.stack(J, -1), o.stack(E, -1), o.stack(A, -1)          # [B,S,6]
+    if mode == "amp":
+        A = A * o.const([1.0 if d == 0 else 0.0 for d in SHIFTS], J)[None, None, :]
     on = A > 0.5
     z = o.where(on, -J / temp, J * 0.0 - 1e9)
     z = z - o.amax(z, -1, keepdims=True)
@@ -299,12 +358,21 @@ def displacement_block(o, b, w, ms, mf, adm, temp, lam, ws_scale=1.0, return_dia
     bres = o.sum(p * E, -1)
     conc = o.sum(p * p, -1)
     inv_n = 1.0 / o.clip_min(n_av, 1.0)
-    c = o.clip((conc - inv_n) / o.clip_min(1.0 - inv_n, EPS), 0.0, 1.0) * o.ge(n_av, 2.0)
+    if mode == "amp":
+        c = st_ok                                                     # one candidate: no shift to be confident about
+    else:
+        c = o.clip((conc - inv_n) / o.clip_min(1.0 - inv_n, EPS), 0.0, 1.0) * o.ge(n_av, 2.0)
     omega = w * c * st_ok
     den = o.sum(omega, 1)
-    d_f = o.sum(omega * dhat, 1) / o.clip_min(den, EPS)
-    b_f = o.sum(omega * bres, 1) / o.clip_min(den, EPS)
-    conf = den / o.clip_min(o.sum(w * st_ok, 1), EPS)
+    usable = o.clip_min(o.sum(w * st_ok, 1), EPS)
+    # G1c shrinkage: normalise by all usable stations' kernel weight, so delta_F = conf * (confidence-weighted mean);
+    # low confidence -> towards no correction (the old den-normalisation let one weak station impose its full shift).
+    d_f = o.sum(omega * dhat, 1) / usable
+    b_f = o.sum(omega * bres, 1) / usable
+    conf = den / usable
+    if mode == "phase":
+        lam = 0.0
+        b_f = b_f * 0.0
     fm = b["gF_mask"] * mf
     grid = o.const(list(range(len(GF_OFF))), J)                     # farm axis positions 0..12
     hz = o.const(HORIZONS, J)
@@ -348,17 +416,21 @@ def station_blocks(o, arm, b, geo, params, phi_fn=None, ws_scale=1.0):
     ms, mf = lead_masks(o, b["age"], b["cycle_ok"])
     w, align = kernel_weights(o, params["kp"], geo, b["dS"], b["dS_mask"])
     parts = [pooled_block(o, b, w, ms)]
-    if arm == "I":
+    if arm in PHI_ARMS:
         parts.append(phi_block(o, b, w, geo, align, ms, phi_fn))
-    elif arm in ("M", "M_self"):
-        temp = o.softplus(params["t_raw"]) + TEMP_FLOOR
-        lam = o.sigmoid(params["l_raw"])
+    elif arm == "R_sp":
+        us, uc = regional_direction(o, b["dS"], b["dS_mask"])
+        parts.append(residual_transfer_block(o, b, w, ms, mf, params["beta"], us, uc))
+    elif arm in DISP_MODES:
+        mode = DISP_MODES[arm]
+        temp = o.softplus(params["t_raw"]) + TEMP_FLOOR if mode != "amp" else 1.0
+        lam = o.sigmoid(params["l_raw"]) if mode != "phase" else 0.0
         adm = admissible_shifts(o, b["age"], b["cycle_ok"])
-        if arm == "M":
-            parts.append(displacement_block(o, b, w, ms, mf, adm, temp, lam, ws_scale))
-        else:
+        if arm == "M_self":
             ones = b["cycle_ok"][:, None] * 0.0 + 1.0
             parts.append(displacement_block(o, self_site_batch(o, b), ones, ms, mf, adm, temp, lam, ws_scale))
+        else:
+            parts.append(displacement_block(o, b, w, ms, mf, adm, temp, lam, ws_scale, mode=mode))
     return o.cat(parts, -1)
 
 
@@ -460,11 +532,14 @@ def init_params_numpy(arm, seed=0):
     """Parameters at the registered init (phi: PyTorch-style uniform(+-1/sqrt(fan_in)), deterministic)."""
     import numpy as np
     p = {"kp": np.asarray(KERNEL_INIT, dtype=float), "t_raw": T_RAW_INIT, "l_raw": L_RAW_INIT}
-    if arm == "I":
+    if arm in PHI_ARMS:
+        hid = PHI_ARMS[arm]
         rng = np.random.default_rng(seed)
-        a1, a2 = 1 / math.sqrt(PHI_IN), 1 / math.sqrt(PHI_HIDDEN)
-        p.update(W1=rng.uniform(-a1, a1, (PHI_IN, PHI_HIDDEN)), b1=rng.uniform(-a1, a1, PHI_HIDDEN),
-                 W2=rng.uniform(-a2, a2, (PHI_HIDDEN, PHI_OUT)), b2=rng.uniform(-a2, a2, PHI_OUT))
+        a1, a2 = 1 / math.sqrt(PHI_IN), 1 / math.sqrt(hid)
+        p.update(W1=rng.uniform(-a1, a1, (PHI_IN, hid)), b1=rng.uniform(-a1, a1, hid),
+                 W2=rng.uniform(-a2, a2, (hid, PHI_OUT)), b2=rng.uniform(-a2, a2, PHI_OUT))
+    if arm == "R_sp":
+        p["beta"] = np.zeros((RSP_FEATS, len(HORIZONS)))
     return p
 
 
@@ -475,7 +550,7 @@ def station_blocks_numpy(arm, batch, geo, params=None, ws_scale=1.0, seed=0):
     params = params or init_params_numpy(arm, seed)
     b = {k: np.asarray(v, dtype=float) for k, v in batch.items()}
     phi_fn = None
-    if arm == "I":
+    if arm in PHI_ARMS:
         def phi_fn(x):
             return np.maximum(x @ params["W1"] + params["b1"], 0.0) @ params["W2"] + params["b2"]
     return station_blocks(o, arm, b, np.asarray(geo, dtype=float), params, phi_fn, ws_scale)
@@ -508,19 +583,24 @@ if _torch is not None:
             self.arm, self.ws_scale = arm, float(ws_scale)
             self.kp = _nn.Parameter(_torch.tensor(KERNEL_INIT, dtype=_torch.float32))
             self.register_buffer("geo", _torch.as_tensor(geo, dtype=_torch.float32).clone())
-            if arm == "I":
-                self.phi = _nn.Sequential(_nn.Linear(PHI_IN, PHI_HIDDEN), _nn.ReLU(), _nn.Linear(PHI_HIDDEN, PHI_OUT))
-            if arm in ("M", "M_self"):
+            if arm in PHI_ARMS:
+                hid = PHI_ARMS[arm]
+                self.phi = _nn.Sequential(_nn.Linear(PHI_IN, hid), _nn.ReLU(), _nn.Linear(hid, PHI_OUT))
+            if arm == "R_sp":
+                self.beta = _nn.Parameter(_torch.zeros(RSP_FEATS, len(HORIZONS)))
+            if DISP_MODES.get(arm) in ("full", "phase"):
                 self.t_raw = _nn.Parameter(_torch.tensor(T_RAW_INIT, dtype=_torch.float32))
+            if DISP_MODES.get(arm) in ("full", "amp"):
                 self.l_raw = _nn.Parameter(_torch.tensor(L_RAW_INIT, dtype=_torch.float32))
 
         def forward(self, batch):
             o = _TorchOps()
             b = {k: _torch.as_tensor(v, dtype=self.kp.dtype, device=self.kp.device) for k, v in batch.items()}
             params = {"kp": self.kp}
-            if self.arm in ("M", "M_self"):
-                params.update(t_raw=self.t_raw, l_raw=self.l_raw)
-            phi_fn = self.phi if self.arm == "I" else None
+            for name in ("t_raw", "l_raw", "beta"):
+                if hasattr(self, name):
+                    params[name] = getattr(self, name)
+            phi_fn = self.phi if self.arm in PHI_ARMS else None
             return station_blocks(o, self.arm, b, self.geo.to(self.kp.dtype), params, phi_fn, self.ws_scale)
 
     class G1TSMixerModel(_nn.Module):
