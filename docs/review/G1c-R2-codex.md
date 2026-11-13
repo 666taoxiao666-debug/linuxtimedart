@@ -45,4 +45,9 @@ Penmanshiel未完成，prepared/complete.json不存在；formal_launch.json不�
 
 按已批准最小修法修正R2-E1导入；新增metadata_only分支仅核注册哈希、目录登记和11站唯一坐标/几何，不读GFS或训练。
 协议JSON及PROTOCOL_SHA256不变；旧r1现场保留，新目录完整准备两场，Kelmarsh逐数组与JSON一致性通过后才可正式拟合。
-实际预检、测试和执行结果待补；本轮未使用额外适配修复额度（最多2处）。
+服务器流水线17/17通过（7.812秒）；Penmanshiel真实元数据预检PASS_METADATA_ONLY：11站、66个MIDAS文件，未读GFS、未训练；证据output/g1/preparation_78/。
+27312d7已推送并部署；新run=g1c_27312d7_r2，准备PID392671，脚本SHA256=442f8a96d2b7026d089fca379c3a1f531c6c0831f4e26c4efcb0483ec546d176。
+完整准备通过：Kelmarsh窗口75024/15680/16949，Penmanshiel64771/35603/38147；两场读取3–18h，37/12项校准全部rma。
+新旧Kelmarsh的7个NPZ共10310数组np.array_equal全部通过；校准/时效/点位JSON原样一致，prepared.json仅规范化运行路径与NPZ容器哈希引用后其余字段一致，差异明确保存在kelmarsh_comparison.json。
+formal_gate全部输入/产物哈希及协议门禁通过；2026-11-13 15:05 UTC唯一启动正式60拟合，PID395899，formal/launch.json与真实命令已核对，尚无最终评估结果。
+本轮未使用额外适配修复额度（最多2处）；原160MB manifest_b1.json未提交，旧失败现场未改。

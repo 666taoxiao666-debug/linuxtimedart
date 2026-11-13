@@ -22,19 +22,21 @@
 需要用户决定: 无
 
 ## Codex → Claude
-<!-- 由Codex覆盖。2026-11-13：第77次G1c R2，B1通过隔离验收，真实准备技术失败后停止 -->
-轮次: R2/2 | 阶段: G1c | 分支: exp/G1 | 提交号: fd3ee91已推送；失败证据提交见git log
-审查结论: R1-B1/B2处理通过；新增执行失败R2-E1，见docs/review/G1c-R2-codex.md；不进入第三轮方案审查。
-已直接修复: 无超范围改动；按批准范围实现derive_b1_acceptance、实际读取时效门禁、准备产物哈希及评估报告补齐。
-运行信息: B1验收output/gfs_g0/b1/acceptance.json；绑定原核验报告6f2dbba3…，原FAIL报告保留。
-关键数字: complete_cycles=4371；excluded=9（7缺失、2字段不完整），统一cycle_ok=0、不回退、不删除标签；2021/2022/2023完整率99.52%/99.86%/100%。
-关键数字: 成功唯一载荷222526985575字节；下载总量未核实，user_accepted_gap=2026-11-13。日志假设场景估算230137867780字节，不是可证明的上界；算法和源日志哈希见traffic_estimate.json。
-关键数字: 服务器验收核验16/16（1.066秒）、最终流水线16/16（1.378秒），无跳过；合成评估报告可序列化，真实准备另记。
-运行信息: 路径T；协议SHA256=92e93dd4d1b62b1654c02bbb95299019f507903f13ef6fe71d2f6687003e8ed4，train_g1.PROTOCOL_SHA256固定；服务器提交与哈希一致。
-运行信息: worktree=/home/XT/nuist/pythoncode/TimeDARTFirst_G1_fd3ee91；run=/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/G1/g1c_fd3ee91_r1；准备PID385020已退出。
-运行信息: scripts/prepare_g1_batches.py:314从错误模块导入read_badc_csv/column，Penmanshiel阶段ImportError；回溯和启动回执见output/g1/preparation_77/。
-关键数字: Kelmarsh准备完成，train/val/test=75024/15680/16949；58465小时读取时效3–18h，37项校准均rma。Penmanshiel未完成。
-运行信息: prepared/complete.json和formal_launch.json均不存在；真实拟合0/60，无模型冻结或最终评估；按第77次失败即停，不自动重跑。
-运行信息: 不下载/安装/解码封存；原160MB manifest_b1.json未提交；原始失败现场保留。
-需要 Claude 做的: 复核验收及执行失败；最小修复为改从scripts.screen_kelmarsh_upstream_observations导入两个函数，补实际适配预检，明确后续准备恢复范围。
-需要用户决定: 本轮已按失败即停结束；下一步修复并重新准备需明确继续执行授权，60拟合预算尚未消耗。
+<!-- 由Codex覆盖。2026-11-13：第78次执行恢复 -->
+轮次: R2/2 | 阶段: G1c | 分支: exp/G1 | 提交号: 27312d7已推送；执行证据提交见git log
+审查结论: 按第78次批准修复R2-E1，不新增方案审查轮；见docs/review/G1c-R2-codex.md。
+已直接修复: 27312d7修正read_badc_csv/column导入，增加导入回归测试及metadata_only预检；额外适配修复额度使用0/2。
+运行信息: 服务器17/17流水线测试通过（7.812秒，无跳过），包含十臂合成拟合及评估序列化；证据output/g1/preparation_78/。
+关键数字: Penmanshiel真实元数据预检PASS_METADATA_ONLY，11个唯一站点、66个MIDAS文件，注册哈希及唯一坐标/距离/方位通过；该预检不读GFS、不训练。
+运行信息: worktree=/home/XT/nuist/pythoncode/TimeDARTFirst_G1_27312d7；run=/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/G1/g1c_27312d7_r2。
+运行信息: 新目录两个风场从头完整准备，准备PID392671；旧g1c_fd3ee91_r1原样保留，未复用其Kelmarsh产物。
+运行信息: 准备脚本SHA256=442f8a96d2b7026d089fca379c3a1f531c6c0831f4e26c4efcb0483ec546d176；协议SHA256=92e93dd4d1b62b1654c02bbb95299019f507903f13ef6fe71d2f6687003e8ed4不变。
+关键数字: 新旧Kelmarsh共7个NPZ、10310个数组，np.array_equal全部通过；校准、时效和点位JSON完全相同。
+运行信息: prepared.json运行路径不同，NPZ哈希不作为新旧一致性依据；仅规范化执行目录及已逐数组核对的NPZ哈希引用，其余JSON字段/原始输入哈希完全相同，详见kelmarsh_comparison.json。
+关键数字: Kelmarsh train/val/test=75024/15680/16949；Penmanshiel=64771/35603/38147；两场时效均3–18h，校准分别37/12项，全部rma。
+运行信息: prepared/complete.json存在，formal_gate逐项哈希核验通过；2026-11-13 15:05 UTC启动唯一正式实例，PID395899，真实完整Python命令及formal/launch.json已核对。
+运行信息: train_g1.py --prepared <run>/prepared --run-dir <run>/formal --protocol-sha256 92e93dd4… --device cuda；正式目录为上述run下formal，日志formal.log。
+运行信息: 15:06 UTC启动核验时0/60完成、进程存活、无failed.json，尚未测试评估；并非最终结果。先冻结全部60拟合再统一评估，禁止重复启动。
+运行信息: 不下载/安装/解码封存；160MB原始manifest_b1.json未提交；其他服务器任务未停止或修改。
+需要 Claude 做的: 复核第78次最小修复与预检证据；正式结果尚未产生，待冻结60拟合后按原协议评估并另交回。
+需要用户决定: 无，最终门禁通过后的60次正式拟合已获授权。

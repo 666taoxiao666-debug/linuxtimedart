@@ -1,0 +1,680 @@
+{
+  "status": "PASS_METADATA_ONLY",
+  "farm": "Penmanshiel",
+  "station_count": 11,
+  "station_ids": [
+    150,
+    161,
+    177,
+    235,
+    982,
+    987,
+    1023,
+    1074,
+    16589,
+    24125,
+    30523
+  ],
+  "stations": [
+    {
+      "src_id": 150,
+      "distance_km": 134.64213679352417,
+      "bearing_deg": 345.73166059598606,
+      "years": {
+        "2016": {
+          "wind_fraction": 0.9504781420765027,
+          "pressure_fraction": 0.9617486338797814,
+          "files": [
+            "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/150/midas-open_uk-hourly-weather-obs_dv-202607_aberdeenshire_00150_aboyne-no-2_qcv-1_2016.csv"
+          ]
+        },
+        "2017": {
+          "wind_fraction": 0.9988584474885844,
+          "pressure_fraction": 0.9984018264840183,
+          "files": [
+            "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/150/midas-open_uk-hourly-weather-obs_dv-202607_aberdeenshire_00150_aboyne-no-2_qcv-1_2017.csv"
+          ]
+        },
+        "2018": {
+          "wind_fraction": 0.9990867579908675,
+          "pressure_fraction": 0.9992009132420091,
+          "files": [
+            "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/150/midas-open_uk-hourly-weather-obs_dv-202607_aberdeenshire_00150_aboyne-no-2_qcv-1_2018.csv"
+          ]
+        },
+        "2019": {
+          "wind_fraction": 0.9993150684931507,
+          "pressure_fraction": 0.9987442922374429,
+          "files": [
+            "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/150/midas-open_uk-hourly-weather-obs_dv-202607_aberdeenshire_00150_aboyne-no-2_qcv-1_2019.csv"
+          ]
+        },
+        "2020": {
+          "wind_fraction": 0.9997723132969034,
+          "pressure_fraction": 0.9990892531876139,
+          "files": [
+            "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/150/midas-open_uk-hourly-weather-obs_dv-202607_aberdeenshire_00150_aboyne-no-2_qcv-1_2020.csv"
+          ]
+        },
+        "2021": {
+          "wind_fraction": 0.993607305936073,
+          "pressure_fraction": 0.9930365296803653,
+          "files": [
+            "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/150/midas-open_uk-hourly-weather-obs_dv-202607_aberdeenshire_00150_aboyne-no-2_qcv-1_2021.csv"
+          ]
+        }
+      },
+      "qualified": true,
+      "pressure_capable": true,
+      "lat": 57.076,
+      "lon": -2.841
+    },
+    {
+      "src_id": 161,
+      "distance_km": 144.79865567629938,
+      "bearing_deg": 2.0730515991947143,
+      "years": {
+        "2016": {
+          "wind_fraction": 0.9020947176684881,
+          "pressure_fraction": 0.9988615664845173,
+          "files": [
+            "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/161/midas-open_uk-hourly-weather-obs_dv-202607_aberdeenshire_00161_dyce_qcv-1_2016.csv"
+          ]
+        },
+        "2017": {
+          "wind_fraction": 0.9309360730593608,
+          "pressure_fraction": 0.9873287671232877,
+          "files": [
+            "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/161/midas-open_uk-hourly-weather-obs_dv-202607_aberdeenshire_00161_dyce_qcv-1_2017.csv"
+          ]
+        },
+        "2018": {
+          "wind_fraction": 0.9149543378995434,
+          "pressure_fraction": 0.9621004566210045,
+          "files": [
+            "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/161/midas-open_uk-hourly-weather-obs_dv-202607_aberdeenshire_00161_dyce_qcv-1_2018.csv"
+          ]
+        },
+        "2019": {
+          "wind_fraction": 0.9509132420091324,
+          "pressure_fraction": 0.9955479452054794,
+          "files": [
+            "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/161/midas-open_uk-hourly-weather-obs_dv-202607_aberdeenshire_00161_dyce_qcv-1_2019.csv"
+          ]
+        },
+        "2020": {
+          "wind_fraction": 0.9351092896174863,
+          "pressure_fraction": 0.9990892531876139,
+          "files": [
+            "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/161/midas-open_uk-hourly-weather-obs_dv-202607_aberdeenshire_00161_dyce_qcv-1_2020.csv"
+          ]
+        },
+        "2021": {
+          "wind_fraction": 0.876027397260274,
+          "pressure_fraction": 0.9939497716894977,
+          "files": [
+            "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/161/midas-open_uk-hourly-weather-obs_dv-202607_aberdeenshire_00161_dyce_qcv-1_2021.csv"
+          ]
+        }
+      },
+      "qualified": true,
+      "pressure_capable": true,
+      "lat": 57.205,
+      "lon": -2.205
+    },
+    {
+      "src_id": 177,
+      "distance_km": 105.4608825197037,
+      "bearing_deg": 0.8576659093490668,
+      "years": {
+        "2016": {
+          "wind_fraction": 0.9996584699453552,
+          "pressure_fraction": 0.998747723132969,
+          "files": [
+            "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/177/midas-open_uk-hourly-weather-obs_dv-202607_kincardineshire_00177_inverbervie-no-2_qcv-1_2016.csv"
+          ]
+        },
+        "2017": {
+          "wind_fraction": 0.9996575342465753,
+          "pressure_fraction": 0.9962328767123287,
+          "files": [
+            "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/177/midas-open_uk-hourly-weather-obs_dv-202607_kincardineshire_00177_inverbervie-no-2_qcv-1_2017.csv"
+          ]
+        },
+        "2018": {
+          "wind_fraction": 0.982648401826484,
+          "pressure_fraction": 0.9995433789954338,
+          "files": [
+            "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/177/midas-open_uk-hourly-weather-obs_dv-202607_kincardineshire_00177_inverbervie-no-2_qcv-1_2018.csv"
+          ]
+        },
+        "2019": {
+          "wind_fraction": 0.9994292237442922,
+          "pressure_fraction": 0.998972602739726,
+          "files": [
+            "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/177/midas-open_uk-hourly-weather-obs_dv-202607_kincardineshire_00177_inverbervie-no-2_qcv-1_2019.csv"
+          ]
+        },
+        "2020": {
+          "wind_fraction": 0.9998861566484517,
+          "pressure_fraction": 0.9989754098360656,
+          "files": [
+            "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/177/midas-open_uk-hourly-weather-obs_dv-202607_kincardineshire_00177_inverbervie-no-2_qcv-1_2020.csv"
+          ]
+        },
+        "2021": {
+          "wind_fraction": 0.98162100456621,
+          "pressure_fraction": 0.9810502283105023,
+          "files": [
+            "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/177/midas-open_uk-hourly-weather-obs_dv-202607_kincardineshire_00177_inverbervie-no-2_qcv-1_2021.csv"
+          ]
+        }
+      },
+      "qualified": true,
+      "pressure_capable": true,
+      "lat": 56.852,
+      "lon": -2.266
+    },
+    {
+      "src_id": 235,
+      "distance_km": 63.38128352196569,
+      "bearing_deg": 326.37455110269815,
+      "years": {
+        "2016": {
+          "wind_fraction": 0.9995446265938069,
+          "pressure_fraction": 0.9992030965391621,
+          "files": [
+            "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/235/midas-open_uk-hourly-weather-obs_dv-202607_fife_00235_leuchars_qcv-1_2016.csv"
+          ]
+        },
+        "2017": {
+          "wind_fraction": 1.0,
+          "pressure_fraction": 0.9996575342465753,
+          "files": [
+            "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/235/midas-open_uk-hourly-weather-obs_dv-202607_fife_00235_leuchars_qcv-1_2017.csv"
+          ]
+        },
+        "2018": {
+          "wind_fraction": 0.9998858447488584,
+          "pressure_fraction": 0.9940639269406393,
+          "files": [
+            "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/235/midas-open_uk-hourly-weather-obs_dv-202607_fife_00235_leuchars_qcv-1_2018.csv"
+          ]
+        },
+        "2019": {
+          "wind_fraction": 0.9996575342465753,
+          "pressure_fraction": 0.9993150684931507,
+          "files": [
+            "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/235/midas-open_uk-hourly-weather-obs_dv-202607_fife_00235_leuchars_qcv-1_2019.csv"
+          ]
+        },
+        "2020": {
+          "wind_fraction": 1.0,
+          "pressure_fraction": 0.9998861566484517,
+          "files": [
+            "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/235/midas-open_uk-hourly-weather-obs_dv-202607_fife_00235_leuchars_qcv-1_2020.csv"
+          ]
+        },
+        "2021": {
+          "wind_fraction": 0.9992009132420091,
+          "pressure_fraction": 0.9985159817351598,
+          "files": [
+            "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/235/midas-open_uk-hourly-weather-obs_dv-202607_fife_00235_leuchars_qcv-1_2021.csv"
+          ]
+        }
+      },
+      "qualified": true,
+      "pressure_capable": true,
+      "lat": 56.377,
+      "lon": -2.862
+    },
+    {
+      "src_id": 982,
+      "distance_km": 98.8436719015374,
+      "bearing_deg": 267.90375671720733,
+      "years": {
+        "2016": {
+          "wind_fraction": 0.9998861566484517,
+          "pressure_fraction": 0.0,
+          "files": [
+            "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/982/midas-open_uk-hourly-weather-obs_dv-202607_lanarkshire_00982_salsburgh_qcv-1_2016.csv"
+          ]
+        },
+        "2017": {
+          "wind_fraction": 0.9979452054794521,
+          "pressure_fraction": 0.0,
+          "files": [
+            "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/982/midas-open_uk-hourly-weather-obs_dv-202607_lanarkshire_00982_salsburgh_qcv-1_2017.csv"
+          ]
+        },
+        "2018": {
+          "wind_fraction": 0.9995433789954338,
+          "pressure_fraction": 0.0,
+          "files": [
+            "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/982/midas-open_uk-hourly-weather-obs_dv-202607_lanarkshire_00982_salsburgh_qcv-1_2018.csv"
+          ]
+        },
+        "2019": {
+          "wind_fraction": 0.9591324200913242,
+          "pressure_fraction": 0.0,
+          "files": [
+            "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/982/midas-open_uk-hourly-weather-obs_dv-202607_lanarkshire_00982_salsburgh_qcv-1_2019.csv"
+          ]
+        },
+        "2020": {
+          "wind_fraction": 0.998747723132969,
+          "pressure_fraction": 0.0,
+          "files": [
+            "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/982/midas-open_uk-hourly-weather-obs_dv-202607_lanarkshire_00982_salsburgh_qcv-1_2020.csv"
+          ]
+        },
+        "2021": {
+          "wind_fraction": 0.9937214611872146,
+          "pressure_fraction": 0.0,
+          "files": [
+            "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/982/midas-open_uk-hourly-weather-obs_dv-202607_lanarkshire_00982_salsburgh_qcv-1_2021.csv"
+          ]
+        }
+      },
+      "qualified": true,
+      "pressure_capable": false,
+      "lat": 55.861,
+      "lon": -3.875
+    },
+    {
+      "src_id": 987,
+      "distance_km": 95.42685866774924,
+      "bearing_deg": 251.79057419510428,
+      "years": {
+        "2016": {
+          "wind_fraction": 0.9947632058287796,
+          "pressure_fraction": 0.9993169398907104,
+          "files": [
+            "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/987/midas-open_uk-hourly-weather-obs_dv-202607_lanarkshire_00987_drumalbin_qcv-1_2016.csv"
+          ]
+        },
+        "2017": {
+          "wind_fraction": 0.9948630136986302,
+          "pressure_fraction": 0.9954337899543378,
+          "files": [
+            "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/987/midas-open_uk-hourly-weather-obs_dv-202607_lanarkshire_00987_drumalbin_qcv-1_2017.csv"
+          ]
+        },
+        "2018": {
+          "wind_fraction": 0.9997716894977169,
+          "pressure_fraction": 0.9993150684931507,
+          "files": [
+            "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/987/midas-open_uk-hourly-weather-obs_dv-202607_lanarkshire_00987_drumalbin_qcv-1_2018.csv"
+          ]
+        },
+        "2019": {
+          "wind_fraction": 0.9986301369863013,
+          "pressure_fraction": 0.9904109589041096,
+          "files": [
+            "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/987/midas-open_uk-hourly-weather-obs_dv-202607_lanarkshire_00987_drumalbin_qcv-1_2019.csv"
+          ]
+        },
+        "2020": {
+          "wind_fraction": 0.9998861566484517,
+          "pressure_fraction": 0.9994307832422586,
+          "files": [
+            "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/987/midas-open_uk-hourly-weather-obs_dv-202607_lanarkshire_00987_drumalbin_qcv-1_2020.csv"
+          ]
+        },
+        "2021": {
+          "wind_fraction": 0.9993150684931507,
+          "pressure_fraction": 0.998972602739726,
+          "files": [
+            "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/987/midas-open_uk-hourly-weather-obs_dv-202607_lanarkshire_00987_drumalbin_qcv-1_2021.csv"
+          ]
+        }
+      },
+      "qualified": true,
+      "pressure_capable": true,
+      "lat": 55.627,
+      "lon": -3.736
+    },
+    {
+      "src_id": 1023,
+      "distance_km": 87.35754147475477,
+      "bearing_deg": 221.51734404911332,
+      "years": {
+        "2016": {
+          "wind_fraction": 0.9829234972677595,
+          "pressure_fraction": 0.9911202185792349,
+          "files": [
+            "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/1023/midas-open_uk-hourly-weather-obs_dv-202607_dumfriesshire_01023_eskdalemuir_qcv-1_2016.csv"
+          ]
+        },
+        "2017": {
+          "wind_fraction": 0.9884703196347032,
+          "pressure_fraction": 0.9886986301369863,
+          "files": [
+            "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/1023/midas-open_uk-hourly-weather-obs_dv-202607_dumfriesshire_01023_eskdalemuir_qcv-1_2017.csv"
+          ]
+        },
+        "2018": {
+          "wind_fraction": 0.9899543378995433,
+          "pressure_fraction": 0.9994292237442922,
+          "files": [
+            "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/1023/midas-open_uk-hourly-weather-obs_dv-202607_dumfriesshire_01023_eskdalemuir_qcv-1_2018.csv"
+          ]
+        },
+        "2019": {
+          "wind_fraction": 0.9980593607305936,
+          "pressure_fraction": 0.9997716894977169,
+          "files": [
+            "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/1023/midas-open_uk-hourly-weather-obs_dv-202607_dumfriesshire_01023_eskdalemuir_qcv-1_2019.csv"
+          ]
+        },
+        "2020": {
+          "wind_fraction": 0.9719945355191257,
+          "pressure_fraction": 0.9721083788706739,
+          "files": [
+            "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/1023/midas-open_uk-hourly-weather-obs_dv-202607_dumfriesshire_01023_eskdalemuir_qcv-1_2020.csv"
+          ]
+        },
+        "2021": {
+          "wind_fraction": 0.995662100456621,
+          "pressure_fraction": 0.9972602739726028,
+          "files": [
+            "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/1023/midas-open_uk-hourly-weather-obs_dv-202607_dumfriesshire_01023_eskdalemuir_qcv-1_2021.csv"
+          ]
+        }
+      },
+      "qualified": true,
+      "pressure_capable": true,
+      "lat": 55.312,
+      "lon": -3.207
+    },
+    {
+      "src_id": 1074,
+      "distance_km": 148.27430846145123,
+      "bearing_deg": 183.01641874245962,
+      "years": {
+        "2016": {
+          "wind_fraction": 0.9698315118397086,
+          "pressure_fraction": 0.9697176684881603,
+          "files": [
+            "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/1074/midas-open_uk-hourly-weather-obs_dv-202607_cumbria_01074_warcop-range_qcv-1_2016.csv"
+          ]
+        },
+        "2017": {
+          "wind_fraction": 0.9962328767123287,
+          "pressure_fraction": 0.9949771689497717,
+          "files": [
+            "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/1074/midas-open_uk-hourly-weather-obs_dv-202607_cumbria_01074_warcop-range_qcv-1_2017.csv"
+          ]
+        },
+        "2018": {
+          "wind_fraction": 0.9984018264840183,
+          "pressure_fraction": 0.9971461187214612,
+          "files": [
+            "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/1074/midas-open_uk-hourly-weather-obs_dv-202607_cumbria_01074_warcop-range_qcv-1_2018.csv"
+          ]
+        },
+        "2019": {
+          "wind_fraction": 0.9884703196347032,
+          "pressure_fraction": 0.984703196347032,
+          "files": [
+            "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/1074/midas-open_uk-hourly-weather-obs_dv-202607_cumbria_01074_warcop-range_qcv-1_2019.csv"
+          ]
+        },
+        "2020": {
+          "wind_fraction": 0.9994307832422586,
+          "pressure_fraction": 0.9993169398907104,
+          "files": [
+            "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/1074/midas-open_uk-hourly-weather-obs_dv-202607_cumbria_01074_warcop-range_qcv-1_2020.csv"
+          ]
+        },
+        "2021": {
+          "wind_fraction": 0.9996575342465753,
+          "pressure_fraction": 0.9994292237442922,
+          "files": [
+            "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/1074/midas-open_uk-hourly-weather-obs_dv-202607_cumbria_01074_warcop-range_qcv-1_2021.csv"
+          ]
+        }
+      },
+      "qualified": true,
+      "pressure_capable": true,
+      "lat": 54.572,
+      "lon": -2.413
+    },
+    {
+      "src_id": 16589,
+      "distance_km": 68.79850008200569,
+      "bearing_deg": 179.31640019391597,
+      "years": {
+        "2016": {
+          "wind_fraction": 0.9937386156648452,
+          "pressure_fraction": 0.9993169398907104,
+          "files": [
+            "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/16589/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_16589_redesdale-camp_qcv-1_2016.csv"
+          ]
+        },
+        "2017": {
+          "wind_fraction": 0.9996575342465753,
+          "pressure_fraction": 0.9992009132420091,
+          "files": [
+            "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/16589/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_16589_redesdale-camp_qcv-1_2017.csv"
+          ]
+        },
+        "2018": {
+          "wind_fraction": 0.9953196347031964,
+          "pressure_fraction": 0.9980593607305936,
+          "files": [
+            "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/16589/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_16589_redesdale-camp_qcv-1_2018.csv"
+          ]
+        },
+        "2019": {
+          "wind_fraction": 0.9990867579908675,
+          "pressure_fraction": 0.9994292237442922,
+          "files": [
+            "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/16589/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_16589_redesdale-camp_qcv-1_2019.csv"
+          ]
+        },
+        "2020": {
+          "wind_fraction": 0.9990892531876139,
+          "pressure_fraction": 0.9986338797814208,
+          "files": [
+            "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/16589/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_16589_redesdale-camp_qcv-1_2020.csv"
+          ]
+        },
+        "2021": {
+          "wind_fraction": 0.9920091324200914,
+          "pressure_fraction": 0.998972602739726,
+          "files": [
+            "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/16589/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_16589_redesdale-camp_qcv-1_2021.csv"
+          ]
+        }
+      },
+      "qualified": true,
+      "pressure_capable": true,
+      "lat": 55.285,
+      "lon": -2.279
+    },
+    {
+      "src_id": 24125,
+      "distance_km": 139.61963032664903,
+      "bearing_deg": 271.0791715397814,
+      "years": {
+        "2016": {
+          "wind_fraction": 0.9764344262295082,
+          "pressure_fraction": 0.9744990892531876,
+          "files": [
+            "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/24125/midas-open_uk-hourly-weather-obs_dv-202607_renfrewshire_24125_glasgow-bishopton_qcv-1_2016.csv"
+          ]
+        },
+        "2017": {
+          "wind_fraction": 0.9988584474885844,
+          "pressure_fraction": 0.9990867579908675,
+          "files": [
+            "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/24125/midas-open_uk-hourly-weather-obs_dv-202607_renfrewshire_24125_glasgow-bishopton_qcv-1_2017.csv"
+          ]
+        },
+        "2018": {
+          "wind_fraction": 0.9940639269406393,
+          "pressure_fraction": 0.9993150684931507,
+          "files": [
+            "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/24125/midas-open_uk-hourly-weather-obs_dv-202607_renfrewshire_24125_glasgow-bishopton_qcv-1_2018.csv"
+          ]
+        },
+        "2019": {
+          "wind_fraction": 0.9997716894977169,
+          "pressure_fraction": 0.9994292237442922,
+          "files": [
+            "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/24125/midas-open_uk-hourly-weather-obs_dv-202607_renfrewshire_24125_glasgow-bishopton_qcv-1_2019.csv"
+          ]
+        },
+        "2020": {
+          "wind_fraction": 0.9997723132969034,
+          "pressure_fraction": 0.9994307832422586,
+          "files": [
+            "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/24125/midas-open_uk-hourly-weather-obs_dv-202607_renfrewshire_24125_glasgow-bishopton_qcv-1_2020.csv"
+          ]
+        },
+        "2021": {
+          "wind_fraction": 0.9992009132420091,
+          "pressure_fraction": 0.9992009132420091,
+          "files": [
+            "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/24125/midas-open_uk-hourly-weather-obs_dv-202607_renfrewshire_24125_glasgow-bishopton_qcv-1_2021.csv"
+          ]
+        }
+      },
+      "qualified": true,
+      "pressure_capable": true,
+      "lat": 55.907,
+      "lon": -4.532
+    },
+    {
+      "src_id": 30523,
+      "distance_km": 101.60196769466188,
+      "bearing_deg": 165.09444615063921,
+      "years": {
+        "2016": {
+          "wind_fraction": 0.9985200364298725,
+          "pressure_fraction": 0.9954462659380692,
+          "files": [
+            "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/30523/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_30523_albemarle_qcv-1_2016.csv"
+          ]
+        },
+        "2017": {
+          "wind_fraction": 0.9973744292237443,
+          "pressure_fraction": 0.9987442922374429,
+          "files": [
+            "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/30523/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_30523_albemarle_qcv-1_2017.csv"
+          ]
+        },
+        "2018": {
+          "wind_fraction": 0.9996575342465753,
+          "pressure_fraction": 0.9990867579908675,
+          "files": [
+            "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/30523/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_30523_albemarle_qcv-1_2018.csv"
+          ]
+        },
+        "2019": {
+          "wind_fraction": 1.0,
+          "pressure_fraction": 0.9995433789954338,
+          "files": [
+            "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/30523/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_30523_albemarle_qcv-1_2019.csv"
+          ]
+        },
+        "2020": {
+          "wind_fraction": 0.9995446265938069,
+          "pressure_fraction": 0.9988615664845173,
+          "files": [
+            "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/30523/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_30523_albemarle_qcv-1_2020.csv"
+          ]
+        },
+        "2021": {
+          "wind_fraction": 0.9961187214611872,
+          "pressure_fraction": 0.9992009132420091,
+          "files": [
+            "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/30523/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_30523_albemarle_qcv-1_2021.csv"
+          ]
+        }
+      },
+      "qualified": true,
+      "pressure_capable": true,
+      "lat": 55.02,
+      "lon": -1.882
+    }
+  ],
+  "midas_files": 66,
+  "input_hashes": {
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/Penmanshiel/p3_v35_2894746_r2/prepared/penmanshiel.csv": "d3be9c9800a71ecdb8550cbacaebf20c673f740026be7767bf9abccefa9c450a",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/Penmanshiel/p3_v35_2894746_r2/prepared/preparation.json": "eb78d0c729c5cd6c010ac4b134d34455c377d718dce207c3b7e7df4170d49875",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/Penmanshiel/p3_v35_2894746_r2/prepared/input_hashes.json": "0ac7b679e2ffe86bd89c13d000b585c7e72e714e958842e13cd97df308c5f497",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst_G1_27312d7/output/kelmarsh_hourly/d2_feasibility_v34_r2/part_A.json": "f68db4f1812bd2d13f9e497f1ab98c4ded3839d686099a887ab42f010a4e9cf4",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst_G1_27312d7/output/kelmarsh_hourly/d2_feasibility_v34_r2/input_hashes.json": "331061575f151ff1d47365bdb624ad745c32d53632fe72112a887e9e5684ab07",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/midas_open_v202607/development/midas-open_uk-hourly-weather-obs_dv-202607_station-metadata.csv": "3c98d20c4b9a8aba3270280c8692b72a54d66df05d178c5fed27eb70e6fd3acc",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/150/midas-open_uk-hourly-weather-obs_dv-202607_aberdeenshire_00150_aboyne-no-2_qcv-1_2016.csv": "635519dbff8449c967547aca2b10687fd798264fe6bb1abb88d2106987a0004a",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/150/midas-open_uk-hourly-weather-obs_dv-202607_aberdeenshire_00150_aboyne-no-2_qcv-1_2017.csv": "e819b48aa051545d21c0bee9dc4ab3c487cfaa99535e0e24c50dbea322c972ed",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/150/midas-open_uk-hourly-weather-obs_dv-202607_aberdeenshire_00150_aboyne-no-2_qcv-1_2018.csv": "5bac97290e9e2089383dd7723e33f92ef0a39bab15eb1c09d9801d01622aebe3",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/150/midas-open_uk-hourly-weather-obs_dv-202607_aberdeenshire_00150_aboyne-no-2_qcv-1_2019.csv": "78f0dfe3322da4c5542863121aac2f80c378623822984d5c9955758247448469",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/150/midas-open_uk-hourly-weather-obs_dv-202607_aberdeenshire_00150_aboyne-no-2_qcv-1_2020.csv": "24bc7cd373e00fb811d55d4b883ffee88c06f99f578b041452cd1cbf4e3cf612",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/150/midas-open_uk-hourly-weather-obs_dv-202607_aberdeenshire_00150_aboyne-no-2_qcv-1_2021.csv": "4fcb19b640a59ecbf8eb21dc8d720979354335b277d43104cb75a11254f59db6",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/161/midas-open_uk-hourly-weather-obs_dv-202607_aberdeenshire_00161_dyce_qcv-1_2016.csv": "798cc1ed5305bbf1c9614ec5b7bf8fdf76799b2ba0d3bf2ead0cf861d4f61f5b",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/161/midas-open_uk-hourly-weather-obs_dv-202607_aberdeenshire_00161_dyce_qcv-1_2017.csv": "d54064179a3176abd8cf78eb1d33222966f02e228c3d670defc0d60b133ebcd9",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/161/midas-open_uk-hourly-weather-obs_dv-202607_aberdeenshire_00161_dyce_qcv-1_2018.csv": "9a13640248850100f08170ccfa122dce89d6fad9ac16881b79fb29d430079671",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/161/midas-open_uk-hourly-weather-obs_dv-202607_aberdeenshire_00161_dyce_qcv-1_2019.csv": "281e1b759f85a1ad7ef873d97fde658d585dfc3a8b040d4634fb3e3539a962f2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/161/midas-open_uk-hourly-weather-obs_dv-202607_aberdeenshire_00161_dyce_qcv-1_2020.csv": "30250de89ae4317e6286d2570c5a46cdd51351ed745950a156493e93806694ae",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/161/midas-open_uk-hourly-weather-obs_dv-202607_aberdeenshire_00161_dyce_qcv-1_2021.csv": "2bdd8f1482c42fe3677b2b5e904da94b44c66429e817d925130af22c908f9987",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/177/midas-open_uk-hourly-weather-obs_dv-202607_kincardineshire_00177_inverbervie-no-2_qcv-1_2016.csv": "21476da1bb41add56100f4fc1a13900150c22457ba74fd162538cd6680859c5d",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/177/midas-open_uk-hourly-weather-obs_dv-202607_kincardineshire_00177_inverbervie-no-2_qcv-1_2017.csv": "0549e2d6519eba690f244b6b58cb0ddeee36b37b32b092a1bc2dc8dff4017855",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/177/midas-open_uk-hourly-weather-obs_dv-202607_kincardineshire_00177_inverbervie-no-2_qcv-1_2018.csv": "713261dcc61b6a397380365f8506742e72a8c5f6dda4a72bc31a09e3bf6054a2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/177/midas-open_uk-hourly-weather-obs_dv-202607_kincardineshire_00177_inverbervie-no-2_qcv-1_2019.csv": "9e27d45cb97fc7ef268f3a75f788c20b6bb6927bea6697dee08703435d1714f8",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/177/midas-open_uk-hourly-weather-obs_dv-202607_kincardineshire_00177_inverbervie-no-2_qcv-1_2020.csv": "145bc5d836bb2a53bbe9f9d361030628a08a88c9ac8578688baebaad5cb661f4",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/177/midas-open_uk-hourly-weather-obs_dv-202607_kincardineshire_00177_inverbervie-no-2_qcv-1_2021.csv": "dfa3d0ecb9ab5a0262cc3dae29888712a480fb88560c877603365ec679cc5348",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/235/midas-open_uk-hourly-weather-obs_dv-202607_fife_00235_leuchars_qcv-1_2016.csv": "aa5957b09488e5451e39460588a0a008316dd139a6996d40e9fce719e599c8bc",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/235/midas-open_uk-hourly-weather-obs_dv-202607_fife_00235_leuchars_qcv-1_2017.csv": "1fd7ce8cbcceed0d808c66db1953ad305f0a8f886a0d4077102dc94369bc977b",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/235/midas-open_uk-hourly-weather-obs_dv-202607_fife_00235_leuchars_qcv-1_2018.csv": "88ddcd08cec75429b7427ca6d0b789a80241879e7d37c2894117ba0436362e5e",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/235/midas-open_uk-hourly-weather-obs_dv-202607_fife_00235_leuchars_qcv-1_2019.csv": "c2d1f3c61efc48701e56778bebfb0ec5793545d28da90caec48ae034d1f1daee",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/235/midas-open_uk-hourly-weather-obs_dv-202607_fife_00235_leuchars_qcv-1_2020.csv": "b316728e8a859a7c7bd17aa946159784a7b79c260f24d6cc21da294f04707db2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/235/midas-open_uk-hourly-weather-obs_dv-202607_fife_00235_leuchars_qcv-1_2021.csv": "153d726c9b44169141cfe4f911d837e4d137c94751efc08b66a3ae86435a22c2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/982/midas-open_uk-hourly-weather-obs_dv-202607_lanarkshire_00982_salsburgh_qcv-1_2016.csv": "5fb5a8a7de136323bd6a7d18194907ca243667ad1b96a9a32055beecad9e22cc",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/982/midas-open_uk-hourly-weather-obs_dv-202607_lanarkshire_00982_salsburgh_qcv-1_2017.csv": "3f30006c799dc3c5e6caaf8ca7c61659659085e7ecd3a4d2561116ea4dfd9e59",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/982/midas-open_uk-hourly-weather-obs_dv-202607_lanarkshire_00982_salsburgh_qcv-1_2018.csv": "d9ce8a6a39e0960ce148e493d14c91fbba4d125d9c0501e984cb209cdaad1bc2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/982/midas-open_uk-hourly-weather-obs_dv-202607_lanarkshire_00982_salsburgh_qcv-1_2019.csv": "a912876465d4269f31476933258fd2a5b0469379583679041382ecd6890b09f7",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/982/midas-open_uk-hourly-weather-obs_dv-202607_lanarkshire_00982_salsburgh_qcv-1_2020.csv": "ca9cc2e99410c85baae5716a69a59acfabb237bffee7f1c9654e1f17cbabe351",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/982/midas-open_uk-hourly-weather-obs_dv-202607_lanarkshire_00982_salsburgh_qcv-1_2021.csv": "d0a94d474bb102275c2c568ff6e4f0687d26db9af684ca0bc1c37a40629ef38e",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/987/midas-open_uk-hourly-weather-obs_dv-202607_lanarkshire_00987_drumalbin_qcv-1_2016.csv": "dbe7500efa262e0d6106f49322b05dcb1b5735ffbca3a658fd96bffd6166dd75",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/987/midas-open_uk-hourly-weather-obs_dv-202607_lanarkshire_00987_drumalbin_qcv-1_2017.csv": "8ff10e463e2d34b82442ba066a2879bb823ccd8f62f5cea392deabebfb8aaa77",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/987/midas-open_uk-hourly-weather-obs_dv-202607_lanarkshire_00987_drumalbin_qcv-1_2018.csv": "da4428cd9a1c2a73384ce42586f3b0ee18872a603e5639cdb9c53d8409fd1d96",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/987/midas-open_uk-hourly-weather-obs_dv-202607_lanarkshire_00987_drumalbin_qcv-1_2019.csv": "f4d22e6cc6bab3b3eaf131b8b12ee09963fbbf70a82964ca844d8e977dab5503",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/987/midas-open_uk-hourly-weather-obs_dv-202607_lanarkshire_00987_drumalbin_qcv-1_2020.csv": "fc0c682fa7cb7c1eced8e082c49aa711f88b27fbbe99b95f28ff376f667b5ced",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/987/midas-open_uk-hourly-weather-obs_dv-202607_lanarkshire_00987_drumalbin_qcv-1_2021.csv": "053b80873f58df84de562d6e1ae774bf90e64474c3eeec92c9b4b8468f31c962",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/1023/midas-open_uk-hourly-weather-obs_dv-202607_dumfriesshire_01023_eskdalemuir_qcv-1_2016.csv": "e6175cac89679c580f06c10876f03dfc5d01caed5d0e5cc9daf426622c36eeb0",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/1023/midas-open_uk-hourly-weather-obs_dv-202607_dumfriesshire_01023_eskdalemuir_qcv-1_2017.csv": "90d1c39801d9caeba4bff38552b8db2e6ac83b32a7483f27b393dd69bc501196",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/1023/midas-open_uk-hourly-weather-obs_dv-202607_dumfriesshire_01023_eskdalemuir_qcv-1_2018.csv": "533568dd477739b72d93c9b014236f193acf7d2f1c9bcef65e084d6b3a4cdb84",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/1023/midas-open_uk-hourly-weather-obs_dv-202607_dumfriesshire_01023_eskdalemuir_qcv-1_2019.csv": "32b7d7425e78afe61285b461f7cc3392fd2cec0a00cd86973944a85bc8e0509e",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/1023/midas-open_uk-hourly-weather-obs_dv-202607_dumfriesshire_01023_eskdalemuir_qcv-1_2020.csv": "5da7c22472d48d6cb3d38607a4cd542727bb2815db70f80acd8cf366b4566496",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/1023/midas-open_uk-hourly-weather-obs_dv-202607_dumfriesshire_01023_eskdalemuir_qcv-1_2021.csv": "fd136939a6ba24fbb2bb7175459e4fbfa10113c61a67d823708f89a7d0feea40",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/1074/midas-open_uk-hourly-weather-obs_dv-202607_cumbria_01074_warcop-range_qcv-1_2016.csv": "742d75c595a27681121208d1100603f55ff977df185dbd710c062c5996c1cb78",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/1074/midas-open_uk-hourly-weather-obs_dv-202607_cumbria_01074_warcop-range_qcv-1_2017.csv": "585a8eb7cf5f75159be7f8016f6cb0c810628b030e22def117543dbd8da78a09",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/1074/midas-open_uk-hourly-weather-obs_dv-202607_cumbria_01074_warcop-range_qcv-1_2018.csv": "1fba4877e61167944477acef8e3e1917a5a9da618d2dcce9650af166b9bbf755",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/1074/midas-open_uk-hourly-weather-obs_dv-202607_cumbria_01074_warcop-range_qcv-1_2019.csv": "76486cf37e13e8850ffcf9a0e156c6704015e898f3cf468c50933542e0ee7e21",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/1074/midas-open_uk-hourly-weather-obs_dv-202607_cumbria_01074_warcop-range_qcv-1_2020.csv": "f090bb72a16f39d6105b97aaba914d31f6665f9d4704983eb43eefaf7f433d28",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/1074/midas-open_uk-hourly-weather-obs_dv-202607_cumbria_01074_warcop-range_qcv-1_2021.csv": "0aef60666bc108da1a7df448321a89d22951466d0b291d9e22b6ee6c82fa8259",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/16589/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_16589_redesdale-camp_qcv-1_2016.csv": "8a82fe08b7c0a12f8f0ef1175affdf255dc7580378753b0967b989d5f056ea9e",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/16589/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_16589_redesdale-camp_qcv-1_2017.csv": "0f3574ceb46dd0d29bb8416f6f6c777a9ad91a2993fa88e0b3852e2d58e46881",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/16589/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_16589_redesdale-camp_qcv-1_2018.csv": "ae88076d1aa3d9416ff95e433e207c257bd87b3760f5b97f79f2adb75ae3efc4",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/16589/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_16589_redesdale-camp_qcv-1_2019.csv": "b882d279d5736beb5bb6eb80c8c06444c967817bc244a81f902de9ca9181eff8",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/16589/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_16589_redesdale-camp_qcv-1_2020.csv": "2ef45cab5e58a7e6b09176520db1619278d5c30952537ce3f91a0f25391437e6",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/16589/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_16589_redesdale-camp_qcv-1_2021.csv": "7bf43156d49f9ac7e1633290030fa462837ba2c063451cbb209aa43941cea436",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/24125/midas-open_uk-hourly-weather-obs_dv-202607_renfrewshire_24125_glasgow-bishopton_qcv-1_2016.csv": "8a566ee5fb4f6b5fe35c5057000be45a14efbbad67ef5b55852cd77ef47b7024",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/24125/midas-open_uk-hourly-weather-obs_dv-202607_renfrewshire_24125_glasgow-bishopton_qcv-1_2017.csv": "4116ee5d3e1735c5236305e4f8572e0a46c6d8a5005043891816b294272bde05",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/24125/midas-open_uk-hourly-weather-obs_dv-202607_renfrewshire_24125_glasgow-bishopton_qcv-1_2018.csv": "a8e4888259f87f14660ae6657be58ebf2452ded5ea0c0a312e9fc796405d1285",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/24125/midas-open_uk-hourly-weather-obs_dv-202607_renfrewshire_24125_glasgow-bishopton_qcv-1_2019.csv": "20b370d4d3ff7066aad11b88be12af1efcc0394d70a7a93ea402284e5b3c1c15",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/24125/midas-open_uk-hourly-weather-obs_dv-202607_renfrewshire_24125_glasgow-bishopton_qcv-1_2020.csv": "85aca99491d7b253dc1d2189eb2bc0c59f3d302c26d402fca29744ebace74552",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/24125/midas-open_uk-hourly-weather-obs_dv-202607_renfrewshire_24125_glasgow-bishopton_qcv-1_2021.csv": "3ad8394f684206cc9ea55f91db72afca858ad8b3e1855de55c0bced3e7932fdf",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/30523/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_30523_albemarle_qcv-1_2016.csv": "480ec144bd40ed9f754aa5aed3fe69b1c1e9f75822bab6b222f6b27ac9066c48",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/30523/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_30523_albemarle_qcv-1_2017.csv": "a8c0a083f2bfc88e473a27ec6f985dbae7f16dce3a4ee84409d88f4515a59068",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/30523/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_30523_albemarle_qcv-1_2018.csv": "d400cf61aacbb5cd246bd6e4136f7e0f5ec6d45800a748dd0a71cb58ba29a870",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/30523/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_30523_albemarle_qcv-1_2019.csv": "2203188008de152a01c268203ef10bb337523887e588e735c2bbf43643a74174",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/30523/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_30523_albemarle_qcv-1_2020.csv": "2c9f795c364ca1468ced2a7b7c81a550109ba0ebf8ceee80c2e34eda74ec1046",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/upstream_observations/sealed/midas_penmanshiel_200km/30523/midas-open_uk-hourly-weather-obs_dv-202607_northumberland_30523_albemarle_qcv-1_2021.csv": "4b46bfdaa1a96a0dab37c576fd266c8cff1732019e9c4fe369a1bfc3a29d87ae"
+  },
+  "gfs_read": false,
+  "training": false
+}

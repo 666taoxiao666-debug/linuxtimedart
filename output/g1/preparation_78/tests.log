@@ -1,0 +1,32 @@
+test_calibration_fit_only_and_missing_cycle (tests.test_g1_pipeline.PreparationTests) ... ok
+test_csv_filters_before_numeric_parse (tests.test_g1_pipeline.PreparationTests) ... ok
+test_sealed_forecast_refused_before_open (tests.test_g1_pipeline.PreparationTests) ... ok
+test_station_catalog_reader_import (tests.test_g1_pipeline.PreparationTests) ... ok
+test_evaluation_report_serializable (tests.test_g1_pipeline.SelectionTests) ... ok
+test_freeze_tamper_and_duplicate (tests.test_g1_pipeline.SelectionTests) ... ok
+test_max_p_holm_and_direction (tests.test_g1_pipeline.SelectionTests) ... ok
+test_unfrozen_formal_refused (tests.test_g1_pipeline.SelectionTests) ... ok
+test_validation_selection_only (tests.test_g1_pipeline.SelectionTests) ... ok
+test_actual_read_gate (tests.test_g1_pipeline.TemporalTests) ... ok
+test_bilinear_descending_latitude (tests.test_g1_pipeline.TemporalTests) ... ok
+test_half_year_hour_end (tests.test_g1_pipeline.TemporalTests) ... ok
+test_lead_mask_no_extrapolation (tests.test_g1_pipeline.TemporalTests) ... ok
+test_missing_endpoint (tests.test_g1_pipeline.TemporalTests) ... ok
+test_release_boundary (tests.test_g1_pipeline.TemporalTests) ... ok
+test_all_ten_arms_fit_predict (tests.test_g1_pipeline.TorchPipelineTests) ... /home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/matplotlib/_fontconfig_pattern.py:64: PyparsingDeprecationWarning: 'oneOf' deprecated - use 'one_of'
+  prop = Group((name + Suppress("=") + comma_separated(value)) | oneOf(_CONSTANTS))
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/matplotlib/_fontconfig_pattern.py:85: PyparsingDeprecationWarning: 'parseString' deprecated - use 'parse_string'
+  parse = parser.parseString(pattern)
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/matplotlib/_fontconfig_pattern.py:89: PyparsingDeprecationWarning: 'resetCache' deprecated - use 'reset_cache'
+  parser.resetCache()
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/matplotlib/_mathtext.py:45: PyparsingDeprecationWarning: 'enablePackrat' deprecated - use 'enable_packrat'
+  ParserElement.enablePackrat()
+In /home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/matplotlib/mpl-data/stylelib/classic.mplstyle: 'parseString' deprecated - use 'parse_string'
+In /home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/matplotlib/mpl-data/stylelib/classic.mplstyle: 'resetCache' deprecated - use 'reset_cache'
+ok
+test_mechanism_diagnostic_contract (tests.test_g1_pipeline.TorchPipelineTests) ... ok
+
+----------------------------------------------------------------------
+Ran 17 tests in 7.812s
+
+OK

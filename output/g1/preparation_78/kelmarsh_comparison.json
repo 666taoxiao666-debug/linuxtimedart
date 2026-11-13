@@ -1,0 +1,67 @@
+{
+  "utc": "2026-11-13T14:55:51.408688+00:00",
+  "old": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/G1/g1c_fd3ee91_r1/prepared/Kelmarsh",
+  "new": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/G1/g1c_27312d7_r2/prepared/Kelmarsh",
+  "arrays": {
+    "points_0.npz": {
+      "count": 7300,
+      "equal": true,
+      "different": []
+    },
+    "points_1.npz": {
+      "count": 2911,
+      "equal": true,
+      "different": []
+    },
+    "test.npz": {
+      "count": 23,
+      "equal": true,
+      "different": []
+    },
+    "train.npz": {
+      "count": 23,
+      "equal": true,
+      "different": []
+    },
+    "train_diagnostics.npz": {
+      "count": 15,
+      "equal": true,
+      "different": []
+    },
+    "val.npz": {
+      "count": 23,
+      "equal": true,
+      "different": []
+    },
+    "val_diagnostics.npz": {
+      "count": 15,
+      "equal": true,
+      "different": []
+    }
+  },
+  "json": {
+    "calibration.json": {
+      "raw_equal": true,
+      "semantic_equal": true
+    },
+    "lead_audit.json": {
+      "raw_equal": true,
+      "semantic_equal": true
+    },
+    "points_0.points.json": {
+      "raw_equal": true,
+      "semantic_equal": true
+    },
+    "points_1.points.json": {
+      "raw_equal": true,
+      "semantic_equal": true
+    },
+    "prepared.json": {
+      "raw_equal": false,
+      "semantic_equal": true
+    }
+  },
+  "differences": [],
+  "normalization": "prepared.json only: execution root paths normalized; NPZ archive hash references replaced only for separately array-compared NPZ files; all remaining values and raw input hashes compared exactly.",
+  "status": "PASS"
+}

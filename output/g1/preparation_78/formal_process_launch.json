@@ -1,0 +1,22 @@
+{
+  "pid": 395899,
+  "cmd": [
+    "/home/XT/miniconda3/envs/timedart/bin/python",
+    "-u",
+    "scripts/train_g1.py",
+    "--prepared",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/G1/g1c_27312d7_r2/prepared",
+    "--run-dir",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/G1/g1c_27312d7_r2/formal",
+    "--protocol-sha256",
+    "92e93dd4d1b62b1654c02bbb95299019f507903f13ef6fe71d2f6687003e8ed4",
+    "--device",
+    "cuda"
+  ],
+  "cwd": "/home/XT/nuist/pythoncode/TimeDARTFirst_G1_27312d7",
+  "utc": "2026-11-13T15:05:01.750063+00:00",
+  "protocol_sha256": "92e93dd4d1b62b1654c02bbb95299019f507903f13ef6fe71d2f6687003e8ed4",
+  "formal_gate": "PASS",
+  "comparison": "PASS",
+  "gpu_before": "index, memory.total [MiB], memory.used [MiB], utilization.gpu [%]\n0, 24576 MiB, 19894 MiB, 100 %\n"
+}
