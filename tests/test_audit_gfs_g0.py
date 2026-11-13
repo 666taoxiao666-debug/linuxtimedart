@@ -30,6 +30,23 @@ def fixture():
 
 
 class AuditTests(unittest.TestCase):
+    def test_b1_identity_and_crossover(self):
+        ds = fixture()
+        ds.u10.attrs['GRIB_paramId'] = 165
+        ds.v10.attrs['GRIB_paramId'] = 166
+        self.assertTrue(a.inspect_dataset(ds, '2016010100', mode='B1')['complete'])
+        self.assertIn('variable_identity:u10', a.inspect_dataset(ds, '2016010100')['errors'])
+        ds = ds.isel(step=slice(0, 1)).assign_coords(time=np.datetime64('2023-12-31T18'))
+        ds = ds.assign_coords(valid_time=('step', ds.time.values+ds.step.values))
+        self.assertTrue(a.inspect_dataset(ds, '2023123118', mode='B1')['complete'])
+
+    def test_b1_two_reported_failure_modes(self):
+        ds = fixture()
+        ds.u10.attrs['GRIB_paramId'], ds.v10.attrs['GRIB_paramId'] = 165, 166
+        self.assertFalse(a.inspect_dataset(ds.isel(step=[0, 1, 2, 4]), '2016010100', mode='B1')['complete'])
+        ds.u10.values[0, 0, 0] = np.nan
+        self.assertIn('nonfinite:u10:f003', a.inspect_dataset(ds, '2016010100', mode='B1')['errors'])
+
     def test_reviewed_acceptance_partition(self):
         path = Path(__file__).parents[1] / 'output/gfs_g0/b2/audit_b2.json'
         result = a.derive_b2_acceptance(path)

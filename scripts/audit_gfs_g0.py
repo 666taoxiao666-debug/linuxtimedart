@@ -29,11 +29,12 @@ def cycles(year):
             for i in range((366 if calendar.isleap(year) else 365) * 4)]
 
 
-def inspect_dataset(ds, cycle):
+def inspect_dataset(ds, cycle, mode='B2'):
     errors, missing, optional_issues = [], [], []
     result = dict(errors=errors, missing_messages=missing, optional_issues=optional_issues,
                   complete=False, optional_complete=False, optional_level_verified=False, ranges={})
     expected_time = np.datetime64(dt.datetime.strptime(cycle, '%Y%m%d%H'))
+    required_leads = tuple(h for h in LEADS if expected_time + np.timedelta64(h, 'h') < CUTOFF) if mode == 'B1' else LEADS
     for key in ('time', 'step', 'valid_time', 'latitude', 'longitude'):
         if key not in ds.coords:
             errors.append('missing_coordinate:' + key)
@@ -93,7 +94,7 @@ def inspect_dataset(ds, cycle):
         pressure = name == 'prmsl'
         units = 'Pa' if pressure else 'm s**-1'
         level_type = 'meanSea' if pressure else 'heightAboveGround'
-        param = 260074 if pressure else (131 if name.startswith('u') else 132)
+        param = 260074 if pressure else ((165 if name == 'u10' else 166) if mode == 'B1' and name in REQUIRED else (131 if name.startswith('u') else 132))
         if (var.attrs.get('units') != units or var.attrs.get('GRIB_typeOfLevel') != level_type
                 or var.attrs.get('GRIB_paramId') != param):
             issues.append('variable_identity:' + name)
@@ -109,7 +110,7 @@ def inspect_dataset(ds, cycle):
         arr = var.transpose('step', 'latitude', 'longitude').values
         finite = arr[np.isfinite(arr)]
         result['ranges'][name] = [float(finite.min()), float(finite.max())] if finite.size else None
-        for h in LEADS:
+        for h in required_leads:
             indices = np.flatnonzero(hours == h)
             values = arr[indices[0]] if len(indices) == 1 else np.array([np.nan])
             if np.isnan(values).all():
@@ -156,6 +157,102 @@ def audit_file(path, cycle, entry):
         record['errors'].append('manifest_completeness_mismatch')
     record['complete'] = record['complete'] and not record['errors']
     return record
+
+
+def audit_b1(root, manifest_path):
+    """Independent development decode and sealed byte-only validation; no repairs."""
+    root = Path(root).resolve()
+    before = sha256(manifest_path)
+    manifest = json.loads(Path(manifest_path).read_text(encoding='utf-8'))
+    if manifest.get('task') != 'G0_GFS_B1':
+        raise ValueError('Expected G0_GFS_B1 manifest')
+    entries, messages = manifest['cycles'], manifest['messages']
+    records, sealed_failures, sealed_count, sealed_bytes = [], [], 0, 0
+    for year in range(2021, 2024):
+        for cycle in cycles(year):
+            path = root/'dev'/str(year)/f'gfs_{cycle}_cropped.nc'
+            row = dict(cycle=cycle, file=str(path), complete=False, errors=[])
+            entry = entries.get(cycle)
+            if not path.is_file():
+                row['missing_file'] = True
+                if cycle not in manifest.get('user_accepted_missing_cycles', []):
+                    row['errors'].append('unapproved_missing_cycle')
+            else:
+                stat = path.stat()
+                row.update(bytes=stat.st_size, sha256=sha256(path))
+                if entry is None or stat.st_size != entry.get('dev_bytes'):
+                    row['errors'].append('manifest_byte_mismatch')
+                else:
+                    try:
+                        with xr.open_dataset(path, cache=False, decode_timedelta=True) as ds:
+                            result = inspect_dataset(ds, cycle, mode='B1')
+                        row.update(result)
+                        if row['missing_messages']:
+                            row['errors'].append('incomplete_required_fields')
+                    except Exception as exc:
+                        row['errors'].append('decode_error:'+type(exc).__name__+':'+str(exc))
+                if (stat.st_size, stat.st_mtime_ns) != (path.stat().st_size, path.stat().st_mtime_ns):
+                    row['errors'].append('changed_during_audit')
+                row['complete'] = row['complete'] and not row['errors']
+            records.append(row)
+        print(f'B1 development {year} checked', flush=True)
+    expected_paths = set()
+    for key, entry in messages.items():
+        valid = np.datetime64(entry['valid_time'])
+        if np.isnat(valid) or bool(entry['sealed']) != bool(valid >= CUTOFF):
+            sealed_failures.append(dict(key=key, error='valid_time_sealed_flag_mismatch'))
+            continue
+        if not entry['sealed']:
+            continue
+        cycle, lead, var, level = entry['cycle'], entry['lead'], entry['var'], entry['level']
+        expected_valid = np.datetime64(dt.datetime.strptime(cycle, '%Y%m%d%H')) + np.timedelta64(int(lead[1:]), 'h')
+        if valid != expected_valid or int(lead[1:]) not in LEADS or var not in ('UGRD', 'VGRD', 'PRMSL'):
+            sealed_failures.append(dict(key=key, error='message_identity_mismatch'))
+            continue
+        path = root/'sealed_raw'/str(valid)[:4]/f'{cycle}_{lead}_{var}_{level.replace(" ", "_")}.grib2'
+        if not path.resolve().is_relative_to(root/'sealed_raw'):
+            raise ValueError('Sealed path outside approved root')
+        expected_paths.add(path.resolve())
+        if not path.is_file():
+            sealed_failures.append(dict(key=key, error='missing_file'))
+            continue
+        stat = path.stat()
+        value = sha256(path)  # bytes only; never open_dataset/cfgrib for this tree
+        sealed_count += 1
+        sealed_bytes += stat.st_size
+        if stat.st_size != entry['bytes'] or value != entry['sha256']:
+            sealed_failures.append(dict(key=key, error='byte_or_hash_mismatch'))
+        if (stat.st_size, stat.st_mtime_ns) != (path.stat().st_size, path.stat().st_mtime_ns):
+            sealed_failures.append(dict(key=key, error='changed_during_hash'))
+        if sealed_count % 10000 == 0:
+            print(f'B1 sealed bytes hashed: {sealed_count}', flush=True)
+    actual_paths = {p.resolve() for p in (root/'sealed_raw').rglob('*') if p.is_file()}
+    extras = sorted(str(p) for p in actual_paths-expected_paths)
+    annual = {}
+    for year in range(2021, 2024):
+        rows = [r for r in records if r['cycle'].startswith(str(year))]
+        count = sum(r['complete'] for r in rows)
+        annual[str(year)] = dict(denominator=len(rows), complete=count, completeness_pct=100*count/len(rows), passes_95pct=count/len(rows) >= .95)
+    dev_bytes = sum(p.stat().st_size for p in (root/'dev').rglob('*') if p.is_file())
+    actual_sealed_bytes = sum(p.stat().st_size for p in actual_paths)
+    dl = manifest['stats'].get('successful_message_download_bytes')
+    budget = dict(download_successful_payload_bytes=dl, download_total_bytes_verified=False,
+        download_note=manifest['stats'].get('download_measurement_note'),
+        dev_storage_bytes=dev_bytes, sealed_storage_bytes=actual_sealed_bytes,
+        dev_storage_pass=dev_bytes <= 20_000_000_000, sealed_storage_pass=actual_sealed_bytes <= 110_000_000_000,
+        successful_payload_under_limit=dl is not None and dl <= 300_000_000_000)
+    failures = [r['cycle'] for r in records if r['errors']]
+    stable = before == sha256(manifest_path)
+    data_pass = not failures and not sealed_failures and not extras and stable and all(a['passes_95pct'] for a in annual.values())
+    passed = data_pass and budget['dev_storage_pass'] and budget['sealed_storage_pass'] and budget['download_total_bytes_verified']
+    return dict(status='PASS_REQUIRED' if passed else 'FAIL', task='G0_GFS_B1',
+        completed_at_utc=dt.datetime.now(dt.timezone.utc).isoformat(), script_sha256=sha256(__file__),
+        manifest_sha256=before, manifest_unchanged=stable, annual=annual, failures=failures,
+        sealed_failures=sealed_failures, unexpected_sealed_files=extras, budget=budget,
+        sealed_files_hashed=sealed_count, sealed_bytes_hashed=sealed_bytes, records=records,
+        limitations=['Development NetCDF hashes computed here: manifest supplies sizes but no registered NetCDF hashes.',
+                    'Unique successful download payload excludes unmetered historical failed/repeated traffic.',
+                    'Sealed content was hashed only; no GRIB decode or numerical interpretation.'])
 
 
 def audit(root, manifest_path):
@@ -234,12 +331,13 @@ def main():
     parser.add_argument('--root', type=Path, required=True)
     parser.add_argument('--manifest', type=Path, required=True)
     parser.add_argument('--out', type=Path, required=True)
+    parser.add_argument('--mode', choices=('B2', 'B1'), default='B2')
     args = parser.parse_args()
     if args.out.resolve().is_relative_to(args.root.resolve()):
         raise ValueError('Report must be outside the input data tree')
     if args.out.exists():
         raise FileExistsError('Use a fresh report path; no overwrites')
-    report = audit(args.root, args.manifest)
+    report = audit_b1(args.root, args.manifest) if args.mode == 'B1' else audit(args.root, args.manifest)
     args.out.parent.mkdir(parents=True, exist_ok=True)
     with args.out.open('x', encoding='utf-8') as f:
         json.dump(report, f, indent=2, allow_nan=False)

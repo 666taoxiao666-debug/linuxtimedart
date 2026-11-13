@@ -1,0 +1,100 @@
+{
+  "status": "FINALIZED_WITH_VALIDATION_WARNINGS",
+  "updated_at": "2026-11-13T03:17:08.145799+00:00",
+  "total_cycles": 7784,
+  "downloaded_cycles": 7777,
+  "download_completeness_pct": 99.910072,
+  "validated_complete_cycles": 7775,
+  "completeness_pct": 99.884378,
+  "missing_cycles": [
+    "2021020200",
+    "2021020312",
+    "2021020318",
+    "2021020412",
+    "2021020612",
+    "2021020618",
+    "2021020712"
+  ],
+  "user_accepted_missing_cycles": [
+    "2021020200",
+    "2021020312",
+    "2021020318",
+    "2021020412",
+    "2021020612",
+    "2021020618",
+    "2021020712"
+  ],
+  "additional_dev_validation_failures": {
+    "2022112918": {
+      "error": "expected leads [3, 6, 9, 12, 15, 18]; found [3.0, 6.0, 9.0, 15.0]",
+      "file": "datasets/external/gfs_g0/dev/2022/gfs_2022112918_cropped.nc"
+    },
+    "2022113006": {
+      "error": "u10 nonfinite",
+      "file": "datasets/external/gfs_g0/dev/2022/gfs_2022113006_cropped.nc"
+    }
+  },
+  "retry_enabled": false,
+  "stats": {
+    "successful_message_download_bytes": 222526985575,
+    "successful_message_download_gb": 222.526986,
+    "download_measurement_note": "Unique successful message payloads; historical failed/repeated transfers were not metered.",
+    "dev_storage_bytes": 954144878,
+    "dev_storage_gb": 0.954145,
+    "sealed_storage_bytes": 98132763339,
+    "sealed_storage_gb": 98.132763,
+    "gb_definition": "GB = 1000000000 bytes"
+  },
+  "annual_summary": {
+    "2021": {
+      "denominator_cycles": 1460,
+      "complete_cycles": 1453,
+      "missing_cycles": 7,
+      "incomplete_cycles": 0,
+      "dev_cropped_files": 1453,
+      "dev_bytes": 317332958,
+      "completeness_pct": 99.520548
+    },
+    "2022": {
+      "denominator_cycles": 1460,
+      "complete_cycles": 1458,
+      "missing_cycles": 0,
+      "incomplete_cycles": 2,
+      "dev_cropped_files": 1460,
+      "dev_bytes": 318916923,
+      "completeness_pct": 99.863014
+    },
+    "2023": {
+      "denominator_cycles": 1460,
+      "complete_cycles": 1460,
+      "missing_cycles": 0,
+      "incomplete_cycles": 0,
+      "dev_cropped_files": 1460,
+      "dev_bytes": 317894997,
+      "completeness_pct": 100.0
+    }
+  },
+  "sealed_annual_summary": {
+    "2024": {
+      "message_count": 43920,
+      "bytes": 42334082140
+    },
+    "2025": {
+      "message_count": 43800,
+      "bytes": 42059400318
+    },
+    "2026": {
+      "message_count": 14445,
+      "bytes": 13739280881
+    }
+  },
+  "sealed_year_basis": "valid_time_utc including crossover messages",
+  "sealed_validation": "Index, registered SHA256, file existence and byte lengths only; no sealed decode, crop or field statistics.",
+  "verified_message_count": 233310,
+  "verified_dev_cycles": 4371,
+  "user_decision": "Stop retries for seven AWS absent cycles. Additional validation issues are reported separately and are not presumed accepted.",
+  "phase": "B1",
+  "pending_cycles": 0,
+  "done_cycles": 7777,
+  "skipped_cycles": 7
+}

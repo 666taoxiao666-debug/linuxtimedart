@@ -1,0 +1,20 @@
+{
+  "phase": "G1c",
+  "status": "development_preflight",
+  "arms": ["B", "N", "I_pool", "I", "M", "M_self", "I_w", "R_sp", "M_amp", "M_phase"],
+  "seeds": [2024, 2025, 2026],
+  "farms": ["Kelmarsh", "Penmanshiel"],
+  "path_T": {
+    "Kelmarsh": {"train": ["2016-05-01", "2021-01-01"], "val": ["2021-01-01", "2022-01-01"], "test": ["2022-01-01", "2023-01-01"]},
+    "Penmanshiel": {"train": ["2016-08-01", "2020-01-01"], "val": ["2020-01-01", "2021-01-01"], "test": ["2021-01-01", "2022-01-01"]}
+  },
+  "path_A": {
+    "train": ["2021-01-01", "2022-07-01"], "val": ["2022-07-01", "2023-01-01"], "test": ["2023-01-01", "2024-01-01"]
+  },
+  "time": {"input_hours": 24, "horizon": 4, "stride": 3, "release_delay_hours": 6, "leads": [3, 6, 9, 12, 15, 18], "sealed_valid_time": "2024-01-01"},
+  "fit": {"max_epochs": 40, "patience": 5, "batch_size": 64, "learning_rate": 0.001, "weight_decay": 0.0001, "mae_weight": 0.8, "mse_weight": 0.2, "grad_clip": 1.0, "eta_min": 0.00001, "blocks": 2, "ff_dim": 32, "dropout": 0.1, "norm_eps": 0.001},
+  "selection": {"candidates": ["I", "I_w", "R_sp"], "metric": "mean_seed_validation_mae", "tie_break": "listed_order"},
+  "statistics": {"questions": ["Q1", "Q3", "Q4", "Q5"], "block_length": 8, "sensitivity_block_length": 56, "replicates": 5000, "seed": 2024, "alpha": 0.05, "cross_farm_p": "max", "method_relative_gain": 0.015},
+  "diagnostics": {"splits": ["train", "val"], "negative_control": "same_season_same_age_different_day", "interpretation": "descriptive_effective_shift"},
+  "execution": {"formal_fits": 60, "requires_B1_acceptance": true, "requires_committed_protocol_lock": true, "resume": false, "test_after_all_fits_frozen": true}
+}

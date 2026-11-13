@@ -1,0 +1,19 @@
+{
+  "source_sha256": {
+    "models/NWPDisplacement.py": "f7c1ac796514d5dcc344a605d1fee40834bd92d0583322910eeb4d3a82e0bde9",
+    "tests/test_nwp_displacement.py": "028aaad20ec629dc8a8f04e9c009d4f77b42d2cbde2296160e1c87948acfddfc",
+    "scripts/audit_gfs_g0.py": "917a5b51474ecfcb58c663750a5da0ee71a9ae015b45ea0fed467968f071316a",
+    "tests/test_audit_gfs_g0.py": "489e1cb27dac947fad6e08969a067237a5d0d6c012fc2427c5f0651b43c92617",
+    "scripts/prepare_g1_batches.py": "b07974d71917cc67b588f4dd9cb4d09d8a0ef52763835a7073dcbbb7bf7fa30e",
+    "scripts/train_g1.py": "88ab3b9ed08adaca39cffbac73849a8fe703fe79a15bab3bfa22c0c21f5491f2",
+    "tests/test_g1_pipeline.py": "e172607b9bfc12b5bffb9d469729b96d663c089bb869f4f1b0746be08fcfd2d0",
+    "configs/g1_protocol.json": "632b9b92df5a3e6a4c7ff78b36fd50c296a40f39c7ff70970db40e50807839ee"
+  },
+  "server_directory": "/tmp/g1c_review_76",
+  "tests": {
+    "module": 29,
+    "audit": 15,
+    "pipeline": 14
+  },
+  "formal_fits": 0
+}
