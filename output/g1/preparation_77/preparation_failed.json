@@ -1,0 +1,26 @@
+{
+  "status": "PREPARATION_FAILED",
+  "phase": "Penmanshiel load_development",
+  "error": "ImportError: read_badc_csv imported from scripts.audit_d2_feasibility_v34_r2 where it is not defined",
+  "formal_fits": 0,
+  "formal_launch_exists": false,
+  "complete_exists": false,
+  "kelmarsh_counts": {
+    "train": 75024,
+    "val": 15680,
+    "test": 16949
+  },
+  "kelmarsh_lead_audit": {
+    "status": "PASS",
+    "min_read_lead": 3.0,
+    "max_read_lead": 18.0,
+    "origins": 58465
+  },
+  "protocol_sha256": "92e93dd4d1b62b1654c02bbb95299019f507903f13ef6fe71d2f6687003e8ed4",
+  "source_code": {
+    "scripts/prepare_g1_batches.py": "e30648aa9f91aa0bf73b581daf2fc43147835279ddd56120b14a15d086eabf71",
+    "scripts/train_g1.py": "c9d7378818e3360b3bc2c017fab51f641bb2ef6dc9b83195d982115e1d046cd3",
+    "models/NWPDisplacement.py": "f7c1ac796514d5dcc344a605d1fee40834bd92d0583322910eeb4d3a82e0bde9"
+  },
+  "recorded_utc": "2026-11-13T14:23:50.150953+00:00"
+}

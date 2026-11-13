@@ -25,15 +25,19 @@
 需要用户决定: 无（流量缺口用户已于 2026-11-13 接受）
 
 ## Codex → Claude
-<!-- 由Codex覆盖。2026-11-13：第77次G1c R2，验收及脚本收尾 -->
-轮次: R2/2 | 阶段: G1c | 分支: exp/G1 | 提交号: 上轮c1771e7已推送；本轮见git log
-审查结论: R1-B1/B2处理通过，无未决方案阻断；docs/review/G1c-R2-codex.md。
+<!-- 由Codex覆盖。2026-11-13：第77次G1c R2，B1通过隔离验收，真实准备技术失败后停止 -->
+轮次: R2/2 | 阶段: G1c | 分支: exp/G1 | 提交号: fd3ee91已推送；失败证据提交见git log
+审查结论: R1-B1/B2处理通过；新增执行失败R2-E1，见docs/review/G1c-R2-codex.md；不进入第三轮方案审查。
 已直接修复: 无超范围改动；按批准范围实现derive_b1_acceptance、实际读取时效门禁、准备产物哈希及评估报告补齐。
 运行信息: B1验收output/gfs_g0/b1/acceptance.json；绑定原核验报告6f2dbba3…，原FAIL报告保留。
 关键数字: complete_cycles=4371；excluded=9（7缺失、2字段不完整），统一cycle_ok=0、不回退、不删除标签；2021/2022/2023完整率99.52%/99.86%/100%。
 关键数字: 成功唯一载荷222526985575字节；下载总量未核实，user_accepted_gap=2026-11-13。日志假设场景估算230137867780字节，不是可证明的上界；算法和源日志哈希见traffic_estimate.json。
 关键数字: 服务器验收核验16/16（1.066秒）、最终流水线16/16（1.378秒），无跳过；合成评估报告可序列化，真实准备另记。
-运行信息: 路径T；协议SHA256=92e93dd4d1b62b1654c02bbb95299019f507903f13ef6fe71d2f6687003e8ed4，train_g1.PROTOCOL_SHA256固定；提交锁定后准备，全部门禁通过才启动60拟合。
-运行信息: 当前真实拟合0；不下载/安装/解码封存；原160MB manifest_b1.json未提交。
-需要 Claude 做的: 本轮执行结束后复核验收名单、脚本和真实结果；当前无需再批准相同范围。
-需要用户决定: 无。
+运行信息: 路径T；协议SHA256=92e93dd4d1b62b1654c02bbb95299019f507903f13ef6fe71d2f6687003e8ed4，train_g1.PROTOCOL_SHA256固定；服务器提交与哈希一致。
+运行信息: worktree=/home/XT/nuist/pythoncode/TimeDARTFirst_G1_fd3ee91；run=/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/G1/g1c_fd3ee91_r1；准备PID385020已退出。
+运行信息: scripts/prepare_g1_batches.py:314从错误模块导入read_badc_csv/column，Penmanshiel阶段ImportError；回溯和启动回执见output/g1/preparation_77/。
+关键数字: Kelmarsh准备完成，train/val/test=75024/15680/16949；58465小时读取时效3–18h，37项校准均rma。Penmanshiel未完成。
+运行信息: prepared/complete.json和formal_launch.json均不存在；真实拟合0/60，无模型冻结或最终评估；按第77次失败即停，不自动重跑。
+运行信息: 不下载/安装/解码封存；原160MB manifest_b1.json未提交；原始失败现场保留。
+需要 Claude 做的: 复核验收及执行失败；最小修复为改从scripts.screen_kelmarsh_upstream_observations导入两个函数，补实际适配预检，明确后续准备恢复范围。
+需要用户决定: 本轮已按失败即停结束；下一步修复并重新准备需明确继续执行授权，60拟合预算尚未消耗。

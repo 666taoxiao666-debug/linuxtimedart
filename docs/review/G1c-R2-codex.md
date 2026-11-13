@@ -4,7 +4,7 @@
 
 ## 最终评级
 
-B：R1-B1/B2处理通过；不将此前FAIL报告改写为原始数据全通过。
+B：R1-B1/B2处理通过；真实准备发生技术失败，不能启动正式拟合。不将此前FAIL报告改写为原始数据全通过。
 
 ## 必须立即修复 Top 5
 
@@ -30,4 +30,13 @@ STAGE_PLAN关于坏周期“影响可忽略”仅为预期，不作为已证实�
 新增测试初次replicates=20低于既有函数最小100，修正夹具为100；正式协议始终5000。隔离目录缺失既有ramp_diagnostics.py，补齐部署后通过，未改该模块。
 验收名单SHA256=1cf9022d4a2612d39abf8c5860d9753fa11aed3c80a6453ba83188f86dea1525；协议SHA256=92e93dd4d1b62b1654c02bbb95299019f507903f13ef6fe71d2f6687003e8ed4。
 日志假设场景估算230137867780字节；算法、假设和源日志哈希已入traffic_estimate.json，不能据此证明总流量上限。
-正式拟合未启动；下一步在提交后的隔离工作树进行真实数据准备，任何实际门禁失败即停止交回。
+正式拟合未启动；在提交后的隔离工作树完成了真实准备尝试，失败后已停止，见下文。
+
+## 真实准备失败（不进入第三轮方案审查）
+
+R2-E1【阻断】【确定缺陷】Penmanshiel准备导入了非模块级函数，触发ImportError —— scripts/prepare_g1_batches.py:314；audit_d2_feasibility_v34_r2.py:165仅在函数内导入这两个名字。
+严重级别P1；影响：准备不完整，正式训练不能启动；置信度高，服务器真实回溯见output/g1/preparation_77/preparation.log。
+最小修复：直接从scripts.screen_kelmarsh_upstream_observations导入read_badc_csv、column，并补真实导入/元数据适配预检；不改数据、年份或模型。
+本轮按第77次“任何一步失败就停下交回”保留现场，未修后重启；该新技术失败不撤销R1-B1/B2处理结论。
+Kelmarsh已完成：train/val/test=75024/15680/16949窗口；58465小时审计读取3–18h；37项校准均rma。
+Penmanshiel未完成，prepared/complete.json不存在；formal_launch.json不存在，真实拟合0/60，未冻结模型或评估。
