@@ -39,6 +39,13 @@ class AuditTests(unittest.TestCase):
         ds = ds.isel(step=slice(0, 1)).assign_coords(time=np.datetime64('2023-12-31T18'))
         ds = ds.assign_coords(valid_time=('step', ds.time.values+ds.step.values))
         self.assertTrue(a.inspect_dataset(ds, '2023123118', mode='B1')['complete'])
+        scalar = ds.isel(step=0)
+        self.assertTrue(a.inspect_dataset(scalar, '2023123118', mode='B1')['complete'])
+        scalar = scalar.assign_coords(time=np.datetime64('2024-01-01T00'),
+                                      valid_time=np.datetime64('2024-01-01T03'))
+        result = a.inspect_dataset(scalar, '2024010100', mode='B1')
+        self.assertIn('sealed_valid_time_refused', result['errors'])
+        self.assertEqual(result['ranges'], {})
 
     def test_b1_two_reported_failure_modes(self):
         ds = fixture()

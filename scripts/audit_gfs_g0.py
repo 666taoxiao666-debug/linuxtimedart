@@ -40,6 +40,11 @@ def inspect_dataset(ds, cycle, mode='B2'):
             errors.append('missing_coordinate:' + key)
     if errors:
         return result
+    # cfgrib squeezes a single lead into a scalar coordinate. Restore only
+    # its dimension; the sealed-time guard below still precedes value access.
+    if mode == 'B1' and ds.step.ndim == 0 and ds.valid_time.ndim == 0:
+        ds = ds.expand_dims('step')
+        ds = ds.assign_coords(valid_time=('step', np.atleast_1d(ds.valid_time.values)))
     time = ds.time.values
     step = ds.step.values
     valid = ds.valid_time.values
@@ -209,7 +214,7 @@ def audit_b1(root, manifest_path):
         if valid != expected_valid or int(lead[1:]) not in LEADS or var not in ('UGRD', 'VGRD', 'PRMSL'):
             sealed_failures.append(dict(key=key, error='message_identity_mismatch'))
             continue
-        path = root/'sealed_raw'/str(valid)[:4]/f'{cycle}_{lead}_{var}_{level.replace(" ", "_")}.grib2'
+        path = root/'sealed_raw'/cycle[:4]/f'{cycle}_{lead}_{var}_{level.replace(" ", "_")}.grib2'
         if not path.resolve().is_relative_to(root/'sealed_raw'):
             raise ValueError('Sealed path outside approved root')
         expected_paths.add(path.resolve())

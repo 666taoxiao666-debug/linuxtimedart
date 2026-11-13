@@ -1,0 +1,742 @@
+B1 development 2021 checked
+B1 development 2022 checked
+B1 development 2023 checked
+B1 sealed bytes hashed: 10000
+B1 sealed bytes hashed: 20000
+B1 sealed bytes hashed: 30000
+B1 sealed bytes hashed: 40000
+B1 sealed bytes hashed: 50000
+B1 sealed bytes hashed: 60000
+B1 sealed bytes hashed: 70000
+B1 sealed bytes hashed: 80000
+B1 sealed bytes hashed: 90000
+B1 sealed bytes hashed: 100000
+{
+  "status": "FAIL",
+  "task": "G0_GFS_B1",
+  "completed_at_utc": "2026-11-13T05:11:16.484370+00:00",
+  "script_sha256": "917a5b51474ecfcb58c663750a5da0ee71a9ae015b45ea0fed467968f071316a",
+  "manifest_sha256": "39722d346007526c66f4fc0347358f8c4d6c1308ecd7c54679f592abd0663ac9",
+  "manifest_unchanged": true,
+  "annual": {
+    "2021": {
+      "denominator": 1460,
+      "complete": 1453,
+      "completeness_pct": 99.52054794520548,
+      "passes_95pct": true
+    },
+    "2022": {
+      "denominator": 1460,
+      "complete": 1458,
+      "completeness_pct": 99.86301369863014,
+      "passes_95pct": true
+    },
+    "2023": {
+      "denominator": 1460,
+      "complete": 1459,
+      "completeness_pct": 99.93150684931507,
+      "passes_95pct": true
+    }
+  },
+  "failures": [
+    "2022112918",
+    "2022113006",
+    "2023123118"
+  ],
+  "sealed_failures": [
+    {
+      "key": "2023123106:f018:VGRD:100 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2023123106:f018:UGRD:100 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2023123106:f018:UGRD:10 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2023123106:f018:VGRD:10 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2023123106:f018:PRMSL:mean sea level",
+      "error": "missing_file"
+    },
+    {
+      "key": "2023123112:f012:PRMSL:mean sea level",
+      "error": "missing_file"
+    },
+    {
+      "key": "2023123112:f012:UGRD:10 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2023123112:f012:VGRD:100 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2023123112:f012:UGRD:100 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2023123112:f012:VGRD:10 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2023123112:f015:VGRD:10 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2023123112:f015:VGRD:100 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2023123112:f015:UGRD:100 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2023123112:f018:VGRD:10 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2023123112:f018:PRMSL:mean sea level",
+      "error": "missing_file"
+    },
+    {
+      "key": "2023123112:f018:UGRD:10 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2023123112:f018:UGRD:100 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2023123112:f015:UGRD:10 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2023123112:f018:VGRD:100 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2023123112:f015:PRMSL:mean sea level",
+      "error": "missing_file"
+    },
+    {
+      "key": "2023123118:f006:UGRD:10 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2023123118:f006:VGRD:10 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2023123118:f006:UGRD:100 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2023123118:f006:VGRD:100 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2023123118:f006:PRMSL:mean sea level",
+      "error": "missing_file"
+    },
+    {
+      "key": "2023123118:f009:VGRD:10 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2023123118:f009:UGRD:100 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2023123118:f009:UGRD:10 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2023123118:f009:PRMSL:mean sea level",
+      "error": "missing_file"
+    },
+    {
+      "key": "2023123118:f015:PRMSL:mean sea level",
+      "error": "missing_file"
+    },
+    {
+      "key": "2023123118:f012:VGRD:100 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2023123118:f015:UGRD:10 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2023123118:f012:PRMSL:mean sea level",
+      "error": "missing_file"
+    },
+    {
+      "key": "2023123118:f018:PRMSL:mean sea level",
+      "error": "missing_file"
+    },
+    {
+      "key": "2023123118:f015:UGRD:100 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2023123118:f018:UGRD:10 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2023123118:f018:VGRD:10 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2023123118:f012:UGRD:10 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2023123118:f015:VGRD:100 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2023123118:f018:VGRD:100 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2023123118:f012:VGRD:10 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2023123118:f009:VGRD:100 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2023123118:f012:UGRD:100 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2023123118:f018:UGRD:100 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2023123118:f015:VGRD:10 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2024123106:f018:VGRD:10 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2024123106:f018:PRMSL:mean sea level",
+      "error": "missing_file"
+    },
+    {
+      "key": "2024123106:f018:UGRD:10 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2024123106:f018:VGRD:100 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2024123106:f018:UGRD:100 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2024123112:f012:UGRD:10 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2024123112:f015:UGRD:10 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2024123112:f012:UGRD:100 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2024123112:f015:VGRD:10 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2024123112:f012:VGRD:10 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2024123112:f015:UGRD:100 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2024123112:f018:PRMSL:mean sea level",
+      "error": "missing_file"
+    },
+    {
+      "key": "2024123112:f015:VGRD:100 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2024123112:f015:PRMSL:mean sea level",
+      "error": "missing_file"
+    },
+    {
+      "key": "2024123112:f018:VGRD:10 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2024123112:f012:PRMSL:mean sea level",
+      "error": "missing_file"
+    },
+    {
+      "key": "2024123112:f018:UGRD:100 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2024123112:f018:VGRD:100 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2024123112:f018:UGRD:10 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2024123112:f012:VGRD:100 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2024123118:f006:UGRD:10 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2024123118:f006:VGRD:10 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2024123118:f006:PRMSL:mean sea level",
+      "error": "missing_file"
+    },
+    {
+      "key": "2024123118:f006:VGRD:100 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2024123118:f009:PRMSL:mean sea level",
+      "error": "missing_file"
+    },
+    {
+      "key": "2024123118:f009:VGRD:100 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2024123118:f006:UGRD:100 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2024123118:f012:UGRD:10 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2024123118:f015:UGRD:10 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2024123118:f009:UGRD:10 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2024123118:f015:PRMSL:mean sea level",
+      "error": "missing_file"
+    },
+    {
+      "key": "2024123118:f012:PRMSL:mean sea level",
+      "error": "missing_file"
+    },
+    {
+      "key": "2024123118:f009:UGRD:100 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2024123118:f012:VGRD:100 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2024123118:f009:VGRD:10 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2024123118:f018:PRMSL:mean sea level",
+      "error": "missing_file"
+    },
+    {
+      "key": "2024123118:f012:VGRD:10 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2024123118:f015:VGRD:100 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2024123118:f018:UGRD:10 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2024123118:f015:UGRD:100 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2024123118:f018:VGRD:100 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2024123118:f018:VGRD:10 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2024123118:f018:UGRD:100 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2024123118:f012:UGRD:100 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2024123118:f015:VGRD:10 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2025123106:f018:UGRD:10 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2025123106:f018:PRMSL:mean sea level",
+      "error": "missing_file"
+    },
+    {
+      "key": "2025123106:f018:UGRD:100 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2025123106:f018:VGRD:10 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2025123106:f018:VGRD:100 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2025123112:f012:PRMSL:mean sea level",
+      "error": "missing_file"
+    },
+    {
+      "key": "2025123112:f012:VGRD:10 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2025123112:f012:UGRD:100 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2025123112:f012:UGRD:10 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2025123112:f015:PRMSL:mean sea level",
+      "error": "missing_file"
+    },
+    {
+      "key": "2025123112:f015:UGRD:100 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2025123112:f015:VGRD:100 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2025123112:f015:UGRD:10 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2025123112:f015:VGRD:10 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2025123112:f018:VGRD:100 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2025123112:f018:VGRD:10 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2025123112:f018:UGRD:100 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2025123112:f012:VGRD:100 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2025123112:f018:UGRD:10 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2025123112:f018:PRMSL:mean sea level",
+      "error": "missing_file"
+    },
+    {
+      "key": "2025123118:f006:PRMSL:mean sea level",
+      "error": "missing_file"
+    },
+    {
+      "key": "2025123118:f006:VGRD:10 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2025123118:f006:UGRD:10 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2025123118:f009:UGRD:10 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2025123118:f009:UGRD:100 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2025123118:f006:UGRD:100 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2025123118:f009:VGRD:10 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2025123118:f009:VGRD:100 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2025123118:f012:PRMSL:mean sea level",
+      "error": "missing_file"
+    },
+    {
+      "key": "2025123118:f009:PRMSL:mean sea level",
+      "error": "missing_file"
+    },
+    {
+      "key": "2025123118:f006:VGRD:100 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2025123118:f012:VGRD:100 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2025123118:f012:VGRD:10 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2025123118:f018:UGRD:10 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2025123118:f012:UGRD:10 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2025123118:f012:UGRD:100 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2025123118:f018:VGRD:10 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2025123118:f015:VGRD:10 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2025123118:f015:UGRD:100 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2025123118:f015:UGRD:10 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2025123118:f015:VGRD:100 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2025123118:f015:PRMSL:mean sea level",
+      "error": "missing_file"
+    },
+    {
+      "key": "2025123118:f018:UGRD:100 m above ground",
+      "error": "missing_file"
+    },
+    {
+      "key": "2025123118:f018:PRMSL:mean sea level",
+      "error": "missing_file"
+    },
+    {
+      "key": "2025123118:f018:VGRD:100 m above ground",
+      "error": "missing_file"
+    }
+  ],
+  "unexpected_sealed_files": [
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2023/2023123106_f018_PRMSL_mean_sea_level.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2023/2023123106_f018_UGRD_100_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2023/2023123106_f018_UGRD_10_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2023/2023123106_f018_VGRD_100_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2023/2023123106_f018_VGRD_10_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2023/2023123112_f012_PRMSL_mean_sea_level.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2023/2023123112_f012_UGRD_100_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2023/2023123112_f012_UGRD_10_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2023/2023123112_f012_VGRD_100_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2023/2023123112_f012_VGRD_10_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2023/2023123112_f015_PRMSL_mean_sea_level.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2023/2023123112_f015_UGRD_100_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2023/2023123112_f015_UGRD_10_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2023/2023123112_f015_VGRD_100_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2023/2023123112_f015_VGRD_10_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2023/2023123112_f018_PRMSL_mean_sea_level.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2023/2023123112_f018_UGRD_100_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2023/2023123112_f018_UGRD_10_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2023/2023123112_f018_VGRD_100_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2023/2023123112_f018_VGRD_10_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2023/2023123118_f006_PRMSL_mean_sea_level.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2023/2023123118_f006_UGRD_100_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2023/2023123118_f006_UGRD_10_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2023/2023123118_f006_VGRD_100_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2023/2023123118_f006_VGRD_10_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2023/2023123118_f009_PRMSL_mean_sea_level.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2023/2023123118_f009_UGRD_100_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2023/2023123118_f009_UGRD_10_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2023/2023123118_f009_VGRD_100_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2023/2023123118_f009_VGRD_10_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2023/2023123118_f012_PRMSL_mean_sea_level.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2023/2023123118_f012_UGRD_100_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2023/2023123118_f012_UGRD_10_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2023/2023123118_f012_VGRD_100_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2023/2023123118_f012_VGRD_10_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2023/2023123118_f015_PRMSL_mean_sea_level.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2023/2023123118_f015_UGRD_100_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2023/2023123118_f015_UGRD_10_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2023/2023123118_f015_VGRD_100_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2023/2023123118_f015_VGRD_10_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2023/2023123118_f018_PRMSL_mean_sea_level.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2023/2023123118_f018_UGRD_100_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2023/2023123118_f018_UGRD_10_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2023/2023123118_f018_VGRD_100_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2023/2023123118_f018_VGRD_10_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2024/2024123106_f018_PRMSL_mean_sea_level.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2024/2024123106_f018_UGRD_100_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2024/2024123106_f018_UGRD_10_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2024/2024123106_f018_VGRD_100_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2024/2024123106_f018_VGRD_10_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2024/2024123112_f012_PRMSL_mean_sea_level.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2024/2024123112_f012_UGRD_100_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2024/2024123112_f012_UGRD_10_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2024/2024123112_f012_VGRD_100_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2024/2024123112_f012_VGRD_10_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2024/2024123112_f015_PRMSL_mean_sea_level.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2024/2024123112_f015_UGRD_100_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2024/2024123112_f015_UGRD_10_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2024/2024123112_f015_VGRD_100_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2024/2024123112_f015_VGRD_10_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2024/2024123112_f018_PRMSL_mean_sea_level.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2024/2024123112_f018_UGRD_100_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2024/2024123112_f018_UGRD_10_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2024/2024123112_f018_VGRD_100_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2024/2024123112_f018_VGRD_10_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2024/2024123118_f006_PRMSL_mean_sea_level.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2024/2024123118_f006_UGRD_100_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2024/2024123118_f006_UGRD_10_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2024/2024123118_f006_VGRD_100_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2024/2024123118_f006_VGRD_10_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2024/2024123118_f009_PRMSL_mean_sea_level.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2024/2024123118_f009_UGRD_100_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2024/2024123118_f009_UGRD_10_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2024/2024123118_f009_VGRD_100_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2024/2024123118_f009_VGRD_10_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2024/2024123118_f012_PRMSL_mean_sea_level.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2024/2024123118_f012_UGRD_100_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2024/2024123118_f012_UGRD_10_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2024/2024123118_f012_VGRD_100_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2024/2024123118_f012_VGRD_10_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2024/2024123118_f015_PRMSL_mean_sea_level.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2024/2024123118_f015_UGRD_100_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2024/2024123118_f015_UGRD_10_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2024/2024123118_f015_VGRD_100_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2024/2024123118_f015_VGRD_10_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2024/2024123118_f018_PRMSL_mean_sea_level.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2024/2024123118_f018_UGRD_100_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2024/2024123118_f018_UGRD_10_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2024/2024123118_f018_VGRD_100_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2024/2024123118_f018_VGRD_10_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2025/2025123106_f018_PRMSL_mean_sea_level.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2025/2025123106_f018_UGRD_100_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2025/2025123106_f018_UGRD_10_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2025/2025123106_f018_VGRD_100_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2025/2025123106_f018_VGRD_10_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2025/2025123112_f012_PRMSL_mean_sea_level.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2025/2025123112_f012_UGRD_100_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2025/2025123112_f012_UGRD_10_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2025/2025123112_f012_VGRD_100_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2025/2025123112_f012_VGRD_10_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2025/2025123112_f015_PRMSL_mean_sea_level.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2025/2025123112_f015_UGRD_100_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2025/2025123112_f015_UGRD_10_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2025/2025123112_f015_VGRD_100_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2025/2025123112_f015_VGRD_10_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2025/2025123112_f018_PRMSL_mean_sea_level.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2025/2025123112_f018_UGRD_100_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2025/2025123112_f018_UGRD_10_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2025/2025123112_f018_VGRD_100_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2025/2025123112_f018_VGRD_10_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2025/2025123118_f006_PRMSL_mean_sea_level.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2025/2025123118_f006_UGRD_100_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2025/2025123118_f006_UGRD_10_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2025/2025123118_f006_VGRD_100_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2025/2025123118_f006_VGRD_10_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2025/2025123118_f009_PRMSL_mean_sea_level.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2025/2025123118_f009_UGRD_100_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2025/2025123118_f009_UGRD_10_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2025/2025123118_f009_VGRD_100_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2025/2025123118_f009_VGRD_10_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2025/2025123118_f012_PRMSL_mean_sea_level.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2025/2025123118_f012_UGRD_100_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2025/2025123118_f012_UGRD_10_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2025/2025123118_f012_VGRD_100_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2025/2025123118_f012_VGRD_10_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2025/2025123118_f015_PRMSL_mean_sea_level.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2025/2025123118_f015_UGRD_100_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2025/2025123118_f015_UGRD_10_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2025/2025123118_f015_VGRD_100_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2025/2025123118_f015_VGRD_10_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2025/2025123118_f018_PRMSL_mean_sea_level.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2025/2025123118_f018_UGRD_100_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2025/2025123118_f018_UGRD_10_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2025/2025123118_f018_VGRD_100_m_above_ground.grib2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/sealed_raw/2025/2025123118_f018_VGRD_10_m_above_ground.grib2"
+  ],
+  "budget": {
+    "download_successful_payload_bytes": 222526985575,
+    "download_total_bytes_verified": false,
+    "download_note": "Unique successful message payloads; historical failed/repeated transfers were not metered.",
+    "dev_storage_bytes": 2372345423,
+    "sealed_storage_bytes": 98132763339,
+    "dev_storage_pass": true,
+    "sealed_storage_pass": true,
+    "successful_payload_under_limit": true
+  },
+  "sealed_files_hashed": 102030,
+  "sealed_bytes_hashed": 98002324845,
+  "limitations": [
+    "Development NetCDF hashes computed here: manifest supplies sizes but no registered NetCDF hashes.",
+    "Unique successful download payload excludes unmetered historical failed/repeated traffic.",
+    "Sealed content was hashed only; no GRIB decode or numerical interpretation."
+  ]
+}
