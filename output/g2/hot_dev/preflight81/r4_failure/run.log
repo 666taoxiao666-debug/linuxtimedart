@@ -1,0 +1,23 @@
+[SCADA] 2016 complete
+[SCADA] 2017 complete
+[SCADA] 2018 complete
+[SCADA] 2019 complete
+[SCADA] 2020 complete
+Traceback (most recent call last):
+  File "/home/XT/nuist/pythoncode/TimeDARTFirst_G2_bd78e5c/scripts/prepare_hot_dev.py", line 355, in run
+    frame, meta, bounds = prepare_scada(directory, out)
+  File "/home/XT/nuist/pythoncode/TimeDARTFirst_G2_bd78e5c/scripts/prepare_hot_dev.py", line 161, in prepare_scada
+    ticks = merge_boundary(carry, read_month(z, year, month, sid_to_unit))
+  File "/home/XT/nuist/pythoncode/TimeDARTFirst_G2_bd78e5c/scripts/prepare_hot_dev.py", line 94, in merge_boundary
+    raise ValueError('Conflicting SCADA boundary observations')
+ValueError: Conflicting SCADA boundary observations
+Traceback (most recent call last):
+  File "/home/XT/nuist/pythoncode/TimeDARTFirst_G2_bd78e5c/scripts/prepare_hot_dev.py", line 398, in <module>
+    run(args.data_root.resolve(), args.output)
+  File "/home/XT/nuist/pythoncode/TimeDARTFirst_G2_bd78e5c/scripts/prepare_hot_dev.py", line 355, in run
+    frame, meta, bounds = prepare_scada(directory, out)
+  File "/home/XT/nuist/pythoncode/TimeDARTFirst_G2_bd78e5c/scripts/prepare_hot_dev.py", line 161, in prepare_scada
+    ticks = merge_boundary(carry, read_month(z, year, month, sid_to_unit))
+  File "/home/XT/nuist/pythoncode/TimeDARTFirst_G2_bd78e5c/scripts/prepare_hot_dev.py", line 94, in merge_boundary
+    raise ValueError('Conflicting SCADA boundary observations')
+ValueError: Conflicting SCADA boundary observations

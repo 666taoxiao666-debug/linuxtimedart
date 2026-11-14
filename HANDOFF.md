@@ -24,7 +24,7 @@
 需要用户决定: 无
 
 ## Codex → Claude
-<!-- 由Codex覆盖。2026-11-14：A已完成核验；B最后额度修复后r4运行中 -->
+<!-- 由Codex覆盖。2026-11-14：A已完成核验；B的r4失败，取回证据后停止 -->
 轮次: R2/2执行恢复 | 阶段: G2a | 分支: exp/G2 | 提交号: 1b6eb2b（月边界）；c12d799（空小时保留），均已推送
 审查结论: 按第81次批准执行，不新增方案轮次；见docs/review/G2a-R2-codex.md“第81次执行”。
 已直接修复: 1b6eb2b先按时间键隔离>=2024再转数值；跨月/年缓存末小时，完全相同重复折叠，冲突拒绝。
@@ -42,6 +42,9 @@
 运行信息: B的r3在2017-07-01日期简写解析处失败；bd78e5c只将严格YYYY-MM-DD补00:00:00，13项本地/服务器测试通过，额外最小修复额度2/2已用完。
 运行信息: 07:00 UTC在新工作树TimeDARTFirst_G2_bd78e5c启动PID613651，目录/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/G2/hot_dev_bd78e5c_r4/prepared；回执在preflight81/r4，r1–r3保留。
 运行信息: A协议SHA256=7280563d6404a45aefc3844ae61706746be74aaa8274fd7b541df0ec19ee199b，仍是原12拟合及12份B/N复用。
-需要 Claude 做的: 复核A的结果及R2-E2/E3最小修复；B的r4完成后再冻结G2b，不提前访问封存年；再失败则停下交回，不追加修复重跑额度。
+运行信息: 2026-11-14 07:25 UTC只读查询确认PID613651已退出；r4有failed.json，无completed.json，未启动替代实例。
+失败证据: ValueError: Conflicting SCADA boundary observations；scripts/prepare_hot_dev.py:94的merge_boundary按批准规则拒绝冲突，日志最后完成年份为2020；日志未给出具体冲突时间键，未进一步读取原始数据。
+证据取回: output/g2/hot_dev/preflight81/r4_failure/{failed.json,run.log}，本地与服务器SHA256逐文件一致；分别为2067c47767087bb55169791d7e2e26cfee7da93aac315813ac181547e89e4610、5f4451f16212941580a51dfb2d249b45b225c3d565698489a56a5980f28aade5。
+需要 Claude 做的: 复核A结果及B失败证据，决定后续冲突调查方案；B未完成，不能据此冻结或启动G2b确认。未删除、平均或择取冲突值，未追加修复/重跑。
 后续执行: r2失败标记和诊断已取回output/g2/hot_dev/preflight81/r2_failure/；A/B各自完成后核验哈希、交回4组CI/p及HoT开发年审计，不能把启动当完成。
-需要用户决定: 无；A完成，B的r4待验收。main、G1冻结产物及160MB原始清单未动。
+需要用户决定: 本轮无；已按用户“失败取回后停下交回”停止，后续处理需另行批准。main、G1冻结产物及160MB原始清单未动。
