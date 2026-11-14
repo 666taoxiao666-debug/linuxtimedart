@@ -1,0 +1,174 @@
+{
+  "status": "PASS_B2_POINT_PREFLIGHT",
+  "records": [
+    {
+      "cycle": "2016-05-01T00",
+      "age": 6,
+      "mask_fraction": 0.8461538553237915,
+      "min_read_lead": 3.0,
+      "max_read_lead": 15.0,
+      "left_valid": true,
+      "right_valid": true
+    },
+    {
+      "cycle": "2016-05-01T00",
+      "age": 7,
+      "mask_fraction": 0.9230769276618958,
+      "min_read_lead": 3.0,
+      "max_read_lead": 15.0,
+      "left_valid": true,
+      "right_valid": true
+    },
+    {
+      "cycle": "2016-05-01T00",
+      "age": 8,
+      "mask_fraction": 1.0,
+      "min_read_lead": 3.0,
+      "max_read_lead": 15.0,
+      "left_valid": true,
+      "right_valid": true
+    },
+    {
+      "cycle": "2016-05-01T00",
+      "age": 9,
+      "mask_fraction": 1.0,
+      "min_read_lead": 3.0,
+      "max_read_lead": 18.0,
+      "left_valid": true,
+      "right_valid": true
+    },
+    {
+      "cycle": "2016-05-01T00",
+      "age": 10,
+      "mask_fraction": 1.0,
+      "min_read_lead": 3.0,
+      "max_read_lead": 18.0,
+      "left_valid": true,
+      "right_valid": true
+    },
+    {
+      "cycle": "2016-05-01T00",
+      "age": 11,
+      "mask_fraction": 1.0,
+      "min_read_lead": 6.0,
+      "max_read_lead": 18.0,
+      "left_valid": true,
+      "right_valid": true
+    },
+    {
+      "cycle": "2018-01-01T06",
+      "age": 6,
+      "mask_fraction": 0.8461538553237915,
+      "min_read_lead": 3.0,
+      "max_read_lead": 15.0,
+      "left_valid": true,
+      "right_valid": true
+    },
+    {
+      "cycle": "2018-01-01T06",
+      "age": 7,
+      "mask_fraction": 0.9230769276618958,
+      "min_read_lead": 3.0,
+      "max_read_lead": 15.0,
+      "left_valid": true,
+      "right_valid": true
+    },
+    {
+      "cycle": "2018-01-01T06",
+      "age": 8,
+      "mask_fraction": 1.0,
+      "min_read_lead": 3.0,
+      "max_read_lead": 15.0,
+      "left_valid": true,
+      "right_valid": true
+    },
+    {
+      "cycle": "2018-01-01T06",
+      "age": 9,
+      "mask_fraction": 1.0,
+      "min_read_lead": 3.0,
+      "max_read_lead": 18.0,
+      "left_valid": true,
+      "right_valid": true
+    },
+    {
+      "cycle": "2018-01-01T06",
+      "age": 10,
+      "mask_fraction": 1.0,
+      "min_read_lead": 3.0,
+      "max_read_lead": 18.0,
+      "left_valid": true,
+      "right_valid": true
+    },
+    {
+      "cycle": "2018-01-01T06",
+      "age": 11,
+      "mask_fraction": 1.0,
+      "min_read_lead": 6.0,
+      "max_read_lead": 18.0,
+      "left_valid": true,
+      "right_valid": true
+    },
+    {
+      "cycle": "2020-12-30T12",
+      "age": 6,
+      "mask_fraction": 0.8461538553237915,
+      "min_read_lead": 3.0,
+      "max_read_lead": 15.0,
+      "left_valid": true,
+      "right_valid": true
+    },
+    {
+      "cycle": "2020-12-30T12",
+      "age": 7,
+      "mask_fraction": 0.9230769276618958,
+      "min_read_lead": 3.0,
+      "max_read_lead": 15.0,
+      "left_valid": true,
+      "right_valid": true
+    },
+    {
+      "cycle": "2020-12-30T12",
+      "age": 8,
+      "mask_fraction": 1.0,
+      "min_read_lead": 3.0,
+      "max_read_lead": 15.0,
+      "left_valid": true,
+      "right_valid": true
+    },
+    {
+      "cycle": "2020-12-30T12",
+      "age": 9,
+      "mask_fraction": 1.0,
+      "min_read_lead": 3.0,
+      "max_read_lead": 18.0,
+      "left_valid": true,
+      "right_valid": true
+    },
+    {
+      "cycle": "2020-12-30T12",
+      "age": 10,
+      "mask_fraction": 1.0,
+      "min_read_lead": 3.0,
+      "max_read_lead": 18.0,
+      "left_valid": true,
+      "right_valid": true
+    },
+    {
+      "cycle": "2020-12-30T12",
+      "age": 11,
+      "mask_fraction": 1.0,
+      "min_read_lead": 6.0,
+      "max_read_lead": 18.0,
+      "left_valid": true,
+      "right_valid": true
+    }
+  ],
+  "inputs": {
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/dev/2016/gfs_2016050100_cropped.nc": "d77cf82cecc8c5a3fa5e306a61b7925d41efc7537ef4addb4ed55f7a9cabaed9",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/dev/2018/gfs_2018010106_cropped.nc": "f3eab665cf9d8d1b7b6c0daa352065a254c9dbefb98fc2830e4c24931163d63c",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0/dev/2020/gfs_2020123012_cropped.nc": "25adaf7d5382af97339faa8d3e7dd4a77eb90f8fb0b92028065f6014b193e342"
+  },
+  "script_sha256": "b07974d71917cc67b588f4dd9cb4d09d8a0ef52763835a7073dcbbb7bf7fa30e",
+  "training": false
+}

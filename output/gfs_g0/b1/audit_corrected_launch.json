@@ -1,0 +1,17 @@
+{
+  "pid": 282381,
+  "command": [
+    "/home/XT/miniconda3/envs/gfs_g0/bin/python",
+    "scripts/audit_gfs_g0.py",
+    "--mode",
+    "B1",
+    "--root",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external/gfs_g0",
+    "--manifest",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/output/external_acquisition/gfs_g0/manifest_b1.json",
+    "--out",
+    "/tmp/g1c_review_76/audit_b1_corrected.json"
+  ],
+  "started_at": "2026-11-13T05:15:37.852960+00:00",
+  "purpose": "read-only audit correction; no training"
+}

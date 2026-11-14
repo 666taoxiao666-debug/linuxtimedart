@@ -1,0 +1,41 @@
+test_displacement_recovers_known_shift (tests.test_nwp_displacement.Blocks) ... ok
+test_fractional_shift_interpolates_linearly (tests.test_nwp_displacement.Blocks) ... ok
+test_g1_r1_b2_all_farm_forecasts_missing (tests.test_nwp_displacement.Blocks)
+Codex G1 R1-B2 second case: farm forecasts all masked and observations +10 -> no bias trajectory. ... ok
+test_g1_r1_b2_missing_farm_endpoint_falls_back (tests.test_nwp_displacement.Blocks)
+Codex G1 R1-B2: a masked farm point read by the shifted interpolation must not be extrapolated over; ... ok
+test_g1_r1_b2_untouched_masked_point_keeps_correction (tests.test_nwp_displacement.Blocks) ... ok
+test_g1b_r1_b1_calibration_rules (tests.test_nwp_displacement.Blocks)
+G1b R1-B1: Codex's OLS counterexample (b = 0) and other degenerate fits must never divide by ~0. ... ok
+test_g1b_r1_s2_paired_farm_keys (tests.test_nwp_displacement.Blocks) ... ok
+test_m_and_m_self_read_different_sources (tests.test_nwp_displacement.Blocks)
+Upstream stations already show a +2 h shift while the farm's own wind still matches the forecast. ... ok
+test_m_self_recovers_farm_shift_and_ignores_station_obs (tests.test_nwp_displacement.Blocks) ... ok
+test_m_self_without_farm_obs_falls_back (tests.test_nwp_displacement.Blocks) ... ok
+test_masked_and_inadmissible_inputs_are_not_read (tests.test_nwp_displacement.Blocks) ... ok
+test_missing_stations_and_missing_cycle (tests.test_nwp_displacement.Blocks) ... ok
+test_pooled_block_matches_hand_computation (tests.test_nwp_displacement.Blocks) ... ok
+test_r2_b1_counterexample (tests.test_nwp_displacement.Blocks)
+Swapping which station carries which pattern leaves every station average equal (I_pool cannot tell), ... ok
+test_station_permutation_and_batch_independence (tests.test_nwp_displacement.Blocks) ... ok
+test_upwind_station_gets_more_weight (tests.test_nwp_displacement.Blocks) ... ok
+test_validate_batch (tests.test_nwp_displacement.Blocks) ... ok
+test_admissible_shifts_whole_window_rule (tests.test_nwp_displacement.Constants) ... ok
+test_lead_masks (tests.test_nwp_displacement.Constants) ... ok
+test_widths_and_param_counts (tests.test_nwp_displacement.Constants) ... ok
+test_curved_ramp_recovers_shift (tests.test_nwp_displacement.Identifiability) ... ok
+test_linear_segment_shift_and_bias_are_confounded (tests.test_nwp_displacement.Identifiability)
+Documented boundary: o = f + bias on a linear f is matched by a shift d = bias / v. With equal station ... ok
+test_low_confidence_shrinks_towards_zero (tests.test_nwp_displacement.Identifiability) ... ok
+test_m_amp_and_m_phase (tests.test_nwp_displacement.Identifiability) ... ok
+test_r_sp_linear_transfer (tests.test_nwp_displacement.Identifiability) ... ok
+test_uniform_costs_give_no_correction (tests.test_nwp_displacement.Identifiability)
+Definite-defect fix: uniform costs over the admissible set {0..3} (age 6) used to give delta_F = +1.5. ... ok
+test_empty_normalization_rejected (tests.test_nwp_displacement.Torch) ... ok
+test_numpy_torch_parity_and_gradients (tests.test_nwp_displacement.Torch) ... ok
+test_wrapper_layout_and_normalization (tests.test_nwp_displacement.Torch) ... ok
+
+----------------------------------------------------------------------
+Ran 29 tests in 0.744s
+
+OK

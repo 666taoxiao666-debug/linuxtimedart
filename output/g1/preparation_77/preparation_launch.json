@@ -1,0 +1,22 @@
+{
+  "pid": 385020,
+  "command": [
+    "/home/XT/miniconda3/envs/timedart/bin/python",
+    "scripts/prepare_g1_batches.py",
+    "--data-root",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst",
+    "--b2-audit",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst_G1_fd3ee91/output/gfs_g0/b2/audit_b2.json",
+    "--b2-acceptance",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst_G1_fd3ee91/output/gfs_g0/b2/acceptance.json",
+    "--b1-audit",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst_G1_fd3ee91/output/gfs_g0/b1/audit_b1_corrected.json",
+    "--b1-acceptance",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst_G1_fd3ee91/output/gfs_g0/b1/acceptance.json",
+    "--output",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/G1/g1c_fd3ee91_r1/prepared"
+  ],
+  "worktree": "/home/XT/nuist/pythoncode/TimeDARTFirst_G1_fd3ee91",
+  "run": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/G1/g1c_fd3ee91_r1",
+  "protocol_sha256": "92e93dd4d1b62b1654c02bbb95299019f507903f13ef6fe71d2f6687003e8ed4"
+}

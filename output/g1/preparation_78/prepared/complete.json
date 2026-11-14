@@ -1,0 +1,9 @@
+{
+  "path": "T",
+  "farms": {
+    "Kelmarsh": "f30ab1140200dbba01816a0688f795bfd903089ba459eac822f21e5a1f52aa94",
+    "Penmanshiel": "0b9ecdbe7418a02b0f3ab14ae51e885531dc08cd5e7a32b2e131c947fd0e680e"
+  },
+  "protocol_sha256": "92e93dd4d1b62b1654c02bbb95299019f507903f13ef6fe71d2f6687003e8ed4",
+  "b1_acceptance_sha256": "1cf9022d4a2612d39abf8c5860d9753fa11aed3c80a6453ba83188f86dea1525"
+}

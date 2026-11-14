@@ -1,0 +1,483 @@
+"""Tests for models/NWPDisplacement.py (G1 station blocks: I_pool, generic phi control I, displacement method M).
+
+The numpy tests run without torch; the torch tests (numpy-vs-torch parity, gradients, wrapper) run on the server.
+The module is loaded by file path so that models/__init__.py is not imported.
+"""
+import importlib.util
+import unittest
+from pathlib import Path
+
+import numpy as np
+
+ROOT = Path(__file__).resolve().parents[1]
+_spec = importlib.util.spec_from_file_location("nwp_displacement_under_test", ROOT / "models" / "NWPDisplacement.py")
+nd = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(nd)
+HAS_TORCH = nd._torch is not None
+SHARP = {"kp": np.asarray(nd.KERNEL_INIT), "t_raw": -12.0, "l_raw": 0.0}  # temperature ~ TEMP_FLOOR
+
+
+def make_batch(B=2, S=3, age=11, seed=0):
+    rng = np.random.default_rng(seed)
+    return {"oS": rng.uniform(2, 12, (B, S, 3)), "oS_mask": np.ones((B, S, 3)),
+            "gS": rng.uniform(2, 12, (B, S, 8)), "gS_mask": np.ones((B, S, 8)),
+            "dS": np.tile([[0.0, 1.0]], (B, S, 1)), "dS_mask": np.ones((B, S)),
+            "gF": rng.uniform(2, 12, (B, 13)), "gF_mask": np.ones((B, 13)),
+            "age": np.full(B, float(age)), "cycle_ok": np.ones(B),
+            "oF": rng.uniform(2, 12, (B, 3)), "oF_mask": np.ones((B, 3))}
+
+
+def make_geo(S=3):
+    # all stations due north (bearing sin 0, cos 1) of the farm, i.e. upwind of a northerly wind
+    return np.tile([[0.5, 0.0, 1.0]], (S, 1))
+
+
+def shifted_station_batch(delta, age=11, S=2):
+    """Station forecasts are a ramp f(u); observations equal f(tau + delta), so the true shift is delta."""
+    b = make_batch(B=1, S=S, age=age)
+    u = np.asarray(nd.GS_OFF, dtype=float)
+    for s in range(S):
+        f = lambda t, s=s: 5.0 + 0.8 * t + 0.1 * s
+        b["gS"][0, s] = f(u)
+        b["oS"][0, s] = f(np.asarray(nd.W_OFF, dtype=float) + delta)
+    b["gF"][0] = 6.0 + 0.5 * np.asarray(nd.GF_OFF, dtype=float)
+    return b
+
+
+class Constants(unittest.TestCase):
+    def test_widths_and_param_counts(self):
+        self.assertEqual(nd.phi_param_count(), 599)
+        self.assertEqual(nd.phi_param_count(nd.PHI_HIDDEN_W), 2375)
+        self.assertEqual([nd.block_width(a) for a in nd.ARMS], [0, 0, 28, 35, 35, 35, 35, 35, 35, 35])
+        counts = nd.structural_param_counts()
+        self.assertEqual([counts[a] for a in ("M", "M_self", "I", "I_w", "R_sp", "M_amp", "M_phase")],
+                         [6, 6, 603, 2379, 40, 5, 5])
+
+    def test_admissible_shifts_whole_window_rule(self):
+        o = nd._NumpyOps()
+        ages = np.asarray([5.0, 6.0, 7.0, 8.0, 11.0, 12.0])
+        adm = nd.admissible_shifts(o, ages, np.ones(6))
+        got = {a: [d for d, m in zip(nd.SHIFTS, row) if m] for a, row in zip(ages, adm)}
+        self.assertEqual(got[6.0], [0, 1, 2, 3])            # delta >= 6 - age
+        self.assertEqual(got[7.0], [-1, 0, 1, 2, 3])
+        self.assertEqual(got[8.0], [-2, -1, 0, 1, 2, 3])
+        self.assertEqual(got[11.0], [-2, -1, 0, 1, 2, 3])
+        self.assertEqual(got[5.0], [1, 2, 3])
+        self.assertEqual(got[12.0], [-2, -1, 0, 1, 2])      # farm read h=4, delta=3 would need lead 19
+        self.assertFalse(nd.admissible_shifts(o, np.asarray([8.0]), np.zeros(1)).any())
+
+    def test_lead_masks(self):
+        o = nd._NumpyOps()
+        ms, mf = nd.lead_masks(o, np.asarray([6.0]), np.ones(1))
+        self.assertEqual(ms[0].tolist(), [0, 0, 1, 1, 1, 1, 1, 1])  # t0-5, t0-4 have lead 1, 2
+        self.assertEqual(mf[0].sum(), 13 - 2)
+
+
+class Blocks(unittest.TestCase):
+    def test_validate_batch(self):
+        b = make_batch()
+        nd.validate_batch(b, 3)
+        bad = dict(b, gS=b["gS"].copy())
+        bad["gS"][0, 0, 0] = np.nan
+        with self.assertRaises(ValueError):
+            nd.validate_batch(bad, 3)
+        with self.assertRaises(ValueError):
+            nd.validate_batch(dict(b, oS_mask=b["oS_mask"] * 0.5), 3)
+
+    def test_pooled_block_matches_hand_computation(self):
+        b = make_batch(B=1, S=2, age=11)
+        b["oS_mask"][0, 1, 0] = 0.0
+        geo = make_geo(2)
+        out = nd.station_blocks_numpy("I_pool", b, geo)
+        self.assertEqual(out.shape, (1, 28))
+        # equal geometry -> equal weights -> plain masked means
+        self.assertAlmostEqual(out[0, 0], b["oS"][0, 0, 0], places=5)                 # only station 0 valid
+        self.assertAlmostEqual(out[0, 1], b["oS"][0, :, 1].mean(), places=5)
+        self.assertAlmostEqual(out[0, 3], b["gS"][0, :, 0].mean(), places=5)
+        r = b["oS"][0, :, 2] - b["gS"][0, :, 4]
+        self.assertAlmostEqual(out[0, 13], r.mean(), places=5)
+        self.assertAlmostEqual(out[0, 14], 0.5, places=5)                             # coverage of o(t0-3)
+        self.assertAlmostEqual(out[0, 15], 1.0, places=5)
+
+    def test_upwind_station_gets_more_weight(self):
+        o = nd._NumpyOps()
+        geo = np.asarray([[0.5, 0.0, 1.0], [0.5, 0.0, -1.0]])   # north (upwind of a northerly) vs south
+        w, align = nd.kernel_weights(o, np.asarray(nd.KERNEL_INIT), geo, np.tile([[0.0, 1.0]], (1, 2, 1)),
+                                     np.ones((1, 2)))
+        self.assertGreater(w[0, 0], 5 * w[0, 1])
+        self.assertAlmostEqual(align[0, 0], 1.0, places=5)
+
+    def test_displacement_recovers_known_shift(self):
+        for delta in (-2, 0, 2, 3):
+            out, diag = nd.displacement_diagnostics_numpy(shifted_station_batch(delta), make_geo(2), SHARP)
+            self.assertAlmostEqual(out[0, 4], delta, places=2, msg=f"delta_F for {delta}")
+            self.assertAlmostEqual(out[0, 5], 0.0, places=2)                           # no residual bias
+            self.assertGreater(out[0, 6], 0.99)
+            expect = 6.0 + 0.5 * (np.asarray(nd.HORIZONS) + delta)
+            np.testing.assert_allclose(out[0, :4], expect, atol=1e-2)
+
+    def test_fractional_shift_interpolates_linearly(self):
+        o = nd._NumpyOps()
+        b = shifted_station_batch(0)
+        ms, mf = nd.lead_masks(o, b["age"], b["cycle_ok"])
+        adm = nd.admissible_shifts(o, b["age"], b["cycle_ok"])
+        w = np.ones((1, 2))
+        # force a 50/50 split between delta 0 and 1 by making both costs equal
+        b["oS"][0] = (b["gS"][0, :, 2:5] + b["gS"][0, :, 3:6]) / 2
+        out = nd.displacement_block(o, b, w, ms, mf, adm, temp=0.05, lam=0.0)
+        # G1c shrinkage: p = (0.5, 0.5) over 6 admissible shifts -> confidence (0.5 - 1/6) / (5/6) = 0.4,
+        # delta_F = 0.4 * 0.5 = 0.2 (was 0.5 before the fix); the trajectory interpolates at h + 0.2.
+        self.assertAlmostEqual(out[0, 6], 0.4, places=3)
+        self.assertAlmostEqual(out[0, 4], 0.2, places=3)
+        np.testing.assert_allclose(out[0, :4], 6.0 + 0.5 * (np.asarray(nd.HORIZONS) + 0.2), atol=1e-3)
+
+    def test_g1_r1_b2_missing_farm_endpoint_falls_back(self):
+        """Codex G1 R1-B2: a masked farm point read by the shifted interpolation must not be extrapolated over;
+        the sample falls back to no correction (uncorrected g_F(t0+h), delta_F = b_F = confidence = 0)."""
+        o = nd._NumpyOps()
+        b = shifted_station_batch(0)
+        b["oS"][0] = (b["gS"][0, :, 2:5] + b["gS"][0, :, 3:6]) / 2   # 50/50 between delta 0 and 1 -> 0.5
+        b["gF_mask"][0, nd._F0 + 2] = 0.0                              # t0+2: an endpoint for h = 1 and h = 2
+        ms, mf = nd.lead_masks(o, b["age"], b["cycle_ok"])
+        adm = nd.admissible_shifts(o, b["age"], b["cycle_ok"])
+        out = nd.displacement_block(o, b, np.ones((1, 2)), ms, mf, adm, temp=0.05, lam=0.5)
+        plain = b["gF"][0, nd._F0 + 1:nd._F0 + 5] * b["gF_mask"][0, nd._F0 + 1:nd._F0 + 5]
+        np.testing.assert_allclose(out[0, :4], plain, atol=1e-12)
+        self.assertEqual(out[0, 1], 0.0)                               # the masked t0+2 itself
+        self.assertEqual(out[0, 4:].tolist(), [0.0, 0.0, 0.0])
+
+    def test_g1_r1_b2_untouched_masked_point_keeps_correction(self):
+        b = shifted_station_batch(2)                                   # reads farm t0+3..t0+6 only
+        b["gF_mask"][0, nd._F0 + 2] = 0.0                              # t0+2 is not read
+        # ws_scale 0.1 makes the match crisp (G1c shrinkage would otherwise give 1.99999 and touch t0+2)
+        out, diag = nd.displacement_diagnostics_numpy(b, make_geo(2), SHARP, ws_scale=0.1)
+        self.assertEqual(float(diag["applied"][0]), 1.0)
+        self.assertAlmostEqual(out[0, 4], 2.0, places=2)
+        np.testing.assert_allclose(out[0, :4], 6.0 + 0.5 * (np.asarray(nd.HORIZONS) + 2), atol=1e-2)
+
+    def test_g1_r1_b2_all_farm_forecasts_missing(self):
+        """Codex G1 R1-B2 second case: farm forecasts all masked and observations +10 -> no bias trajectory."""
+        b = shifted_station_batch(1)
+        b["oS"][0] += 10.0
+        b["gF_mask"][:] = 0.0
+        out = nd.station_blocks_numpy("M", b, make_geo(2), SHARP)
+        self.assertEqual(np.abs(out[0, 28:]).max(), 0.0)
+
+    def test_m_self_recovers_farm_shift_and_ignores_station_obs(self):
+        for delta in (-1, 0, 2):
+            b = make_batch(B=1, S=2, age=11, seed=2)
+            g = 6.0 + 0.5 * np.asarray(nd.GF_OFF, dtype=float)
+            b["gF"][0] = g
+            b["oF"][0] = 6.0 + 0.5 * (np.asarray(nd.W_OFF, dtype=float) + delta)   # farm sees the shift itself
+            out = nd.station_blocks_numpy("M_self", b, make_geo(2), SHARP, ws_scale=0.1)
+            self.assertAlmostEqual(out[0, 28 + 4], delta, places=2, msg=f"M_self delta_F for {delta}")
+            np.testing.assert_allclose(out[0, 28:32], 6.0 + 0.5 * (np.asarray(nd.HORIZONS) + delta), atol=1e-2)
+            b2 = {k: v.copy() for k, v in b.items()}
+            b2["oS"] += 7.0                                                     # station obs change ...
+            out2 = nd.station_blocks_numpy("M_self", b2, make_geo(2), SHARP, ws_scale=0.1)
+            np.testing.assert_allclose(out2[0, 28:], out[0, 28:], atol=1e-12)  # ... the self block does not
+            self.assertGreater(np.abs(out2[0, :28] - out[0, :28]).max(), 1.0)  # (pooled channels do)
+
+    def test_m_and_m_self_read_different_sources(self):
+        """Upstream stations already show a +2 h shift while the farm's own wind still matches the forecast."""
+        b = shifted_station_batch(2)
+        b["oF"][0] = b["gF"][0, nd._K0:nd._K0 + 3]                              # farm: no shift yet
+        b["oF_mask"][:] = 1.0
+        m = nd.station_blocks_numpy("M", b, make_geo(2), SHARP)
+        ms = nd.station_blocks_numpy("M_self", b, make_geo(2), SHARP)
+        np.testing.assert_allclose(m[0, :28], ms[0, :28], atol=1e-12)          # identical pooled inputs
+        self.assertAlmostEqual(m[0, 28 + 4], 2.0, places=2)
+        self.assertAlmostEqual(ms[0, 28 + 4], 0.0, places=2)
+
+    def test_m_self_without_farm_obs_falls_back(self):
+        b = make_batch(B=1, S=2, age=9)
+        b["oF_mask"][:] = 0.0
+        out = nd.station_blocks_numpy("M_self", b, make_geo(2), SHARP)
+        self.assertEqual(out[0, 32:].tolist(), [0.0, 0.0, 0.0])
+        np.testing.assert_allclose(out[0, 28:32], b["gF"][0, 6:10], atol=1e-6)
+        with self.assertRaises(ValueError):
+            nd.validate_batch(dict(b, oF=np.zeros((1, 2))), 2)
+
+    def test_g1b_r1_b1_calibration_rules(self):
+        """G1b R1-B1: Codex's OLS counterexample (b = 0) and other degenerate fits must never divide by ~0."""
+        f = lambda o, g: nd.fit_affine_calibration(o, g, n_min=3)
+        c = f([1.0, 0.0, 1.0], [1.0, 2.0, 3.0])                          # r = 0 (OLS slope would be 0)
+        self.assertEqual((c["method"], c["b"]), ("offset", 1.0))
+        self.assertAlmostEqual(c["a"], (2.0 / 3.0) - 2.0)
+        c = f([1.0, 2.0, 4.0], [5.0, 5.0, 5.0])                          # constant forecast
+        self.assertEqual(c["method"], "offset")
+        self.assertIn("sd_g", c["reason"])
+        c = nd.fit_affine_calibration([1.0, 2.0], [1.0, 2.0])             # too few pairs (default n_min)
+        self.assertEqual(c["method"], "masked")
+        o2, m2 = nd.apply_calibration(np.asarray([[3.0, 4.0]]), np.ones((1, 2)), c)
+        self.assertEqual((o2.sum(), m2.sum()), (0.0, 0.0))
+        rng = np.random.default_rng(0)
+        g = rng.uniform(2, 14, 5000)
+        o = 0.7 + 1.3 * g                                                 # hub-height-like scale, no noise
+        c = nd.fit_affine_calibration(o, g)
+        self.assertEqual(c["method"], "rma")
+        self.assertAlmostEqual(c["b"], 1.3, places=6)
+        self.assertAlmostEqual(c["a"], 0.7, places=6)
+        oc, _ = nd.apply_calibration(o, np.ones_like(o), c)
+        np.testing.assert_allclose(oc, g, atol=1e-9)
+        for bad_b in (0.0, float("nan"), float("inf"), 4.0):
+            with self.assertRaises(ValueError):
+                nd.apply_calibration(o, np.ones_like(o), dict(c, b=bad_b))
+        c = nd.fit_affine_calibration(4.0 * g, g)                         # slope 4 outside [1/3, 3]
+        self.assertEqual(c["method"], "offset")
+        o_nan = o.copy()
+        o_nan[:10] = np.nan                                               # non-finite pairs are dropped
+        self.assertEqual(nd.fit_affine_calibration(o_nan, g)["n"], 4990)
+        for cal in (nd.fit_affine_calibration(rng.normal(0, 1, 2000), rng.normal(0, 1, 2000)),
+                    nd.fit_affine_calibration(np.full(2000, 3.0), g[:2000])):
+            out, _ = nd.apply_calibration(o[:2000], np.ones(2000), cal)
+            self.assertTrue(np.isfinite(out).all())
+
+    def test_g1b_r1_s2_paired_farm_keys(self):
+        b = make_batch(B=1, S=2)
+        nd.validate_batch(b, 2, arm="M_self")
+        with self.assertRaises(ValueError):
+            nd.validate_batch({k: v for k, v in b.items() if k != "oF_mask"}, 2)
+        with self.assertRaises(ValueError):
+            nd.validate_batch({k: v for k, v in b.items() if k not in ("oF", "oF_mask")}, 2, arm="M_self")
+        nd.validate_batch({k: v for k, v in b.items() if k not in ("oF", "oF_mask")}, 2, arm="M")
+
+    def test_r2_b1_counterexample(self):
+        """Swapping which station carries which pattern leaves every station average equal (I_pool cannot tell),
+        while M (per-station matching) and I (per-station phi) must tell the two cases apart."""
+        geo = make_geo(2)
+        s = np.zeros(8)
+        s[:3], s[3:6] = 1.0, -1.0                       # offsets -5..-3 -> +1, -2..0 -> -1, 1..2 -> 0
+        cases = {}
+        for name, o1 in (("X", 1.0), ("Y", -1.0)):
+            b = make_batch(B=1, S=2, age=11)
+            b["gS"][0, 0], b["gS"][0, 1] = 5 + s, 5 - s
+            b["oS"][0, 0], b["oS"][0, 1] = 5 + o1, 5 - o1
+            b["gF"][0] = 6.0 + 0.5 * np.asarray(nd.GF_OFF, dtype=float)
+            cases[name] = b
+        pool = {k: nd.station_blocks_numpy("I_pool", v, geo) for k, v in cases.items()}
+        np.testing.assert_allclose(pool["X"], pool["Y"], atol=1e-9)
+        m = {k: nd.station_blocks_numpy("M", v, geo, SHARP) for k, v in cases.items()}
+        self.assertAlmostEqual(m["X"][0, 28 + 4], -2.0, places=2)
+        self.assertAlmostEqual(m["Y"][0, 28 + 4], 1.0, places=2)
+        i = {k: nd.station_blocks_numpy("I", v, geo, seed=3) for k, v in cases.items()}
+        self.assertGreater(np.abs(i["X"][0, 28:] - i["Y"][0, 28:]).max(), 1e-4)
+
+    def test_masked_and_inadmissible_inputs_are_not_read(self):
+        geo = make_geo(3)
+        base = make_batch(B=1, S=3, age=6, seed=4)
+        base["oS_mask"][0, 2, 1] = 0.0
+        ref = nd.station_blocks_numpy("M", base, geo, SHARP)
+        b = {k: v.copy() for k, v in base.items()}
+        b["gS"][0, :, :2] += 50.0                       # t0-5, t0-4: lead 1, 2 at age 6 (masked)
+        b["oS"][0, 2, 1] += 50.0                        # masked observation
+        b["gF"][0, :4] += 50.0                          # farm t0-5..t0-2: never read by the correction
+        out = nd.station_blocks_numpy("M", b, geo, SHARP)
+        np.testing.assert_allclose(out[0, 28:], ref[0, 28:], atol=1e-9)
+
+    def test_missing_stations_and_missing_cycle(self):
+        geo = make_geo(3)
+        b = make_batch(B=1, S=3, age=9)
+        b["oS_mask"][:] = 0.0
+        out = nd.station_blocks_numpy("M", b, geo, SHARP)
+        self.assertTrue(np.isfinite(out).all())
+        self.assertEqual(out[0, 32:].tolist(), [0.0, 0.0, 0.0])            # delta_F, b_F, confidence
+        np.testing.assert_allclose(out[0, 28:32], b["gF"][0, 6:10], atol=1e-6)  # uncorrected g_F(t0+h)
+        b2 = make_batch(B=1, S=3, age=9)
+        b2["cycle_ok"][:] = 0.0
+        for arm in ("I_pool", "I", "M"):
+            out2 = nd.station_blocks_numpy(arm, b2, geo, SHARP if arm == "M" else None)
+            self.assertTrue(np.isfinite(out2).all())
+        self.assertEqual(np.abs(nd.station_blocks_numpy("M", b2, geo, SHARP)[0, 28:]).max(), 0.0)
+
+    def test_station_permutation_and_batch_independence(self):
+        geo = np.asarray([[0.3, 0.2, 0.98], [0.9, -0.6, 0.8], [0.5, 1.0, 0.0]])
+        b = make_batch(B=3, S=3, age=8, seed=7)
+        b["dS"] = np.tile([[0.3, 0.95]], (3, 3, 1))
+        perm = [2, 0, 1]
+        bp = {k: (v[:, perm] if v.ndim >= 2 and v.shape[1] == 3 and k.startswith(("oS", "gS", "dS")) else v)
+              for k, v in b.items()}
+        for arm in nd.STATION_ARMS:
+            a = nd.station_blocks_numpy(arm, b, geo, seed=1)
+            c = nd.station_blocks_numpy(arm, bp, geo[perm], seed=1)
+            np.testing.assert_allclose(a, c, atol=1e-9, err_msg=arm)
+            single = nd.station_blocks_numpy(arm, {k: v[1:2] for k, v in b.items()}, geo, seed=1)
+            np.testing.assert_allclose(single[0], a[1], atol=1e-9, err_msg=arm)
+
+
+class Identifiability(unittest.TestCase):
+    """G1c: GPT's synthetic checks (flat / linear / curved) and the new control arms."""
+
+    def _flat_batch(self, age):
+        b = make_batch(B=1, S=2, age=age, seed=5)
+        b["gS"][0] = 7.0
+        b["oS"][0] = 7.0                                   # every admissible shift costs the same
+        return b
+
+    def test_uniform_costs_give_no_correction(self):
+        """Definite-defect fix: uniform costs over the admissible set {0..3} (age 6) used to give delta_F = +1.5."""
+        for age in (6.0, 9.0, 11.0):
+            b = self._flat_batch(age)
+            out, diag = nd.displacement_diagnostics_numpy(b, make_geo(2), SHARP)
+            self.assertAlmostEqual(float(diag["delta_station"][0, 0]), float(np.mean(
+                [d for d, m in zip(nd.SHIFTS, diag["available"][0, 0]) if m])), places=6)  # old soft-argmin
+            np.testing.assert_allclose(out[0, 4:], 0.0, atol=1e-12)
+            np.testing.assert_allclose(out[0, :4], b["gF"][0, nd._F0 + 1:nd._F0 + 5], atol=1e-9)
+
+    def test_low_confidence_shrinks_towards_zero(self):
+        b = shifted_station_batch(3)
+        b["oS"][0, 1] = 7.0
+        b["gS"][0, 1] = 7.0                                # station 1 uninformative, station 0 says +3
+        out = nd.station_blocks_numpy("M", b, make_geo(2), SHARP)
+        conf, d_f = out[0, 34], out[0, 32]
+        self.assertAlmostEqual(conf, 0.5, places=2)        # equal kernel weights, one confident station
+        self.assertAlmostEqual(d_f, conf * 3.0, places=2)
+
+    def test_curved_ramp_recovers_shift(self):
+        u = np.asarray(nd.GS_OFF, dtype=float)
+        f = lambda t: 7.0 + 3.0 * np.tanh((t + 1.0) / 1.5)   # turning point inside the matching range
+        for delta in (-2, 1, 3):
+            b = shifted_station_batch(0)
+            b["gS"][0] = f(u)
+            b["oS"][0] = f(np.asarray(nd.W_OFF, dtype=float) + delta)
+            out = nd.station_blocks_numpy("M", b, make_geo(2), SHARP)
+            self.assertLess(abs(out[0, 32] - delta), 0.5, msg=f"curved ramp, delta {delta}")
+
+    def test_linear_segment_shift_and_bias_are_confounded(self):
+        """Documented boundary: o = f + bias on a linear f is matched by a shift d = bias / v. With equal station
+        and farm slopes the shifted trajectory equals the bias-corrected one, so the forecast is the same and only
+        M vs M_amp on held-out data can attribute a gain to timing."""
+        v, bias = 0.8, 1.6
+        b = shifted_station_batch(0)
+        u = np.asarray(nd.GS_OFF, dtype=float)
+        b["gS"][0] = 5.0 + v * u
+        b["oS"][0] = 5.0 + v * np.asarray(nd.W_OFF, dtype=float) + bias
+        b["gF"][0] = 6.0 + v * np.asarray(nd.GF_OFF, dtype=float)
+        m = nd.station_blocks_numpy("M", b, make_geo(2), SHARP)
+        self.assertAlmostEqual(m[0, 32], bias / v, places=2)                  # reported as a +2 h shift
+        amp = nd.station_blocks_numpy("M_amp", b, make_geo(2), dict(SHARP, l_raw=30.0))   # lambda ~ 1
+        self.assertAlmostEqual(amp[0, 32], 0.0)
+        self.assertAlmostEqual(amp[0, 33], bias, places=6)
+        np.testing.assert_allclose(m[0, 28:32], amp[0, 28:32], atol=1e-2)
+
+    def test_m_amp_and_m_phase(self):
+        b = shifted_station_batch(2)
+        b["oS"][0] += 1.0                                  # shift +2 plus a level bias of +1
+        plain = b["gF"][0, nd._F0 + 1:nd._F0 + 5]
+        amp = nd.station_blocks_numpy("M_amp", b, make_geo(2), SHARP)    # lambda = 0.5 at init
+        r0 = (b["oS"][0] - b["gS"][0, :, nd._K0:nd._K0 + 3]).mean()
+        self.assertEqual(amp[0, 32], 0.0)
+        self.assertAlmostEqual(amp[0, 33], r0, places=9)
+        self.assertEqual(amp[0, 34], 1.0)
+        np.testing.assert_allclose(amp[0, 28:32], plain + 0.5 * r0, atol=1e-9)
+        ph = nd.station_blocks_numpy("M_phase", b, make_geo(2), SHARP)
+        full = nd.station_blocks_numpy("M", b, make_geo(2), SHARP)
+        self.assertAlmostEqual(ph[0, 32], full[0, 32], places=9)          # same shift path
+        self.assertEqual(ph[0, 33], 0.0)                                   # no bias channel
+        g_shift = 6.0 + 0.5 * (np.asarray(nd.HORIZONS) + ph[0, 32])
+        np.testing.assert_allclose(ph[0, 28:32], g_shift, atol=1e-6)       # no lambda * b_F term
+        # with o = g(tau + 2) + 1 the cost is minimal at delta = 2 + 1/0.8 -> clipped to 3: the bias is partly
+        # absorbed into the shift (identifiability boundary), so M's residual b_F is only 0.2
+        self.assertAlmostEqual(full[0, 32], 3.0, places=2)
+        self.assertAlmostEqual(full[0, 33], 0.2, places=2)
+
+    def test_r_sp_linear_transfer(self):
+        geo = make_geo(2)
+        b = make_batch(B=1, S=2, age=9, seed=8)
+        b["dS"] = np.tile([[0.6, 0.8]], (1, 2, 1))
+        plain = b["gF"][0, nd._F0 + 1:nd._F0 + 5]
+        zero = nd.station_blocks_numpy("R_sp", b, geo)                      # beta = 0 at init
+        np.testing.assert_allclose(zero[0, 28:32], plain, atol=1e-12)
+        rng = np.random.default_rng(1)
+        p = dict(nd.init_params_numpy("R_sp"), beta=rng.normal(0, 0.3, (nd.RSP_FEATS, 4)))
+        out = nd.station_blocks_numpy("R_sp", b, geo, p)
+        rbar = (b["oS"][0] - b["gS"][0, :, nd._K0:nd._K0 + 3]).mean(0)     # equal weights
+        x = np.concatenate([rbar, rbar * 0.6, rbar * 0.8])
+        np.testing.assert_allclose(out[0, 28:32], plain + x @ p["beta"], atol=1e-5)   # EPS in the direction norm
+        self.assertEqual(out[0, 34], 1.0)
+        b2 = {k: v.copy() for k, v in b.items()}
+        b2["gF_mask"][0, nd._F0 + 2] = 0.0                                 # h = 2 forecast missing
+        out2 = nd.station_blocks_numpy("R_sp", b2, geo, p)
+        self.assertEqual(out2[0, 29], 0.0)
+        np.testing.assert_allclose(out2[0, [28, 30, 31]], out[0, [28, 30, 31]], atol=1e-12)
+        b3 = {k: v.copy() for k, v in b.items()}
+        b3["oS_mask"][:] = 0.0                                             # no residual -> plain forecast
+        out3 = nd.station_blocks_numpy("R_sp", b3, geo, p)
+        np.testing.assert_allclose(out3[0, 28:32], plain, atol=1e-12)
+        self.assertEqual(out3[0, 34], 0.0)
+
+
+@unittest.skipUnless(HAS_TORCH, "torch not installed (parity and gradient checks run on the server)")
+class Torch(unittest.TestCase):
+    def _torch_params_from_numpy(self, blk, params):
+        import torch
+        with torch.no_grad():
+            blk.kp.copy_(torch.as_tensor(params["kp"]))
+            if hasattr(blk, "t_raw"):
+                blk.t_raw.fill_(float(params["t_raw"]))
+            if hasattr(blk, "l_raw"):
+                blk.l_raw.fill_(float(params["l_raw"]))
+            if hasattr(blk, "beta"):
+                blk.beta.copy_(torch.as_tensor(params["beta"]))
+            if blk.arm in nd.PHI_ARMS:
+                blk.phi[0].weight.copy_(torch.as_tensor(params["W1"]).T)
+                blk.phi[0].bias.copy_(torch.as_tensor(params["b1"]))
+                blk.phi[2].weight.copy_(torch.as_tensor(params["W2"]).T)
+                blk.phi[2].bias.copy_(torch.as_tensor(params["b2"]))
+
+    def test_numpy_torch_parity_and_gradients(self):
+        import torch
+        geo = np.asarray([[0.3, 0.2, 0.98], [0.9, -0.6, 0.8], [0.5, 1.0, 0.0]])
+        b = make_batch(B=4, S=3, age=7, seed=11)
+        b["age"] = np.asarray([6.0, 7.0, 9.0, 11.0])
+        b["oS_mask"][1, 2, :] = 0.0
+        b["gF_mask"][3, :] = 0.0                       # one sample takes the R1-B2 fallback branch
+        for arm in nd.STATION_ARMS:
+            params = nd.init_params_numpy(arm, seed=5)
+            if arm == "R_sp":                          # nonzero beta so the parity check covers the transfer path
+                params["beta"] = np.random.default_rng(5).normal(0, 0.3, params["beta"].shape)
+            ref = nd.station_blocks_numpy(arm, b, geo, params)
+            blk = nd.StationBlocks(arm, geo).double()
+            # Match float64 reference inputs, avoiding constructor float32 rounding.
+            blk.geo.copy_(torch.as_tensor(geo, dtype=torch.float64))
+            self._torch_params_from_numpy(blk, params)
+            out = blk({k: torch.as_tensor(v) for k, v in b.items()})
+            np.testing.assert_allclose(out.detach().numpy(), ref, atol=1e-8, rtol=0, err_msg=arm)
+            out.square().sum().backward()
+            for name, p in blk.named_parameters():
+                self.assertTrue(torch.isfinite(p.grad).all(), f"{arm}.{name}")
+                self.assertGreater(float(p.grad.abs().sum()), 0.0, f"{arm}.{name}")
+            self.assertGreater(float(blk.kp.grad.abs().sum()), 0.0)
+
+    def test_wrapper_layout_and_normalization(self):
+        import torch
+        geo = make_geo(3)
+        b = {k: torch.as_tensor(v, dtype=torch.float32) for k, v in make_batch(B=5, S=3).items()}
+        x = torch.randn(5, 24, 50)
+        for arm in nd.ARMS:
+            m = nd.G1TSMixerModel(arm, 50, geo)
+            self.assertEqual(m.backbone.channels, 50 + nd.block_width(arm))
+            if nd.block_width(arm):
+                with self.assertRaises(RuntimeError):
+                    m(x, b)
+                m.fit_station_normalization([b])
+            captured = []
+            hook = m.backbone.register_forward_pre_hook(lambda module, args: captured.append(args[0].detach()))
+            y = m(x, b)
+            hook.remove()
+            torch.testing.assert_close(captured[0][..., -1], x[..., -1])
+            torch.testing.assert_close(captured[0][..., :49], x[..., :49])
+            self.assertEqual(m.backbone.target_slot, captured[0].shape[-1] - 1)
+            self.assertEqual(tuple(y.shape), (5, 4, 1))
+
+    def test_empty_normalization_rejected(self):
+        for arm in ("I_pool", "I", "M"):
+            m = nd.G1TSMixerModel(arm, 50, make_geo(3))
+            for batches in ([], [make_batch(B=0)]):
+                with self.assertRaises(ValueError):
+                    m.fit_station_normalization(batches)
+                self.assertFalse(bool(m.normalized))
+
+
+if __name__ == "__main__":
+    unittest.main()

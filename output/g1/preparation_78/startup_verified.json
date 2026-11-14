@@ -1,0 +1,42 @@
+{
+  "utc": "2026-11-13T15:06:41.735927+00:00",
+  "formal_pid": 395899,
+  "launch_exists": true,
+  "failed": false,
+  "fits_completed": 0,
+  "evaluation_started": false,
+  "farms": {
+    "Kelmarsh": {
+      "counts": {
+        "train": 75024,
+        "val": 15680,
+        "test": 16949
+      },
+      "lead_audit": {
+        "status": "PASS",
+        "min_read_lead": 3.0,
+        "max_read_lead": 18.0,
+        "origins": 58465
+      },
+      "calibration_methods": {
+        "rma": 37
+      }
+    },
+    "Penmanshiel": {
+      "counts": {
+        "train": 64771,
+        "val": 35603,
+        "test": 38147
+      },
+      "lead_audit": {
+        "status": "PASS",
+        "min_read_lead": 3.0,
+        "max_read_lead": 18.0,
+        "origins": 47497
+      },
+      "calibration_methods": {
+        "rma": 12
+      }
+    }
+  }
+}

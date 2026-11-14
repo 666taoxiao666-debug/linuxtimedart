@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "/home/XT/nuist/pythoncode/TimeDARTFirst_G1_fd3ee91/scripts/prepare_g1_batches.py", line 528, in <module>
+    main()
+  File "/home/XT/nuist/pythoncode/TimeDARTFirst_G1_fd3ee91/scripts/prepare_g1_batches.py", line 521, in main
+    path = prepare_farm(args.data_root, farm, protocol["path_T"][farm], pairs, args.output/farm)
+  File "/home/XT/nuist/pythoncode/TimeDARTFirst_G1_fd3ee91/scripts/prepare_g1_batches.py", line 420, in prepare_farm
+    series, frame, obs, stations, hours, center, upstream = load_development(data_root, farm, bounds, identities)
+  File "/home/XT/nuist/pythoncode/TimeDARTFirst_G1_fd3ee91/scripts/prepare_g1_batches.py", line 314, in load_development
+    from scripts.audit_d2_feasibility_v34_r2 import read_badc_csv, column
+ImportError: cannot import name 'read_badc_csv' from 'scripts.audit_d2_feasibility_v34_r2' (/home/XT/nuist/pythoncode/TimeDARTFirst_G1_fd3ee91/scripts/audit_d2_feasibility_v34_r2.py)

@@ -1,0 +1,26 @@
+{
+  "status": "PASS",
+  "fits": 60,
+  "predictions": 60,
+  "inputs_checkpoints_sources_results_verified": true,
+  "utc": "2026-11-14T01:52:15.560979+00:00",
+  "selections": {
+    "Kelmarsh": {
+      "arm": "I_w",
+      "scores": {
+        "I": 135.51482645670572,
+        "I_w": 135.38589477539062,
+        "R_sp": 136.07030232747397
+      }
+    },
+    "Penmanshiel": {
+      "arm": "I",
+      "scores": {
+        "I": 187.68790181477866,
+        "I_w": 187.76932779947916,
+        "R_sp": 187.86865234375
+      }
+    }
+  },
+  "completed_utc": "2026-11-13T20:22:46.702999+00:00"
+}

@@ -1,0 +1,259 @@
+{
+  "phase": "B2",
+  "updated_at": "2026-11-11T18:05:05.371109Z",
+  "total_cycles": 60,
+  "done_cycles": 60,
+  "pending_cycles": 0,
+  "completion_pct": 100.0,
+  "stats": {
+    "total_downloaded_bytes": 731228160,
+    "dev_storage_bytes": 1418200545,
+    "sealed_storage_bytes": 0
+  },
+  "retries_count": 2,
+  "elapsed_seconds": 4035.1,
+  "estimated_remaining_seconds": 0.0,
+  "estimated_remaining_hours": 0.0,
+  "unit": "months",
+  "done_months": 60,
+  "total_months": 60,
+  "active_requests": {},
+  "request_states": {
+    "201602": {
+      "rindex": "969948",
+      "state": "Completed+Purged"
+    },
+    "201603": {
+      "rindex": "969949",
+      "state": "Completed+Purged"
+    },
+    "201604": {
+      "rindex": "969950",
+      "state": "Completed+Purged"
+    },
+    "201605": {
+      "rindex": "969951",
+      "state": "Completed+Purged"
+    },
+    "201606": {
+      "rindex": "969952",
+      "state": "Completed+Purged"
+    },
+    "201607": {
+      "rindex": "969953",
+      "state": "Completed+Purged"
+    },
+    "201608": {
+      "rindex": "969954",
+      "state": "Completed+Purged"
+    },
+    "201609": {
+      "rindex": "969955",
+      "state": "Completed+Purged"
+    },
+    "201610": {
+      "rindex": "969969",
+      "state": "Completed+Purged"
+    },
+    "201611": {
+      "rindex": "969970",
+      "state": "Completed+Purged"
+    },
+    "201612": {
+      "rindex": "969971",
+      "state": "Completed+Purged"
+    },
+    "201701": {
+      "rindex": "969973",
+      "state": "Completed+Purged"
+    },
+    "201702": {
+      "rindex": "969974",
+      "state": "Completed+Purged"
+    },
+    "201703": {
+      "rindex": "969982",
+      "state": "Completed+Purged"
+    },
+    "201704": {
+      "rindex": "969983",
+      "state": "Completed+Purged"
+    },
+    "201705": {
+      "rindex": "969984",
+      "state": "Completed+Purged"
+    },
+    "201706": {
+      "rindex": "969985",
+      "state": "Completed+Purged"
+    },
+    "201707": {
+      "rindex": "969991",
+      "state": "Completed+Purged"
+    },
+    "201708": {
+      "rindex": "970003",
+      "state": "Completed+Purged"
+    },
+    "201709": {
+      "rindex": "970007",
+      "state": "Completed+Purged"
+    },
+    "201710": {
+      "rindex": "970009",
+      "state": "Completed+Purged"
+    },
+    "201711": {
+      "rindex": "970010",
+      "state": "Completed+Purged"
+    },
+    "201712": {
+      "rindex": "970012",
+      "state": "Completed+Purged"
+    },
+    "201801": {
+      "rindex": "970027",
+      "state": "Completed+Purged"
+    },
+    "201802": {
+      "rindex": "970028",
+      "state": "Completed+Purged"
+    },
+    "201803": {
+      "rindex": "970029",
+      "state": "Completed+Purged"
+    },
+    "201804": {
+      "rindex": "970040",
+      "state": "Completed+Purged"
+    },
+    "201805": {
+      "rindex": "970041",
+      "state": "Completed+Purged"
+    },
+    "201806": {
+      "rindex": "970042",
+      "state": "Completed+Purged"
+    },
+    "201807": {
+      "rindex": "970052",
+      "state": "Completed+Purged"
+    },
+    "201808": {
+      "rindex": "970053",
+      "state": "Completed+Purged"
+    },
+    "201809": {
+      "rindex": "970054",
+      "state": "Completed+Purged"
+    },
+    "201810": {
+      "rindex": "970055",
+      "state": "Completed+Purged"
+    },
+    "201811": {
+      "rindex": "970056",
+      "state": "Completed+Purged"
+    },
+    "201812": {
+      "rindex": "970057",
+      "state": "Completed+Purged"
+    },
+    "201901": {
+      "rindex": "970059",
+      "state": "Completed+Purged"
+    },
+    "201902": {
+      "rindex": "970060",
+      "state": "Completed+Purged"
+    },
+    "201903": {
+      "rindex": "970061",
+      "state": "Completed+Purged"
+    },
+    "201904": {
+      "rindex": "970062",
+      "state": "Completed+Purged"
+    },
+    "201905": {
+      "rindex": "970073",
+      "state": "Completed+Purged"
+    },
+    "201906": {
+      "rindex": "970074",
+      "state": "Completed+Purged"
+    },
+    "201907": {
+      "rindex": "970075",
+      "state": "Completed+Purged"
+    },
+    "201908": {
+      "rindex": "970077",
+      "state": "Completed+Purged"
+    },
+    "201909": {
+      "rindex": "970078",
+      "state": "Completed+Purged"
+    },
+    "201910": {
+      "rindex": "970082",
+      "state": "Completed+Purged"
+    },
+    "201911": {
+      "rindex": "970083",
+      "state": "Completed+Purged"
+    },
+    "201912": {
+      "rindex": "970097",
+      "state": "Completed+Purged"
+    },
+    "202001": {
+      "rindex": "970103",
+      "state": "Completed+Purged"
+    },
+    "202002": {
+      "rindex": "970104",
+      "state": "Completed+Purged"
+    },
+    "202003": {
+      "rindex": "970105",
+      "state": "Completed+Purged"
+    },
+    "202004": {
+      "rindex": "970106",
+      "state": "Completed+Purged"
+    },
+    "202005": {
+      "rindex": "970125",
+      "state": "Completed+Purged"
+    },
+    "202006": {
+      "rindex": "970126",
+      "state": "Completed+Purged"
+    },
+    "202007": {
+      "rindex": "970127",
+      "state": "Completed+Purged"
+    },
+    "202008": {
+      "rindex": "970132",
+      "state": "Completed+Purged"
+    },
+    "202009": {
+      "rindex": "970136",
+      "state": "Completed+Purged"
+    },
+    "202010": {
+      "rindex": "970137",
+      "state": "Completed+Purged"
+    },
+    "202011": {
+      "rindex": "970141",
+      "state": "Completed+Purged"
+    },
+    "202012": {
+      "rindex": "970143",
+      "state": "Completed+Purged"
+    }
+  }
+}

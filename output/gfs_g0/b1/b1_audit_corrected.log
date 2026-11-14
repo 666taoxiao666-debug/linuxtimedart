@@ -1,0 +1,64 @@
+B1 development 2021 checked
+B1 development 2022 checked
+B1 development 2023 checked
+B1 sealed bytes hashed: 10000
+B1 sealed bytes hashed: 20000
+B1 sealed bytes hashed: 30000
+B1 sealed bytes hashed: 40000
+B1 sealed bytes hashed: 50000
+B1 sealed bytes hashed: 60000
+B1 sealed bytes hashed: 70000
+B1 sealed bytes hashed: 80000
+B1 sealed bytes hashed: 90000
+B1 sealed bytes hashed: 100000
+{
+  "status": "FAIL",
+  "task": "G0_GFS_B1",
+  "completed_at_utc": "2026-11-13T05:25:29.996998+00:00",
+  "script_sha256": "7d1c6e3055546d35bd941a0d3d20230999024c14f2fc87c290a1c169cda8a0de",
+  "manifest_sha256": "39722d346007526c66f4fc0347358f8c4d6c1308ecd7c54679f592abd0663ac9",
+  "manifest_unchanged": true,
+  "annual": {
+    "2021": {
+      "denominator": 1460,
+      "complete": 1453,
+      "completeness_pct": 99.52054794520548,
+      "passes_95pct": true
+    },
+    "2022": {
+      "denominator": 1460,
+      "complete": 1458,
+      "completeness_pct": 99.86301369863014,
+      "passes_95pct": true
+    },
+    "2023": {
+      "denominator": 1460,
+      "complete": 1460,
+      "completeness_pct": 100.0,
+      "passes_95pct": true
+    }
+  },
+  "failures": [
+    "2022112918",
+    "2022113006"
+  ],
+  "sealed_failures": [],
+  "unexpected_sealed_files": [],
+  "budget": {
+    "download_successful_payload_bytes": 222526985575,
+    "download_total_bytes_verified": false,
+    "download_note": "Unique successful message payloads; historical failed/repeated transfers were not metered.",
+    "dev_storage_bytes": 2372345423,
+    "sealed_storage_bytes": 98132763339,
+    "dev_storage_pass": true,
+    "sealed_storage_pass": true,
+    "successful_payload_under_limit": true
+  },
+  "sealed_files_hashed": 102165,
+  "sealed_bytes_hashed": 98132763339,
+  "limitations": [
+    "Development NetCDF hashes computed here: manifest supplies sizes but no registered NetCDF hashes.",
+    "Unique successful download payload excludes unmetered historical failed/repeated traffic.",
+    "Sealed content was hashed only; no GRIB decode or numerical interpretation."
+  ]
+}

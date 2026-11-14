@@ -1,0 +1,96 @@
+Checked 500/7308
+Checked 1000/7308
+Checked 1500/7308
+Checked 2000/7308
+Checked 2500/7308
+Checked 3000/7308
+Checked 3500/7308
+Checked 4000/7308
+Checked 4500/7308
+Checked 5000/7308
+Checked 5500/7308
+Checked 6000/7308
+Checked 6500/7308
+Checked 7000/7308
+{
+  "status": "FAIL",
+  "scope": "B2 dev 2016-2020 only",
+  "completed_at_utc": "2026-11-11T21:39:49.942706+00:00",
+  "script_sha256": "b18b5970675a557d7ee7bd16fd6c67d1eb7730bd9a73403c107ace3bff0e2e1d",
+  "manifest_sha256": "84cd69c0545f9bb392db16984e19e580a100f68f10d8dd6954e094ebaf21b008",
+  "manifest_unchanged": true,
+  "annual": {
+    "2016": {
+      "denominator": 1464,
+      "complete": 1457,
+      "completeness_pct": 99.52185792349727,
+      "passes_95pct": true,
+      "missing_cycles": [],
+      "incomplete_cycles": [
+        "2016011600",
+        "2016012018",
+        "2016042406",
+        "2016071000",
+        "2016100200",
+        "2016100700",
+        "2016111318"
+      ],
+      "optional_complete": 1457,
+      "optional_level_verified": 0
+    },
+    "2017": {
+      "denominator": 1460,
+      "complete": 1460,
+      "completeness_pct": 100.0,
+      "passes_95pct": true,
+      "missing_cycles": [],
+      "incomplete_cycles": [],
+      "optional_complete": 1460,
+      "optional_level_verified": 0
+    },
+    "2018": {
+      "denominator": 1460,
+      "complete": 1459,
+      "completeness_pct": 99.93150684931507,
+      "passes_95pct": true,
+      "missing_cycles": [
+        "2018052618"
+      ],
+      "incomplete_cycles": [],
+      "optional_complete": 1459,
+      "optional_level_verified": 0
+    },
+    "2019": {
+      "denominator": 1460,
+      "complete": 1460,
+      "completeness_pct": 100.0,
+      "passes_95pct": true,
+      "missing_cycles": [],
+      "incomplete_cycles": [],
+      "optional_complete": 1460,
+      "optional_level_verified": 0
+    },
+    "2020": {
+      "denominator": 1464,
+      "complete": 1464,
+      "completeness_pct": 100.0,
+      "passes_95pct": true,
+      "missing_cycles": [],
+      "incomplete_cycles": [],
+      "optional_complete": 1464,
+      "optional_level_verified": 0
+    }
+  },
+  "failures": [
+    "2016011600"
+  ],
+  "unexpected_files": [],
+  "unexpected_manifest_keys": [],
+  "files_hashed": 7307,
+  "bytes_hashed": 1418200545,
+  "optional_100m_approved": false,
+  "limitations": [
+    "Raw monthly tar hashes are manifest claims only: source archives were purged.",
+    "No B1 GRIB or sealed values decoded; forecast publication timing not proven by this audit."
+  ]
+}

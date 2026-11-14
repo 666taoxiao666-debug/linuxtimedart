@@ -1,0 +1,22 @@
+{
+  "strict_upper_bound_proven": false,
+  "scenario_total_bytes": 230137867780,
+  "algorithm": "unique payload + cycles*6*100000 assumed idx bytes + logged failed attempts*max cycle + logged starts*4 in-flight cycles*max cycle + WARN lines*30 messages*max message",
+  "counts": {
+    "cycles": 7777,
+    "failed_attempts": 33,
+    "warn_lines": 50,
+    "logged_starts": 3,
+    "max_cycle_bytes": 29973249,
+    "max_message_bytes": 1063924
+  },
+  "assumptions": [
+    "100KB per idx; 4 cycles in flight; every warning charges 30 full messages",
+    "Historical unlogged retries, repeated idx requests and protocol overhead remain unknown; NOT a true upper bound"
+  ],
+  "logs": {
+    "acquire_b1.log": "3573b5f69ecaf5adfcad597220b9416a02daea29dadb07a799ede42f1390eb01",
+    "b1_fail_counts.json": "708df32d4f3ca5a670bef1d55a1ed0e52bd7336c3e08fc4541c2937309791e74",
+    ".b1_restart_timestamps": "385e07c140099fe0de7e7c6366f68ba3b13db9453637a1b08ff37e11021f57a1"
+  }
+}

@@ -1,0 +1,99 @@
+{
+  "stats": {
+    "completed_months": 60,
+    "total_months": 60,
+    "total_raw_bytes": 731228160,
+    "total_raw_gb": 0.681,
+    "dev_storage_bytes": 1418200545,
+    "dev_storage_gb": 1.3208,
+    "total_elapsed_seconds": 4035.0
+  },
+  "control_params": {
+    "datetype": "init",
+    "param": "U GRD/V GRD/PRMSL",
+    "level": "HTGL:10/100;MSL:0",
+    "product": "3-hour Forecast/6-hour Forecast/9-hour Forecast/12-hour Forecast/15-hour Forecast/18-hour Forecast",
+    "nlat": 60.0,
+    "slat": 49.5,
+    "wlon": -8.0,
+    "elon": 2.5
+  },
+  "annual_summary": {
+    "2016": {
+      "days": 366,
+      "denominator_cycles": 1464,
+      "complete_cycles": 1458,
+      "missing_cycles": 0,
+      "incomplete_cycles": 6,
+      "dev_cropped_files": 1464,
+      "has_100m_wind_cycles": 1464,
+      "missing_100m_wind_cycles": 0,
+      "excluded_f000_count": 0,
+      "raw_bytes": 146708480,
+      "dev_bytes": 283977675,
+      "completeness_pct": 99.59,
+      "has_100m_wind": true
+    },
+    "2017": {
+      "days": 365,
+      "denominator_cycles": 1460,
+      "complete_cycles": 1460,
+      "missing_cycles": 0,
+      "incomplete_cycles": 0,
+      "dev_cropped_files": 1460,
+      "has_100m_wind_cycles": 1460,
+      "missing_100m_wind_cycles": 0,
+      "excluded_f000_count": 0,
+      "raw_bytes": 147548160,
+      "dev_bytes": 283657415,
+      "completeness_pct": 100.0,
+      "has_100m_wind": true
+    },
+    "2018": {
+      "days": 365,
+      "denominator_cycles": 1460,
+      "complete_cycles": 1459,
+      "missing_cycles": 1,
+      "incomplete_cycles": 0,
+      "dev_cropped_files": 1459,
+      "has_100m_wind_cycles": 1459,
+      "missing_100m_wind_cycles": 0,
+      "excluded_f000_count": 0,
+      "raw_bytes": 143687680,
+      "dev_bytes": 280138896,
+      "completeness_pct": 99.93,
+      "has_100m_wind": true
+    },
+    "2019": {
+      "days": 365,
+      "denominator_cycles": 1460,
+      "complete_cycles": 1460,
+      "missing_cycles": 0,
+      "incomplete_cycles": 0,
+      "dev_cropped_files": 1460,
+      "has_100m_wind_cycles": 1460,
+      "missing_100m_wind_cycles": 0,
+      "excluded_f000_count": 0,
+      "raw_bytes": 146094080,
+      "dev_bytes": 284005363,
+      "completeness_pct": 100.0,
+      "has_100m_wind": true
+    },
+    "2020": {
+      "days": 366,
+      "denominator_cycles": 1464,
+      "complete_cycles": 1464,
+      "missing_cycles": 0,
+      "incomplete_cycles": 0,
+      "dev_cropped_files": 1464,
+      "has_100m_wind_cycles": 1464,
+      "missing_100m_wind_cycles": 0,
+      "excluded_f000_count": 0,
+      "raw_bytes": 147189760,
+      "dev_bytes": 286421196,
+      "completeness_pct": 100.0,
+      "has_100m_wind": true
+    }
+  },
+  "failed_months": {}
+}
