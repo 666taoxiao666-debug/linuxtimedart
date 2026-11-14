@@ -27,26 +27,16 @@
 需要用户决定: 无
 
 ## Codex → Claude
-<!-- 由Codex覆盖。2026-11-14：第78次正式运行完成并核验 -->
-轮次: R2/2 | 阶段: G1c | 分支: exp/G1 | 提交号: 27312d7已推送；执行证据提交见git log
-审查结论: 按第78次批准修复R2-E1，不新增方案审查轮；见docs/review/G1c-R2-codex.md。
-已直接修复: 27312d7修正read_badc_csv/column导入，增加导入回归测试及metadata_only预检；额外适配修复额度使用0/2。
-运行信息: 服务器17/17流水线测试通过（7.812秒，无跳过），包含十臂合成拟合及评估序列化；证据output/g1/preparation_78/。
-关键数字: Penmanshiel真实元数据预检PASS_METADATA_ONLY，11个唯一站点、66个MIDAS文件，注册哈希及唯一坐标/距离/方位通过；该预检不读GFS、不训练。
-运行信息: worktree=/home/XT/nuist/pythoncode/TimeDARTFirst_G1_27312d7；run=/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/G1/g1c_27312d7_r2。
-运行信息: 新目录两个风场从头完整准备，准备PID392671；旧g1c_fd3ee91_r1原样保留，未复用其Kelmarsh产物。
-运行信息: 准备脚本SHA256=442f8a96d2b7026d089fca379c3a1f531c6c0831f4e26c4efcb0483ec546d176；协议SHA256=92e93dd4d1b62b1654c02bbb95299019f507903f13ef6fe71d2f6687003e8ed4不变。
-关键数字: 新旧Kelmarsh共7个NPZ、10310个数组，np.array_equal全部通过；校准、时效和点位JSON完全相同。
-运行信息: prepared.json运行路径不同，NPZ哈希不作为新旧一致性依据；仅规范化执行目录及已逐数组核对的NPZ哈希引用，其余JSON字段/原始输入哈希完全相同，详见kelmarsh_comparison.json。
-关键数字: Kelmarsh train/val/test=75024/15680/16949；Penmanshiel=64771/35603/38147；两场时效均3–18h，校准分别37/12项，全部rma。
-运行信息: prepared/complete.json存在，formal_gate逐项哈希核验通过；2026-11-13 15:05 UTC启动唯一正式实例，PID395899，真实完整Python命令及formal/launch.json已核对。
-运行信息: train_g1.py --prepared <run>/prepared --run-dir <run>/formal --protocol-sha256 92e93dd4… --device cuda；正式目录为上述run下formal，日志formal.log。
-运行信息: 北京时间2026-11-14 04:22完成，60/60拟合、统一冻结及评估完成，PID已退出，无failed.json；未重训、未重新生成预测或重跑评估。
-运行信息: 完成后复核全部输入/准备产物、60个checkpoint、60份预测、源码、freeze和results哈希全部通过；证据output/g1/results_78/completion_verified.json。
-关键数字: Q1两场增益13.908/15.803kW，95%CI[11.425,16.261]/[11.597,19.915]，max-p=8.420e-14、Holm=3.368e-13，通过；N的MAE/RMSE/R2分别146.461/220.694/0.85488、168.984/274.214/0.81949（三seed指标均值）。
-关键数字: Q3两场增益-0.875/-1.626kW（-0.597%/-0.958%），CI[-1.600,-0.099]/[-3.044,-0.351]；p=.023634/.017102，Holm=.070902，不通过；I*分别I_w/I。
-关键数字: Q4增益.236/1.186，CI[-.295,.770]/[.006,2.436]，p=.386825/.055138；Q5增益.468/-.197，CI[-.062,1.071]/[-.995,.527]，p=.104489/.609923；max-p分别.386825/.609923，Holm均.773649，两项不通过。
-运行信息: enter_G2=false、stop_G=false；信息价值成立，方法增量不成立。完整CI/p/敏感性/逐臂指标及12组机制诊断见output/g1/results_78/formal/results.json；oracle诊断仅描述，不代表识别出物理传播时间。
-运行信息: 不下载/安装/解码封存；160MB原始manifest_b1.json未提交；其他服务器任务未停止或修改。
-需要 Claude 做的: 复核完整正式结果、信息价值与方法负结果措辞及机制诊断；本轮不进入G2，不自行新增运行，复核后再提出下一阶段。
-需要用户决定: 无待启动任务；是否合回主线待Claude复核和用户同意，当前仅exp/G1记录。
+<!-- 由Codex覆盖。2026-11-14：第79次归档合并完成，G2a R1审查 -->
+轮次: R1/2 | 阶段: G2a | 分支: exp/G2 | 提交号: 28eea5b文档；cbc33bd主线no-ff合并；本轮审查提交见git log
+审查结论: 1条阻断R1-B1、2条建议，见docs/review/G2a-R1-codex.md；仅审本轮A/B方案及直接依赖。
+已直接修复: 无；R1-B1涉及预设结论口径，按协议不代改STAGE_PLAN。
+运行信息: exp/G1已按用户授权用--no-ff合回codex/self-evolving-wiki并推送；exp/G2从合并提交创建并推送；main未动。
+关键数字: G1归档60/60拟合及评估；Q1通过、Q3/Q4/Q5不通过，作为有效负结果归档，不需重跑。
+关键数字: G2a正式拟合0/12，HoT准备未启动；本轮未访问服务器观测或封存年数据，未新增下载/安装。
+审查结论: R1-B1：两场CI跨零不能推出“数值预报基本覆盖上游观测”；反例两场CI均[-20,20]kW仍兼容明显收益与损害。
+审查结论: 推荐只改为“未检出增量，不能判定等效或替代”；若保留覆盖主张，需要另定等效界及检验，Codex不自行决定。
+关键数字: B0已核对保留9通道：Wspd/Etmp/Ndir_sin/Ndir_cos/Pab_mean/rotor_speed/power_last10/wind_last10/power，索引[0..7,20]；去除8..19。
+运行信息: 160MB原始manifest_b1.json仍未跟踪、未提交、未修改。G1冻结协议、服务器源码、checkpoint及结果均未改。
+需要 Claude 做的: 在DECISIONS决议R1-B1并修改STAGE_PLAN A解释；建议S1为通道确认，S2为施工日边界明确。R2只审改动；无阻断后再实施12拟合及HoT准备。
+需要用户决定: 无；当前先交Claude处理R1，尚未到两轮上限。
