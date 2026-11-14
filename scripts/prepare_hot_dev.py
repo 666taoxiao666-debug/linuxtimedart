@@ -2,6 +2,8 @@
 from __future__ import annotations
 
 import argparse
+from collections import Counter
+from decimal import Decimal
 import json
 from pathlib import Path
 import sys
@@ -94,6 +96,107 @@ def merge_boundary(previous, current):
             raise ValueError('Conflicting SCADA boundary observations')
         merged = merged.drop_duplicates(keys, keep='first')
     return merged.sort_values(keys).reset_index(drop=True)
+
+
+def boundary_class(left, right):
+    """Classify raw export cells; no modification of observations."""
+    missing = lambda v: str(v).strip().lower() in ('', 'nan', 'na', 'n/a', 'null', 'none')
+    a, b = missing(left), missing(right)
+    if a or b:
+        return ('both_missing' if a and b else 'one_missing'), None, False
+    x, y = Decimal(str(left).strip()), Decimal(str(right).strip())
+    if not x.is_finite() or not y.is_finite():
+        raise ValueError('Nonfinite boundary observation')
+    delta = abs(x-y)
+    # Coarser export's last displayed place defines the rounding allowance.
+    tolerance = max(Decimal(10)**x.as_tuple().exponent,
+                    Decimal(10)**y.as_tuple().exponent) / 2
+    return ('same' if x == y else 'different'), str(delta), delta > tolerance
+
+
+def diagnose_boundaries(root, out):
+    """Scan registered development exports only, retaining boundary metadata."""
+    if out.exists() or out.resolve().is_relative_to((root/'datasets').resolve()):
+        raise ValueError('Require fresh diagnostic output outside datasets')
+    out.mkdir(parents=True)
+    identities, previous, groups, examples = {}, {}, [], []
+    duplicate_keys, material_keys, nonboundary, annual_batches = set(), set(), [], []
+    try:
+        directory = raw_inventory(root, identities)
+        for year in YEARS:
+            with zipfile.ZipFile(directory/f'{development_year(year)}.zip') as archive:
+                for month in range(1, 13):
+                    lower = pd.Timestamp(year=year, month=month, day=1, tz='UTC')
+                    upper = lower + pd.offsets.MonthBegin(1)
+                    for table, mapping in MAPPING.items():
+                        name = f'{table}_{year}_{month:02d}.csv'
+                        with archive.open(name) as handle:
+                            t = pd.read_csv(handle, usecols=['TimeStamp', 'StationId']+list(mapping),
+                                            encoding='cp1252', dtype=str, keep_default_na=False)
+                        stamps = t.TimeStamp.str.strip()
+                        stamps = stamps.where(~stamps.str.fullmatch(r'\d{4}-\d{2}-\d{2}'), stamps+' 00:00:00')
+                        t['TimeStamp'] = pd.to_datetime(stamps, utc=True, errors='raise')
+                        # Protected values are never converted, compared or reported.
+                        t = t.loc[t.TimeStamp < CUTOFF].copy()
+                        if not t.TimeStamp.between(lower, upper).all():
+                            raise ValueError('Timestamp outside registered month')
+                        keys = ['TimeStamp', 'StationId']
+                        dup = t.duplicated(keys, keep=False)
+                        if dup.any():
+                            for row in t.loc[dup, keys].drop_duplicates().itertuples(index=False):
+                                nonboundary.append(dict(file=name, time=str(row.TimeStamp),
+                                    station=row.StationId, reason='duplicate within one export'))
+                        current = t.loc[t.TimeStamp == lower].drop_duplicates(keys).set_index(keys)
+                        prior = previous.get(table)
+                        if prior is not None:
+                            shared = prior.index.intersection(current.index)
+                            changed, material = set(), set()
+                            counts = {c: Counter() for c in mapping}
+                            for key in shared:
+                                identity = (str(key[0]), str(key[1]))
+                                duplicate_keys.add(identity)
+                                for column in mapping:
+                                    left, right = prior.at[key, column], current.at[key, column]
+                                    category, delta, beyond = boundary_class(left, right)
+                                    counts[column][category] += 1
+                                    if category == 'different':
+                                        changed.add(identity)
+                                    if beyond:
+                                        counts[column]['beyond_rounding'] += 1
+                                        material.add(identity)
+                                        material_keys.add(identity)
+                                    if category != 'same' and len(examples) < 20:
+                                        examples.append(dict(boundary=str(lower), table=table,
+                                            station=str(key[1]), column=column, left=left, right=right,
+                                            category=category, delta=delta, beyond_rounding=bool(beyond)))
+                            groups.append(dict(boundary=str(lower), table=table, duplicate_keys=len(shared),
+                                changed_keys=len(changed), beyond_rounding_keys=len(material),
+                                columns={c: dict(v) for c, v in counts.items()}))
+                            if month == 1 and len(shared) and len(changed) == len(shared):
+                                annual_batches.append(groups[-1])
+                        previous[table] = t.loc[t.TimeStamp == upper].drop_duplicates(keys).set_index(keys)
+            print(f'[DIAGNOSTIC] {year} complete', flush=True)
+        ratio = len(material_keys)/len(duplicate_keys) if duplicate_keys else 0
+        stops = []
+        if ratio > .01:
+            stops.append('beyond_rounding_keys_exceed_one_percent')
+        if nonboundary:
+            stops.append('duplicates_within_export_require_review')
+        if annual_batches:
+            stops.append('entire_annual_boundary_batch_differs')
+        report = dict(status='STOP' if stops else 'DIAGNOSED', stop_reasons=stops,
+            development_years=list(YEARS), duplicate_keys=len(duplicate_keys),
+            beyond_rounding_keys=len(material_keys), beyond_rounding_fraction=ratio,
+            groups=groups, examples=examples, nonboundary=nonboundary, annual_batches=annual_batches,
+            missing_also_conflicts_in_existing_merge=True, source_sha256=g1.digest(__file__),
+            input_hashes=identities, training=False, preparation_started=False)
+        g1.save_json(out/'diagnostic.json', report)
+        g1.save_json(out/'completed.json', dict(status=report['status'],
+            report_sha256=g1.digest(out/'diagnostic.json'), stop_reasons=stops))
+        print(f'[DIAGNOSTIC] {report["status"]}: {stops}', flush=True)
+    except Exception as exc:
+        g1.save_json(out/'failed.json', dict(error_type=type(exc).__name__, error=str(exc), restart=False))
+        raise
 
 
 def aggregate(ticks):
@@ -394,5 +497,7 @@ if __name__ == '__main__':
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--data-root', type=Path, required=True)
     p.add_argument('--output', type=Path, required=True)
+    p.add_argument('--diagnose-boundaries', action='store_true')
     args = p.parse_args()
-    run(args.data_root.resolve(), args.output)
+    action = diagnose_boundaries if args.diagnose_boundaries else run
+    action(args.data_root.resolve(), args.output)

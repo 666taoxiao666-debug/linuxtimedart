@@ -2,7 +2,7 @@ import io
 import tempfile
 import unittest
 from pathlib import Path
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 
 import numpy as np
 import pandas as pd
@@ -11,6 +11,55 @@ from scripts import prepare_hot_dev as hot
 
 
 class HotDevelopmentTests(unittest.TestCase):
+    def test_boundary_raw_classification_and_rounding(self):
+        self.assertEqual(hot.boundary_class('1.00', '1'), ('same', '0.00', False))
+        self.assertEqual(hot.boundary_class('', 'NaN'), ('both_missing', None, False))
+        self.assertEqual(hot.boundary_class('', '42'), ('one_missing', None, False))
+        self.assertEqual(hot.boundary_class('1.2', '1.24'), ('different', '0.04', False))
+        self.assertEqual(hot.boundary_class('1.2', '1.26'), ('different', '0.06', True))
+        with self.assertRaises(ValueError):
+            hot.boundary_class('inf', '1')
+
+    def test_missing_value_is_conflict_in_original_merge(self):
+        a = pd.DataFrame({'timestamp': [pd.Timestamp('2021-01-01', tz='UTC')],
+                          'StationId': [1], 'power_kw': [np.nan]})
+        b = a.copy()
+        b['power_kw'] = 1.
+        with self.assertRaisesRegex(ValueError, 'Conflicting'):
+            hot.merge_boundary(a, b)
+
+    def test_diagnostic_cross_year_stop_and_protected_sentinel(self):
+        class Archive:
+            def __init__(self, path):
+                pass
+            def __enter__(self):
+                return self
+            def __exit__(self, *args):
+                pass
+            def open(self, name):
+                table, y, m = name.removesuffix('.csv').rsplit('_', 2)
+                lo = pd.Timestamp(year=int(y), month=int(m), day=1)
+                hi = lo + pd.offsets.MonthBegin(1)
+                columns = list(hot.MAPPING[table])
+                rows = [','.join(['TimeStamp', 'StationId']+columns)]
+                for stamp in (lo, hi):
+                    value = 'protected-not-numeric' if stamp.year >= 2024 else '1'
+                    if int(y) == 2021 and int(m) == 1 and stamp == lo:
+                        value = '100'
+                    rows.append(','.join([str(stamp), '1']+[value]*len(columns)))
+                return io.BytesIO(('\n'.join(rows)+'\n').encode())
+        with tempfile.TemporaryDirectory() as d:
+            out = Path(d)/'diagnostic'
+            with patch.object(hot, 'raw_inventory', return_value=Path(d)), \
+                 patch.object(hot.zipfile, 'ZipFile', Archive):
+                hot.diagnose_boundaries(Path(d), out)
+            report = hot.json.loads((out/'diagnostic.json').read_text())
+            self.assertEqual(report['duplicate_keys'], 95)
+            self.assertEqual(report['beyond_rounding_keys'], 1)
+            self.assertIn('entire_annual_boundary_batch_differs', report['stop_reasons'])
+            self.assertIn('beyond_rounding_keys_exceed_one_percent', report['stop_reasons'])
+            self.assertNotIn('protected-not-numeric', (out/'diagnostic.json').read_text())
+
     def test_protected_year_rejected_before_zip_open(self):
         z = Mock()
         for y in (2015, 2024, 2025, 2026):
