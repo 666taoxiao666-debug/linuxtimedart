@@ -1,0 +1,8 @@
+{
+  "utc": "2026-11-14T03:12:05.399113+00:00",
+  "run": "g2a_e72e462_r1",
+  "pid": 550508,
+  "alive": true,
+  "command": "/home/XT/miniconda3/envs/timedart/bin/python -u scripts/train_g1.py --prepared /home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/G1/g1c_27312d7_r2/prepared --g2a-parent /home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/G1/g1c_27312d7_r2/formal --run-dir /home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/G2/g2a_e72e462_r1/formal --protocol-sha256 7280563d6404a45aefc3844ae61706746be74aaa8274fd7b541df0ec19ee199b --device cuda ",
+  "tail": "{\"completed\": 1, \"total\": 12, \"key\": \"Kelmarsh/B0/2024\"}\n{\"completed\": 2, \"total\": 12, \"key\": \"Kelmarsh/B0/2025\"}\n{\"completed\": 3, \"total\": 12, \"key\": \"Kelmarsh/B0/2026\"}\n{\"completed\": 4, \"total\": 12, \"key\": \"Kelmarsh/N0/2024\"}\n{\"completed\": 5, \"total\": 12, \"key\": \"Kelmarsh/N0/2025\"}\n{\"completed\": 6, \"total\": 12, \"key\": \"Kelmarsh/N0/2026\"}\n"
+}
