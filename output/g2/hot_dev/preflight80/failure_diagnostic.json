@@ -1,0 +1,38 @@
+{
+  "scope": "diagnostic key columns only, 2016 January; no restart or data modification",
+  "records": [
+    {
+      "member": "tblSCTurbine_2016_01.csv",
+      "rows": 93736,
+      "start": "2016-01-01 00:00:00+00:00",
+      "end": "2016-02-01 00:00:00+00:00",
+      "outside_year": 0,
+      "outside_month": 21,
+      "unknown_station_ids": [],
+      "duplicate_rows": 0,
+      "duplicate_examples": []
+    },
+    {
+      "member": "tblSCTurGrid_2016_01.csv",
+      "rows": 93736,
+      "start": "2016-01-01 00:00:00+00:00",
+      "end": "2016-02-01 00:00:00+00:00",
+      "outside_year": 0,
+      "outside_month": 21,
+      "unknown_station_ids": [],
+      "duplicate_rows": 0,
+      "duplicate_examples": []
+    },
+    {
+      "member": "tblSCTurTemp_2016_01.csv",
+      "rows": 93736,
+      "start": "2016-01-01 00:00:00+00:00",
+      "end": "2016-02-01 00:00:00+00:00",
+      "outside_year": 0,
+      "outside_month": 21,
+      "unknown_station_ids": [],
+      "duplicate_rows": 0,
+      "duplicate_examples": []
+    }
+  ]
+}

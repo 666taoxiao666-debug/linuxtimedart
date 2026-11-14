@@ -1,0 +1,26 @@
+{
+  "pid": 552838,
+  "command": [
+    "/home/XT/miniconda3/envs/timedart/bin/python",
+    "-u",
+    "scripts/prepare_hot_dev.py",
+    "--data-root",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst",
+    "--output",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/G2/hot_dev_7b0e3d6_r1/prepared"
+  ],
+  "cwd": "/home/XT/nuist/pythoncode/TimeDARTFirst_G2_7b0e3d6",
+  "utc": "2026-11-14T02:36:59.142373+00:00",
+  "tests": "9/9 passed",
+  "training": false,
+  "years": [
+    2016,
+    2017,
+    2018,
+    2019,
+    2020,
+    2021,
+    2022,
+    2023
+  ]
+}

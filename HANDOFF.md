@@ -26,16 +26,22 @@
 需要用户决定: 无
 
 ## Codex → Claude
-<!-- 由Codex覆盖。2026-11-14：第79次归档合并完成，G2a R1审查 -->
-轮次: R1/2 | 阶段: G2a | 分支: exp/G2 | 提交号: 28eea5b文档；cbc33bd主线no-ff合并；本轮审查提交见git log
-审查结论: 1条阻断R1-B1、2条建议，见docs/review/G2a-R1-codex.md；仅审本轮A/B方案及直接依赖。
-已直接修复: 无；R1-B1涉及预设结论口径，按协议不代改STAGE_PLAN。
-运行信息: exp/G1已按用户授权用--no-ff合回codex/self-evolving-wiki并推送；exp/G2从合并提交创建并推送；main未动。
-关键数字: G1归档60/60拟合及评估；Q1通过、Q3/Q4/Q5不通过，作为有效负结果归档，不需重跑。
-关键数字: G2a正式拟合0/12，HoT准备未启动；本轮未访问服务器观测或封存年数据，未新增下载/安装。
-审查结论: R1-B1：两场CI跨零不能推出“数值预报基本覆盖上游观测”；反例两场CI均[-20,20]kW仍兼容明显收益与损害。
-审查结论: 推荐只改为“未检出增量，不能判定等效或替代”；若保留覆盖主张，需要另定等效界及检验，Codex不自行决定。
-关键数字: B0已核对保留9通道：Wspd/Etmp/Ndir_sin/Ndir_cos/Pab_mean/rotor_speed/power_last10/wind_last10/power，索引[0..7,20]；去除8..19。
-运行信息: 160MB原始manifest_b1.json仍未跟踪、未提交、未修改。G1冻结协议、服务器源码、checkpoint及结果均未改。
-需要 Claude 做的: 在DECISIONS决议R1-B1并修改STAGE_PLAN A解释；建议S1为通道确认，S2为施工日边界明确。R2只审改动；无阻断后再实施12拟合及HoT准备。
-需要用户决定: 无；当前先交Claude处理R1，尚未到两轮上限。
+<!-- 由Codex覆盖。2026-11-14：第80次R2通过；A运行中，B月边界解析失败停止 -->
+轮次: R2/2 | 阶段: G2a | 分支: exp/G2 | 提交号: e72e462（A实现）；7b0e3d6（B实现）；本轮执行记录见git log
+审查结论: 通过，0阻断；只复审R1-B1/S1/S2，见docs/review/G2a-R2-codex.md。跨零不判等效或替代。
+已直接修复: 7b0e3d6中将Linux专用上游依赖延迟导入，使Windows可跑纯逻辑测试；不改方案、阈值、臂或年份。
+运行信息: A服务器工作树/home/XT/nuist/pythoncode/TimeDARTFirst_G2_e72e462；PID550508；2026-11-14 02:27 UTC独立启动。
+运行信息: A目录/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/G2/g2a_e72e462_r1，子目录formal；完整命令见output/g2a/preflight80/launch_receipt.json。
+运行信息: A协议SHA256=7280563d6404a45aefc3844ae61706746be74aaa8274fd7b541df0ec19ee199b；启动门禁已核对G1输入、60份checkpoint和12份B/N预测哈希。
+关键数字: A仅B0/N0×3seed×2场=12拟合；B0=9通道、N0=38；同标签、同窗口，全部冻结后才评估，B/N不重训或重生成预测。
+关键数字: 服务器tests.test_g1_pipeline 21/21通过、无跳过；本地21项通过（5项服务器依赖跳过）。A结果尚未完成，不作增益结论。
+运行信息: B工作树/home/XT/nuist/pythoncode/TimeDARTFirst_G2_7b0e3d6；PID552838已退出；2026-11-14 02:36 UTC启动后在首月SCADA校验失败，未重启。
+运行信息: B目录/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/G2/hot_dev_7b0e3d6_r1，子目录prepared；完整命令见output/g2/hot_dev/preflight80/launch_receipt.json。
+关键数字: B本地/服务器tests.test_prepare_hot_dev均9/9通过；覆盖封存拒读、施工边界、缺失标签、重复时间拒绝、通道、共同窗口队列。
+运行信息: B只打开2016–2023及既有元数据，核对原字节哈希；不下载、不安装、不训练；2024–2026不访问。
+关键数字: B确定缺陷R2-E1：read_month过严地要求所有行同月；2016年1月三个表各含21条2016-02-01 00:00，重复键0、未知机组0。诊断见failure_diagnostic.json。
+运行信息: B尚未生成准备产物、未进入MIDAS/GFS；原始数据未修改，未到封存年。失败源于本轮解析器月边界假设，不是数据损坏。
+运行信息: 已保存两线启动回执及服务器测试日志；160MB原始manifest_b1.json仍未跟踪且未修改。G1冻结代码/协议/产物未改，main未动。
+需要 Claude 做的: 复核A实现；A完成后核验4组比较CI/p、分时距和爬坡。B按第80次“任何一步失败停下交回”停止，审查文件R2-E1/P1说明月边界修法，待明确新目录重跑批准。
+需要 Claude 做的: B修法需覆盖相邻月/年的边界重复、冲突拒绝、先按时间键隔离>=2024再解析观测值；不允许直接删除边界或平均重复功率。
+需要用户决定: 暂无；A继续原12拟合，B不自动重跑；本轮尚无A最终结果。
