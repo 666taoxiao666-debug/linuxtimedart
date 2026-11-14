@@ -3,23 +3,21 @@
 规则见 AGENTS.md：两节各由一方整节覆盖、不追加，每节不超过 40 行；历史用 `git log -p HANDOFF.md` 查。
 
 ## Claude → Codex
-<!-- 由 Claude 覆盖。最后更新：2026-11-14 第 82 次（A 复核通过；HoT 边界冲突 R2-E4：先只读诊断，再按事先登记的规则处置，满足条件就第 5 次重跑） -->
-轮次: R2/2 | 阶段: G2a | 分支: exp/G2 | 基线提交: 84d566d
-请求: 只读诊断后按规则修复并运行（执行恢复，不是新的方案审查轮）
+<!-- 由 Claude 覆盖。最后更新：2026-11-14 第 83 次（G2a 结束：HoT 开发年准备通过；新阶段 G2b：改造诊断 → 开发年拟合并冻结 → 停下交回，再授权开封存年） -->
+轮次: R1/2 | 阶段: G2b | 分支: exp/G2 | 基线提交: 5b02f93
+请求: 审方案后运行（无阻断就做第 1、2 步；第 2 步冻结后停下交回，不碰封存年）
 待审范围: git diff HEAD -- docs/STAGE_PLAN.md docs/review/DECISIONS.md
-允许改动: scripts/prepare_hot_dev.py, tests/test_prepare_hot_dev.py, output/g2/**, output/g2a/**, output/external_acquisition/gfs_g0/manifest_b1.json（160 MB 原始清单，本地未跟踪，只为通过范围检查，不要提交、不要改）
-审查文件: docs/review/G2a-R2-codex.md（续写一节"第 82 次执行"）
-本轮决议: 采纳 3（R2-E2、R2-E3 复核正确；R2-E4 先诊断后处置）；A 线结果复核通过，见 DECISIONS G2a 末段
+允许改动: scripts/prepare_hot_dev.py, scripts/train_g2b.py, configs/g2b_protocol.json, tests/test_g2b.py, output/g2b/**, output/g2/**, output/external_acquisition/gfs_g0/manifest_b1.json（160 MB 原始清单，本地未跟踪，只为通过范围检查，不要提交、不要改）
+审查文件: docs/review/G2b-R1-codex.md
+本轮决议: 无新编号。B 线第 5 次准备复核通过；改造后样本占比 3.55%/100% 的分析见 DECISIONS G2a 末段，处理办法写进 G2b 第 1 步
 
 需要你做的:
-1. **只读诊断**（不改数据、不训练、只看 <2024-01-01 00:00 的行）。对 2016-01 至 2023-12 全部月间、年间边界上（时间、机组）重复的记录逐列分类：
-   - 相同；两边都缺；一边缺一边有；两边都有但不同（记差值和两边原始字符串）。
-   - 按边界、表、列汇总，给前 20 个例子，写到 output/g2/hot_dev/conflict_diagnostic/。
-   - 顺带确认：现行 merge_boundary 的 nunique(dropna=False) 是否把"一边缺一边有"也判成了冲突。
-2. **检查停止条件**（STAGE_PLAN B 节"边界冲突"）：第 4 类超过全部边界重复键的 1%、重复出现在非边界时刻，或某次年度文件交接整批取值不同。满足任一条就只交回诊断，不重跑。
-3. **不满足停止条件：** 按 STAGE_PLAN B 节的四类规则实现处置，补合成测试（四类各一例，加跨年边界）。在新目录做第 5 次完整运行（只读，不训练，不读 2024–2026）；同类解析问题另给 2 处最小修复额度。
-   - 交回：诊断汇总、各类处置的数量（尤其第 4 类被标缺测的小时数），以及第 80 次 B 节要求的全部审计。
-   - 失败就停下交回。不下载、不安装。
+1. **审 G2b 方案**（STAGE_PLAN 全文）。确定缺陷按唯一最小修法先行；设计分歧写成 B/S 编号交我。
+2. **第 1 步（只读开发年）：** 按 STAGE_PLAN 算每台机的 S1、S2（5–11 m/s，0.5 m/s 分箱中位数；P0 只取 5–12 月）。描述限功率/可用性/状态字段（ActRegSt、BoostAct/BoostAva、tblSCTurFlag 等）在 P0/P1/P2 的分布。按规则判情形 A 或 B，"其余情形"就停下交回。结果写 output/g2b/retrofit_diagnostic/。
+3. **第 2 步：** 按所选情形设定改造通道和切分，写 train_g2b.py（复用 train_g1.py，每次编辑 ≤150 行）和 g2b_protocol.json（锁 SHA）。跑 14 次拟合：B、N0、B0 各 3 个 seed，N 5 个 seed。
+   - 同时写好封存年准备和评估脚本、锁哈希，但不运行。
+   - 冻结包写到 output/g2b/freeze/，写完就停下交回：协议 SHA、checkpoint 哈希、各臂验证 MAE、所选情形。
+4. 绝不读 2024–2026 的 HoT SCADA/MIDAS 值，不解码 GFS 封存字节。失败就停下交回；不下载、不安装。
 
 需要用户决定: 无
 

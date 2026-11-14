@@ -408,6 +408,112 @@ def descriptive_curve(unit, first, end):
     return output
 
 
+def retrofit_masks(times, first, end):
+    t = pd.DatetimeIndex(times)
+    return dict(P0=(t < first) & (t.month >= 5),
+                P1=(t >= end) & (t < pd.Timestamp('2023-05-01', tz='UTC')),
+                P2=(t >= max(end, pd.Timestamp('2023-05-01', tz='UTC'))) & (t < CUTOFF))
+
+
+def retrofit_scores(unit, first, end):
+    masks = retrofit_masks(unit.index-pd.Timedelta(hours=1), first, end)
+    edges = np.arange(5., 11.01, .5)
+    curves = {}
+    for name, mask in masks.items():
+        rows = unit.loc[mask, ['wind_speed_mps', 'power_kw']].replace([np.inf, -np.inf], np.nan).dropna()
+        grouped = rows.groupby(pd.cut(rows.wind_speed_mps, edges, right=False), observed=False).power_kw
+        counts, medians = grouped.count().to_numpy(), grouped.median().to_numpy()
+        curves[name] = dict(counts=counts.tolist(), medians=[None if pd.isna(x) else float(x) for x in medians])
+    def score(period):
+        a = np.asarray(curves['P0']['medians'], dtype=float)
+        b = np.asarray(curves[period]['medians'], dtype=float)
+        valid = np.isfinite(a) & np.isfinite(b) & (a > 0)
+        return float(np.median((b-a)/a)) if valid.all() else None
+    return dict(S1=score('P1'), S2=score('P2'), bins=curves)
+
+
+def choose_retrofit_case(units):
+    if len(units) != 21:
+        raise ValueError('Expected 21 units for registered decision')
+    values = [u['S2'] for u in units.values() if u['S2'] is not None]
+    positive = sum(v >= .05 for v in values)
+    negative = sum(v <= -.05 for v in values)
+    small = sum(abs(v) < .05 for v in values)
+    case = 'A' if max(positive, negative) >= 11 else ('B' if small >= 14 else 'STOP')
+    return dict(case=case, positive=positive, negative=negative, small=small, unclassified=21-len(values))
+
+
+def diagnose_retrofit(root, prepared, out):
+    """G2b step 1: development-only diagnostic, no model execution."""
+    if out.exists() or out.resolve().is_relative_to((root/'datasets').resolve()):
+        raise ValueError('Require fresh diagnostic directory')
+    out.mkdir(parents=True)
+    try:
+        completed = json.loads((prepared/'completed.json').read_text())
+        for name in ('hourly_scada.csv', 'input_hashes.json'):
+            if g1.digest(prepared/name) != completed['artifacts'][name]:
+                raise ValueError('Prepared input hash mismatch: '+name)
+        identities = {}
+        directory = raw_inventory(root, identities)
+        expected = json.loads((prepared/'input_hashes.json').read_text())
+        if any(expected.get(p) != h for p, h in identities.items()):
+            raise ValueError('Raw development identity mismatch')
+        works = pd.read_csv(directory/'Hill_of_Towie_AeroUp_install_dates.csv').set_index('Turbine')
+        bounds = {name: works_bounds(*row.tolist()) for name, row in works.iterrows()}
+        frame = pd.read_csv(prepared/'hourly_scada.csv')
+        frame['timestamp_hour_end_utc'] = pd.to_datetime(frame.timestamp_hour_end_utc, utc=True)
+        if not (frame.timestamp_hour_end_utc < CUTOFF).all():
+            raise ValueError('Protected timestamp in prepared input')
+        units = {name: retrofit_scores(u.set_index('timestamp_hour_end_utc'), *bounds[name])
+                 for name, u in frame.groupby('turbine_id')}
+        decision = choose_retrofit_case(units)
+        g1.save_json(out/'scores.json', dict(units=units, decision=decision,
+            prepared_sha256=completed['artifacts']['hourly_scada.csv'], training=False,
+            rule='12 equal-weight bins [5,11); physical hour start; incomplete/nonpositive P0 bins unclassified'))
+        # Describe raw status columns at 10-minute resolution, not model inputs.
+        meta = pd.read_csv(directory/'Hill_of_Towie_turbine_metadata.csv')
+        names = dict(zip(meta['Station ID'].astype(str), meta['Turbine Name']))
+        distributions, columns_seen = {}, {}
+        for year in YEARS:
+            with zipfile.ZipFile(directory/f'{development_year(year)}.zip') as archive:
+                for name in sorted(archive.namelist()):
+                    if not name.endswith('.csv') or not name.startswith('tblSC'):
+                        continue
+                    with archive.open(name) as handle:
+                        header = pd.read_csv(handle, encoding='cp1252', nrows=0).columns.tolist()
+                    cols = [c for c in header if any(s in c.lower() for s in ('actregst', 'boostact', 'boostava', 'avail', 'derat', 'curtail', 'powerlimit'))]
+                    if 'tblSCTurFlag' in name:
+                        cols = [c for c in header if c not in ('TimeStamp', 'StationId')]
+                    if not cols or not {'TimeStamp', 'StationId'} <= set(header):
+                        continue
+                    table = name.split('_')[0]
+                    columns_seen[table] = sorted(set(columns_seen.get(table, [])+cols))
+                    with archive.open(name) as handle:
+                        t = pd.read_csv(handle, usecols=['TimeStamp', 'StationId']+cols, dtype=str, encoding='cp1252')
+                    stamps = t.TimeStamp.str.strip()
+                    stamps = stamps.where(~stamps.str.fullmatch(r'\d{4}-\d{2}-\d{2}'), stamps+' 00:00:00')
+                    times = pd.to_datetime(stamps, utc=True, errors='raise')
+                    # No protected values are converted or summarized.
+                    t = t.loc[times < CUTOFF].copy()
+                    t['physical'] = times.loc[t.index]-pd.Timedelta(minutes=10)
+                    for sid, u in t.groupby('StationId'):
+                        turbine = names[str(sid)]
+                        for period, mask in retrofit_masks(u.physical, *bounds[turbine]).items():
+                            for col in cols:
+                                key = '|'.join([turbine, period, table, col])
+                                distributions.setdefault(key, Counter()).update(u.loc[mask, col].fillna('<missing>').value_counts().to_dict())
+            print(f'[RETROFIT_STATUS] {year} complete', flush=True)
+        g1.save_json(out/'status_distributions.json', dict(columns=columns_seen,
+            distributions={k: dict(v) for k, v in distributions.items()},
+            rule='raw monthly-export occurrences; duplicate endpoints may count twice; descriptive only'))
+        g1.save_json(out/'completed.json', dict(decision=decision, training=False,
+            source_sha256=g1.digest(__file__), artifacts={p.name:g1.digest(p) for p in out.glob('*.json')}))
+        print(f'[RETROFIT] {decision}', flush=True)
+    except Exception as exc:
+        g1.save_json(out/'failed.json', dict(error_type=type(exc).__name__, error=str(exc), restart=False))
+        raise
+
+
 def boundary_examples(first, end):
     points = sorted(set([first-pd.Timedelta(hours=1), first, first+pd.Timedelta(hours=1),
                          end-pd.Timedelta(hours=1), end, end+pd.Timedelta(hours=1),
@@ -576,8 +682,11 @@ if __name__ == '__main__':
     p.add_argument('--output', type=Path, required=True)
     p.add_argument('--diagnose-boundaries', action='store_true')
     p.add_argument('--boundary-diagnostic', type=Path)
+    p.add_argument('--retrofit-prepared', type=Path)
     args = p.parse_args()
-    if args.diagnose_boundaries:
+    if args.retrofit_prepared:
+        diagnose_retrofit(args.data_root.resolve(), args.retrofit_prepared.resolve(), args.output)
+    elif args.diagnose_boundaries:
         diagnose_boundaries(args.data_root.resolve(), args.output)
     else:
         run(args.data_root.resolve(), args.output, args.boundary_diagnostic)
