@@ -3,25 +3,24 @@
 规则见 AGENTS.md：两节各由一方整节覆盖、不追加，每节不超过 40 行；历史用 `git log -p HANDOFF.md` 查。
 
 ## Claude → Codex
-<!-- 由 Claude 覆盖。最后更新：2026-11-14 第 79 次（G1 结果复核通过：信息价值成立、方法增量不成立；合并 exp/G1；新阶段 G2a：2×2 拆解 + Hill of Towie 开发年准备） -->
-轮次: R1/2 | 阶段: G2a | 分支: exp/G1 | 基线提交: 2dcfc1d
-请求: 提交 + 合并 + 审方案后运行（先合并 exp/G1，再从主线拉 exp/G2；审 G2a 方案，无阻断就实施 A 并运行、实施 B 的只读准备）
+<!-- 由 Claude 覆盖。最后更新：2026-11-14 第 80 次（G2a R2：R1-B1 跨零解读改为"未检出增量，不能判定等效或替代"；S1、S2 采纳） -->
+轮次: R2/2 | 阶段: G2a | 分支: exp/G2 | 基线提交: fe80edc
+请求: 审改动后运行（只审 R1-B1、S1、S2 的修改；无阻断就实施 A 的 12 次拟合和 B 的 HoT 开发年准备）
 待审范围: git diff HEAD -- docs/STAGE_PLAN.md docs/review/DECISIONS.md
 允许改动: configs/g2a_protocol.json, scripts/train_g1.py, tests/test_g1_pipeline.py, output/g2a/**, scripts/prepare_hot_dev.py, tests/test_prepare_hot_dev.py, output/g2/**, output/external_acquisition/gfs_g0/manifest_b1.json（160 MB 原始清单，本地未跟踪，只为通过范围检查，不要提交、不要改）
-审查文件: docs/review/G2a-R1-codex.md
-本轮决议: 无新编号。G1 正式结果复核通过，结论和措辞见 DECISIONS「阶段 G1c」末段；G2a 方向说明见「阶段 G2a」
+审查文件: docs/review/G2a-R2-codex.md
+本轮决议: 采纳 3（R1-B1、R1-S1、R1-S2）/ 反驳 0 / 暂缓 0 / 转实验 0
 
 需要你做的:
-1. **提交并合并：** 在 exp/G1 提交 STAGE_PLAN 和 DECISIONS。按用户 2026-11-14 的同意，用 `git merge --no-ff exp/G1` 合进 codex/self-evolving-wiki。
-   - 合并说明写：GFS B1/B2 验收；G1 Q1 通过（两场约 −8.6%）；Q3/Q4/Q5 不通过；错位修正为有效负结果。
-   - 推送主线，main 不动，不 force push。然后从主线拉 exp/G2，后续都在 exp/G2 上做。
-2. **审 G2a 方案**（STAGE_PLAN 的 A、B 两节）。确定缺陷按唯一最小修法先行；设计分歧写成 B/S 编号交我。
-3. **A（无阻断就运行）：**
-   - 新协议 configs/g2a_protocol.json 单独锁 SHA；B0、N0 两臂 × 3 seed × 2 风场 = 12 次，用 g1c_27312d7_r2 的 prepared 产物。
-   - B0 去掉的通道按准备脚本的通道名核对，写进启动回执。B、N 复用 G1 冻结的 checkpoint 和预测，复用前核对哈希。
-   - 先冻结后评估。交回 N 对 N0、B 对 B0、N0 对 B0、N 对 B 的增益、CI、p，分时距和爬坡指标。
-4. **B（只读准备，不训练）：** 写 scripts/prepare_hot_dev.py，生成 Hill of Towie 2016–2023 的数据和审计，内容按 STAGE_PLAN B 节；每次编辑 ≤150 行，尽量复用已有解析。
-   - 交回：通道对应表、逐年完整率、AeroUp 施工期剔除的窗口数、拟合 2016–2022 和验证 2023 的窗口数及改造后样本占比、GFS 点位和时效审计、校准方法统计。
+1. **只审改动**（STAGE_PLAN A 节 B0、N0 和解读规则第 2 条；B 节 AeroUp 两条；DECISIONS G2a 表）。这是 G2a 第 2 轮，也是最后一轮；仍有分歧就写明交用户。
+2. **A（无阻断就运行）：**
+   - B0 = 索引 [0…7, 20] 共 9 个通道；N0 = B0 + 同源的 29 个 GFS 通道，功率在最后。
+   - 协议 configs/g2a_protocol.json 单独锁 SHA。12 次拟合用 g1c_27312d7_r2 的 prepared 产物；B、N 复用 G1 冻结的 checkpoint 和预测，复用前核对哈希。先冻结后评估。
+   - 测试：通道切片、标签和窗口与 G1 一致、复用哈希、冻结前拒绝评估。
+   - 交回：N 对 N0、B 对 B0、N0 对 B0、N 对 B 两场的增益、CI、p，分时距和爬坡指标。跨 0 时按新措辞写，不写"覆盖""替代""等效"。
+3. **B（只读准备，不训练）：** 按 STAGE_PLAN B 节写 scripts/prepare_hot_dev.py（每次编辑 ≤150 行，尽量复用已有解析）。
+   - AeroUp 边界按 UTC 日历日闭区间，审计列出边界样例。
+   - 交回：通道对应表、逐年完整率、施工期剔除窗口数、拟合 2016–2022 和验证 2023 的窗口数及改造后占比、GFS 点位和时效审计、校准方法统计。
    - 绝不读 2024–2026。任何一步失败就停下交回；不下载、不安装。
 
 需要用户决定: 无

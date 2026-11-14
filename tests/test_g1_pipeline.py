@@ -10,6 +10,56 @@ from scripts import prepare_g1_batches as p
 from scripts import train_g1 as t
 
 
+class G2aTests(unittest.TestCase):
+    def test_input_slicing_preserves_cohort_and_power(self):
+        x = np.broadcast_to(np.arange(21), (3, 24, 21)).copy()
+        y = np.broadcast_to(np.arange(50), (3, 24, 50)).copy()
+        y[..., -1] = x[..., -1]
+        pack = dict(x21=x, x50=y, truth=np.ones((3, 4)), issue=np.arange(3), turbines=np.arange(3))
+        q = t.g2a_pack(pack)
+        np.testing.assert_array_equal(q['x21'], x[..., [*range(8), 20]])
+        np.testing.assert_array_equal(q['x50'][..., 8:-1], y[..., 20:49])
+        np.testing.assert_array_equal(q['x50'][..., -1], x[..., -1])
+        for key in ('truth', 'issue', 'turbines'):
+            self.assertIs(q[key], pack[key])
+        y[..., -1] = -1
+        with self.assertRaises(ValueError):
+            t.g2a_pack(pack)
+
+    def test_evaluation_refused_without_freeze(self):
+        with tempfile.TemporaryDirectory() as root:
+            with self.assertRaises(FileNotFoundError):
+                t.g2a_evaluation_gate(root, {})
+
+    def test_reused_prediction_tamper_rejected(self):
+        import json
+        with tempfile.TemporaryDirectory() as root:
+            root = Path(root); parent = root/'formal'; parent.mkdir()
+            prepared = root/'prepared'; prepared.mkdir()
+            (prepared/'complete.json').write_text('{}')
+            fits, predictions = [], {}
+            for farm in ('Kelmarsh', 'Penmanshiel'):
+                for arm in p.nd.ARMS:
+                    for seed in (2024, 2025, 2026):
+                        key = f'{farm}/{arm}/{seed}'; folder = parent/key; folder.mkdir(parents=True)
+                        (folder/'selected.pt').write_bytes(b'checkpoint')
+                        fits.append(dict(key=key, checkpoint=key+'/selected.pt', sha256=t.digest(folder/'selected.pt')))
+                        if arm in ('B', 'N'):
+                            (folder/'prediction.npy').write_bytes(b'prediction')
+                            predictions[key+'/prediction.npy'] = t.digest(folder/'prediction.npy')
+            (parent/'selection_freeze.json').write_text(json.dumps(dict(fits=fits)))
+            (parent/'results.json').write_text('{}')
+            h = t.digest(parent/'selection_freeze.json')
+            (parent/'test_evaluation_started.json').write_text(json.dumps(dict(freeze_sha256=h)))
+            (parent/'launch.json').write_text(json.dumps(dict(prepared_sha256=t.digest(prepared/'complete.json'))))
+            (parent/'completed.json').write_text(json.dumps(dict(status='COMPLETED', fits=60,
+                freeze_sha256=h, results_sha256=t.digest(parent/'results.json'), predictions=predictions)))
+            self.assertEqual(len(t.verify_reuse(parent, prepared)[0]), 12)
+            (parent/'Kelmarsh/B/2024/prediction.npy').write_bytes(b'tampered')
+            with self.assertRaisesRegex(ValueError, 'prediction hash'):
+                t.verify_reuse(parent, prepared)
+
+
 class TemporalTests(unittest.TestCase):
     def test_actual_read_gate(self):
         good = dict(min_read_lead=3, max_read_lead=18, age=6)
@@ -157,6 +207,26 @@ class PreparationTests(unittest.TestCase):
 
 @unittest.skipIf(p.nd._torch is None, "server torch required")
 class TorchPipelineTests(unittest.TestCase):
+    def test_g2a_two_arms_fit_and_report(self):
+        import json
+        config = json.loads((p.ROOT/'configs/g1_protocol.json').read_text())['fit']
+        config = {**config, 'max_epochs': 1, 'batch_size': 8, 'patience': 1}
+        train, val = t.g2a_pack(synthetic_pack()), t.g2a_pack(synthetic_pack(96))
+        preds = {}
+        with tempfile.TemporaryDirectory() as d:
+            for arm in ('B0', 'N0'):
+                result = t.fit_one(arm, 2024, train, val, config, Path(d)/arm, 'cpu')
+                self.assertTrue(np.isfinite(result['validation_mae']))
+                model = t.make_model(arm, val, config, 'cpu')
+                preds[arm] = [t.predict(model, val, 'cpu')]*3
+            preds.update(B=preds['B0'], N=preds['N0'])
+            pairs = json.loads((p.ROOT/'configs/g2a_protocol.json').read_text())['comparisons']
+            report = t.evaluate_arrays(preds, val['truth'], np.datetime64('2020-01-01')+np.arange(96)*np.timedelta64(3,'h'),
+                None, dict(replicates=100, seed=2024, block_length=8, sensitivity_block_length=56),
+                np.zeros(96), 2050, pairs)
+            self.assertEqual(set(report['primary']), set(pairs))
+            json.dumps(report, allow_nan=False)
+
     def test_all_ten_arms_fit_predict(self):
         import json
         config = json.loads((p.ROOT/"configs/g1_protocol.json").read_text())["fit"]

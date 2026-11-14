@@ -19,6 +19,7 @@ from scripts.prepare_g1_batches import digest, save_json, nd
 
 BATCH_KEYS = ("oS", "oS_mask", "gS", "gS_mask", "gF", "gF_mask", "dS", "dS_mask", "oF", "oF_mask", "age", "cycle_ok")
 PROTOCOL_SHA256 = '92e93dd4d1b62b1654c02bbb95299019f507903f13ef6fe71d2f6687003e8ed4'
+G2A_PROTOCOL_SHA256 = '7280563d6404a45aefc3844ae61706746be74aaa8274fd7b541df0ec19ee199b'
 
 
 def select_information_control(validation, candidates=("I", "I_w", "R_sp")):
@@ -58,7 +59,9 @@ def tensors(pack, indices, device):
 
 
 def make_model(arm, pack, fit_config, device):
-    return nd.G1TSMixerModel(arm, 21 if arm == "B" else 50, pack["geo"],
+    base_arm = {"B0": "B", "N0": "N"}.get(arm, arm)
+    channels = {"B0": 9, "N0": 38}.get(arm, 21 if arm == "B" else 50)
+    return nd.G1TSMixerModel(base_arm, channels, pack["geo"],
         blocks=fit_config["blocks"], ff_dim=fit_config["ff_dim"], dropout=fit_config["dropout"],
         norm_eps=fit_config["norm_eps"], ws_scale=float(pack["ws_scale"])).to(device)
 
@@ -92,7 +95,7 @@ def fit_one(arm, seed, train, val, config, directory, device):
     best = float(np.abs(predict(model, val, device)-val["truth"]).mean())
     state = {k: v.detach().cpu().clone() for k, v in model.state_dict().items()}
     epoch_best, stale, history = 0, 0, [{"epoch": 0, "val_mae": best}]
-    xs = train["x21" if arm == "B" else "x50"]
+    xs = train["x21" if arm in ("B", "B0") else "x50"]
     y = (train["truth"]-float(train["power_mean"]))/float(train["power_scale"])
     for epoch in range(1, config["max_epochs"]+1):
         model.train()
@@ -131,10 +134,11 @@ def fit_one(arm, seed, train, val, config, directory, device):
     return result
 
 
-def evaluate_arrays(predictions, truth, issue, choice, stats, anchor=None, rated=None):
+def evaluate_arrays(predictions, truth, issue, choice, stats, anchor=None, rated=None, comparison_pairs=None):
     from utils.kelmarsh_backbone_information import paired_loss_statistics
     losses = {a: np.mean([np.abs(p-truth) for p in ps], axis=0) for a, ps in predictions.items()}
-    pairs = {"Q1": ("N", "B"), "Q3": ("M", choice), "Q4": ("M", "M_self"), "Q5": ("M", "M_amp")}
+    pairs = comparison_pairs if comparison_pairs is not None else {
+        "Q1": ("N", "B"), "Q3": ("M", choice), "Q4": ("M", "M_self"), "Q5": ("M", "M_amp")}
     results, sensitivity = {}, {}
     for q, (candidate, reference) in pairs.items():
         kwargs = dict(replicates=stats["replicates"], seed=stats["seed"])
@@ -151,6 +155,8 @@ def evaluate_arrays(predictions, truth, issue, choice, stats, anchor=None, rated
     descriptive = {}
     for label, candidate, reference in [('Q2', 'I_pool', 'N'), ('M_phase_vs_M', 'M_phase', 'M'),
             ('M_vs_I_pool', 'M', 'I_pool')] + [('M_vs_'+a, 'M', a) for a in ('I', 'I_w', 'R_sp') if a != choice]:
+        if comparison_pairs is not None:
+            break
         descriptive[label] = dict(gain=float((losses[reference]-losses[candidate]).mean()), descriptive_only=True)
     ramps = {}
     if anchor is not None:
@@ -341,14 +347,147 @@ def run_formal(prepared, directory, protocol_sha256, device):
             raise
 
 
+def g2a_pack(pack):
+    """Slice only inputs; every other array remains the same object and cohort."""
+    if pack['x21'].shape[-1] != 21 or pack['x50'].shape[-1] != 50:
+        raise ValueError('G1 input layout mismatch')
+    if not np.array_equal(pack['x21'][..., -1], pack['x50'][..., -1]):
+        raise ValueError('Power is not aligned across G1 inputs')
+    return {**pack, 'x21': pack['x21'][..., [*range(8), 20]],
+            'x50': pack['x50'][..., [*range(8), *range(20, 50)]]}
+
+
+def verify_reuse(parent, prepared):
+    parent, prepared = Path(parent), Path(prepared)
+    done = json.loads((parent/'completed.json').read_text())
+    freeze = json.loads((parent/'selection_freeze.json').read_text())
+    launch = json.loads((parent/'launch.json').read_text())
+    if done['fits'] != 60 or done['status'] != 'COMPLETED':
+        raise ValueError('Parent not complete')
+    if (digest(parent/'results.json') != done['results_sha256'] or
+            digest(parent/'selection_freeze.json') != done['freeze_sha256'] or
+            digest(prepared/'complete.json') != launch['prepared_sha256']):
+        raise ValueError('Parent result/freeze/prepared mismatch')
+    if json.loads((parent/'test_evaluation_started.json').read_text())['freeze_sha256'] != done['freeze_sha256']:
+        raise ValueError('Parent evaluation not bound to freeze')
+    check_freeze(freeze, 60, parent)
+    reused = {}
+    for item in freeze['fits']:
+        if item['key'].split('/')[1] not in ('B', 'N'):
+            continue
+        name = item['key']+'/prediction.npy'
+        if digest(parent/name) != done['predictions'][name]:
+            raise ValueError('Reused prediction hash changed: '+name)
+        reused[item['key']] = dict(checkpoint=item['sha256'], prediction=done['predictions'][name])
+    if len(reused) != 12:
+        raise ValueError('Expected 12 reused B/N fits')
+    return reused, done['results_sha256']
+
+
+def g2a_gate(prepared, parent, protocol_sha256):
+    path = ROOT/'configs/g2a_protocol.json'
+    if digest(path) != G2A_PROTOCOL_SHA256 or protocol_sha256 != G2A_PROTOCOL_SHA256:
+        raise ValueError('G2a protocol hash mismatch')
+    if subprocess.check_output(['git', 'diff', 'HEAD', '--', str(path)], cwd=ROOT):
+        raise ValueError('G2a protocol not committed')
+    protocol = json.loads(path.read_text())
+    base = formal_gate(prepared, PROTOCOL_SHA256)
+    reused, result_hash = verify_reuse(parent, prepared)
+    if result_hash != protocol['parent_results_sha256'] or Path(parent).parent.name != protocol['parent_run']:
+        raise ValueError('Wrong G1 parent')
+    return {**protocol, **{k: base[k] for k in protocol['inherit']}}, reused
+
+
+def g2a_evaluation_gate(directory, sources):
+    directory = Path(directory)
+    freeze = json.loads((directory/'selection_freeze.json').read_text())
+    check_freeze(freeze, 12, directory)
+    if freeze['source_code'] != sources or source_snapshot() != sources:
+        raise ValueError('G2a source changed after freeze')
+    return digest(directory/'selection_freeze.json')
+
+
+def run_g2a(prepared, parent, directory, protocol_sha256, device):
+    import torch
+    import fcntl
+    prepared, parent, directory = map(Path, (prepared, parent, directory))
+    protocol, reused = g2a_gate(prepared, parent, protocol_sha256)
+    # New receipt alongside the new run, never write into frozen G1 directories.
+    directory.parent.mkdir(parents=True, exist_ok=True)
+    with (directory.parent/'.g2a.lock').open('a') as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        with (directory.parent/'g2a_launch_once.json').open('x') as receipt:
+            json.dump(dict(directory=str(directory), protocol_sha256=protocol_sha256), receipt)
+        directory.mkdir(exist_ok=False)
+        sources = source_snapshot()
+        save_json(directory/'launch.json', dict(protocol=protocol, protocol_sha256=protocol_sha256,
+            source_code=sources, reused=reused, prepared_sha256=digest(prepared/'complete.json'),
+            utc=dt.datetime.now(dt.timezone.utc).isoformat(), fits=12, device=device))
+        try:
+            fits = []
+            for farm in protocol['farms']:
+                train, val = [g2a_pack(dict(np.load(prepared/farm/(s+'.npz'), allow_pickle=False))) for s in ('train', 'val')]
+                for arm in protocol['arms']:
+                    for seed in protocol['seeds']:
+                        key = f'{farm}/{arm}/{seed}'
+                        result = fit_one(arm, seed, train, val, protocol['fit'], directory/key, device)
+                        fits.append(dict(key=key, checkpoint=key+'/selected.pt', sha256=result['sha256']))
+                        print(json.dumps(dict(completed=len(fits), total=12, key=key)), flush=True)
+                del train, val
+            check_freeze(dict(fits=fits), 12, directory)
+            save_json(directory/'selection_freeze.json', dict(fits=fits, source_code=sources,
+                protocol_sha256=protocol_sha256, reused=reused))
+            frozen_sha = g2a_evaluation_gate(directory, sources)
+            _, now_reused = g2a_gate(prepared, parent, protocol_sha256)
+            if now_reused != reused:
+                raise ValueError('Parent changed during G2a fitting')
+            with (directory/'test_evaluation_started.json').open('x') as f:
+                json.dump(dict(freeze_sha256=frozen_sha), f)
+            reports, hashes = {}, {}
+            for farm in protocol['farms']:
+                test = g2a_pack(dict(np.load(prepared/farm/'test.npz', allow_pickle=False)))
+                predictions = {a: [] for a in protocol['arms']+protocol['reuse']}
+                for arm in predictions:
+                    for seed in protocol['seeds']:
+                        key = f'{farm}/{arm}/{seed}'
+                        if arm in protocol['reuse']:
+                            pred = np.load(parent/key/'prediction.npy', allow_pickle=False)
+                        else:
+                            model = make_model(arm, test, protocol['fit'], device)
+                            model.load_state_dict(torch.load(directory/key/'selected.pt', map_location=device, weights_only=True))
+                            pred = predict(model, test, device)
+                            np.save(directory/key/'prediction.npy', pred)
+                            hashes[key+'/prediction.npy'] = digest(directory/key/'prediction.npy')
+                        if pred.shape != test['truth'].shape or not np.isfinite(pred).all():
+                            raise ValueError('Prediction alignment or values invalid')
+                        predictions[arm].append(pred)
+                reports[farm] = evaluate_arrays(predictions, test['truth'], test['issue'].astype('datetime64[ns]'),
+                    None, protocol['statistics'], test['anchor'], protocol['rated_kw'][farm], protocol['comparisons'])
+            save_json(directory/'results.json', dict(farms=reports, descriptive_only=True,
+                interpretation=protocol['interpretation']))
+            g2a_evaluation_gate(directory, sources)
+            if digest(ROOT/'configs/g2a_protocol.json') != protocol_sha256:
+                raise ValueError('Protocol changed during run')
+            save_json(directory/'completed.json', dict(status='COMPLETED', fits=12, reused_fits=12,
+                predictions=hashes, results_sha256=digest(directory/'results.json'), freeze_sha256=frozen_sha))
+        except Exception as exc:
+            save_json(directory/'failed.json', dict(type=type(exc).__name__, message=str(exc),
+                evaluation_started=(directory/'test_evaluation_started.json').exists(), restart_allowed=False))
+            raise
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--prepared", type=Path, required=True)
     parser.add_argument("--run-dir", type=Path, required=True)
     parser.add_argument("--protocol-sha256", required=True)
     parser.add_argument("--device", default="cuda")
+    parser.add_argument("--g2a-parent", type=Path)
     args = parser.parse_args()
-    run_formal(args.prepared, args.run_dir, args.protocol_sha256, args.device)
+    if args.g2a_parent:
+        run_g2a(args.prepared, args.g2a_parent, args.run_dir, args.protocol_sha256, args.device)
+    else:
+        run_formal(args.prepared, args.run_dir, args.protocol_sha256, args.device)
 
 
 if __name__ == "__main__":
