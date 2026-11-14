@@ -11,6 +11,41 @@ from scripts import prepare_hot_dev as hot
 
 
 class HotDevelopmentTests(unittest.TestCase):
+    def test_registered_boundary_resolution_four_classes_and_year(self):
+        stamp = pd.Timestamp('2021-01-01', tz='UTC')
+        a = pd.DataFrame({'timestamp': [stamp], 'StationId': [1], 'power_kw': [np.nan],
+                          'same': [3.], 'empty': [np.nan], 'rounded': [1.2], 'conflict': [5.]})
+        b = a.copy()
+        b.loc[0, ['power_kw', 'rounded', 'conflict']] = [10., 1.24, 7.]
+        a.attrs['raw_boundary_cells'] = {(stamp, 1, 'rounded'): '1.2'}
+        b.attrs['raw_boundary_cells'] = {(stamp, 1, 'rounded'): '1.24'}
+        audit = dict(cells=hot.Counter(), masked_hours=set(), duplicate_keys=0)
+        result = hot.merge_boundary(a, b, audit)
+        self.assertEqual(len(result), 1)
+        self.assertEqual(result['rounded'].iloc[0], 1.24)
+        self.assertEqual(result['same'].iloc[0], 3.)
+        self.assertTrue(np.isnan(result.power_kw.iloc[0]))
+        self.assertTrue(np.isnan(result['conflict'].iloc[0]))
+        self.assertEqual(len(audit['masked_hours']), 1)
+        self.assertEqual(audit['cells']['one_missing'], 1)
+        self.assertEqual(audit['cells']['both_missing'], 1)
+        b['conflict'] = 5.
+        clean = hot.merge_boundary(a, b, dict(cells=hot.Counter(), masked_hours=set(), duplicate_keys=0))
+        self.assertEqual(clean.power_kw.iloc[0], 10.)
+        self.assertTrue(np.isnan(a.power_kw.iloc[0]))
+
+    def test_conflict_masks_whole_hour_even_if_nonpower_column(self):
+        a = self.ticks().iloc[:6].copy()
+        a['timestamp'] = pd.date_range('2020-12-31T23:10', periods=6, freq='10min', tz='UTC')
+        a['StationId'] = 1
+        b = a.iloc[[-1]].copy()
+        b['wind_speed_mps'] = 99.
+        audit = dict(cells=hot.Counter(), masked_hours=set(), duplicate_keys=0)
+        merged = hot.merge_boundary(a, b, audit)
+        h = hot.aggregate(merged.drop(columns='StationId'))
+        self.assertTrue(np.isnan(h.power_kw.iloc[0]))
+        self.assertEqual(audit['masked_hours'], {('2021-01-01 00:00:00+00:00', 1)})
+
     def test_boundary_raw_classification_and_rounding(self):
         self.assertEqual(hot.boundary_class('1.00', '1'), ('same', '0.00', False))
         self.assertEqual(hot.boundary_class('', 'NaN'), ('both_missing', None, False))

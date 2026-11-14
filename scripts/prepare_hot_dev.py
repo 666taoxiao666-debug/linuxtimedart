@@ -59,7 +59,7 @@ def read_month(z, year, month, station_ids):
     development_year(year)
     lower = pd.Timestamp(year=year, month=month, day=1, tz='UTC')
     upper = lower + pd.offsets.MonthBegin(1)
-    tables = []
+    tables, raw_cells = [], {}
     for prefix, mapping in MAPPING.items():
         name = f'{prefix}_{year}_{month:02d}.csv'
         with z.open(name) as f:
@@ -77,25 +77,70 @@ def read_month(z, year, month, station_ids):
         if (not set(t.StationId) <= set(station_ids) or t.duplicated(['TimeStamp', 'StationId']).any()):
             raise ValueError('SCADA year/month/unit/duplicate identity mismatch')
         for c in mapping:
+            for row in t.loc[t.TimeStamp.isin([lower, upper]), ['TimeStamp', 'StationId', c]].itertuples(index=False, name=None):
+                raw_cells[(row[0], int(row[1]), mapping[c])] = '' if pd.isna(row[2]) else str(row[2])
             t[c] = pd.to_numeric(t[c], errors='raise')
         tables.append(t.rename(columns=mapping))
     ticks = tables[0]
     for t in tables[1:]:
         ticks = ticks.merge(t, on=['TimeStamp', 'StationId'], how='outer', validate='one_to_one')
-    return ticks.rename(columns={'TimeStamp': 'timestamp'})
+    ticks = ticks.rename(columns={'TimeStamp': 'timestamp'})
+    ticks.attrs['raw_boundary_cells'] = raw_cells
+    return ticks
 
 
-def merge_boundary(previous, current):
+def merge_boundary(previous, current, audit=None):
     """Exact duplicate observations collapse; never average conflicting labels."""
     merged = pd.concat([previous, current], ignore_index=True) if previous is not None else current.copy()
     keys = ['timestamp', 'StationId']
     duplicates = merged.duplicated(keys, keep=False)
     if duplicates.any():
+        if audit is not None:
+            return resolve_boundary(previous, current, merged, duplicates, audit)
         values = merged.loc[duplicates].groupby(keys, dropna=False).nunique(dropna=False)
         if (values > 1).any().any():
             raise ValueError('Conflicting SCADA boundary observations')
         merged = merged.drop_duplicates(keys, keep='first')
-    return merged.sort_values(keys).reset_index(drop=True)
+    merged = merged.sort_values(keys).reset_index(drop=True)
+    merged.attrs['raw_boundary_cells'] = current.attrs.get('raw_boundary_cells', {})
+    return merged
+
+
+def resolve_boundary(previous, current, merged, duplicates, audit):
+    """Apply registered policy only to duplicated month endpoints."""
+    rows = []
+    raw_a = previous.attrs.get('raw_boundary_cells', {})
+    raw_b = current.attrs.get('raw_boundary_cells', {})
+    for (stamp, sid), group in merged.loc[duplicates].groupby(['timestamp', 'StationId']):
+        if len(group) != 2 or stamp.day != 1 or stamp != stamp.normalize():
+            raise ValueError('Unregistered duplicate boundary')
+        row = group.iloc[0].copy()
+        conflict = False
+        for column in merged.columns.difference(['timestamp', 'StationId']):
+            a, b = group[column].iloc[0], group[column].iloc[1]
+            key = (stamp, int(sid), column)
+            left = raw_a.get(key, '' if pd.isna(a) else str(a))
+            right = raw_b.get(key, '' if pd.isna(b) else str(b))
+            category, _, beyond = boundary_class(left, right)
+            audit['cells'][category] += 1
+            if category == 'one_missing':
+                row[column] = b if pd.isna(a) else a
+            elif category == 'different':
+                if beyond:
+                    row[column], conflict = np.nan, True
+                    audit['cells']['beyond_rounding'] += 1
+                else:
+                    row[column] = b if Decimal(right).as_tuple().exponent < Decimal(left).as_tuple().exponent else a
+                    audit['cells']['rounding_equivalent'] += 1
+        if conflict:
+            row['power_kw'] = np.nan  # Strict six-tick aggregation masks this entire target hour.
+            audit['masked_hours'].add((str(stamp), int(sid)))
+        rows.append(row)
+        audit['duplicate_keys'] += 1
+    result = pd.concat([merged.loc[~duplicates], pd.DataFrame(rows)], ignore_index=True)
+    result = result.sort_values(['timestamp', 'StationId']).reset_index(drop=True)
+    result.attrs['raw_boundary_cells'] = raw_b
+    return result
 
 
 def boundary_class(left, right):
@@ -253,7 +298,7 @@ def raw_inventory(root, identities):
     return directory
 
 
-def prepare_scada(directory, out):
+def prepare_scada(directory, out, boundary_audit=None):
     dictionary = (directory/'Hill_of_Towie_data_dictionary.md').read_text(encoding='utf-8')
     if 'TimeStamp` giving the end of the' not in dictionary or 'subtract 10 minutes' not in dictionary:
         raise ValueError('Official SCADA time semantics require reinspection')
@@ -270,7 +315,7 @@ def prepare_scada(directory, out):
     for year in YEARS:
         with zipfile.ZipFile(directory/f'{development_year(year)}.zip') as z:
             for month in range(1, 13):
-                ticks = merge_boundary(carry, read_month(z, year, month, sid_to_unit))
+                ticks = merge_boundary(carry, read_month(z, year, month, sid_to_unit), boundary_audit)
                 boundary = pd.Timestamp(year=year, month=month, day=1, tz='UTC') + pd.offsets.MonthBegin(1)
                 # Retain the entire final physical hour until the adjacent file
                 # has supplied its duplicate endpoint for exact-value checking.
@@ -290,6 +335,11 @@ def prepare_scada(directory, out):
     if frame.duplicated(['turbine_id', 'timestamp_hour_end_utc']).any():
         raise ValueError('Duplicate hourly labels across monthly archives')
     frame.to_csv(out/'hourly_scada.csv', index=False)
+    if boundary_audit is not None:
+        g1.save_json(out/'boundary_disposition.json', dict(
+            duplicate_keys=boundary_audit['duplicate_keys'], cells=dict(boundary_audit['cells']),
+            masked_hours=sorted(boundary_audit['masked_hours']), masked_hour_count=len(boundary_audit['masked_hours']),
+            raw_files_modified=False, diagnostic_sha256=boundary_audit['diagnostic_sha256']))
     return frame, meta, bounds
 
 
@@ -451,7 +501,7 @@ def prepare_nwp(root, hours, frame, meta, observations, stations, out, identitie
                 cycle_missing_hours=int((hourly['cycle_ok'] == 0).sum()))
 
 
-def run(root, out):
+def run(root, out, boundary_diagnostic=None):
     out = out.resolve()
     if out.exists() or out.is_relative_to((root/'datasets').resolve()):
         raise ValueError('Require a fresh output outside raw datasets')
@@ -464,7 +514,25 @@ def run(root, out):
         cutoff='strict valid time < 2024-01-01; no protected file opens'))
     try:
         directory = raw_inventory(root, identities)
-        frame, meta, bounds = prepare_scada(directory, out)
+        boundary_audit = None
+        if boundary_diagnostic is not None:
+            diagnostic = json.loads(boundary_diagnostic.read_text())
+            if (diagnostic['status'] != 'DIAGNOSED' or diagnostic['stop_reasons']
+                    or diagnostic['input_hashes'] != identities):
+                raise ValueError('Boundary diagnostic gate or input identity failed')
+            boundary_audit = dict(cells=Counter(), masked_hours=set(), duplicate_keys=0,
+                                  diagnostic_sha256=g1.digest(boundary_diagnostic))
+        frame, meta, bounds = prepare_scada(directory, out, boundary_audit)
+        if boundary_audit is not None:
+            expected = Counter()
+            for group in diagnostic['groups']:
+                for counts in group['columns'].values():
+                    expected.update(counts)
+            for category in ('same', 'both_missing', 'one_missing', 'different', 'beyond_rounding'):
+                if boundary_audit['cells'][category] != expected[category]:
+                    raise ValueError('Boundary disposition differs from diagnostic: '+category)
+            if boundary_audit['duplicate_keys'] != diagnostic['duplicate_keys']:
+                raise ValueError('Boundary duplicate key count differs from diagnostic')
         hours = pd.date_range('2016-01-01T01:00', '2024-01-01', freq='h', inclusive='left')
         windows = prepare_windows(frame, hours, bounds, out)
         obs, stations, upstream, midas_audit = prepare_midas(root, hours, identities)
@@ -507,6 +575,9 @@ if __name__ == '__main__':
     p.add_argument('--data-root', type=Path, required=True)
     p.add_argument('--output', type=Path, required=True)
     p.add_argument('--diagnose-boundaries', action='store_true')
+    p.add_argument('--boundary-diagnostic', type=Path)
     args = p.parse_args()
-    action = diagnose_boundaries if args.diagnose_boundaries else run
-    action(args.data_root.resolve(), args.output)
+    if args.diagnose_boundaries:
+        diagnose_boundaries(args.data_root.resolve(), args.output)
+    else:
+        run(args.data_root.resolve(), args.output, args.boundary_diagnostic)
