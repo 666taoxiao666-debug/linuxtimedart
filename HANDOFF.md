@@ -24,22 +24,20 @@
 需要用户决定: 无
 
 ## Codex → Claude
-<!-- 由Codex覆盖。2026-11-14：第80次R2通过；A运行中，B月边界解析失败停止 -->
-轮次: R2/2 | 阶段: G2a | 分支: exp/G2 | 提交号: e72e462（A实现）；7b0e3d6（B实现）；本轮执行记录见git log
-审查结论: 通过，0阻断；只复审R1-B1/S1/S2，见docs/review/G2a-R2-codex.md。跨零不判等效或替代。
-已直接修复: 7b0e3d6中将Linux专用上游依赖延迟导入，使Windows可跑纯逻辑测试；不改方案、阈值、臂或年份。
-运行信息: A服务器工作树/home/XT/nuist/pythoncode/TimeDARTFirst_G2_e72e462；PID550508；2026-11-14 02:27 UTC独立启动。
-运行信息: A目录/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/G2/g2a_e72e462_r1，子目录formal；完整命令见output/g2a/preflight80/launch_receipt.json。
-运行信息: A协议SHA256=7280563d6404a45aefc3844ae61706746be74aaa8274fd7b541df0ec19ee199b；启动门禁已核对G1输入、60份checkpoint和12份B/N预测哈希。
-关键数字: A仅B0/N0×3seed×2场=12拟合；B0=9通道、N0=38；同标签、同窗口，全部冻结后才评估，B/N不重训或重生成预测。
-关键数字: 服务器tests.test_g1_pipeline 21/21通过、无跳过；本地21项通过（5项服务器依赖跳过）。A结果尚未完成，不作增益结论。
-运行信息: B工作树/home/XT/nuist/pythoncode/TimeDARTFirst_G2_7b0e3d6；PID552838已退出；2026-11-14 02:36 UTC启动后在首月SCADA校验失败，未重启。
-运行信息: B目录/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/G2/hot_dev_7b0e3d6_r1，子目录prepared；完整命令见output/g2/hot_dev/preflight80/launch_receipt.json。
-关键数字: B本地/服务器tests.test_prepare_hot_dev均9/9通过；覆盖封存拒读、施工边界、缺失标签、重复时间拒绝、通道、共同窗口队列。
-运行信息: B只打开2016–2023及既有元数据，核对原字节哈希；不下载、不安装、不训练；2024–2026不访问。
-关键数字: B确定缺陷R2-E1：read_month过严地要求所有行同月；2016年1月三个表各含21条2016-02-01 00:00，重复键0、未知机组0。诊断见failure_diagnostic.json。
-运行信息: B尚未生成准备产物、未进入MIDAS/GFS；原始数据未修改，未到封存年。失败源于本轮解析器月边界假设，不是数据损坏。
-运行信息: 已保存两线启动回执及服务器测试日志；160MB原始manifest_b1.json仍未跟踪且未修改。G1冻结代码/协议/产物未改，main未动。
-需要 Claude 做的: 复核A实现；A完成后核验4组比较CI/p、分时距和爬坡。B按第80次“任何一步失败停下交回”停止，审查文件R2-E1/P1说明月边界修法，待明确新目录重跑批准。
-需要 Claude 做的: B修法需覆盖相邻月/年的边界重复、冲突拒绝、先按时间键隔离>=2024再解析观测值；不允许直接删除边界或平均重复功率。
-需要用户决定: 暂无；A继续原12拟合，B不自动重跑；本轮尚无A最终结果。
+<!-- 由Codex覆盖。2026-11-14：第81次执行；月边界修复已运行，额外最小修复待网络恢复部署 -->
+轮次: R2/2执行恢复 | 阶段: G2a | 分支: exp/G2 | 提交号: 1b6eb2b（月边界）；c12d799（空小时保留），均已推送
+审查结论: 按第81次批准执行，不新增方案轮次；见docs/review/G2a-R2-codex.md“第81次执行”。
+已直接修复: 1b6eb2b先按时间键隔离>=2024再转数值；跨月/年缓存末小时，完全相同重复折叠，冲突拒绝。
+已直接修复: 官方Hill_of_Towie_data_dictionary.md明确TimeStamp是UTC区间终点；减10分钟后用既有聚合，官方字典加入输入MD5/SHA核验。
+运行信息: B工作树/home/XT/nuist/pythoncode/TimeDARTFirst_G2_1b6eb2b；运行目录/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/G2/hot_dev_1b6eb2b_r2，子目录prepared。
+关键数字: 月边界修复本地/服务器11/11测试通过；2026-11-14 02:54 UTC启动PID557324，回执及测试日志在output/g2/hot_dev/preflight81/。
+运行信息: r2已退出，failed.json为“Power label altered during enrichment”；原r1/r2均保留，未访问封存年份、未进入MIDAS/GFS。
+关键数字: R2-E2证据：2016-01机组2304526原744小时，inner合并后741；left合并恢复744且功率标签逐值相等。服务器r2/failure_diagnostic.json已保存，待取回。
+已直接修复: c12d799仅inner→left保留空小时原始NaN标签；合成缺整小时测试先失败后通过，全部12项本地测试通过，额外唯一最小修法额度已用1/2。
+运行信息: c12d799已推送，但SCP多次SSH banner超时、tailscale预热超时；未确认上传成功，尚未部署/启动r3，不把网络失败当运行失败。
+运行信息: A仍使用/home/XT/nuist/pythoncode/TimeDARTFirst_G2_e72e462及PID550508；run=/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/G2/g2a_e72e462_r1/formal。
+关键数字: 最后成功查询A进程存活、日志3/12拟合；无完成/失败标记。此后网络不可达，最新状态待查，不重启、不改其协议和源码。
+运行信息: A协议SHA256=7280563d6404a45aefc3844ae61706746be74aaa8274fd7b541df0ec19ee199b，仍是原12拟合及12份B/N复用。
+需要 Claude 做的: 事后复核R2-E2最小修复；无需重复批准已授权恢复。A结果及B开发年审计尚未齐，不冻结G2b或开始封存确认。
+后续执行: 网络恢复后先查询真实进程/标记；c12d799新工作树跑12项测试后新目录恢复B，保留旧目录；取回r2失败证据。A完成后核验哈希并交回4组CI/p、分时距和爬坡。
+需要用户决定: 无新方案裁决；当前外部阻塞是SSH连接，任务未完成。main、G1冻结产物及160MB原始清单未动。
