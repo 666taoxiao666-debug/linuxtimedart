@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 import argparse
-import contextlib
 import datetime as dt
 import json
 from pathlib import Path
@@ -156,7 +155,8 @@ def sources():
              'utils/kelmarsh_upstream_v31.py', 'data_provider/kelmarsh_multiyear.py',
              'scripts/screen_kelmarsh_upstream_observations.py', 'scripts/audit_hill_of_towie_e1.py',
              'scripts/acquire_hourly_wind_datasets.py', 'utils/kelmarsh_enrichment.py',
-             'utils/kelmarsh_backbone_information.py', 'scripts/ramp_diagnostics.py']
+             'utils/kelmarsh_backbone_information.py', 'utils/paired_forecast_statistics.py',
+             'scripts/ramp_diagnostics.py', 'output/g2a/results81/results.json']
     return {n: prep.digest(ROOT/n) for n in names}
 
 
@@ -471,6 +471,23 @@ def joint_test_decisions(reports, alpha=.05):
             for y in (2024, 2025)))) for i, q in enumerate(questions)}
 
 
+def pooled_descriptive(reports):
+    previous = json.loads((ROOT/'output/g2a/results81/results.json').read_text())['farms']
+    rows = {farm: result['primary']['N_vs_N0'] for farm, result in previous.items()}
+    rows.update({f'HoT_{year}': report['primary']['N_vs_N0'] for year, report in reports.items()})
+    entries = {}
+    for name, row in rows.items():
+        statistic, gain = row['newey_west']['statistic'], row['gain']
+        if statistic is None or not np.isfinite(statistic) or statistic == 0 or gain == 0:
+            return dict(descriptive_only=True, status='UNAVAILABLE_ZERO_OR_INVALID_SE', no_imputation=True)
+        variance = (gain/statistic)**2
+        entries[name] = dict(gain=gain, variance=variance)
+    total = sum(1/r['variance'] for r in entries.values())
+    return dict(descriptive_only=True, gain=sum(r['gain']/r['variance'] for r in entries.values())/total,
+        entries=entries, variance_source='Newey-West gain/statistic squared',
+        interpretation='No significance gate; HoT years share the same fitted models, independence not claimed')
+
+
 def evaluate_sealed(freeze_dir, expected_freeze, directory, packs, device):
     import torch
     frozen, protocol = frozen_gate(freeze_dir, expected_freeze)
@@ -507,7 +524,7 @@ def evaluate_sealed(freeze_dir, expected_freeze, directory, packs, device):
         frozen_gate(freeze_dir, expected_freeze)
         prep.save_json(directory/'results.json', dict(years=reports, joint=joint_test_decisions(reports),
             secondary=['N_vs_N0'], descriptive=['B_vs_B0', 'N0_vs_B0', 'ramps', 'mean_bias_kw', 'one_minus_nrmse'],
-            cross_farm_pooling='Descriptive only, requires previously saved farm estimates; no extra test access'))
+            cross_farm_pooling=pooled_descriptive(reports)))
         prep.save_json(directory/'completed.json', dict(status='COMPLETED', freeze_sha256=expected_freeze,
             predictions=hashes, results_sha256=prep.digest(directory/'results.json'), new_fits=0))
     except Exception as exc:
