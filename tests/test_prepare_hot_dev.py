@@ -28,7 +28,7 @@ class HotDevelopmentTests(unittest.TestCase):
         np.testing.assert_array_equal(flag, [0, 0, 1, 1, 1])
 
     def ticks(self):
-        t = pd.DataFrame({'timestamp': pd.date_range('2022-01-01', periods=12, freq='10min', tz='UTC')})
+        t = pd.DataFrame({'timestamp': pd.date_range('2022-01-01T00:10', periods=12, freq='10min', tz='UTC')})
         for c in hot.enrich.REQUIRED_TICK_COLUMNS:
             t[c] = np.arange(12, dtype=float)
         return t
@@ -53,8 +53,8 @@ class HotDevelopmentTests(unittest.TestCase):
             hot.aggregate(t)
 
     def test_2024_hour_label_not_retained(self):
-        t = self.ticks()
-        t['timestamp'] = pd.date_range('2023-12-31T22:00', periods=12, freq='10min', tz='UTC')
+        t = self.ticks().iloc[:11].copy()
+        t['timestamp'] = pd.date_range('2023-12-31T22:10', periods=11, freq='10min', tz='UTC')
         h = hot.aggregate(t)
         self.assertEqual(len(h), 1)
         self.assertTrue((h.timestamp_hour_end_utc < hot.CUTOFF).all())
@@ -108,6 +108,35 @@ class HotDevelopmentTests(unittest.TestCase):
             with np.load(Path(d)/'scada_rows.npz') as p:
                 self.assertTrue(np.isnan(p['raw'][30, -1]))
             self.assertGreater(summary['excluded_works_total'], 0)
+
+    def test_month_and_year_boundary_merge_preserves_physical_hour(self):
+        for end in ('2016-02-01', '2017-01-01'):
+            t = self.ticks().iloc[:6].copy()
+            t['timestamp'] = pd.date_range(pd.Timestamp(end, tz='UTC')-pd.Timedelta(minutes=50),
+                                          periods=6, freq='10min')
+            t['StationId'] = 1
+            merged = hot.merge_boundary(t, t.iloc[[-1]].copy())
+            self.assertEqual(len(merged), 6)
+            h = hot.aggregate(merged.drop(columns='StationId'))
+            self.assertEqual(len(h), 1)
+            self.assertEqual(h.timestamp_hour_end_utc.iloc[0], pd.Timestamp(end, tz='UTC'))
+            self.assertEqual(h.power_kw.iloc[0], 2.5)
+            bad = t.iloc[[-1]].copy()
+            bad['power_kw'] += 1
+            with self.assertRaisesRegex(ValueError, 'Conflicting'):
+                hot.merge_boundary(t, bad)
+
+    def test_protected_boundary_values_never_converted(self):
+        class Archive:
+            def open(self, name):
+                columns = hot.MAPPING[name.split('_2023')[0]]
+                header = ','.join(['TimeStamp', 'StationId']+list(columns))
+                good = ','.join(['2023-12-31 23:50:00', '1']+['2']*len(columns))
+                forbidden = ','.join(['2024-01-01 00:00:00', 'NOT_NUMERIC']+['DO_NOT_CONVERT']*len(columns))
+                return io.BytesIO((header+'\n'+good+'\n'+forbidden+'\n').encode())
+        result = hot.read_month(Archive(), 2023, 12, [1])
+        self.assertEqual(len(result), 1)
+        self.assertTrue((result.timestamp < hot.CUTOFF).all())
 
 
 if __name__ == '__main__':

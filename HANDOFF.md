@@ -3,25 +3,23 @@
 规则见 AGENTS.md：两节各由一方整节覆盖、不追加，每节不超过 40 行；历史用 `git log -p HANDOFF.md` 查。
 
 ## Claude → Codex
-<!-- 由 Claude 覆盖。最后更新：2026-11-14 第 80 次（G2a R2：R1-B1 跨零解读改为"未检出增量，不能判定等效或替代"；S1、S2 采纳） -->
-轮次: R2/2 | 阶段: G2a | 分支: exp/G2 | 基线提交: fe80edc
-请求: 审改动后运行（只审 R1-B1、S1、S2 的修改；无阻断就实施 A 的 12 次拟合和 B 的 HoT 开发年准备）
+<!-- 由 Claude 覆盖。最后更新：2026-11-14 第 81 次（B 的月边界修复批准，新目录重跑；A 继续；用户定：HoT 确认用 2024、2025 两年） -->
+轮次: R2/2 | 阶段: G2a | 分支: exp/G2 | 基线提交: 9f60925
+请求: 修复后运行（执行失败的恢复，不是新的方案审查轮）
 待审范围: git diff HEAD -- docs/STAGE_PLAN.md docs/review/DECISIONS.md
-允许改动: configs/g2a_protocol.json, scripts/train_g1.py, tests/test_g1_pipeline.py, output/g2a/**, scripts/prepare_hot_dev.py, tests/test_prepare_hot_dev.py, output/g2/**, output/external_acquisition/gfs_g0/manifest_b1.json（160 MB 原始清单，本地未跟踪，只为通过范围检查，不要提交、不要改）
-审查文件: docs/review/G2a-R2-codex.md
-本轮决议: 采纳 3（R1-B1、R1-S1、R1-S2）/ 反驳 0 / 暂缓 0 / 转实验 0
+允许改动: scripts/prepare_hot_dev.py, tests/test_prepare_hot_dev.py, output/g2/**, output/g2a/**, output/external_acquisition/gfs_g0/manifest_b1.json（160 MB 原始清单，本地未跟踪，只为通过范围检查，不要提交、不要改）
+审查文件: docs/review/G2a-R2-codex.md（续写一节"第 81 次执行"）
+本轮决议: 采纳 2（R2-E1、R2-P1）；R2-S1–S3 已在上一轮落实
 
 需要你做的:
-1. **只审改动**（STAGE_PLAN A 节 B0、N0 和解读规则第 2 条；B 节 AeroUp 两条；DECISIONS G2a 表）。这是 G2a 第 2 轮，也是最后一轮；仍有分歧就写明交用户。
-2. **A（无阻断就运行）：**
-   - B0 = 索引 [0…7, 20] 共 9 个通道；N0 = B0 + 同源的 29 个 GFS 通道，功率在最后。
-   - 协议 configs/g2a_protocol.json 单独锁 SHA。12 次拟合用 g1c_27312d7_r2 的 prepared 产物；B、N 复用 G1 冻结的 checkpoint 和预测，复用前核对哈希。先冻结后评估。
-   - 测试：通道切片、标签和窗口与 G1 一致、复用哈希、冻结前拒绝评估。
-   - 交回：N 对 N0、B 对 B0、N0 对 B0、N 对 B 两场的增益、CI、p，分时距和爬坡指标。跨 0 时按新措辞写，不写"覆盖""替代""等效"。
-3. **B（只读准备，不训练）：** 按 STAGE_PLAN B 节写 scripts/prepare_hot_dev.py（每次编辑 ≤150 行，尽量复用已有解析）。
-   - AeroUp 边界按 UTC 日历日闭区间，审计列出边界样例。
-   - 交回：通道对应表、逐年完整率、施工期剔除窗口数、拟合 2016–2022 和验证 2023 的窗口数及改造后占比、GFS 点位和时效审计、校准方法统计。
-   - 绝不读 2024–2026。任何一步失败就停下交回；不下载、不安装。
+1. **修 B（R2-P1）：** read_month 和 prepare_scada 的规则：
+   - 先按时间键拒读 ≥2024-01-01 00:00 的行，不转换数值；
+   - 再把相邻月文件按（时间、机组）合并，完全相同的重复只留一份，取值冲突就报错停止；不删边界行，不平均冲突值。
+   - 时间戳是区间起点还是终点，按官方说明写进审计，小时聚合口径与 Kelmarsh、Penmanshiel 相同。
+   - 补合成测试：相邻月边界、跨年边界、2023-12 文件里的 2024-01-01 00:00 行被拒读、冲突重复报错。每次编辑 ≤150 行。
+2. **新目录重跑 B**（只读，不训练，不读 2024–2026），失败现场 hot_dev_7b0e3d6_r1 保留。交回内容同第 80 次 B 节；若还有同类确定缺陷，修法唯一且不改数据、年份、规则的可按最小修法先行，最多 2 处，超过就停下交回。
+3. **A 照常跑完**，交回 N 对 N0、B 对 B0、N0 对 B0、N 对 B 两场的增益、CI、p，分时距和爬坡；跨 0 按"未检出增量，不能判定等效或替代"写。
+4. 不下载、不安装。两条线都交回后，我写 G2b 确认协议（用户已定：2024、2025 两年都用于这次确认）。
 
 需要用户决定: 无
 

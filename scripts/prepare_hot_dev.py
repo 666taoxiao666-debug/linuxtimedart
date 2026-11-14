@@ -55,14 +55,21 @@ def window_works(issue, first, end):
 
 def read_month(z, year, month, station_ids):
     development_year(year)
+    lower = pd.Timestamp(year=year, month=month, day=1, tz='UTC')
+    upper = lower + pd.offsets.MonthBegin(1)
     tables = []
     for prefix, mapping in MAPPING.items():
         name = f'{prefix}_{year}_{month:02d}.csv'
         with z.open(name) as f:
-            t = pd.read_csv(f, usecols=['TimeStamp', 'StationId'] + list(mapping), encoding='cp1252')
+            t = pd.read_csv(f, usecols=['TimeStamp', 'StationId'] + list(mapping),
+                            encoding='cp1252', dtype=str)
         t['TimeStamp'] = pd.to_datetime(t.TimeStamp.str.strip(), utc=True, errors='raise')
-        if (not t.TimeStamp.dt.year.eq(year).all() or not t.TimeStamp.dt.month.eq(month).all()
-                or not set(t.StationId) <= set(station_ids) or t.duplicated(['TimeStamp', 'StationId']).any()):
+        if t.TimeStamp.isna().any() or not t.TimeStamp.between(lower, upper).all():
+            raise ValueError('SCADA timestamp outside registered month and endpoint')
+        # Inspect time keys first; protected rows never reach numeric conversion.
+        t = t.loc[t.TimeStamp < CUTOFF].copy()
+        t['StationId'] = pd.to_numeric(t.StationId, errors='raise')
+        if (not set(t.StationId) <= set(station_ids) or t.duplicated(['TimeStamp', 'StationId']).any()):
             raise ValueError('SCADA year/month/unit/duplicate identity mismatch')
         for c in mapping:
             t[c] = pd.to_numeric(t[c], errors='raise')
@@ -73,8 +80,23 @@ def read_month(z, year, month, station_ids):
     return ticks.rename(columns={'TimeStamp': 'timestamp'})
 
 
+def merge_boundary(previous, current):
+    """Exact duplicate observations collapse; never average conflicting labels."""
+    merged = pd.concat([previous, current], ignore_index=True) if previous is not None else current.copy()
+    keys = ['timestamp', 'StationId']
+    duplicates = merged.duplicated(keys, keep=False)
+    if duplicates.any():
+        values = merged.loc[duplicates].groupby(keys, dropna=False).nunique(dropna=False)
+        if (values > 1).any().any():
+            raise ValueError('Conflicting SCADA boundary observations')
+        merged = merged.drop_duplicates(keys, keep='first')
+    return merged.sort_values(keys).reset_index(drop=True)
+
+
 def aggregate(ticks):
     ticks = ticks.sort_values('timestamp').copy()
+    # Official data dictionary: SCADA TimeStamp is period END (UTC).
+    ticks['timestamp'] = ticks.timestamp - pd.Timedelta(minutes=10)
     enrich.validate_tick_index(pd.DatetimeIndex(ticks.timestamp))
     base = hourly_scada(ticks.copy(), ['nacelle_position_deg'])
     for c in enrich.OPTIONAL_TICK_COLUMNS:
@@ -105,7 +127,8 @@ def raw_inventory(root, identities):
     identities[str(manifest)] = g1.digest(manifest)
     entries = {f['name']: f for f in json.loads(manifest.read_text())['files']}
     names = [f'{y}.zip' for y in YEARS] + ['Hill_of_Towie_turbine_metadata.csv',
-                                           'Hill_of_Towie_AeroUp_install_dates.csv']
+                                           'Hill_of_Towie_AeroUp_install_dates.csv',
+                                           'Hill_of_Towie_data_dictionary.md']
     for name in names:
         f, official, p = entries[name], registered[name], directory/name
         if not (p.stat().st_size == f['actual_bytes'] == official['size']
@@ -116,6 +139,9 @@ def raw_inventory(root, identities):
 
 
 def prepare_scada(directory, out):
+    dictionary = (directory/'Hill_of_Towie_data_dictionary.md').read_text(encoding='utf-8')
+    if 'TimeStamp` giving the end of the' not in dictionary or 'subtract 10 minutes' not in dictionary:
+        raise ValueError('Official SCADA time semantics require reinspection')
     meta = pd.read_csv(directory/'Hill_of_Towie_turbine_metadata.csv', encoding='utf-8-sig')
     works = pd.read_csv(directory/'Hill_of_Towie_AeroUp_install_dates.csv').set_index('Turbine')
     if (len(meta) != 21 or meta['Station ID'].nunique() != 21 or meta['Turbine Name'].nunique() != 21
@@ -125,16 +151,26 @@ def prepare_scada(directory, out):
     bounds = {r['Turbine Name']: works_bounds(*works.loc[r['Turbine Name']].tolist())
               for _, r in meta.iterrows()}
     sid_to_unit = dict(zip(meta['Station ID'], meta['Turbine Name']))
-    chunks = []
+    chunks, carry = [], None
     for year in YEARS:
         with zipfile.ZipFile(directory/f'{development_year(year)}.zip') as z:
             for month in range(1, 13):
-                ticks = read_month(z, year, month, sid_to_unit)
+                ticks = merge_boundary(carry, read_month(z, year, month, sid_to_unit))
+                boundary = pd.Timestamp(year=year, month=month, day=1, tz='UTC') + pd.offsets.MonthBegin(1)
+                # Retain the entire final physical hour until the adjacent file
+                # has supplied its duplicate endpoint for exact-value checking.
+                carry = ticks.loc[ticks.timestamp > boundary-pd.Timedelta(hours=1)].copy()
+                ticks = ticks.loc[ticks.timestamp <= boundary-pd.Timedelta(hours=1)]
                 for sid, t in ticks.groupby('StationId'):
                     h = aggregate(t.drop(columns='StationId'))
                     h['turbine_id'] = sid_to_unit[sid]
                     chunks.append(h)
         print(f'[SCADA] {year} complete', flush=True)
+    if carry is not None and not carry.empty:
+        for sid, t in carry.groupby('StationId'):
+            h = aggregate(t.drop(columns='StationId'))
+            h['turbine_id'] = sid_to_unit[sid]
+            chunks.append(h)
     frame = pd.concat(chunks, ignore_index=True)
     if frame.duplicated(['turbine_id', 'timestamp_hour_end_utc']).any():
         raise ValueError('Duplicate hourly labels across monthly archives')
@@ -335,7 +371,8 @@ def run(root, out):
             mapping=MAPPING, base_channels=BASE_FEATURES+['power_last10', 'wind_last10', 'power'],
             upstream_channels=UPSTREAM_FEATURES+['upstream_missing'], retrofit='per-window issue>=works_end',
             representation='Unscaled SCADA rows + hourly upstream/NWP arrays + common window indices; model fitting prohibited',
-            hour_convention='[t,t+1h) label t+1h; last10 timestamp minute 50, same as G1',
+            hour_convention='Official UTC period-end TimeStamp minus 10min, then [t,t+1h) label t+1h; last10 normalized minute 50, same aggregation as G1',
+            timestamp_source='Hill_of_Towie_data_dictionary.md: TimeStamp giving the end of the period; subtract 10 minutes for the start',
             upstream_fill_provisional=fill.tolist(), **windows, midas=midas_audit, nwp=nwp,
             limitations=['Split awaits Claude freeze; all 2023 observations are development.',
                 'First 2015 GFS cycles are masked without opening; final 2023 cycles crossing 2024 are not decoded.',
