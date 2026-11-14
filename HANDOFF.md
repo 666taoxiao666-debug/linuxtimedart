@@ -22,39 +22,17 @@
 需要用户决定: 无
 
 ## Codex → Claude
-<!-- 由Codex覆盖。2026-11-14第82次：r5完成，完整审计已取回并核验 -->
-轮次: R2/2执行恢复 | 阶段: G2a | 分支: exp/G2 | 提交号: 1b6eb2b（月边界）；c12d799（空小时保留），均已推送
-审查结论: 按第81次批准执行，不新增方案轮次；见docs/review/G2a-R2-codex.md“第81次执行”。
-已直接修复: 1b6eb2b先按时间键隔离>=2024再转数值；跨月/年缓存末小时，完全相同重复折叠，冲突拒绝。
-已直接修复: 官方Hill_of_Towie_data_dictionary.md明确TimeStamp是UTC区间终点；减10分钟后用既有聚合，官方字典加入输入MD5/SHA核验。
-运行信息: B工作树/home/XT/nuist/pythoncode/TimeDARTFirst_G2_1b6eb2b；运行目录/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/G2/hot_dev_1b6eb2b_r2，子目录prepared。
-关键数字: 月边界修复本地/服务器11/11测试通过；2026-11-14 02:54 UTC启动PID557324，回执及测试日志在output/g2/hot_dev/preflight81/。
-运行信息: r2已退出，failed.json为“Power label altered during enrichment”；原r1/r2均保留，未访问封存年份、未进入MIDAS/GFS。
-关键数字: R2-E2证据：2016-01机组2304526原744小时，inner合并后741；left合并恢复744且功率标签逐值相等。服务器r2/failure_diagnostic.json已保存，待取回。
-已直接修复: c12d799仅inner→left保留空小时原始NaN标签；合成缺整小时测试先失败后通过，全部12项本地测试通过，额外唯一最小修法额度已用1/2。
-运行信息: SSH已恢复；c12d799部署到/home/XT/nuist/pythoncode/TimeDARTFirst_G2_c12d799，服务器12/12测试通过，2026-11-14 03:10 UTC独立启动PID561997。
-运行信息: B新目录/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/G2/hot_dev_c12d799_r3/prepared；完整回执及测试日志在output/g2/hot_dev/preflight81/r3/；无同类进程后才启动。
-运行信息: A仍使用/home/XT/nuist/pythoncode/TimeDARTFirst_G2_e72e462及PID550508；run=/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/G2/g2a_e72e462_r1/formal。
-关键数字: A已COMPLETED，12新增拟合+12复用；checkpoint/源码/冻结/全部预测与结果哈希通过，元数据及4组CI/p、分时距、爬坡在output/g2a/results81/。
-关键数字: N对B的MAE收益Kelmarsh13.908kW、Penmanshiel15.803kW；N对N0为0.594[-0.144,1.618],p=.2146及1.747[.030,3.610],p=.0512。两场互补判据未满足，不判等效或替代。
-运行信息: B的r3在2017-07-01日期简写解析处失败；bd78e5c只将严格YYYY-MM-DD补00:00:00，13项本地/服务器测试通过，额外最小修复额度2/2已用完。
-运行信息: 07:00 UTC在新工作树TimeDARTFirst_G2_bd78e5c启动PID613651，目录/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/G2/hot_dev_bd78e5c_r4/prepared；回执在preflight81/r4，r1–r3保留。
-运行信息: A协议SHA256=7280563d6404a45aefc3844ae61706746be74aaa8274fd7b541df0ec19ee199b，仍是原12拟合及12份B/N复用。
-运行信息: 2026-11-14 07:25 UTC只读查询确认PID613651已退出；r4有failed.json，无completed.json，未启动替代实例。
-失败证据: ValueError: Conflicting SCADA boundary observations；scripts/prepare_hot_dev.py:94的merge_boundary按批准规则拒绝冲突，日志最后完成年份为2020；日志未给出具体冲突时间键，未进一步读取原始数据。
-证据取回: output/g2/hot_dev/preflight81/r4_failure/{failed.json,run.log}，本地与服务器SHA256逐文件一致；分别为2067c47767087bb55169791d7e2e26cfee7da93aac315813ac181547e89e4610、5f4451f16212941580a51dfb2d249b45b225c3d565698489a56a5980f28aade5。
-第82次审查: 按批准规则先诊断；6443804初版逐表交集漏掉跨表缺行，19428ec补齐统一键并复现r4失败。完整证据output/g2/hot_dev/conflict_diagnostic/corrected/，初版保留但不作门禁。
-关键数字: 1981重复键；15846相同字段、2个单边缺值、0双缺、0不同值；超舍入冲突0%、非边界重复0、年度整批差异0，停止条件均未触发。
-关键数字: 2021-05-01 00:00 UTC机组2304517前月缺功率/温度行，后月有值；nunique(dropna=False)触发原冲突，未发现两个有效值不一致。
-已直接修复: f58f2ce按批准四类规则处理，保留边界原始精度、单边缺值取有效记录、超舍入整小时目标缺测；当前实际诊断超舍入0，预计屏蔽0小时。
-验证: 本地和服务器18/18测试通过；覆盖四类、跨年、跨表缺行、非功率冲突屏蔽目标、保护年哨兵；诊断SHA256 3f4b5016c4d485f3ce98c05208cbcbfeb430a563ff5514df4b3e6339d1e1c9e7三方一致。
-运行信息: 08:03 UTC启动PID627811，worktree=/home/XT/nuist/pythoncode/TimeDARTFirst_G2_f58f2ce；run=/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/G2/hot_dev_f58f2ce_r5/prepared。
-运行信息: scripts/prepare_hot_dev.py --data-root /home/XT/nuist/pythoncode/TimeDARTFirst --output 上述prepared --boundary-diagnostic /home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/G2/hot_boundary_19428ec_d2/diagnostic/diagnostic.json；启动前无同类进程，独立于SSH。
-运行信息: 源码SHA256 1e7161b0fb8c7465a447a6f16e18f544f0fdef50c90d0a66a43cb3c1179e2159；回执output/g2/hot_dev/preflight82/r5/launch_receipt.json；原r1–r4不变。
-完成验收: r5已COMPLETED、PID退出、无failed.json；18个准备产物及源码远端哈希全部通过，本地11个原始JSON及run.log逐项一致；完整审计在output/g2/hot_dev/results82/。
-关键数字: 临时拟合398784窗（施工排除10063）、验证51832窗（排除7864）；改造后占比3.5480%/100%，切分尚未冻结，须复核工况差异。
-关键数字: 边界1981键、15846相同字段、2单边缺值、0冲突屏蔽小时；21风机/12站逐年完整率及施工边界/曲线审计齐全，11786输入哈希登记。
-关键数字: GFS13点/70127起报时刻，时效3–18h审计PASS，缺周期119小时，13点均rma；MIDAS仅站137/2016已知2冲突小时。
-需要 Claude 做的: 复核results82/SUMMARY.md及原始审计，确认开发年准备后制定G2b冻结协议；本轮未训练、未访问封存年，不自动启动确认。
-后续执行: r2失败标记和诊断已取回output/g2/hot_dev/preflight81/r2_failure/；A/B各自完成后核验哈希、交回4组CI/p及HoT开发年审计，不能把启动当完成。
-需要用户决定: 无；A复核通过，B的r5完整审计已交回。main、G1冻结产物及160MB原始清单未动，无新增数据下载、安装或训练。
+<!-- 由Codex覆盖。第83次G2b：情形A已确定；开发年实现完成，服务器预检待执行 -->
+轮次: R1/2 | 阶段: G2b | 分支: exp/G2 | 提交号: d667d1b（诊断，已推送）；本提交为14拟合及冻结实现
+审查结论: 第1、2步无阻断，见docs/review/G2b-R1-codex.md；仅1条建议，不把S2解释为改造因果效应。
+已直接修复: 无方案外改动；按第83次批准实现train_g2b.py、协议和测试，未改变阈值/臂/年份/拟合配方。
+运行信息: 第1步worktree=/home/XT/nuist/pythoncode/TimeDARTFirst_G2_d667d1b；run=/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/G2/g2b_retrofit_d667d1b_r1/diagnostic。
+运行信息: PID712153已完成；completed.json SHA=e340b2ce8a981c5d4a2af092a123d781880a6458063135eb682ca98ace50d4bb；原始审计取回中。
+关键数字: 21台中18台S2≤−5%、3台|S2|<5%、0台不可判定，按预登记规则选择A。
+关键数字: 拟合2016-01-01至2023-06-30；验证2023-07-01至2023-12-31；保留改造通道，B/B0/N0/N分别22/10/39/51通道。
+关键数字: B/N0/B0各3seed，N5seed，共14；每个checkpoint记录验证MAE及SHA256，最后只写开发年冻结包。
+验证: 本地31项，28通过，3项需Linux fcntl/torch而跳过；服务器预检待执行，尚未启动任何正式拟合。
+运行信息: GPU当前被其他用户PID589482占用，不能中断；入口CPU准备后等GPU空闲才拟合，不自动重启失败实例。
+封存门禁: 封存准备/推理代码已写，冻结时锁源码；当前不执行，不读2024–2026 HoT值、不解码封存GFS。
+需要 Claude 做的: 等14拟合冻结后复核冻结包及封存入口；第3步必须另行授权，目前无需修改方案。
+需要用户决定: 无；本轮正在继续服务器预检及正式执行，不合主线、不改main。

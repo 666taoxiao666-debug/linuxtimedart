@@ -1,0 +1,14 @@
+{
+  "phase": "G2b", "formal_fits": 14, "rated_kw": 2300,
+  "seeds": {"B": [2024, 2025, 2026], "N0": [2024, 2025, 2026], "B0": [2024, 2025, 2026], "N": [2024, 2025, 2026, 2027, 2028]},
+  "diagnostic": {"bins": [5, 11, 0.5], "P0_months": [5,6,7,8,9,10,11,12], "A_min_same_direction": 11, "B_min_small": 14, "threshold": 0.05, "otherwise": "STOP"},
+  "case_A": {"train": ["2016-01-01", "2023-07-01"], "val": ["2023-07-01", "2024-01-01"], "retrofit_channel": true},
+  "case_B": {"train": ["2016-01-01", "2023-01-01"], "val": ["2023-01-01", "2024-01-01"], "retrofit_channel": false},
+  "fit": {"max_epochs": 40, "patience": 5, "batch_size": 64, "learning_rate": 0.001, "weight_decay": 0.0001, "mae_weight": 0.8, "mse_weight": 0.2, "grad_clip": 1.0, "eta_min": 0.00001, "blocks": 2, "ff_dim": 32, "dropout": 0.1, "norm_eps": 0.001},
+  "time": {"input_hours": 24, "horizon": 4, "stride": 3, "release_delay_hours": 6, "leads": [3,6,9,12,15,18]},
+  "test_years": [2024, 2025], "protected_years": [2026],
+  "statistics": {"block_length": 8, "sensitivity_block_length": 56, "replicates": 5000, "seed": 2024, "nw_lag": 7, "alpha": 0.05},
+  "primary": {"Q1h": "N first-three seed mean losses versus B three-seed mean losses", "Qe": "mean-five N prediction loss versus mean-five N individual losses", "joint": "max annual p per question, Holm across two questions; both annual gains and CI lower bounds positive"},
+  "secondary": "N first-three seed mean losses versus N0 three-seed mean losses; inverse-variance multi-farm summary descriptive only",
+  "execution": {"resume": false, "stop_after_development_freeze": true, "sealed_requires_new_authorization": true, "sealed_once": true, "construction_exclusion": "common full 24h-input and 4h-target overlap exclusion", "missing_bin": "undetermined, never imputed"}
+}
