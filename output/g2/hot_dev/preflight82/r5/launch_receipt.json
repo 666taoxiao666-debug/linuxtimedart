@@ -1,0 +1,17 @@
+{
+  "pid": 627811,
+  "run": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/G2/hot_dev_f58f2ce_r5",
+  "command": [
+    "/home/XT/miniconda3/envs/timedart/bin/python",
+    "-u",
+    "scripts/prepare_hot_dev.py",
+    "--data-root",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst",
+    "--output",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/G2/hot_dev_f58f2ce_r5/prepared",
+    "--boundary-diagnostic",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/G2/hot_boundary_19428ec_d2/diagnostic/diagnostic.json"
+  ],
+  "source_sha256": "1e7161b0fb8c7465a447a6f16e18f544f0fdef50c90d0a66a43cb3c1179e2159",
+  "timestamp": "2026-11-14T08:03:11.344804+00:00"
+}
