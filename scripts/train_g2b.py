@@ -160,10 +160,38 @@ def sources():
     return {n: prep.digest(ROOT/n) for n in names}
 
 
-def wait_for_idle_gpu(directory):
+def shared_gpu_budget(total_mib, free_mib, allocator_mib):
+    if allocator_mib < 256 or allocator_mib > 2048 or total_mib <= allocator_mib:
+        raise ValueError('Shared allocator budget must be 256-2048 MiB and below device total')
+    # CUDA context is outside PyTorch's allocator; retain 512 MiB for it plus 1 GiB headroom.
+    return free_mib >= allocator_mib+1536, allocator_mib/total_mib
+
+
+def wait_for_idle_gpu(directory, allocator_mib=None):
     import subprocess
     import time
     while True:
+        if allocator_mib is not None:
+            import torch
+            rows = subprocess.check_output(['nvidia-smi', '--query-gpu=memory.total,memory.free',
+                '--format=csv,noheader,nounits'], text=True).strip().splitlines()
+            if len(rows) != 1:
+                raise ValueError('Shared gate requires the registered single GPU')
+            total, free = [int(x.strip()) for x in rows[0].split(',')]
+            ready, fraction = shared_gpu_budget(total, free, allocator_mib)
+            if ready:
+                torch.cuda.set_per_process_memory_fraction(fraction, 0)
+                prep.save_json(directory/'resource_state.json', dict(status='SHARED_GPU_LIMITED',
+                    allocator_limit_mib=allocator_mib, allocator_fraction=fraction, free_before_mib=free,
+                    reserve_mib=1024, context_allowance_mib=512, compute_quota=False,
+                    checked_utc=dt.datetime.now(dt.timezone.utc).isoformat()))
+                print(f'[RESOURCE] Shared GPU; PyTorch allocator <= {allocator_mib} MiB; CPU 2 threads', flush=True)
+                return
+            prep.save_json(directory/'resource_state.json', dict(status='WAITING_FOR_MEMORY_HEADROOM',
+                allocator_limit_mib=allocator_mib, free_mib=free, required_mib=allocator_mib+1536,
+                checked_utc=dt.datetime.now(dt.timezone.utc).isoformat()))
+            time.sleep(30)
+            continue
         occupied = subprocess.check_output(['nvidia-smi', '--query-compute-apps=pid', '--format=csv,noheader'], text=True).strip()
         if not occupied:
             prep.save_json(directory/'resource_state.json', dict(status='GPU_AVAILABLE', checked_utc=dt.datetime.now(dt.timezone.utc).isoformat()))
@@ -173,8 +201,18 @@ def wait_for_idle_gpu(directory):
         time.sleep(30)
 
 
-def fit_development(root, prepared, diagnostic, directory, protocol_sha, device):
+def fit_development(root, prepared, diagnostic, directory, protocol_sha, device, allocator_mib=None):
     import fcntl
+    if allocator_mib is not None:
+        import os
+        import torch
+        shared_gpu_budget(24576, 0, allocator_mib)
+        if not device.startswith('cuda'):
+            raise ValueError('Shared GPU budget requires CUDA')
+        torch.set_num_threads(2)
+        torch.set_num_interop_threads(1)
+        os.sched_setaffinity(0, sorted(os.sched_getaffinity(0))[:2])
+        os.nice(10)
     protocol_path = ROOT/'configs/g2b_protocol.json'
     if prep.digest(protocol_path) != protocol_sha:
         raise ValueError('Protocol hash mismatch')
@@ -196,7 +234,9 @@ def fit_development(root, prepared, diagnostic, directory, protocol_sha, device)
         snapshot = sources()
         prep.save_json(directory/'launch.json', dict(protocol_sha256=protocol_sha,
             decision=decision, source_code=snapshot, formal_fits=14, sealed_access=False,
-            diagnostic_sha256=prep.digest(diagnostic/'completed.json'), device=device))
+            diagnostic_sha256=prep.digest(diagnostic/'completed.json'), device=device,
+            resource_policy=dict(shared=allocator_mib is not None, allocator_limit_mib=allocator_mib,
+                                 cpu_cores=2 if allocator_mib is not None else None)))
         try:
             packs, stats = input_state(prepared, root, decision['case'])
             prep.save_json(directory/'fit_statistics.json', stats)
@@ -205,7 +245,7 @@ def fit_development(root, prepared, diagnostic, directory, protocol_sha, device)
                 last_target=str(v['times'].max().astype('datetime64[ns]')),
                 retrofit_fraction=float(v['retrofit'].mean())) for k,v in packs.items()})
             if device.startswith('cuda'):
-                wait_for_idle_gpu(directory)
+                wait_for_idle_gpu(directory, allocator_mib)
             if sources() != snapshot or prep.digest(protocol_path) != protocol_sha:
                 raise ValueError('Source or protocol changed before fitting')
             fits = []
@@ -232,6 +272,7 @@ def fit_development(root, prepared, diagnostic, directory, protocol_sha, device)
                 fit_statistics_sha256=prep.digest(directory/'fit_statistics.json'),
                 cohorts_sha256=prep.digest(directory/'cohorts.json'), sealed_access=False,
                 sealed_script='scripts/train_g2b.py', sealed_script_sha256=snapshot['scripts/train_g2b.py'])
+            freeze['resource_policy'] = json.loads((directory/'launch.json').read_text())['resource_policy']
             runner.check_freeze(freeze, 14, directory)
             prep.save_json(directory/'selection_freeze.json', freeze)
             prep.save_json(directory/'completed.json', dict(status='FROZEN_DEVELOPMENT_ONLY',
@@ -547,11 +588,13 @@ def main():
     parser.add_argument('--points', type=Path)
     parser.add_argument('--authorization')
     parser.add_argument('--device', default='cuda')
+    parser.add_argument('--shared-gpu-memory-mib', type=int)
     args = parser.parse_args()
     if args.mode == 'development':
         if not all((args.prepared, args.diagnostic, args.protocol_sha256)):
             parser.error('Development requires prepared, diagnostic and protocol-sha256')
-        fit_development(args.data_root, args.prepared, args.diagnostic, args.output, args.protocol_sha256, args.device)
+        fit_development(args.data_root, args.prepared, args.diagnostic, args.output, args.protocol_sha256,
+                        args.device, args.shared_gpu_memory_mib)
     else:
         if args.authorization != 'G2b-2024-2025-once':
             parser.error('Separate sealed authorization required')

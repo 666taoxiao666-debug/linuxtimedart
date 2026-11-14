@@ -44,6 +44,14 @@ class RetrofitDiagnosticTests(unittest.TestCase):
 
 
 class G2bExecutionTests(unittest.TestCase):
+    def test_shared_budget_preserves_context_and_other_user_headroom(self):
+        ready, fraction = train.shared_gpu_budget(24576, 2560, 1024)
+        self.assertTrue(ready)
+        self.assertAlmostEqual(fraction*24576, 1024)
+        self.assertFalse(train.shared_gpu_budget(24576, 2559, 1024)[0])
+        with self.assertRaises(ValueError):
+            train.shared_gpu_budget(24576, 10000, 4096)
+
     def test_recipe_and_seed_budget(self):
         protocol = json.loads((train.ROOT/'configs/g2b_protocol.json').read_text())
         train.validate_protocol(protocol)
