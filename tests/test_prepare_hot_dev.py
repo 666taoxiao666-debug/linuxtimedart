@@ -43,6 +43,8 @@ class HotDevelopmentTests(unittest.TestCase):
                 columns = list(hot.MAPPING[table])
                 rows = [','.join(['TimeStamp', 'StationId']+columns)]
                 for stamp in (lo, hi):
+                    if table == 'tblSCTurTemp' and int(y) == 2021 and int(m) == 1 and stamp == lo:
+                        continue  # Absent table row becomes NaN after outer join.
                     value = 'protected-not-numeric' if stamp.year >= 2024 else '1'
                     if int(y) == 2021 and int(m) == 1 and stamp == lo:
                         value = '100'
@@ -59,6 +61,9 @@ class HotDevelopmentTests(unittest.TestCase):
             self.assertIn('entire_annual_boundary_batch_differs', report['stop_reasons'])
             self.assertIn('beyond_rounding_keys_exceed_one_percent', report['stop_reasons'])
             self.assertNotIn('protected-not-numeric', (out/'diagnostic.json').read_text())
+            temp = next(g for g in report['groups'] if g['table'] == 'tblSCTurTemp'
+                        and g['boundary'].startswith('2021-01-01'))
+            self.assertEqual(temp['columns']['wtc_AmbieTmp_mean']['one_missing'], 1)
 
     def test_protected_year_rejected_before_zip_open(self):
         z = Mock()

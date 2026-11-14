@@ -128,6 +128,7 @@ def diagnose_boundaries(root, out):
                 for month in range(1, 13):
                     lower = pd.Timestamp(year=year, month=month, day=1, tz='UTC')
                     upper = lower + pd.offsets.MonthBegin(1)
+                    starts, ends = {}, {}
                     for table, mapping in MAPPING.items():
                         name = f'{table}_{year}_{month:02d}.csv'
                         with archive.open(name) as handle:
@@ -146,10 +147,18 @@ def diagnose_boundaries(root, out):
                             for row in t.loc[dup, keys].drop_duplicates().itertuples(index=False):
                                 nonboundary.append(dict(file=name, time=str(row.TimeStamp),
                                     station=row.StationId, reason='duplicate within one export'))
-                        current = t.loc[t.TimeStamp == lower].drop_duplicates(keys).set_index(keys)
+                        starts[table] = t.loc[t.TimeStamp == lower].drop_duplicates(keys).set_index(keys)
+                        ends[table] = t.loc[t.TimeStamp == upper].drop_duplicates(keys).set_index(keys)
+                    # Outer table joins can create missing cells even when each
+                    # individual table's intersecting rows are identical.
+                    all_before = set().union(*(set(v.index) for v in previous.values()))
+                    all_after = set().union(*(set(v.index) for v in starts.values()))
+                    shared = sorted(all_before & all_after)
+                    for table, mapping in MAPPING.items():
+                        current = starts[table].reindex(shared).fillna('')
                         prior = previous.get(table)
                         if prior is not None:
-                            shared = prior.index.intersection(current.index)
+                            prior = prior.reindex(shared).fillna('')
                             changed, material = set(), set()
                             counts = {c: Counter() for c in mapping}
                             for key in shared:
@@ -174,7 +183,7 @@ def diagnose_boundaries(root, out):
                                 columns={c: dict(v) for c, v in counts.items()}))
                             if month == 1 and len(shared) and len(changed) == len(shared):
                                 annual_batches.append(groups[-1])
-                        previous[table] = t.loc[t.TimeStamp == upper].drop_duplicates(keys).set_index(keys)
+                    previous = ends
             print(f'[DIAGNOSTIC] {year} complete', flush=True)
         ratio = len(material_keys)/len(duplicate_keys) if duplicate_keys else 0
         stops = []
