@@ -1,0 +1,32 @@
+{
+  "protocol_sha256": "da809d691e93b7bb284fc7ce282f1c16a59ecd0fe5342f68ceab0e8530966a53",
+  "decision": {
+    "case": "A",
+    "positive": 0,
+    "negative": 18,
+    "small": 3,
+    "unclassified": 0
+  },
+  "source_code": {
+    "scripts/train_g2b.py": "c230d72185482e395c7b183592a0d585f7325616c7d3a99a4550633bae416f72",
+    "scripts/prepare_hot_dev.py": "f4cd76e5519b6da75ce4b2a1e21cb10c05a5328c16f2e1e922c929fb3f5ee2ec",
+    "scripts/train_g1.py": "5b3e35d3dfc2ff87271f4a48265bf96baaebe4ab45e7d5bed19486ec0d0d18ac",
+    "scripts/prepare_g1_batches.py": "442f8a96d2b7026d089fca379c3a1f531c6c0831f4e26c4efcb0483ec546d176",
+    "models/NWPDisplacement.py": "f7c1ac796514d5dcc344a605d1fee40834bd92d0583322910eeb4d3a82e0bde9",
+    "models/TSMixerBasicSmall.py": "bea4bcca1309f994f6bde074afaa04192a919abd23f22f42be46c2b7a0b2993a",
+    "utils/kelmarsh_upstream_v31.py": "66dd2a86694040347c53298be4fd6fc0b18ff2782cece2bcd92f980328a23fcd",
+    "data_provider/kelmarsh_multiyear.py": "bbf838888b77bae6865d4b2e2443bf42ce898f41dadc027641c149acd868d558",
+    "scripts/screen_kelmarsh_upstream_observations.py": "c68477c52fa9405b12095560c446f7bfaf160743842efeccc276717070aa214b",
+    "scripts/audit_hill_of_towie_e1.py": "25533dffc637157d2d31ff0662bb09bd68a4033d7be6ae8640e8d2bf0f348d13",
+    "scripts/acquire_hourly_wind_datasets.py": "9deb94c2bb5d678c0b227c868f787445d179e154005d71a2baa054e8489f2bee",
+    "utils/kelmarsh_enrichment.py": "6a05295abb1bbe7217dcb43c57ca2501d7b7ad3173431f60a94fba61b2094872",
+    "utils/kelmarsh_backbone_information.py": "1354a3905c61a2131cb975def1bccb5ef6083b75ff3615e2f115298a535bfe6c",
+    "utils/paired_forecast_statistics.py": "b6f8613466ed76b53f64699798d3aac2d04dbcb5ae6dfe6bbdc44eb4f16b3248",
+    "scripts/ramp_diagnostics.py": "b3489f20109659c685a7c58386b75b2758b91ae1a045d77ef709c40c15d519ba",
+    "output/g2a/results81/results.json": "6f917d7afd53b7870fce9cba8881913ae5f2f39b7b8c46a60196ae1e72db7187"
+  },
+  "formal_fits": 14,
+  "sealed_access": false,
+  "diagnostic_sha256": "e340b2ce8a981c5d4a2af092a123d781880a6458063135eb682ca98ace50d4bb",
+  "device": "cuda"
+}

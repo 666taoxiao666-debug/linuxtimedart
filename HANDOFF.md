@@ -22,17 +22,21 @@
 需要用户决定: 无
 
 ## Codex → Claude
-<!-- 由Codex覆盖。第83次G2b：情形A已确定；开发年实现完成，服务器预检待执行 -->
-轮次: R1/2 | 阶段: G2b | 分支: exp/G2 | 提交号: d667d1b（诊断，已推送）；本提交为14拟合及冻结实现
+<!-- 由Codex覆盖。第83次G2b：情形A已确定，正式实例已启动，待完成冻结 -->
+轮次: R1/2 | 阶段: G2b | 分支: exp/G2 | 提交号: d667d1b（诊断）、df1b4ff/598a89d（14拟合及冻结实现），均已推送
 审查结论: 第1、2步无阻断，见docs/review/G2b-R1-codex.md；仅1条建议，不把S2解释为改造因果效应。
 已直接修复: 无方案外改动；按第83次批准实现train_g2b.py、协议和测试，未改变阈值/臂/年份/拟合配方。
 运行信息: 第1步worktree=/home/XT/nuist/pythoncode/TimeDARTFirst_G2_d667d1b；run=/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/G2/g2b_retrofit_d667d1b_r1/diagnostic。
-运行信息: PID712153已完成；completed.json SHA=e340b2ce8a981c5d4a2af092a123d781880a6458063135eb682ca98ace50d4bb；原始审计取回中。
+运行信息: PID712153已完成；completed.json SHA=e340b2ce8a981c5d4a2af092a123d781880a6458063135eb682ca98ace50d4bb；完整审计已取回output/g2b/retrofit_diagnostic并逐文件核验。
 关键数字: 21台中18台S2≤−5%、3台|S2|<5%、0台不可判定，按预登记规则选择A。
 关键数字: 拟合2016-01-01至2023-06-30；验证2023-07-01至2023-12-31；保留改造通道，B/B0/N0/N分别22/10/39/51通道。
 关键数字: B/N0/B0各3seed，N5seed，共14；每个checkpoint记录验证MAE及SHA256，最后只写开发年冻结包。
-验证: 本地31项，28通过，3项需Linux fcntl/torch而跳过；服务器预检待执行，尚未启动任何正式拟合。
-运行信息: GPU当前被其他用户PID589482占用，不能中断；入口CPU准备后等GPU空闲才拟合，不自动重启失败实例。
+验证: 本地31项28通过/3跳过；服务器31/31全部通过。日志的FIT 1–14是模拟拟合门禁测试，不是正式结果。
+运行信息: 正式worktree=/home/XT/nuist/pythoncode/TimeDARTFirst_G2_598a89d；run=/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/G2/g2b_598a89d_r1/formal。
+运行信息: 2026-11-14 15:08:32 UTC独立启动PID719679；15:17 UTC核对存活、开发年准备完成、WAITING_FOR_GPU；GPU被其他用户PID589482占用，空闲才拟合，不自动重启失败实例。
+关键数字: 情形A实际拟合420475窗/验证30056窗，改造后比例8.5287%/100%；尚无正式checkpoint，不得把模拟测试日志当正式拟合或冻结。
+运行信息: 协议SHA256=da809d691e93b7bb284fc7ce282f1c16a59ecd0fe5342f68ceab0e8530966a53；脚本SHA256=c230d72185482e395c7b183592a0d585f7325616c7d3a99a4550633bae416f72。
 封存门禁: 封存准备/推理代码已写，冻结时锁源码；当前不执行，不读2024–2026 HoT值、不解码封存GFS。
 需要 Claude 做的: 等14拟合冻结后复核冻结包及封存入口；第3步必须另行授权，目前无需修改方案。
-需要用户决定: 无；本轮正在继续服务器预检及正式执行，不合主线、不改main。
+后续执行: 只跟踪PID719679原实例；完成后取回14份trained.json及freeze/统计/日志、核验checkpoint和源码哈希，更新本节交Claude；失败只交回，不另起实例。
+需要用户决定: 无；正式任务已排队等GPU，冻结尚未完成。不合主线、不改main；2024–2026值未访问。

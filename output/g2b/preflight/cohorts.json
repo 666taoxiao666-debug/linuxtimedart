@@ -1,0 +1,14 @@
+{
+  "train": {
+    "windows": 420475,
+    "first_target": "2016-01-02T04:00:00.000000000",
+    "last_target": "2023-07-01T00:00:00.000000000",
+    "retrofit_fraction": 0.08528687804937363
+  },
+  "val": {
+    "windows": 30056,
+    "first_target": "2023-07-01T01:00:00.000000000",
+    "last_target": "2023-12-31T15:00:00.000000000",
+    "retrofit_fraction": 1.0
+  }
+}

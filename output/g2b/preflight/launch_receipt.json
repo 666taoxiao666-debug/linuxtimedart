@@ -1,0 +1,27 @@
+{
+  "pid": 719679,
+  "command": [
+    "/home/XT/miniconda3/envs/timedart/bin/python",
+    "-u",
+    "scripts/train_g2b.py",
+    "--data-root",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst",
+    "--prepared",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/G2/hot_dev_f58f2ce_r5/prepared",
+    "--diagnostic",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/G2/g2b_retrofit_d667d1b_r1/diagnostic",
+    "--output",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/G2/g2b_598a89d_r1/formal",
+    "--protocol-sha256",
+    "da809d691e93b7bb284fc7ce282f1c16a59ecd0fe5342f68ceab0e8530966a53",
+    "--device",
+    "cuda"
+  ],
+  "worktree": "/home/XT/nuist/pythoncode/TimeDARTFirst_G2_598a89d",
+  "started_utc": "2026-11-14T15:08:32.729185+00:00",
+  "protocol_sha256": "da809d691e93b7bb284fc7ce282f1c16a59ecd0fe5342f68ceab0e8530966a53",
+  "script_sha256": "c230d72185482e395c7b183592a0d585f7325616c7d3a99a4550633bae416f72",
+  "formal_fits": 14,
+  "sealed_access": false,
+  "wait_for_gpu": true
+}

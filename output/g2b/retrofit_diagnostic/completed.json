@@ -1,0 +1,15 @@
+{
+  "decision": {
+    "case": "A",
+    "positive": 0,
+    "negative": 18,
+    "small": 3,
+    "unclassified": 0
+  },
+  "training": false,
+  "source_sha256": "f4cd76e5519b6da75ce4b2a1e21cb10c05a5328c16f2e1e922c929fb3f5ee2ec",
+  "artifacts": {
+    "status_distributions.json": "92385c5dd44678dd600d0aeae6ba0abd5c75285a8a00b86e07edb676792abf3d",
+    "scores.json": "c482b17c135ad4f26f9d942cf1b881e047279a482a5e0f1e195c68742f784513"
+  }
+}

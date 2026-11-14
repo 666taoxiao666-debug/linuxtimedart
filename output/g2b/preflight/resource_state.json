@@ -1,0 +1,8 @@
+{
+  "status": "WAITING_FOR_GPU",
+  "existing_pids": [
+    "589482"
+  ],
+  "checked_utc": "2026-11-14T15:19:33.815027+00:00",
+  "interrupted_other_tasks": false
+}
