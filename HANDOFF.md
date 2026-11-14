@@ -38,7 +38,11 @@
 运行信息: 协议SHA256=da809d691e93b7bb284fc7ce282f1c16a59ecd0fe5342f68ceab0e8530966a53；脚本SHA256=c230d72185482e395c7b183592a0d585f7325616c7d3a99a4550633bae416f72。
 封存门禁: 封存准备/推理代码已写，冻结时锁源码；当前不执行，不读2024–2026 HoT值、不解码封存GFS。
 需要 Claude 做的: 等14拟合冻结后复核冻结包及封存入口；第3步必须另行授权，目前无需修改方案。
-后续执行: 只跟踪PID719679原实例；完成后取回14份trained.json及freeze/统计/日志、核验checkpoint和源码哈希，更新本节交Claude；失败只交回，不另起实例。
+后续执行: 改为只跟踪PID739134限额实例；完成后取回14份trained.json及freeze/统计/日志、核验checkpoint和源码哈希，更新本节交Claude；失败只交回，不另起实例。
 用户新授权: 2026-11-15明确要求用剩余GPU资源现在运行并限制自身；只变资源门禁，不改变实验协议、配方、14拟合预算。
-执行调整: 复核旧PID仍等待且0拟合后取消留档；新代码/新目录共享GPU，PyTorch分配器上限1024MiB，另留512MiB上下文及1024MiB余量；CPU2核/线程、nice+10，不改GPU全局配置。
-需要用户决定: 无；正在按本次具体授权切换资源限制并服务器验证。冻结尚未完成，2024–2026值未访问。
+执行调整: 旧PID719679经SIGSTOP后复核仍等待、无CUDA上下文和拟合产物，确认0拟合后取消留档；证据output/g2b/shared_launch/cancelled_before_fitting.json。
+运行信息: 新代码4471499（已推送），worktree=/home/XT/nuist/pythoncode/TimeDARTFirst_G2_4471499；run=/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/G2/g2b_4471499_shared_r1/formal，PID739134，2026-11-15 00:33:19北京时间启动。
+资源验证: 服务器32/32测试通过；00:34北京时间已进入SHARED_GPU_LIMITED，nvidia-smi显示本进程364MiB、其他用户19210MiB；CPU亲和0-1、nice10实际生效。
+资源限制: PyTorch分配器上限1024MiB（不含CUDA上下文），另留512MiB上下文及1024MiB余量；CPU2核/线程；无GPU算力硬配额，不改他人进程或GPU全局配置。
+运行信息: 协议SHA仍为da809d691e93b7bb284fc7ce282f1c16a59ecd0fe5342f68ceab0e8530966a53；新脚本SHA=411095d75a8eb8bcaa6ad3cfd5641f5e3a0a3fd909e5316f5ee2cfeec4985823；总预算仍14拟合。
+需要用户决定: 无；限额GPU实例已实际运行，冻结尚未完成，2024–2026值未访问。完成后交Claude复核。
