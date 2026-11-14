@@ -22,27 +22,24 @@
 需要用户决定: 无
 
 ## Codex → Claude
-<!-- 由Codex覆盖。第83次G2b：情形A已确定，正式实例已启动，待完成冻结 -->
-轮次: R1/2 | 阶段: G2b | 分支: exp/G2 | 提交号: d667d1b（诊断）、df1b4ff/598a89d（14拟合及冻结实现），均已推送
-审查结论: 第1、2步无阻断，见docs/review/G2b-R1-codex.md；仅1条建议，不把S2解释为改造因果效应。
-已直接修复: 无方案外改动；按第83次批准实现train_g2b.py、协议和测试，未改变阈值/臂/年份/拟合配方。
-运行信息: 第1步worktree=/home/XT/nuist/pythoncode/TimeDARTFirst_G2_d667d1b；run=/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/G2/g2b_retrofit_d667d1b_r1/diagnostic。
-运行信息: PID712153已完成；completed.json SHA=e340b2ce8a981c5d4a2af092a123d781880a6458063135eb682ca98ace50d4bb；完整审计已取回output/g2b/retrofit_diagnostic并逐文件核验。
-关键数字: 21台中18台S2≤−5%、3台|S2|<5%、0台不可判定，按预登记规则选择A。
-关键数字: 拟合2016-01-01至2023-06-30；验证2023-07-01至2023-12-31；保留改造通道，B/B0/N0/N分别22/10/39/51通道。
-关键数字: B/N0/B0各3seed，N5seed，共14；每个checkpoint记录验证MAE及SHA256，最后只写开发年冻结包。
-验证: 本地31项28通过/3跳过；服务器31/31全部通过。日志的FIT 1–14是模拟拟合门禁测试，不是正式结果。
-运行信息: 正式worktree=/home/XT/nuist/pythoncode/TimeDARTFirst_G2_598a89d；run=/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/G2/g2b_598a89d_r1/formal。
-运行信息: 2026-11-14 15:08:32 UTC独立启动PID719679；15:17 UTC核对存活、开发年准备完成、WAITING_FOR_GPU；GPU被其他用户PID589482占用，空闲才拟合，不自动重启失败实例。
-关键数字: 情形A实际拟合420475窗/验证30056窗，改造后比例8.5287%/100%；尚无正式checkpoint，不得把模拟测试日志当正式拟合或冻结。
-运行信息: 协议SHA256=da809d691e93b7bb284fc7ce282f1c16a59ecd0fe5342f68ceab0e8530966a53；脚本SHA256=c230d72185482e395c7b183592a0d585f7325616c7d3a99a4550633bae416f72。
-封存门禁: 封存准备/推理代码已写，冻结时锁源码；当前不执行，不读2024–2026 HoT值、不解码封存GFS。
-需要 Claude 做的: 等14拟合冻结后复核冻结包及封存入口；第3步必须另行授权，目前无需修改方案。
-后续执行: 改为只跟踪PID739134限额实例；完成后取回14份trained.json及freeze/统计/日志、核验checkpoint和源码哈希，更新本节交Claude；失败只交回，不另起实例。
-用户新授权: 2026-11-15明确要求用剩余GPU资源现在运行并限制自身；只变资源门禁，不改变实验协议、配方、14拟合预算。
-执行调整: 旧PID719679经SIGSTOP后复核仍等待、无CUDA上下文和拟合产物，确认0拟合后取消留档；证据output/g2b/shared_launch/cancelled_before_fitting.json。
-运行信息: 新代码4471499（已推送），worktree=/home/XT/nuist/pythoncode/TimeDARTFirst_G2_4471499；run=/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/G2/g2b_4471499_shared_r1/formal，PID739134，2026-11-15 00:33:19北京时间启动。
-资源验证: 服务器32/32测试通过；00:34北京时间已进入SHARED_GPU_LIMITED，nvidia-smi显示本进程364MiB、其他用户19210MiB；CPU亲和0-1、nice10实际生效。
-资源限制: PyTorch分配器上限1024MiB（不含CUDA上下文），另留512MiB上下文及1024MiB余量；CPU2核/线程；无GPU算力硬配额，不改他人进程或GPU全局配置。
-运行信息: 协议SHA仍为da809d691e93b7bb284fc7ce282f1c16a59ecd0fe5342f68ceab0e8530966a53；新脚本SHA=411095d75a8eb8bcaa6ad3cfd5641f5e3a0a3fd909e5316f5ee2cfeec4985823；总预算仍14拟合。
-需要用户决定: 无；限额GPU实例已实际运行，冻结尚未完成，2024–2026值未访问。完成后交Claude复核。
+<!-- 由Codex覆盖。第83次G2b：14拟合完成、冻结核验通过，停下交回 -->
+轮次: R1/2 | 阶段: G2b | 分支: exp/G2 | 提交号: 4471499（限额运行代码）、a065430（启动记录），本提交登记冻结验收
+审查结论: 第1、2步完成；见docs/review/G2b-R1-codex.md；仅S1建议，不把诊断当改造因果效应。
+已直接修复: 按用户2026-11-15明确授权改共享资源门禁；无实验阈值、配方、臂或年份变动。
+诊断结果: 21台18台S2≤−5%、3台|S2|<5%，选择A；完整原始状态分布压缩包及SHA在output/g2b/retrofit_diagnostic/。
+运行信息: worktree=/home/XT/nuist/pythoncode/TimeDARTFirst_G2_4471499；run=/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/G2/g2b_4471499_shared_r1/formal。
+运行信息: PID739134已退出；北京时间2026-11-15 00:33:19启动、03:13:56完成，总耗时约2小时41分；14/14，FROZEN_DEVELOPMENT_ONLY，无failed.json。
+运行信息: 原PID719679仅等待且0拟合时取消留档；未增加拟合预算，其他用户进程未动。
+资源限制: PyTorch allocator1024MiB（CUDA上下文另计）；CPU2核/2线程、nice10；共享算力无硬配额。
+验证: 服务器32/32测试通过；14份checkpoint、trained.json、最优验证MAE/epoch、源码/协议/准备产物及追加开发输入SHA全部核验通过。
+验收文件: output/g2b/freeze/；23份原始JSON/日志/PID逐文件SHA一致，含14份trained.json；未拷权重、原始数据或预测数组。
+冻结SHA256: 981f3ae27e6792f5da71c177af1c24a0e91c4dfcd880322773fb4f9fe34607f6。
+协议SHA256: da809d691e93b7bb284fc7ce282f1c16a59ecd0fe5342f68ceab0e8530966a53。
+脚本SHA256: 411095d75a8eb8bcaa6ad3cfd5641f5e3a0a3fd909e5316f5ee2cfeec4985823。
+关键数字: 情形A拟合420475窗/验证30056窗，改造后8.5287%/100%；拟合截至2023-06-30，验证2023-07至12月。
+关键数字: 验证MAE种子均值kW：B0(3)=221.9221，B(3)=202.7767，N0(3)=184.9365，N(5)=182.2926。
+关键数字: N前3seed=182.2244，对B降低20.5524kW，对N0降低2.7122kW；仅验证描述，无独立检验或显著性结论。
+关键数字: N五种子均值是单模型MAE平均，不是集成预测MAE，不能据此判断Qe。
+封存门禁: 未产生test_evaluation_started.json；未访问2024–2026观测值或解码封存GFS，冻结后已停止。
+需要 Claude 做的: 复核freeze/SUMMARY.md、verification.json、formal/selection_freeze.json和封存准备/评估入口；通过后提出第3步的明确授权范围及已批准GFS输入清单。
+需要用户决定: 当前无；完成本轮后停下，封存年仍需另行授权，不合主线、不重训或补跑。

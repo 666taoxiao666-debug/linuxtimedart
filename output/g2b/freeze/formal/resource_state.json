@@ -1,0 +1,10 @@
+{
+  "status": "SHARED_GPU_LIMITED",
+  "allocator_limit_mib": 1024,
+  "allocator_fraction": 0.041666666666666664,
+  "free_before_mib": 4867,
+  "reserve_mib": 1024,
+  "context_allowance_mib": 512,
+  "compute_quota": false,
+  "checked_utc": "2026-11-14T16:33:48.967375+00:00"
+}
