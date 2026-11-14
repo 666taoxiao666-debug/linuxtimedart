@@ -188,5 +188,91 @@ class G2bExecutionTests(unittest.TestCase):
                 self.assertTrue(all(torch.isfinite(v.grad).all() for v in model.parameters() if v.grad is not None))
 
 
+class G2bPreparationTests(unittest.TestCase):
+    def test_existing_destination_has_no_attempt_side_effect(self):
+        from scripts import evaluate_g2b_sealed as entry
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            out = root/'existing'
+            out.mkdir()
+            with patch.object(entry, 'frozen_gate') as gate:
+                with self.assertRaisesRegex(ValueError, 'Fresh output'):
+                    entry.start_preparation(root, out, root/'freeze', [2023])
+                gate.assert_not_called()
+            self.assertEqual(list(out.iterdir()), [])
+
+    def test_protected_year_configuration_rejected_before_gate(self):
+        from scripts import evaluate_g2b_sealed as entry
+        with patch.object(entry, 'start_preparation') as start:
+            with self.assertRaisesRegex(ValueError, 'Unapproved'):
+                entry.prepare_sealed(Path('/data'), Path('/freeze'), Path('/out'),
+                    (2026,), ('2026-01-01', '2027-01-01'), {}, '2027-01-01')
+            start.assert_not_called()
+
+    def test_midas_conflict_masks_all_fields_and_preserves_units(self):
+        from scripts import evaluate_g2b_sealed as entry
+        frame = pd.DataFrame(dict(src_id=[1, 1, 1], version_num=[1, 1, 1],
+            ob_time=['2023-01-01 00:00', '2023-01-01 00:00', '2023-01-01 01:00'],
+            wind_speed=[5., np.nan, 6.], wind_direction=[20., 20., 30.], msl_pressure=[1000., 1000., 999.]))
+        frame.attrs['units'] = {'wind_speed': 'knots'}
+        actual, counts = entry.conflict_missing(frame, 2023)
+        self.assertEqual(counts, {'1': 1})
+        self.assertTrue(actual.loc[:1, ['wind_speed', 'wind_direction', 'msl_pressure']].isna().all().all())
+        self.assertEqual(actual.loc[2, 'wind_speed'], 6.)
+        self.assertEqual(actual.attrs, frame.attrs)
+
+    def test_boundary_merge_keeps_six_distinct_leads(self):
+        from scripts import evaluate_g2b_sealed as entry
+        try:
+            import xarray as xr
+        except ImportError:
+            self.skipTest('xarray in GFS runtime')
+        def dataset(leads):
+            return xr.Dataset({'u10': (('step', 'latitude', 'longitude'), np.ones((len(leads), 2, 2)))},
+                coords={'step': np.asarray(leads, dtype='timedelta64[h]'), 'latitude': [50., 51.], 'longitude': [0., 1.]})
+        merged = entry.merge_boundary_cycle(dataset([3, 6]), dataset([9, 12, 15, 18]))
+        np.testing.assert_array_equal(merged.step / np.timedelta64(1, 'h'), [3, 6, 9, 12, 15, 18])
+        with self.assertRaisesRegex(ValueError, 'Overlapping'):
+            entry.merge_boundary_cycle(dataset([3, 6]), dataset([6, 9]))
+        changed = dataset([9, 12, 15, 18]).assign_coords(latitude=[49., 50.])
+        with self.assertRaisesRegex(ValueError, 'grid'):
+            entry.merge_boundary_cycle(dataset([3, 6]), changed)
+
+    def test_gfs_or_midas_failure_never_opens_scada(self):
+        from contextlib import ExitStack
+        from scripts import evaluate_g2b_sealed as entry
+        for fail_stage in ('gfs', 'midas'):
+            with self.subTest(stage=fail_stage), tempfile.TemporaryDirectory() as tmp, ExitStack() as stack:
+                root = Path(tmp)
+                out = root/'out'
+                out.mkdir()
+                metadata = root/'datasets/external_validation/sealed/hill_of_towie/Hill_of_Towie_turbine_metadata.csv'
+                metadata.parent.mkdir(parents=True)
+                metadata.write_text('Latitude,Longitude\n57,0\n')
+                def read(path):
+                    name = Path(path).name
+                    if name == 'record_22662930.json':
+                        return {'files': [{'key': metadata.name, 'size': metadata.stat().st_size, 'checksum': 'md5:ok'}]}
+                    if name == 'qualified_stations.json':
+                        return {'stations': [{'latitude': 57., 'longitude': 0.}]*12}
+                    if name == 'gfs_test_inventory.json':
+                        return {'source_identities': {}}
+                    return {}
+                stack.enter_context(patch.object(entry, 'start_preparation', return_value=({}, {})))
+                stack.enter_context(patch.object(entry, 'read_json', side_effect=read))
+                stack.enter_context(patch.object(entry.hot, 'verified', side_effect=lambda p, s, i: p))
+                stack.enter_context(patch.object(entry.hot, 'sha', return_value='ok'))
+                stack.enter_context(patch.object(entry.prep, 'digest', return_value='digest'))
+                gfs = stack.enter_context(patch.object(entry.subprocess, 'run', side_effect=RuntimeError('gfs') if fail_stage == 'gfs' else None))
+                midas = stack.enter_context(patch.object(entry, 'sealed_midas', side_effect=RuntimeError('midas')))
+                scada = stack.enter_context(patch.object(entry.train, 'scoped_functions'))
+                with self.assertRaisesRegex(RuntimeError, fail_stage):
+                    entry.prepare_sealed(root, root/'freeze', out, *entry.preparation_config(True))
+                gfs.assert_called_once()
+                self.assertEqual(midas.call_count, int(fail_stage == 'midas'))
+                scada.assert_not_called()
+                self.assertTrue((out/'failed.json').exists())
+
+
 if __name__ == '__main__':
     unittest.main()
