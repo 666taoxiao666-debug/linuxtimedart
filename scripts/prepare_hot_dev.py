@@ -103,7 +103,7 @@ def aggregate(ticks):
         ticks[c] = np.nan
     extra = enrich.hourly_enrichment(ticks.set_index('timestamp'), 2300)
     base = base.merge(extra[['power_last10_kw', 'wind_last10_mps']].reset_index(),
-                      on='timestamp_hour_end_utc', validate='one_to_one')
+                      on='timestamp_hour_end_utc', how='left', validate='one_to_one')
     check = hourly_scada(ticks[['timestamp', 'power_kw']].copy())
     if not np.array_equal(base.power_kw, check.power_kw, equal_nan=True):
         raise ValueError('Power label altered during enrichment')

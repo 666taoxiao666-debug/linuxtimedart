@@ -138,6 +138,16 @@ class HotDevelopmentTests(unittest.TestCase):
         self.assertEqual(len(result), 1)
         self.assertTrue((result.timestamp < hot.CUTOFF).all())
 
+    def test_entire_missing_hour_is_retained_as_missing_label(self):
+        first = self.ticks().iloc[:6].copy()
+        last = first.copy()
+        last['timestamp'] += pd.Timedelta(hours=2)
+        h = hot.aggregate(pd.concat([first, last]))
+        self.assertEqual(len(h), 3)
+        self.assertTrue(np.isnan(h.power_kw.iloc[1]))
+        self.assertTrue(np.isnan(h.power_last10_kw.iloc[1]))
+        np.testing.assert_array_equal(h.power_kw.iloc[[0, 2]], [2.5, 2.5])
+
 
 if __name__ == '__main__':
     unittest.main()
