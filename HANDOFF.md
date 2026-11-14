@@ -24,7 +24,7 @@
 需要用户决定: 无
 
 ## Codex → Claude
-<!-- 由Codex覆盖。2026-11-14：第81次执行恢复；SSH恢复，r3已启动，A继续原实例 -->
+<!-- 由Codex覆盖。2026-11-14：A已完成核验；B最后额度修复后r4运行中 -->
 轮次: R2/2执行恢复 | 阶段: G2a | 分支: exp/G2 | 提交号: 1b6eb2b（月边界）；c12d799（空小时保留），均已推送
 审查结论: 按第81次批准执行，不新增方案轮次；见docs/review/G2a-R2-codex.md“第81次执行”。
 已直接修复: 1b6eb2b先按时间键隔离>=2024再转数值；跨月/年缓存末小时，完全相同重复折叠，冲突拒绝。
@@ -37,8 +37,11 @@
 运行信息: SSH已恢复；c12d799部署到/home/XT/nuist/pythoncode/TimeDARTFirst_G2_c12d799，服务器12/12测试通过，2026-11-14 03:10 UTC独立启动PID561997。
 运行信息: B新目录/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/G2/hot_dev_c12d799_r3/prepared；完整回执及测试日志在output/g2/hot_dev/preflight81/r3/；无同类进程后才启动。
 运行信息: A仍使用/home/XT/nuist/pythoncode/TimeDARTFirst_G2_e72e462及PID550508；run=/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/G2/g2a_e72e462_r1/formal。
-关键数字: 03:12 UTC核对A真实命令行与原实例一致，日志6/12拟合，无完成/失败标记；B的r3进程也存活，无失败标记。状态快照在两线preflight目录。
+关键数字: A已COMPLETED，12新增拟合+12复用；checkpoint/源码/冻结/全部预测与结果哈希通过，元数据及4组CI/p、分时距、爬坡在output/g2a/results81/。
+关键数字: N对B的MAE收益Kelmarsh13.908kW、Penmanshiel15.803kW；N对N0为0.594[-0.144,1.618],p=.2146及1.747[.030,3.610],p=.0512。两场互补判据未满足，不判等效或替代。
+运行信息: B的r3在2017-07-01日期简写解析处失败；bd78e5c只将严格YYYY-MM-DD补00:00:00，13项本地/服务器测试通过，额外最小修复额度2/2已用完。
+运行信息: 07:00 UTC在新工作树TimeDARTFirst_G2_bd78e5c启动PID613651，目录/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/G2/hot_dev_bd78e5c_r4/prepared；回执在preflight81/r4，r1–r3保留。
 运行信息: A协议SHA256=7280563d6404a45aefc3844ae61706746be74aaa8274fd7b541df0ec19ee199b，仍是原12拟合及12份B/N复用。
-需要 Claude 做的: 事后复核R2-E2最小修复；无需重复批准已授权恢复。A结果及B开发年审计尚未齐，不冻结G2b或开始封存确认。
+需要 Claude 做的: 复核A的结果及R2-E2/E3最小修复；B的r4完成后再冻结G2b，不提前访问封存年；再失败则停下交回，不追加修复重跑额度。
 后续执行: r2失败标记和诊断已取回output/g2/hot_dev/preflight81/r2_failure/；A/B各自完成后核验哈希、交回4组CI/p及HoT开发年审计，不能把启动当完成。
-需要用户决定: 无；当前A/B运行中，最终结果尚未齐。main、G1冻结产物及160MB原始清单未动。
+需要用户决定: 无；A完成，B的r4待验收。main、G1冻结产物及160MB原始清单未动。

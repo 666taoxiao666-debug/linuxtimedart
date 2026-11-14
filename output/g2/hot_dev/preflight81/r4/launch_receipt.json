@@ -1,0 +1,16 @@
+{
+  "pid": 613651,
+  "command": [
+    "/home/XT/miniconda3/envs/timedart/bin/python",
+    "-u",
+    "scripts/prepare_hot_dev.py",
+    "--data-root",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst",
+    "--output",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/G2/hot_dev_bd78e5c_r4/prepared"
+  ],
+  "cwd": "/home/XT/nuist/pythoncode/TimeDARTFirst_G2_bd78e5c",
+  "utc": "2026-11-14T07:00:23.465590+00:00",
+  "tests": "13/13 PASS",
+  "extra_fixes_used": 2
+}
