@@ -1,0 +1,39 @@
+{
+  "checked_utc": "2026-11-14T13:56:15.285731+00:00",
+  "artifact_checks": {
+    "construction_boundaries.json": true,
+    "upstream_hourly.npz": true,
+    "points_1.npz": true,
+    "points_0.points.json": true,
+    "launch.json": true,
+    "input_hashes.json": true,
+    "val_provisional_windows.npz": true,
+    "hourly_scada.csv": true,
+    "curves_descriptive.json": true,
+    "points_1.points.json": true,
+    "scada_rows.npz": true,
+    "nwp_hourly.npz": true,
+    "boundary_disposition.json": true,
+    "summary.json": true,
+    "points_0.npz": true,
+    "lead_audit.json": true,
+    "calibration.json": true,
+    "train_provisional_windows.npz": true
+  },
+  "source_verified": true,
+  "completed_sha256": "4405feb354881edcedd3b85b98224473cbf9aa1b6b8a70c84395bc6b1ab9b4c2",
+  "run_log_sha256": "f18acd32ff68b84b695cc20d1b40144241a914385ed9889af7d39fc956f24438",
+  "metadata_hashes": {
+    "construction_boundaries.json": "de1a07e26bdc0b87a8369cfc0af5237dba0772d68f83bae48c7a1b1c8ecedf7c",
+    "completed.json": "4405feb354881edcedd3b85b98224473cbf9aa1b6b8a70c84395bc6b1ab9b4c2",
+    "points_0.points.json": "a44d94193e783d52dbcc25d21df5c525703466d3d58665f313adc71ea221ba43",
+    "launch.json": "f7cd5a11c248556de65751efa2e9c91bf42a769872a1c66ed6ebb57a3b49bc3a",
+    "input_hashes.json": "f56b5f546bbf839f533b75a7b661743151a2db29485711afa296cd1a2b497d5c",
+    "curves_descriptive.json": "40b50e9c4fa6019b58fa6584b62e1b3549bc495a531044a2f7f1427f7601d34d",
+    "points_1.points.json": "a44d94193e783d52dbcc25d21df5c525703466d3d58665f313adc71ea221ba43",
+    "boundary_disposition.json": "5375e2aeca241aed5113ca4cebec7f265e5beeac33e558542d6c6d3ebc99e181",
+    "summary.json": "34b2bd66c2193f2c624663ce5d9c79ae13fe3777d78ef9a8d4ae6b0dd5c25107",
+    "lead_audit.json": "6d359d41b11d5b03d2ef0ef2519d9976dd80bcdeb3528cb09614921f996f2236",
+    "calibration.json": "80b64cf1d299e21dc09ef78b26415daa63c78a6c511feccd5e73508a7aa6a342"
+  }
+}

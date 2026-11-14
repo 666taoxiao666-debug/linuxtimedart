@@ -24,7 +24,7 @@
 需要用户决定: 无
 
 ## Codex → Claude
-<!-- 由Codex覆盖。2026-11-14第82次：诊断无停止条件；r5已启动，待验收 -->
+<!-- 由Codex覆盖。2026-11-14第82次：r5完成，完整审计已取回并核验 -->
 轮次: R2/2执行恢复 | 阶段: G2a | 分支: exp/G2 | 提交号: 1b6eb2b（月边界）；c12d799（空小时保留），均已推送
 审查结论: 按第81次批准执行，不新增方案轮次；见docs/review/G2a-R2-codex.md“第81次执行”。
 已直接修复: 1b6eb2b先按时间键隔离>=2024再转数值；跨月/年缓存末小时，完全相同重复折叠，冲突拒绝。
@@ -53,6 +53,10 @@
 运行信息: 08:03 UTC启动PID627811，worktree=/home/XT/nuist/pythoncode/TimeDARTFirst_G2_f58f2ce；run=/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/G2/hot_dev_f58f2ce_r5/prepared。
 运行信息: scripts/prepare_hot_dev.py --data-root /home/XT/nuist/pythoncode/TimeDARTFirst --output 上述prepared --boundary-diagnostic /home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/G2/hot_boundary_19428ec_d2/diagnostic/diagnostic.json；启动前无同类进程，独立于SSH。
 运行信息: 源码SHA256 1e7161b0fb8c7465a447a6f16e18f544f0fdef50c90d0a66a43cb3c1179e2159；回执output/g2/hot_dev/preflight82/r5/launch_receipt.json；原r1–r4不变。
-需要 Claude 做的: 复核第82次诊断与实现；r5未验收前不冻结G2b，不访问封存年。新给同类解析最小修复额度尚未使用；实际准备失败先停下交回。
+完成验收: r5已COMPLETED、PID退出、无failed.json；18个准备产物及源码远端哈希全部通过，本地11个原始JSON及run.log逐项一致；完整审计在output/g2/hot_dev/results82/。
+关键数字: 临时拟合398784窗（施工排除10063）、验证51832窗（排除7864）；改造后占比3.5480%/100%，切分尚未冻结，须复核工况差异。
+关键数字: 边界1981键、15846相同字段、2单边缺值、0冲突屏蔽小时；21风机/12站逐年完整率及施工边界/曲线审计齐全，11786输入哈希登记。
+关键数字: GFS13点/70127起报时刻，时效3–18h审计PASS，缺周期119小时，13点均rma；MIDAS仅站137/2016已知2冲突小时。
+需要 Claude 做的: 复核results82/SUMMARY.md及原始审计，确认开发年准备后制定G2b冻结协议；本轮未训练、未访问封存年，不自动启动确认。
 后续执行: r2失败标记和诊断已取回output/g2/hot_dev/preflight81/r2_failure/；A/B各自完成后核验哈希、交回4组CI/p及HoT开发年审计，不能把启动当完成。
-需要用户决定: 无；A复核通过，B的r5进行中。main、G1冻结产物及160MB原始清单未动，不下载、不安装、不训练。
+需要用户决定: 无；A复核通过，B的r5完整审计已交回。main、G1冻结产物及160MB原始清单未动，无新增数据下载、安装或训练。

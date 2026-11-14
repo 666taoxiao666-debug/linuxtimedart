@@ -1,0 +1,25 @@
+{
+  "status": "COMPLETED",
+  "artifacts": {
+    "construction_boundaries.json": "de1a07e26bdc0b87a8369cfc0af5237dba0772d68f83bae48c7a1b1c8ecedf7c",
+    "upstream_hourly.npz": "3a152b7e0a318a18b81a2bd7aad942a58cf44d4400c63af0b10c519ec83c7912",
+    "points_1.npz": "fdd9efd7d228a7b658d70df46603ec0dc4f95f62666fb837f41efff7281c6dba",
+    "points_0.points.json": "a44d94193e783d52dbcc25d21df5c525703466d3d58665f313adc71ea221ba43",
+    "launch.json": "f7cd5a11c248556de65751efa2e9c91bf42a769872a1c66ed6ebb57a3b49bc3a",
+    "input_hashes.json": "f56b5f546bbf839f533b75a7b661743151a2db29485711afa296cd1a2b497d5c",
+    "val_provisional_windows.npz": "2936a327b731530c14a4f00f22d0d4947eff0bb76a8c53f835c1a30ce7623c68",
+    "hourly_scada.csv": "8a8b700ce4388e36601165d02982f10a08e7dbe37f4e66d688cfdc1d98d43a2f",
+    "curves_descriptive.json": "40b50e9c4fa6019b58fa6584b62e1b3549bc495a531044a2f7f1427f7601d34d",
+    "points_1.points.json": "a44d94193e783d52dbcc25d21df5c525703466d3d58665f313adc71ea221ba43",
+    "scada_rows.npz": "cf43bc90ceb73e6b1c4a1922c4aae0bb937886b79164a9eb5ac1d26b1a8d5787",
+    "nwp_hourly.npz": "599331631e8771b065c48fcb0bb404916b4ff98579e288916b55a836a02e6799",
+    "boundary_disposition.json": "5375e2aeca241aed5113ca4cebec7f265e5beeac33e558542d6c6d3ebc99e181",
+    "summary.json": "34b2bd66c2193f2c624663ce5d9c79ae13fe3777d78ef9a8d4ae6b0dd5c25107",
+    "points_0.npz": "65f854595a0746b3b77baefd6db29f7f14d9d55fa7d650873a9f79b9d7031e7e",
+    "lead_audit.json": "6d359d41b11d5b03d2ef0ef2519d9976dd80bcdeb3528cb09614921f996f2236",
+    "calibration.json": "80b64cf1d299e21dc09ef78b26415daa63c78a6c511feccd5e73508a7aa6a342",
+    "train_provisional_windows.npz": "b40f306f03c6b5d97068e19cd26dce891d506c911d56266a3c27b374a2d1c502"
+  },
+  "source_sha256": "1e7161b0fb8c7465a447a6f16e18f544f0fdef50c90d0a66a43cb3c1179e2159",
+  "input_count": 11786
+}

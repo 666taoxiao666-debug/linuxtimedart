@@ -1,0 +1,20 @@
+{
+  "source_sha256": "1e7161b0fb8c7465a447a6f16e18f544f0fdef50c90d0a66a43cb3c1179e2159",
+  "development_years": [
+    2016,
+    2017,
+    2018,
+    2019,
+    2020,
+    2021,
+    2022,
+    2023
+  ],
+  "training": false,
+  "automatic_restart": false,
+  "provisional_split": {
+    "train": "2016-2022",
+    "validation": "2023"
+  },
+  "cutoff": "strict valid time < 2024-01-01; no protected file opens"
+}
