@@ -63,7 +63,10 @@ def read_month(z, year, month, station_ids):
         with z.open(name) as f:
             t = pd.read_csv(f, usecols=['TimeStamp', 'StationId'] + list(mapping),
                             encoding='cp1252', dtype=str)
-        t['TimeStamp'] = pd.to_datetime(t.TimeStamp.str.strip(), utc=True, errors='raise')
+        # Official exports sometimes abbreviate midnight as YYYY-MM-DD.
+        stamps = t.TimeStamp.str.strip()
+        stamps = stamps.where(~stamps.str.fullmatch(r'\d{4}-\d{2}-\d{2}'), stamps + ' 00:00:00')
+        t['TimeStamp'] = pd.to_datetime(stamps, utc=True, errors='raise')
         if t.TimeStamp.isna().any() or not t.TimeStamp.between(lower, upper).all():
             raise ValueError('SCADA timestamp outside registered month and endpoint')
         # Inspect time keys first; protected rows never reach numeric conversion.

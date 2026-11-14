@@ -148,6 +148,18 @@ class HotDevelopmentTests(unittest.TestCase):
         self.assertTrue(np.isnan(h.power_last10_kw.iloc[1]))
         np.testing.assert_array_equal(h.power_kw.iloc[[0, 2]], [2.5, 2.5])
 
+    def test_abbreviated_midnight_at_month_boundary(self):
+        class Archive:
+            def open(self, name):
+                columns = hot.MAPPING[name.split('_2017')[0]]
+                header = ','.join(['TimeStamp', 'StationId']+list(columns))
+                rows = [','.join([date, '1']+['2']*len(columns))
+                        for date in ('2017-06-30 23:50:00', '2017-07-01')]
+                return io.BytesIO((header+'\n'+'\n'.join(rows)+'\n').encode())
+        result = hot.read_month(Archive(), 2017, 6, [1])
+        self.assertEqual(len(result), 2)
+        self.assertEqual(result.timestamp.iloc[-1], pd.Timestamp('2017-07-01T00:00Z'))
+
 
 if __name__ == '__main__':
     unittest.main()
