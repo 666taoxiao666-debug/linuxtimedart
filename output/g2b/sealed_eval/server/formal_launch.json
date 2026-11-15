@@ -1,0 +1,23 @@
+{
+  "pid": 1027531,
+  "command": [
+    "/home/XT/miniconda3/envs/timedart/bin/python",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst_G2c_2eeb23f/scripts/evaluate_g2b_sealed.py",
+    "--mode",
+    "evaluate",
+    "--prepared",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/G2/g2b84_bc7730e_r1/sealed_prep",
+    "--freeze",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/G2/g2b_4471499_shared_r1/formal",
+    "--output",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/G2/g2c_2eeb23f_r1/formal",
+    "--smoke-result",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/G2/g2c_2eeb23f_r1/smoke"
+  ],
+  "started_utc": "2026-11-15T14:13:02.429824+00:00",
+  "entrypoint_sha256": "a8565b1505f8b76814fc0dfebd45f8ca89cd9a3a23bdbda25e6c5d5e2ef0ca27",
+  "source_commit": "2eeb23f",
+  "device": "cpu",
+  "threads": 2,
+  "retry": false
+}

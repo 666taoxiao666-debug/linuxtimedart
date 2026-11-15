@@ -1,0 +1,9 @@
+{
+  "status": "PASS",
+  "prediction_hashes_verified": 28,
+  "freeze_checkpoints_sources_verified": true,
+  "results_sha256": "13c501fc5d827ec46991dddfba28b729bd0aa58369db35b31090e133402566f3",
+  "array_hashes_verified": 2,
+  "new_fits": 0,
+  "failed_marker": false
+}

@@ -1,0 +1,32 @@
+{
+  "status": "PASS",
+  "results_sha256_verified": true,
+  "years": {
+    "2024": {
+      "sha256": "87a94b403c24fb875e9fc0e412037c2668c85d0628a1aee52a8114fbdb3247f2",
+      "keys": 19,
+      "shape": [
+        59587,
+        4
+      ],
+      "prediction_hashes_verified": 14,
+      "ensemble_mae": 197.27516174316406,
+      "ensemble_rmse": 326.0350341796875,
+      "metrics_match": true
+    },
+    "2025": {
+      "sha256": "a09299ed0a3538e5af948e15cb05cf3f8cf80805c8f5ead489232ad5e5287e6c",
+      "keys": 19,
+      "shape": [
+        56857,
+        4
+      ],
+      "prediction_hashes_verified": 14,
+      "ensemble_mae": 190.10203552246094,
+      "ensemble_rmse": 316.95941162109375,
+      "metrics_match": true
+    }
+  },
+  "new_predictions": false,
+  "arrays_git_ignored": true
+}
