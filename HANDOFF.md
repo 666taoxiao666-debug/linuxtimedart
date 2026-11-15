@@ -28,17 +28,21 @@
 需要用户决定: 无（3c 是唯一一次打开封存年做评估，放行前我会先复核）
 
 ## Codex → Claude
-<!-- 由Codex覆盖。第84次G2b：独立准备入口，3a/3b执行中 -->
-轮次: R2/2 | 阶段: G2b | 分支: exp/G2 | 提交号: 本提交实现第84次批准的C1–C4
+<!-- 由Codex覆盖。第84次G2b：3a/3b完成验收，停止于3c之前 -->
+轮次: R2/2 | 阶段: G2b | 分支: exp/G2 | 提交号: bc7730e实现、83d7987演练验收，本提交登记3b验收
 审查结论: 通过，见docs/review/G2b-R2-codex.md；仅实施3a、3b，3c暂缓。
 已直接修复: 按C1–C4在scripts/evaluate_g2b_sealed.py实现冲突置缺测、GFS转换/边界合并、顺序门禁和共用准备函数。
 冻结保护: train_g2b.py及16项冻结源码、原协议不改；原14拟合和冻结目录保留。
 运行信息: 代码bc7730e；服务器worktree=TimeDARTFirst_G2b_bc7730e；run=/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/G2/g2b84_bc7730e_r1。
-运行信息: 3a PID835464完成；3b PID837985于2026-11-15 00:09:40 UTC启动，仅CPU2核/2线程、nice10，无GPU。
+运行信息: 3a PID835464完成；3b PID837985已退出，2026-11-15 00:09:40至01:32:39 UTC，约83分钟，CPU2核/2线程、nice10，无GPU。
 验证: timedart测试18通过/1跳过，解码环境新增5项全通过；GFS环境旧窗口测试1失败（不在该环境构造窗口），详见rehearsal/preflight.json。
 关键数字: 3a=30056窗、14模型通过；MAE最大差0.000030517578125kW；13份原始元数据逐SHA核验通过，位于output/g2b/rehearsal/server/。
 演练门禁: 只重建2023下半年，30056窗、全部14模型MAE差≤0.01kW才进入3b。
 封存门禁: 3b只准备2024/2025；先GFS完整率≥95%，再MIDAS、SCADA；2026不打开，无封存推理命令。
+关键数字: 3b PREPARED_ONLY；2024=59587窗、2025=56857窗，改造占比均100%；GFS分别1464/1464、1457/1460（末3周期截止排除）。
+关键数字: MIDAS三年冲突均0，SCADA屏蔽小时0；整条2023–2025准备轴上游缺测行5.7332%，不是各年独立比例。
+验收: 两个数据包SHA独立复算一致，冻结包/源码再核验通过；无failed.json及test_evaluation_started.json；无新拟合。
+验收文件: output/g2b/sealed_prep/SUMMARY.md及server/原始JSON、日志、PID、verification；不拷CSV/NPZ/权重，不读取数组统计。
 冻结SHA256: 981f3ae27e6792f5da71c177af1c24a0e91c4dfcd880322773fb4f9fe34607f6。
-需要 Claude 做的: 本轮运行结束后复核新脚本、演练证据及准备计数；3c另行放行。
-需要用户决定: 无；本轮在3b完成或任何正式失败时停下交回，不重训、不合主线。
+需要 Claude 做的: 复核新脚本C1–C4、rehearsal/server/及sealed_prep/server/；通过后明确放行一次性3c，当前无封存评估结果。
+需要用户决定: 无；3b完成后已停下交回，不推理、不重训、不合主线。

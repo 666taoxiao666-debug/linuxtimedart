@@ -1,0 +1,62 @@
+{
+  "status": "PREPARED_ONLY",
+  "freeze_sha256": "981f3ae27e6792f5da71c177af1c24a0e91c4dfcd880322773fb4f9fe34607f6",
+  "packs": {
+    "2024": "a4dfc88037a7b14fecccf6fbcd56e1ed65b9a3d9f996d43d0446e7a65c942420",
+    "2025": "07f34631dece57d7fafb52cfe647c58e3745fddd58e2f0909dc8018462952c02"
+  },
+  "counts": {
+    "2024": {
+      "windows": 59587,
+      "retrofit_fraction": 1.0
+    },
+    "2025": {
+      "windows": 56857,
+      "retrofit_fraction": 1.0
+    }
+  },
+  "annual_gfs": {
+    "2024": {
+      "complete": 1464,
+      "denominator": 1464,
+      "passes_95pct": true
+    },
+    "2025": {
+      "complete": 1457,
+      "denominator": 1460,
+      "passes_95pct": true
+    }
+  },
+  "scada_masked_hours": 0,
+  "upstream_missing_fraction": 0.05733186328555678,
+  "entrypoint_sha256": "cbdc1b980c652095978366b7f3f2ccdfa5160a52d59f930cb448fb7c9aee97fe",
+  "frozen_source_code": {
+    "scripts/train_g2b.py": "411095d75a8eb8bcaa6ad3cfd5641f5e3a0a3fd909e5316f5ee2cfeec4985823",
+    "scripts/prepare_hot_dev.py": "f4cd76e5519b6da75ce4b2a1e21cb10c05a5328c16f2e1e922c929fb3f5ee2ec",
+    "scripts/train_g1.py": "5b3e35d3dfc2ff87271f4a48265bf96baaebe4ab45e7d5bed19486ec0d0d18ac",
+    "scripts/prepare_g1_batches.py": "442f8a96d2b7026d089fca379c3a1f531c6c0831f4e26c4efcb0483ec546d176",
+    "models/NWPDisplacement.py": "f7c1ac796514d5dcc344a605d1fee40834bd92d0583322910eeb4d3a82e0bde9",
+    "models/TSMixerBasicSmall.py": "bea4bcca1309f994f6bde074afaa04192a919abd23f22f42be46c2b7a0b2993a",
+    "utils/kelmarsh_upstream_v31.py": "66dd2a86694040347c53298be4fd6fc0b18ff2782cece2bcd92f980328a23fcd",
+    "data_provider/kelmarsh_multiyear.py": "bbf838888b77bae6865d4b2e2443bf42ce898f41dadc027641c149acd868d558",
+    "scripts/screen_kelmarsh_upstream_observations.py": "c68477c52fa9405b12095560c446f7bfaf160743842efeccc276717070aa214b",
+    "scripts/audit_hill_of_towie_e1.py": "25533dffc637157d2d31ff0662bb09bd68a4033d7be6ae8640e8d2bf0f348d13",
+    "scripts/acquire_hourly_wind_datasets.py": "9deb94c2bb5d678c0b227c868f787445d179e154005d71a2baa054e8489f2bee",
+    "utils/kelmarsh_enrichment.py": "6a05295abb1bbe7217dcb43c57ca2501d7b7ad3173431f60a94fba61b2094872",
+    "utils/kelmarsh_backbone_information.py": "1354a3905c61a2131cb975def1bccb5ef6083b75ff3615e2f115298a535bfe6c",
+    "utils/paired_forecast_statistics.py": "b6f8613466ed76b53f64699798d3aac2d04dbcb5ae6dfe6bbdc44eb4f16b3248",
+    "scripts/ramp_diagnostics.py": "b3489f20109659c685a7c58386b75b2758b91ae1a045d77ef709c40c15d519ba",
+    "output/g2a/results81/results.json": "6f917d7afd53b7870fce9cba8881913ae5f2f39b7b8c46a60196ae1e72db7187"
+  },
+  "no_refit": true,
+  "model_loaded": false,
+  "label_statistics": false,
+  "years": [
+    2023,
+    2024,
+    2025
+  ],
+  "protected_years": [
+    2026
+  ]
+}
