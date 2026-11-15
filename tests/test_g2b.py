@@ -274,5 +274,43 @@ class G2bPreparationTests(unittest.TestCase):
                 self.assertTrue((out/'failed.json').exists())
 
 
+class G2cEvaluationGateTests(unittest.TestCase):
+    def test_wrong_package_hash_does_not_write_marker(self):
+        from scripts import evaluate_g2b_sealed as e
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            complete = dict(status='PREPARED_ONLY', entrypoint_sha256=e.PREPARATION_SHA,
+                freeze_sha256=e.FREEZE_SHA, packs={k:v[0] for k,v in e.EVALUATION_PACKS.items()},
+                counts={k:{'windows':v[1]} for k,v in e.EVALUATION_PACKS.items()})
+            (root/'prepared_complete.json').write_text(json.dumps(complete))
+            (root/'2024.npz').write_bytes(b'wrong')
+            with patch.object(e, 'frozen_gate', return_value=({'protocol_sha256':e.PROTOCOL_SHA}, {})):
+                with self.assertRaisesRegex(ValueError, 'hash/count'):
+                    e.evaluate_once(root, root, root/'new')
+            self.assertFalse((root/'test_evaluation_started.json').exists())
+            self.assertFalse((root/'new').exists())
+
+    def test_existing_marker_is_never_replaced(self):
+        from scripts import evaluate_g2b_sealed as e
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            marker = root/'test_evaluation_started.json'
+            marker.write_text('original')
+            with self.assertRaisesRegex(ValueError, 'already attempted'):
+                e.reserve_evaluation(root, root/'new', {})
+            self.assertEqual(marker.read_text(), 'original')
+            self.assertFalse((root/'new').exists())
+
+    def test_existing_output_refused_before_marker(self):
+        from scripts import evaluate_g2b_sealed as e
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            out = root/'exists'
+            out.mkdir()
+            with self.assertRaisesRegex(ValueError, 'output already exists'):
+                e.reserve_evaluation(root, out, {})
+            self.assertFalse((root/'test_evaluation_started.json').exists())
+
+
 if __name__ == '__main__':
     unittest.main()

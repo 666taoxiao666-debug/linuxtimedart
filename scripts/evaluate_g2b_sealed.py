@@ -376,5 +376,120 @@ def main():
         prepare_sealed(args.data_root, args.freeze, args.output, *preparation_config(True))
 
 
+PROTOCOL_SHA = 'da809d691e93b7bb284fc7ce282f1c16a59ecd0fe5342f68ceab0e8530966a53'
+PREPARATION_SHA = 'cbdc1b980c652095978366b7f3f2ccdfa5160a52d59f930cb448fb7c9aee97fe'
+EVALUATION_PACKS = {
+    '2024': ('a4dfc88037a7b14fecccf6fbcd56e1ed65b9a3d9f996d43d0446e7a65c942420', 59587),
+    '2025': ('07f34631dece57d7fafb52cfe647c58e3745fddd58e2f0909dc8018462952c02', 56857)}
+REHEARSAL_PACK_SHA = 'c8395144cad7dcee83602efb5c5e8d6156d3ed5318fc4c924925956a8b266a4e'
+CANONICAL_FREEZE = Path('/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/G2/g2b_4471499_shared_r1/formal')
+
+
+def evaluation_inputs(prepared, smoke=False):
+    complete = read_json(prepared/'prepared_complete.json')
+    if (complete['status'] != 'PREPARED_ONLY' or complete['entrypoint_sha256'] != PREPARATION_SHA
+            or complete['freeze_sha256'] != FREEZE_SHA or (prepared/'failed.json').exists()):
+        raise ValueError('Prepared evidence differs')
+    expected = {'val': (REHEARSAL_PACK_SHA, 30056)} if smoke else EVALUATION_PACKS
+    if complete['packs'] != {k: v[0] for k, v in expected.items()}:
+        raise ValueError('Registered pack hashes differ')
+    for key, (sha, count) in expected.items():
+        if complete['counts'][key]['windows'] != count or prep.digest(prepared/f'{key}.npz') != sha:
+            raise ValueError('Data package hash/count differs: '+key)
+    return expected
+
+
+def reserve_evaluation(freeze_dir, directory, marker):
+    if directory.exists():
+        raise ValueError('Evaluation output already exists')
+    if (freeze_dir/'test_evaluation_started.json').exists():
+        raise ValueError('Evaluation already attempted; retry forbidden')
+    directory.mkdir(parents=True, exist_ok=False)
+    # x is the authoritative race-safe gate, including simultaneous launches.
+    with (freeze_dir/'test_evaluation_started.json').open('x') as stream:
+        json.dump(marker, stream, indent=2)
+    prep.save_json(directory/'evaluation_launch.json', marker)
+
+
+def evaluate_once(prepared, freeze_dir, directory, smoke=False, smoke_result=None):
+    frozen, _ = frozen_gate(freeze_dir, FREEZE_SHA)
+    if frozen['protocol_sha256'] != PROTOCOL_SHA:
+        raise ValueError('Registered protocol differs')
+    expected = evaluation_inputs(prepared, smoke)
+    if smoke:
+        origin = read_json(freeze_dir/'smoke_copy_origin.json')
+        if (freeze_dir.resolve() == CANONICAL_FREEZE.resolve()
+                or origin['source'] != str(CANONICAL_FREEZE) or origin['freeze_sha256'] != FREEZE_SHA):
+            raise ValueError('Smoke requires a separate verified freeze copy')
+    else:
+        if freeze_dir.resolve() != CANONICAL_FREEZE.resolve():
+            raise ValueError('Formal evaluation requires the canonical freeze directory')
+        evidence = read_json(smoke_result/'smoke_passed.json')
+        if (evidence['status'] != 'PASS' or evidence['predictions'] != 28
+                or evidence['entrypoint_sha256'] != prep.digest(Path(__file__))
+                or (smoke_result/'failed.json').exists()
+                or evidence['completed_sha256'] != prep.digest(smoke_result/'completed.json')):
+            raise ValueError('Smoke evidence gate failed')
+    marker = dict(freeze_sha256=FREEZE_SHA, protocol_sha256=PROTOCOL_SHA, smoke=smoke,
+        output=str(directory.resolve()), prepared=str(prepared.resolve()),
+        entrypoint_sha256=prep.digest(Path(__file__)), package_sha256={k:v[0] for k,v in expected.items()},
+        started_utc=dt.datetime.now(dt.timezone.utc).isoformat(), device='cpu', threads=2, retry=False)
+    reserve_evaluation(freeze_dir, directory, marker)
+    try:
+        import torch
+        torch.set_num_threads(2)
+        torch.set_num_interop_threads(1)
+        if hasattr(os, 'sched_getaffinity'):
+            os.sched_setaffinity(0, sorted(os.sched_getaffinity(0))[:2])
+        packs = {k: train.load_arrays(prepared/f'{k}.npz') for k in expected}
+        evaluation_inputs(prepared, smoke)
+        for key, pack in packs.items():
+            if len(pack['truth']) != expected[key][1]:
+                raise ValueError('Actual window count differs')
+        if smoke:
+            packs = {'2024': packs['val'], '2025': packs['val']}
+        evaluate_sealed(freeze_dir, FREEZE_SHA, directory, packs, 'cpu')
+        completed = read_json(directory/'completed.json')
+        if completed['status'] != 'COMPLETED' or len(completed['predictions']) != 28:
+            raise ValueError('Incomplete evaluation')
+        for name, sha in completed['predictions'].items():
+            if prep.digest(directory/name) != sha or not np.isfinite(np.load(directory/name, allow_pickle=False)).all():
+                raise ValueError('Prediction verification failed')
+        if smoke:
+            prep.save_json(directory/'smoke_passed.json', dict(status='PASS', predictions=28,
+                entrypoint_sha256=prep.digest(Path(__file__)), completed_sha256=prep.digest(directory/'completed.json'),
+                development_only=True, interpret_results=False))
+        else:
+            exports = {}
+            for year, pack in packs.items():
+                small = {k: pack[k] for k in ('truth', 'issue', 'turbines', 'times', 'anchor')}
+                for fit in frozen['fits']:
+                    small['pred_'+fit['key']] = np.load(directory/f"{year}_{fit['key']}.npy", allow_pickle=False)
+                path = directory/f'{year}_arrays.npz'
+                np.savez_compressed(path, **small)
+                exports[year] = dict(sha256=prep.digest(path), bytes=path.stat().st_size, keys=list(small))
+            prep.save_json(directory/'array_exports.json', exports)
+    except Exception as exc:
+        prep.save_json(directory/'failed.json', dict(error_type=type(exc).__name__, error=str(exc), restart=False))
+        raise
+
+
+def evaluation_main():
+    parser = argparse.ArgumentParser(description='G2c one-shot CPU evaluation')
+    parser.add_argument('--mode', choices=['evaluate'], required=True)
+    parser.add_argument('--prepared', type=Path, required=True)
+    parser.add_argument('--freeze', type=Path, required=True)
+    parser.add_argument('--output', type=Path, required=True)
+    parser.add_argument('--smoke', action='store_true')
+    parser.add_argument('--smoke-result', type=Path)
+    args = parser.parse_args()
+    if not args.smoke and args.smoke_result is None:
+        parser.error('Formal evaluation requires --smoke-result')
+    evaluate_once(args.prepared, args.freeze, args.output, args.smoke, args.smoke_result)
+
+
 if __name__ == '__main__':
-    main()
+    if '--mode=evaluate' in sys.argv or any(sys.argv[i:i+2] == ['--mode', 'evaluate'] for i in range(len(sys.argv))):
+        evaluation_main()
+    else:
+        main()
