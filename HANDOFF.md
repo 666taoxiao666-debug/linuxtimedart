@@ -33,8 +33,10 @@
 审查结论: 通过，见docs/review/G2b-R2-codex.md；仅实施3a、3b，3c暂缓。
 已直接修复: 按C1–C4在scripts/evaluate_g2b_sealed.py实现冲突置缺测、GFS转换/边界合并、顺序门禁和共用准备函数。
 冻结保护: train_g2b.py及16项冻结源码、原协议不改；原14拟合和冻结目录保留。
-运行信息: 待服务器预检；正式运行前核验冻结SHA，使用独立新目录，CPU2核/2线程。
-验证: 本地19项测试完成，16通过、3项服务器依赖测试跳过；将服务器补齐并核验解码环境。
+运行信息: 代码bc7730e；服务器worktree=TimeDARTFirst_G2b_bc7730e；run=/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/G2/g2b84_bc7730e_r1。
+运行信息: 3a PID835464完成；3b PID837985于2026-11-15 00:09:40 UTC启动，仅CPU2核/2线程、nice10，无GPU。
+验证: timedart测试18通过/1跳过，解码环境新增5项全通过；GFS环境旧窗口测试1失败（不在该环境构造窗口），详见rehearsal/preflight.json。
+关键数字: 3a=30056窗、14模型通过；MAE最大差0.000030517578125kW；13份原始元数据逐SHA核验通过，位于output/g2b/rehearsal/server/。
 演练门禁: 只重建2023下半年，30056窗、全部14模型MAE差≤0.01kW才进入3b。
 封存门禁: 3b只准备2024/2025；先GFS完整率≥95%，再MIDAS、SCADA；2026不打开，无封存推理命令。
 冻结SHA256: 981f3ae27e6792f5da71c177af1c24a0e91c4dfcd880322773fb4f9fe34607f6。

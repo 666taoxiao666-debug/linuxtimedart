@@ -1,0 +1,18 @@
+{
+  "implementation_commit": "bc7730e",
+  "entrypoint_sha256_lf": "cbdc1b980c652095978366b7f3f2ccdfa5160a52d59f930cb448fb7c9aee97fe",
+  "freeze_sha256": "981f3ae27e6792f5da71c177af1c24a0e91c4dfcd880322773fb4f9fe34607f6",
+  "windows_tests": {"total": 19, "passed": 16, "skipped": 3},
+  "server_timedart_tests": {"total": 19, "passed": 18, "skipped": 1, "skip_reason": "xarray boundary test executed separately in gfs_g0"},
+  "server_gfs_preparation_tests": {"total": 5, "passed": 5, "skipped": 0},
+  "server_gfs_full_suite": {
+    "total": 19, "passed": 17, "skipped": 1, "failed": 1,
+    "failure": "test_common_cohorts_exclude_construction_and_split_crossing",
+    "scope": "Existing window construction test in decoding-only runtime; production common_packs runs in timedart, where it passes. No dependency installation or frozen source change."
+  },
+  "runtime_separation": {"window_construction_and_inference": "timedart", "netcdf_decoding": "gfs_g0"},
+  "dependencies_present": ["xarray", "cfgrib", "netCDF4"],
+  "training_source_modified": false,
+  "new_fits": 0,
+  "sealed_inference_authorized": false
+}
