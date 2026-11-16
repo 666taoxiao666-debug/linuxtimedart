@@ -62,6 +62,83 @@ def paths(base, item):
     return pack, preds
 
 
+def curve_points(wind, power, valid, width=.5, minimum=30):
+    valid = valid & np.isfinite(wind) & np.isfinite(power) & (wind >= 0)
+    w, y = wind[valid], power[valid]
+    bins = np.floor(w/width).astype(int)
+    points = [(float((b+.5)*width), float(np.median(y[bins == b])))
+              for b in np.unique(bins) if (bins == b).sum() >= minimum]
+    return np.asarray(points, float).reshape(-1, 2)
+
+
+def fit_curves(packs, post_only=False):
+    w = np.concatenate([p['gF'][:, 6:10] for p in packs])
+    y = np.concatenate([p['truth'] for p in packs])
+    valid = np.concatenate([p['gF_mask'][:, 6:10] > 0 for p in packs])
+    unit = np.concatenate([p['turbines'] for p in packs])
+    if post_only:
+        valid &= np.concatenate([p['retrofit'] > 0 for p in packs])[:, None]
+    pooled = curve_points(w, y, valid)
+    curves = {}
+    for u in np.unique(unit):
+        take = unit == u
+        points = curve_points(w[take], y[take], valid[take])
+        curves[str(u)] = dict(points=points.tolist() if len(points) else pooled.tolist(),
+                              pooled_fallback=not bool(len(points)))
+    return curves
+
+
+def curve_predict(pack, curves):
+    pred = persistence(pack['truth'], pack['anchor'])
+    w, mask = pack['gF'][:, 6:10], pack['gF_mask'][:, 6:10] > 0
+    valid = mask & np.isfinite(w) & (w >= 0)
+    used = np.zeros_like(valid)
+    for u in np.unique(pack['turbines']):
+        points = np.asarray(curves[str(u)]['points']).reshape(-1, 2)
+        take = (pack['turbines'] == u)[:, None] & valid
+        if len(points):
+            pred[take] = np.interp(w[take], points[:, 0], points[:, 1])
+            used[take] = True
+    return pred, dict(missing_gfs_cells=int((~mask).sum()),
+                     total_fallback_cells=int((~used).sum()), total_cells=int(mask.size))
+
+
+def load_pack(path):
+    with np.load(path, allow_pickle=False) as z:
+        return {k: z[k] for k in z.files}
+
+
+def development(logs, item):
+    if item['family'] == 'G1':
+        folder = logs/'G1/g1c_27312d7_r2/prepared'/item['farm']
+        local = ROOT/'output/g1/preparation_78/prepared'/item['farm']/'prepared.json'
+        meta = read(local)
+        if read(folder/'prepared.json') != meta:
+            raise ValueError('Development metadata differs')
+        return [load_pack(checked(folder/(s+'.npz'), meta['artifacts'][s+'.npz']))
+                for s in ('train', 'val')]
+    from scripts import train_g2b as g2, evaluate_g2b_sealed as sealed
+    freeze = logs/'G2/g2b_4471499_shared_r1/formal'
+    frozen, _ = g2.frozen_gate(freeze, sealed.FREEZE_SHA)
+    stats = read(freeze/'fit_statistics.json')
+    folder = logs/'G2/hot_dev_f58f2ce_r5/prepared'
+    checked(folder/'completed.json', frozen['preparation_sha256'])
+    meta = read(folder/'completed.json')
+    arrays = {n: load_pack(checked(folder/n, meta['artifacts'][n]))
+              for n in ('scada_rows.npz', 'upstream_hourly.npz', 'nwp_hourly.npz')}
+    rows, up, hourly = [arrays[n] for n in ('scada_rows.npz', 'upstream_hourly.npz', 'nwp_hourly.npz')]
+    hours = rows['hours'].astype('datetime64[ns]')
+    if np.any(hours >= np.datetime64('2024-01-01')):
+        raise ValueError('Non-development inputs')
+    hourly.update(nwp_mean=stats['nwp_mean'], nwp_scale=stats['nwp_scale'])
+    root = logs.parents[1]
+    works = root/'datasets/external_validation/sealed/hill_of_towie/Hill_of_Towie_AeroUp_install_dates.csv'
+    checked(works, stats['works_sha256'])
+    packs = g2.common_packs(rows['raw'], hours, rows['units'], up['raw'], hourly, stats,
+                           works, stats['bounds'], '2024-01-01')
+    return [packs[s] for s in ('train', 'val')]
+
+
 def run(args):
     from scripts.train_g1 import evaluate_arrays
     checked(ROOT/'configs/x1_protocol.json', args.protocol_sha256)
@@ -75,7 +152,7 @@ def run(args):
         script_sha256=digest(__file__), started_utc=dt.datetime.now(dt.timezone.utc).isoformat(),
         cpu_threads=2, retry=False, new_fits=0))
     try:
-        reports, hashes = {}, {}
+        reports, hashes, fitted = {}, {}, {}
         for name, item in protocol['datasets'].items():
             path, pred_paths = paths(args.logs, item)
             with np.load(path, allow_pickle=False) as z:
@@ -85,7 +162,20 @@ def run(args):
                 years = (z['times'].astype('datetime64[ns]')-np.timedelta64(1, 'ns')).astype('datetime64[Y]').astype(int)+1970
                 if not np.all(years == item['year']):
                     raise ValueError('Target year mismatch')
-            baseline = persistence(truth, anchor)
+            if args.arm == 'A0':
+                baseline = persistence(truth, anchor)
+                audit = {}
+            elif args.arm == 'A2':
+                if item['farm'] not in fitted:
+                    packs = development(args.logs, item)
+                    fitted[item['farm']] = fit_curves(packs, item['family'] == 'G2')
+                    save(args.output/(item['farm']+'_curves.json'), fitted[item['farm']])
+                    del packs
+                pack = load_pack(path)
+                baseline, audit = curve_predict(pack, fitted[item['farm']])
+                del pack
+            else:
+                raise ValueError('Mode implementation not ready')
             preds = [np.load(p, allow_pickle=False) for p in pred_paths]
             if any(p.shape != truth.shape or not np.isfinite(p).all() for p in preds):
                 raise ValueError('Invalid saved N predictions')
@@ -98,6 +188,7 @@ def run(args):
             np.save(args.output/(name+'_'+args.arm+'.npy'), baseline)
             hashes[name] = digest(args.output/(name+'_'+args.arm+'.npy'))
             reports[name] = report
+            report['baseline_audit'] = audit
             print('COMPLETED', name, flush=True)
         passed = all(r['primary']['N_vs_'+args.arm]['gain'] > 0 and
             r['primary']['N_vs_'+args.arm]['ci95_low'] > 0 for r in reports.values())
@@ -114,5 +205,5 @@ if __name__ == '__main__':
     p.add_argument('--logs', type=Path, required=True)
     p.add_argument('--output', type=Path, required=True)
     p.add_argument('--protocol-sha256', required=True)
-    p.add_argument('--arm', choices=['A0'], default='A0')
+    p.add_argument('--arm', choices=['A0', 'A2'], required=True)
     run(p.parse_args())

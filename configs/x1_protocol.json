@@ -1,7 +1,13 @@
 {
   "stage": "X1",
-  "authorized_ready_arms": ["A0"],
-  "blocked": {"A2": "R1-B1: missing GFS fallback unspecified", "A1": "lightgbm unavailable", "A3_B": "await Cursor receipt and verification"},
+  "version": 2,
+  "authorized_ready_arms": ["A2", "E1", "E2", "A1", "C1", "A3", "B2", "B1"],
+  "curve": {"bin_width": 0.5, "minimum_cells": 30, "missing_fallback": "persistence", "hot_post_retrofit_only": true},
+  "lightgbm": {"num_leaves": [31, 127], "min_child_samples": [50, 200], "learning_rate": 0.05, "n_estimators": 4000, "early_stopping_rounds": 200, "feature_fraction": 0.8, "bagging_fraction": 0.8, "seed": 2024},
+  "E1": {"stride": 1, "equivalence_kw": 0.01, "minimum_turbine_fraction": 0.8},
+  "E2": {"stop_wind": 4, "stop_rated_fraction": 0.01, "derate_wind": [6, 25], "curve_fraction": 0.5},
+  "B2": {"variants": ["median", "quantiles", "residual"], "seeds": [2024, 2025, 2026], "fits": 27, "validation_gain_required": 0.01},
+  "C1": {"weight_step": 0.1, "selection": "validation_mae", "descriptive_only": true},
   "statistics": {"block_length": 8, "sensitivity_block_length": 56, "replicates": 5000, "seed": 2024},
   "n_seeds": [2024, 2025, 2026],
   "datasets": {
