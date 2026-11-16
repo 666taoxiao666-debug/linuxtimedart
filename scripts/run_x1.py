@@ -511,7 +511,7 @@ def run_e2_saved(args):
             report['mask_sha256'] = digest(mask_path)
             report['prediction_sha256'] = {}
             predictions = {'A1': [checked(args.a1_results/(name+'_A1.npy'), a1['predictions'][name])]}
-            for arm in ('B', 'N0'):
+            for arm in ('B', 'B0', 'N0'):
                 if item['family'] == 'G1':
                     parent = args.logs/('G1/g1c_27312d7_r2/formal' if arm=='B' else 'G2/g2a_e72e462_r1/formal')
                     local = ROOT/('output/g1/results_78/formal' if arm=='B' else 'output/g2a/results81')
