@@ -1,0 +1,16 @@
+{
+  "stage": "X1",
+  "authorized_ready_arms": ["A0"],
+  "blocked": {"A2": "R1-B1: missing GFS fallback unspecified", "A1": "lightgbm unavailable", "A3_B": "await Cursor receipt and verification"},
+  "statistics": {"block_length": 8, "sensitivity_block_length": 56, "replicates": 5000, "seed": 2024},
+  "n_seeds": [2024, 2025, 2026],
+  "datasets": {
+    "Kelmarsh_2022": {"family": "G1", "farm": "Kelmarsh", "year": 2022, "count": 16949, "rated_kw": 2050, "pack_sha256": "d99e9020dc8deb70197db6d58563ff5e9655ed8e3b1d203fa2999cb3c1ff306d"},
+    "Penmanshiel_2021": {"family": "G1", "farm": "Penmanshiel", "year": 2021, "count": 38147, "rated_kw": 2050, "pack_sha256": "1dd74158558d939bd1b1cf555ba7aaf46d4b939850437a4b18c30cda1a7164e3"},
+    "HoT_2024": {"family": "G2", "farm": "HoT", "year": 2024, "count": 59587, "rated_kw": 2300, "pack_sha256": "a4dfc88037a7b14fecccf6fbcd56e1ed65b9a3d9f996d43d0446e7a65c942420"},
+    "HoT_2025": {"family": "G2", "farm": "HoT", "year": 2025, "count": 56857, "rated_kw": 2300, "pack_sha256": "07f34631dece57d7fafb52cfe647c58e3745fddd58e2f0909dc8018462952c02"}
+  },
+  "decision": "all_four_gain_and_ci_lower_positive",
+  "no_download_install": true,
+  "no_2026_data": true
+}
