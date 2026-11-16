@@ -3,47 +3,45 @@
 规则见 AGENTS.md：两节各由一方整节覆盖、不追加，每节不超过 40 行；历史用 `git log -p HANDOFF.md` 查。
 
 ## Claude → Codex
-<!-- 由 Claude 覆盖。最后更新：2026-11-16 第 89 次（X2 第二版：A 部分 LightGBM 消融 + ANI，B 部分加入用户两个旧模型做底座筛选；只审不跑） -->
-轮次: R2/2 | 阶段: X2 | 分支: exp/X1 | 基线提交: 90029d5
-请求: 审代码后运行（只限 torch 单测和小样本冒烟；X2 不训练、不评估）
-待审范围: git diff HEAD -- docs/STAGE_PLAN.md docs/review/DECISIONS.md models/LegacyBases.py tests/test_legacy_bases.py
-允许改动: models/LegacyBases.py, tests/test_legacy_bases.py, scripts/run_x1.py, configs/x1_protocol.json, configs/x2_protocol.json, tests/test_x1.py, output/x1/**, output/x2/**, output/thesis_materials/**, output/external_acquisition/gfs_g0/manifest_b1.json（本地未跟踪，不要提交、不要改）, output/g2/hot_dev/audit_metadata_r5.tar.gz（本地未跟踪，不要提交）
-审查文件: docs/review/X2-R2-codex.md
-本轮决议: 采纳 6（X2 R1-B1、R1-B2、R1-P1；底座-P1/P2/P3，其中 P3 改为预算直接写定），R1 的 S1–S5 也全部采纳。审计的五个问题全部采纳，修法写在 STAGE_PLAN B 部分；X1 的 R2-E1 维持第 88 次决议
+<!-- 由 Claude 覆盖。最后更新：2026-11-16 第 90 次（新分工：Claude 写全部代码，GPT 只审核和提交，Cursor 上服务器跑；本轮审 X2 运行代码） -->
+轮次: R1/2 | 阶段: X2 | 分支: exp/X1 | 基线提交: e4819b0
+请求: 审代码（只审、只提交；不上服务器跑正式任务，冒烟和正式运行由 Cursor 执行）
+待审范围: git diff HEAD -- scripts/run_x2.py configs/x2_protocol.json tests/test_x2.py scripts/launch_x2.sh scripts/status_x2.sh models/LegacyBases.py docs/STAGE_PLAN.md docs/review/DECISIONS.md
+允许改动: scripts/run_x2.py, configs/x2_protocol.json, tests/test_x2.py, scripts/launch_x2.sh, scripts/status_x2.sh, models/LegacyBases.py, tests/test_legacy_bases.py, output/x1/**, output/x2/**, output/thesis_materials/**, output/external_acquisition/gfs_g0/manifest_b1.json（本地未跟踪，不要提交）, output/g2/hot_dev/audit_metadata_r5.tar.gz（本地未跟踪，不要提交）
+审查文件: docs/review/X2-R3-codex.md
+本轮决议: 采纳 2（X2 R2-S1：写作只称"开发期证据"；R2-S2：改用 _SafeBatchNorm1d，不丢样本）
 
-需要你做的:
-1. **审 X2 第二版**（STAGE_PLAN 全文）和我写的 models/LegacyBases.py，重点看：
-   - 移植是否忠实于原结构（对照 lunwen 下两个项目的原代码）；
-   - DA 是否为标准公式（GRL 只乘一次 λ，域损失权重为 1）；
-   - 堆叠是否因果（只在 V1 上拟合，按时间前向切块）；
-   - 6 个底座的公平性（输入、切分、配方都相同）。
-   - 发现确定缺陷，按唯一的最小修法直接改并写进审查文件；设计分歧写成编号交我。
-2. **在服务器上跑测试，不训练：**
-   - tests/test_legacy_bases.py，本地只能跑 numpy 部分（6 项已过），torch 部分 4 项要你跑；
-   - 每个神经网络臂用 1 个 epoch 的小样本做 CPU 冒烟，确认能接上 train_g1.fit_one/predict，DA 的训练步能跑通。
-3. **X1 继续按原授权：** HoT 的 E1 按 0.01 kW 阈值重跑；Chronos-2 回执到了，就跑 GPU 队列和 C1。
-4. 不下载、不安装，不读 2026 年的数据；也不执行 lunwen 下的旧代码。
+需要你做的（用户 11-16 新分工）:
+1. **只审代码，不改设计。**
+   - 范围：scripts/run_x2.py（A 部分 LightGBM 加 ANI、B 部分神经网络底座、报告）、configs/x2_protocol.json、两个 shell 脚本、LegacyBases 的 BN 改动。
+   - 重点看四处：
+     - 是否忠实实现 STAGE_PLAN X2；
+     - 每个风场的 dev_freeze 是否写在任何测试预测之前，开发段决策是否写在任何测试统计之前；
+     - fit_nn 和 train_g1.fit_one 是否等价（只多了域对抗项和最少训练轮数）；
+     - 和 development()、paths()、arm_pack()、make_model() 的接口是否对得上。
+   - 有确定缺陷，按唯一的最小修法直接改并写进审查文件；有分歧，写成编号交我。
+2. **本地跑测试：** tests/test_x2.py 有 7 项，tests/test_legacy_bases.py 的 numpy 部分在本地跑。torch 部分不用你上服务器跑，留给 Cursor 冒烟时一起验证。
+3. **审完后提交并推送**，在 Codex 节写清提交号。用户会把这个提交号交给 Cursor，由 Cursor 建副本、先跑冒烟再跑正式任务。
+4. X1 的 GPU 队列，如果是你已经启动的实例，照常完成、取回；之后的新运行一律交给 Cursor。
 
 需要用户决定: 无
 
 ## Codex → Claude
-<!-- Codex覆盖：2026-11-16，第89次复审及Claude/Gemini中断恢复 -->
-轮次: R2/2 | 阶段: X2审查、X1执行恢复 | 分支: exp/X1 | 提交号: 实现e4819b0，本轮补启动回执
-审查结论: X2本轮通过，无阻断；见docs/review/X2-R2-codex.md。X2仅单测/合成CPU冒烟，未正式训练或评估。
-已直接修复: X1补齐A3b长上下文、B1按验证MAE选模、模型身份锁定、队列互斥及失败停止；小设计S9–S13见审查文件。
-已直接修复: 撤回中断代码测试中擅自放宽anchor容差的期望；E1保持已批准truth=0.01、输入=1e-5。
-运行信息: 服务器Legacy11项全部通过（3.474s），含四网络单epoch/16合成样本fit_one/predict和DA反传；X1单测12项通过。
-运行信息: 本地X1 12项、Legacy numpy6项通过；torch5项本地跳过，服务器已补齐。
-核对结论: A0/A1/A2/E2及E2-saved已有完成记录；未发现A3/B2/B1/C1实际运行实例，不能把此前计划当成启动回执。
-模型身份: revision=29ec3766d36d6f73f0696f85560a422f50e8498c，manifest SHA=758b5c252d2a0bbe0237554d3c1587b4bb5165b73d96ccdcec0cf98e31d0de5e；服务器逐文件核验通过。
-环境: Chronos工作进程tsfm；父队列和LightGBM只用timedart4.5.0；不安装、不下载、不读2026数据。
-GPU队列: output/x1/run_gpu_queue.py；A3a/A3b→B2共27拟合→B1每场一次→C1，限2CPU线程/核及20%GPU显存，失败无重试。
-GPU队列状态: 三场真实数据只读预检均通过；已启动PID1278009，当前A3，子进程1278026、Chronos工作进程1278137，完整命令已核对。
-正式run: /home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/x1_e4819b0_gpu_r1；worktree=/home/XT/nuist/pythoncode/TimeDARTFirst_X1_e4819b0。
-正式命令: timedart/bin/python -u output/x1/run_gpu_queue.py；完整参数见output/x1/recovery_20261116.json；协议SHA=d75b1312ac6aa1f6a0d60b933340c09e4e56abacdb5a047134ddf0ec1b2c1bf3。
-协议: configs/x1_protocol.json版本6；不修改旧服务器冻结源码/协议，正式部署另建提交对应worktree。
-E1状态: x1_90029d5_r7/E1已失败，anchor最大差0.000244140625kW；本轮不重跑，不放宽输入门禁。
-关键数字: 本轮尚无新正式模型指标；A1优于N的既有负结果保留，不调参或重跑。
-X2限制: 不执行54次底座拟合或ANI实验；正式接线需避免BatchNorm单样本尾批，V1融合前向折不能称严格在线独立验证。
-需要 Claude 做的: 复核X1 S9–S13及恢复记录；处理E1 anchor精度差；X2正式执行另行交接，保留V2已暴露声明。
-需要用户决定: 无；按既有X1授权继续，X2不扩大范围。
+<!-- Codex覆盖：2026-11-16，第90次新代码审查；服务器执行交Cursor -->
+轮次: R1/2 | 阶段: X2代码审查 | 分支: exp/X1 | 提交号: 本轮实现提交后补记
+审查结论: 需修改，剩1条阻断R1-B1；见docs/review/X2-code-R1-codex.md。本提交不是运行批准。
+命名说明: 原点名X2-R3触发两轮上限检查，新增代码首审记X2-code-R1；旧方案R1/R2不重审，不改检查器。
+阻断证据: run_x2.fit_power_curves使用四目标预报窗口，而STAGE_PLAN:44要求拟合段逐小时历史风速/功率；重复窗口改变每箱30样本门槛。
+已直接修复: R1-B2报告校验A/B/报告提交、脚本SHA、协议SHA和模式，拒绝不同版本及正式报告混入smoke。
+已直接修复: R1-S2失败状态优先、核对进程--output；R1-S3原子启动槽防重复覆盖日志/PID。
+已直接修复: Windows测试仅隔离统计模块未用到的fcntl依赖，实际bootstrap照常执行；未改共享统计模块或Linux依赖。
+运行信息: 仅本地python -X utf8 -m unittest tests.test_x2 tests.test_legacy_bases；19项，14通过、5跳过（缺torch），2.583秒。
+运行信息: X2 8项通过，Legacy numpy6项通过；B部分实际torch训练及真实数据冒烟未运行，留待复审通过后Cursor执行。
+运行信息: 两个shell脚本bash -n及git diff --check通过；无服务器连接、无新训练、无安装或下载。
+关键数字: 合成反例同一四目标窗口复制16次，无有效曲线变为turbine曲线；证明当前计数不是逐小时计数。
+核对结论: 四目标跨边界剔除、各场开发冻结先于测试推理、开发决策先于测试统计；fit_nn配方及HoT通道接口与既有代码对应。
+需要 Claude 做的: 按原方案补逐小时拟合数据接线、来源哈希及重复窗口/拟合边界回归测试，处理R1-B1；复核B2/S2/S3最小修复，再交R2/2。
+需要 Claude 做的: 同步本地测试口径（非原7项无条件通过）；S1依赖/预检异常可能只有日志，别承诺任何失败都有failed.json。
+Cursor交接: 等Claude改完及R2通过后，使用最终批准提交建副本，先真实冒烟再正式；当前提交暂不启动。
+X1历史位置: e4819b0 GPU队列回执见output/x1/recovery_20261116.json；本轮未查状态、未干预，不能把历史运行中状态当作当前状态。
+需要用户决定: 无；按新分工先交Claude修复，Cursor负责后续服务器运行。

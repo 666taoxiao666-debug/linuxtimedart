@@ -1,0 +1,46 @@
+{
+  "stage": "X2",
+  "version": 1,
+  "author": "Claude 2026-11-16; GPT reviews, Cursor runs (user split 2026-11-16)",
+  "plan": "docs/STAGE_PLAN.md (X2); decisions in docs/review/DECISIONS.md (stage X2)",
+  "splits": {
+    "Kelmarsh": {"V1": ["2021-01-01", "2021-07-01"], "V2": ["2021-07-01", "2022-01-01"]},
+    "Penmanshiel": {"V1": ["2020-01-01", "2020-07-01"], "V2": ["2020-07-01", "2021-01-01"]},
+    "HoT": {"V1": ["2023-07-01", "2023-10-01"], "V2": ["2023-10-01", "2024-01-01"]}
+  },
+  "part_a": {
+    "lightgbm": "configs/x1_protocol.json lightgbm (2x2 grid, lr 0.05, 4000 trees, early stop 200 on V1, ff 0.8, bagging 0.8 freq 1); timedart lightgbm 4.5.0",
+    "arms": {
+      "L0": {"info": "L0", "extra": null, "seeds": [2024]},
+      "LU": {"info": "LU", "extra": null, "seeds": [2024]},
+      "LG": {"info": "LG", "extra": null, "seeds": [2024]},
+      "LUG": {"info": "LUG", "extra": null, "seeds": [2024, 2025, 2026]},
+      "LUG_PCL": {"info": "LUG", "extra": "PCL", "seeds": [2024, 2025, 2026]},
+      "LUG_ANI": {"info": "LUG", "extra": "ANI", "seeds": [2024, 2025, 2026]}
+    },
+    "curve": {"width": 0.5, "minimum": 30, "min_bins": 2},
+    "gates": {"min_gain": 0.01, "min_positive": 2}
+  },
+  "part_b": {
+    "fit": "configs/g1_protocol.json fit (Kelmarsh, Penmanshiel) / configs/g2b_protocol.json fit (HoT); early stopping on V1",
+    "arms": {
+      "N_v1": {"seeds": [2024, 2025, 2026]},
+      "TCNGRU": {"seeds": [2024, 2025, 2026], "min_epochs": 16},
+      "DATCNGRU": {"seeds": [2024, 2025, 2026], "min_epochs": 16, "lambda_end": [0.005, 0.05]},
+      "CNN": {"seeds": [2024, 2025, 2026]},
+      "BILSTM": {"seeds": [2024, 2025, 2026]}
+    },
+    "domains": 3,
+    "fusion": {"members": ["CNN", "BILSTM", "LUG"], "alphas": [0.1, 1, 10, 20, 50], "blocks": 3, "fit": "V1 only"},
+    "selection": {"reference": "LUG", "margin": 0.01}
+  },
+  "statistics": {"block_length": 8, "replicates": 5000, "seed": 2024},
+  "statistics_smoke": {"block_length": 8, "replicates": 200, "seed": 2024},
+  "budget": {
+    "formal": {"grid_cells": 4, "seeds": 3, "lambda_cells": 2},
+    "smoke": {"grid_cells": 1, "seeds": 1, "lambda_cells": 1, "n_estimators": 40, "early_stopping_rounds": 10,
+              "max_epochs": 1, "train_rows": 4000, "eval_rows": 600}
+  },
+  "test_sets": "the four X1 test sets (configs/x1_protocol.json datasets); exposed before, exploratory only",
+  "no_2026_data": true
+}

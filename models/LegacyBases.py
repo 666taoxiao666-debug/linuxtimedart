@@ -16,6 +16,7 @@ Changes from the originals (registered in STAGE_PLAN X2 and DECISIONS):
     (0.005 -> 2.5e-5) and the discriminator learnt at weight lambda.  This port is "DA (standard GRL)",
     not a bit-exact reproduction.
   * Keras recurrent_dropout / l1_l2 kernel regularisers are dropped (cuDNN LSTM; AdamW weight decay is shared).
+  * Fully-connected BatchNorm uses running statistics for a 1-sample training batch (X2 R2-S2), no sample dropped.
   * Stacking (fusion) is causal: the meta-learner sees only calibration-segment predictions of members fitted
     on the fit period; forward-chaining over contiguous issue-time blocks replaces in-sample / KFold stacking.
 """
@@ -126,6 +127,16 @@ if torch is not None:
     def grad_reverse(x, lam):
         return _GradReverse.apply(x, lam)
 
+    class _SafeBatchNorm1d(nn.BatchNorm1d):
+        """BatchNorm1d that, for a single-sample training batch, uses running statistics instead of failing.
+        Keeps every sample (fit_one's last batch can hold 1 window); behaviour is unchanged for batches >= 2."""
+
+        def forward(self, x):
+            if self.training and x.shape[0] == 1:
+                return F.batch_norm(x, self.running_mean, self.running_var, self.weight, self.bias,
+                                    False, 0.0, self.eps)
+            return super().forward(x)
+
     def _weight_norm(conv):
         try:
             return nn.utils.parametrizations.weight_norm(conv)
@@ -219,7 +230,7 @@ if torch is not None:
 
             self.blocks = nn.Sequential(block(c_in, 64, 5), block(64, 128, 3), block(128, 256, 3))
             self.attn = nn.Conv1d(256, 256, 3, padding=1)
-            self.fc = nn.Sequential(nn.Linear(256, 256), nn.ReLU(), nn.BatchNorm1d(256), nn.Dropout(0.3),
+            self.fc = nn.Sequential(nn.Linear(256, 256), nn.ReLU(), _SafeBatchNorm1d(256), nn.Dropout(0.3),
                                     nn.Linear(256, 128), nn.ReLU(), nn.Dropout(0.3), nn.Linear(128, pred_len))
 
         def forward(self, x, batch=None):
@@ -238,7 +249,7 @@ if torch is not None:
             self.l2 = nn.LSTM(256, 192, batch_first=True, bidirectional=True)
             self.n2, self.d2 = nn.LayerNorm(384), nn.Dropout(0.25)
             self.score = nn.Linear(384, 1)
-            self.fc = nn.Sequential(nn.Linear(384, 256), nn.ReLU(), nn.BatchNorm1d(256), nn.Dropout(0.3),
+            self.fc = nn.Sequential(nn.Linear(384, 256), nn.ReLU(), _SafeBatchNorm1d(256), nn.Dropout(0.3),
                                     nn.Linear(256, 128), nn.ReLU(), nn.Dropout(0.3), nn.Linear(128, pred_len))
 
         def forward(self, x, batch=None):

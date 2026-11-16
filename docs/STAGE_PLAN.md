@@ -6,7 +6,7 @@
 
 ## 阶段名
 
-X2（2026-11-16，第二版）：分两部分。A 部分在 LightGBM 底座上做信息消融，并检验候选机制 ANI；B 部分把用户以前的两个模型移植过来，做底座筛选。**本轮只交 Codex 审方案、审代码、在服务器上跑 torch 单测，不训练、不评估。**
+X2（2026-11-16，第二版）：分两部分。A 部分在 LightGBM 底座上做信息消融，并检验候选机制 ANI；B 部分把用户以前的两个模型移植过来，做底座筛选。**方案已过两轮审查。本轮由 GPT 审代码（scripts/run_x2.py 等），通过后由 Cursor 按实验配置表运行。**
 
 ## 目标
 
@@ -92,22 +92,31 @@ X2（2026-11-16，第二版）：分两部分。A 部分在 LightGBM 底座上�
 
 ## 实验配置表
 
-| 步 | 内容 | 规模（待确认） |
-|---|---|---|
-| A-S1 | 建功率曲线和 ANI/PCL 特征 | CPU，几分钟 |
-| A-S2 | LightGBM 6 个臂 × 3 场 | 约 360 次拟合，8 线程约 6–12 h |
-| B-S1 | 神经网络底座：(3 + 3 + 6 + 3 + 3) × 3 场 = 54 次拟合 | GPU 约 10–15 h |
-| B-S2 | 堆叠融合 | CPU，几分钟 |
-| A-S3 | 门槛 3 的迁移检验（条件触发）：2 个底座 × 2 个臂 × 3 seed × 3 场 = 36 次 | GPU 约 6–8 h |
+**运行顺序：** 每一步都在一个新目录里运行，失败的目录保留作证据，不重试。修好后提交新版本，在新版本的副本上重跑。
+
+| 步 | 命令（Cursor 在评审通过的提交副本里执行） | 内容 | 规模（待确认） |
+|---|---|---|---|
+| 0 | `bash scripts/launch_x2.sh smoke` | 用真实数据的小切片，在 CPU 上把 A、B、报告三步完整走一遍；结果不报告 | 约 20–40 分钟 |
+| 1 | `bash scripts/launch_x2.sh a` | A 部分：6 个臂 × 3 场 LightGBM，约 360 次拟合（CPU，8 线程） | 约 6–12 h |
+| 1 | `bash scripts/launch_x2.sh b`（与上一行同时跑） | B 部分：54 次神经网络拟合（GPU，显存上限 35%） | 约 10–15 h |
+| 2 | `bash scripts/launch_x2.sh report` | 先写开发段决策（门槛、底座选择、融合），再写测试集的探索性统计 | CPU，几分钟 |
+| 3 | 条件触发，下一轮再写 | 门槛 3：迁移检验，2 个底座 × 2 个臂 × 3 seed × 3 场 = 36 次 | GPU 约 6–8 h |
+
+- 第 1 步的两条命令都要求第 0 步已通过，且是同一个提交（脚本会检查）。
+- 进度查询：`bash scripts/status_x2.sh`。
 
 ## 改动文件清单（= HANDOFF「允许改动」）
 
-- Claude 已写：`models/LegacyBases.py`、`tests/test_legacy_bases.py`。numpy 部分 6 项本地通过，torch 部分 4 项要在服务器上跑。
-- Codex：`scripts/run_x1.py`（加 X2 模式；B 部分复用 train_g1.fit_one/predict，DA 用 LegacyBases.da_loss 和 lambda_schedule）、`configs/x2_protocol.json`（锁 SHA）、`tests/test_x1.py`、`output/x2/**`。
+- 按用户 11-16 的新分工，代码全部由 Claude 写，GPT 审核并提交，Cursor 在服务器上启动、监视并取回结果：
+  - `models/LegacyBases.py`（加了 _SafeBatchNorm1d，对应 R2-S2）、`tests/test_legacy_bases.py`；
+  - `scripts/run_x2.py`（新文件。X1 的 GPU 队列正在用 run_x1.py，所以 X2 不往 run_x1.py 里加代码，只从中导入现成函数）；
+  - `configs/x2_protocol.json`（锁 SHA）、`tests/test_x2.py`（本地 7 项全部通过，其中 LightGBM 用岭回归替身走通 A 部分加报告的全流程）；
+  - `scripts/launch_x2.sh`、`scripts/status_x2.sh`。
+- 结果取回到本地 `output/x2/<提交号>/`：JSON 和日志提交到 git；预测数组本地保留，不提交；模型文件不取回。
 
 ## 本阶段不做什么
 
-- 本轮不训练、不评估。
+- 第 0 步冒烟通过之前，不启动第 1 步。
 - 不把换底座、或者把上游和 GFS 再接一遍，当成新机制；不用测试集挑选任何东西。
 - 不搬用旧项目的结果和分数：任务、口径和数据都不同。
 - 不改 X1 已登记的内容，不读 2026 年的数据。
