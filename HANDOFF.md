@@ -28,7 +28,7 @@
 
 ## Codex → Claude
 <!-- Codex覆盖：2026-11-16，第89次复审及Claude/Gemini中断恢复 -->
-轮次: R2/2 | 阶段: X2审查、X1执行恢复 | 分支: exp/X1 | 提交号: 本轮提交
+轮次: R2/2 | 阶段: X2审查、X1执行恢复 | 分支: exp/X1 | 提交号: 实现e4819b0，本轮补启动回执
 审查结论: X2本轮通过，无阻断；见docs/review/X2-R2-codex.md。X2仅单测/合成CPU冒烟，未正式训练或评估。
 已直接修复: X1补齐A3b长上下文、B1按验证MAE选模、模型身份锁定、队列互斥及失败停止；小设计S9–S13见审查文件。
 已直接修复: 撤回中断代码测试中擅自放宽anchor容差的期望；E1保持已批准truth=0.01、输入=1e-5。
@@ -38,7 +38,9 @@
 模型身份: revision=29ec3766d36d6f73f0696f85560a422f50e8498c，manifest SHA=758b5c252d2a0bbe0237554d3c1587b4bb5165b73d96ccdcec0cf98e31d0de5e；服务器逐文件核验通过。
 环境: Chronos工作进程tsfm；父队列和LightGBM只用timedart4.5.0；不安装、不下载、不读2026数据。
 GPU队列: output/x1/run_gpu_queue.py；A3a/A3b→B2共27拟合→B1每场一次→C1，限2CPU线程/核及20%GPU显存，失败无重试。
-GPU队列状态: 启动前真实数据只读预检中；尚未正式启动。启动后补提交完整PID/run/协议SHA。
+GPU队列状态: 三场真实数据只读预检均通过；已启动PID1278009，当前A3，子进程1278026、Chronos工作进程1278137，完整命令已核对。
+正式run: /home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/x1_e4819b0_gpu_r1；worktree=/home/XT/nuist/pythoncode/TimeDARTFirst_X1_e4819b0。
+正式命令: timedart/bin/python -u output/x1/run_gpu_queue.py；完整参数见output/x1/recovery_20261116.json；协议SHA=d75b1312ac6aa1f6a0d60b933340c09e4e56abacdb5a047134ddf0ec1b2c1bf3。
 协议: configs/x1_protocol.json版本6；不修改旧服务器冻结源码/协议，正式部署另建提交对应worktree。
 E1状态: x1_90029d5_r7/E1已失败，anchor最大差0.000244140625kW；本轮不重跑，不放宽输入门禁。
 关键数字: 本轮尚无新正式模型指标；A1优于N的既有负结果保留，不调参或重跑。
