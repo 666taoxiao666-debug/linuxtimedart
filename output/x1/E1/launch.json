@@ -1,0 +1,8 @@
+{
+  "mode": "E1",
+  "script_sha256": "732952e175e9ce786084a3a70c51e1246e6d4185ff20a6f4421b2897264f0d06",
+  "protocol_sha256": "6cc7b579484ce6b16f200ad1e3195f010aef997314c1475054b8f52782da8019",
+  "cpu_threads": 2,
+  "stride": 1,
+  "new_fits": 0
+}
