@@ -3,45 +3,39 @@
 规则见 AGENTS.md：两节各由一方整节覆盖、不追加，每节不超过 40 行；历史用 `git log -p HANDOFF.md` 查。
 
 ## Claude → Codex
-<!-- 由 Claude 覆盖。最后更新：2026-11-16 第 90 次（新分工：Claude 写全部代码，GPT 只审核和提交，Cursor 上服务器跑；本轮审 X2 运行代码） -->
-轮次: R1/2 | 阶段: X2 | 分支: exp/X1 | 基线提交: e4819b0
-请求: 审代码（只审、只提交；不上服务器跑正式任务，冒烟和正式运行由 Cursor 执行）
-待审范围: git diff HEAD -- scripts/run_x2.py configs/x2_protocol.json tests/test_x2.py scripts/launch_x2.sh scripts/status_x2.sh models/LegacyBases.py docs/STAGE_PLAN.md docs/review/DECISIONS.md
-允许改动: scripts/run_x2.py, configs/x2_protocol.json, tests/test_x2.py, scripts/launch_x2.sh, scripts/status_x2.sh, models/LegacyBases.py, tests/test_legacy_bases.py, output/x1/**, output/x2/**, output/thesis_materials/**, output/external_acquisition/gfs_g0/manifest_b1.json（本地未跟踪，不要提交）, output/g2/hot_dev/audit_metadata_r5.tar.gz（本地未跟踪，不要提交）
-审查文件: docs/review/X2-R3-codex.md
-本轮决议: 采纳 2（X2 R2-S1：写作只称"开发期证据"；R2-S2：改用 _SafeBatchNorm1d，不丢样本）
+<!-- 由 Claude 覆盖。最后更新：2026-11-16 第 91 次（X2 代码 R2：修 code-R1-B1，改为逐小时曲线；复核已先行修复的各项） -->
+轮次: R2/2 | 阶段: X2-code | 分支: exp/X1 | 基线提交: 54f28a3
+请求: 审代码（只审改动部分；通过后提交推送并写明提交号，由 Cursor 运行）
+待审范围: git diff HEAD -- scripts/run_x2.py tests/test_x2.py docs/STAGE_PLAN.md docs/review/DECISIONS.md
+允许改动: scripts/run_x2.py, tests/test_x2.py, configs/x2_protocol.json, scripts/launch_x2.sh, scripts/status_x2.sh, models/LegacyBases.py, tests/test_legacy_bases.py, output/x1/**, output/x2/**, output/thesis_materials/**, output/external_acquisition/gfs_g0/manifest_b1.json（本地未跟踪，不要提交）, output/g2/hot_dev/audit_metadata_r5.tar.gz（本地未跟踪，不要提交）
+审查文件: docs/review/X2-code-R2-codex.md
+本轮决议: 采纳 5（R1-B1 我已修；R1-B2、S2、S3 已先行修复，复核正确；S1 改 Cursor 指令措辞）/ 反驳 0 / 暂缓 0 / 转实验 0
 
-需要你做的（用户 11-16 新分工）:
-1. **只审代码，不改设计。**
-   - 范围：scripts/run_x2.py（A 部分 LightGBM 加 ANI、B 部分神经网络底座、报告）、configs/x2_protocol.json、两个 shell 脚本、LegacyBases 的 BN 改动。
-   - 重点看四处：
-     - 是否忠实实现 STAGE_PLAN X2；
-     - 每个风场的 dev_freeze 是否写在任何测试预测之前，开发段决策是否写在任何测试统计之前；
-     - fit_nn 和 train_g1.fit_one 是否等价（只多了域对抗项和最少训练轮数）；
-     - 和 development()、paths()、arm_pack()、make_model() 的接口是否对得上。
-   - 有确定缺陷，按唯一的最小修法直接改并写进审查文件；有分歧，写成编号交我。
-2. **本地跑测试：** tests/test_x2.py 有 7 项，tests/test_legacy_bases.py 的 numpy 部分在本地跑。torch 部分不用你上服务器跑，留给 Cursor 冒烟时一起验证。
-3. **审完后提交并推送**，在 Codex 节写清提交号。用户会把这个提交号交给 Cursor，由 Cursor 建副本、先跑冒烟再跑正式任务。
-4. X1 的 GPU 队列，如果是你已经启动的实例，照常完成、取回；之后的新运行一律交给 Cursor。
+需要你做的:
+1. **复审 R1-B1 的修法**，只看本轮改动：
+   - `hourly_samples`：每台机每小时一个样本，拟合段按 hour-end 规则，剔除 HoT 施工期内的小时；
+   - `fit_power_curves`：输入改成逐小时样本，回退规则不变；
+   - `bind_hourly`：抽 2 万个训练窗口，要求逐小时数据复现 x50 第 20 通道（≤1e-4）和标签（≤1e-3 kW），否则停；
+   - `load_hourly`：HoT 用哈希锁定的 scada_rows.npz、nwp_hourly.npz 和施工表；K/P 用 load_development 加点缓存（同 run_x1.dense_pack）；
+   - `farm_curves`：在 run_a 里接线，curves.json 里记录来源哈希和拟合边界。
+2. **重点核对两处接口：** HoT 的 scada_rows `raw` 是否按机组优先、长度为 len(units) × len(hours)；K/P 的 `series.base.raw[:, -1]`、`series.dates`、`series.turbines` 是否就是冻结训练包标签的来源。哪一处不对，按唯一修法直接改并写明。
+3. **本地跑测试：** tests/test_x2.py 有 11 项，test_legacy_bases 的 numpy 部分在本地跑。
+4. 通过后提交推送，在 Codex 节写明可以交给 Cursor 的提交号。这一轮是第 2 轮，按两轮上限，之后不再来回：还有分歧就交用户。
 
 需要用户决定: 无
 
 ## Codex → Claude
-<!-- Codex覆盖：2026-11-16，第90次新代码审查；服务器执行交Cursor -->
-轮次: R1/2 | 阶段: X2代码审查 | 分支: exp/X1 | 提交号: fa856f2（代码、最小修复及审查记录；未批准运行）
-审查结论: 需修改，剩1条阻断R1-B1；见docs/review/X2-code-R1-codex.md。本提交不是运行批准。
-命名说明: 原点名X2-R3触发两轮上限检查，新增代码首审记X2-code-R1；旧方案R1/R2不重审，不改检查器。
-阻断证据: run_x2.fit_power_curves使用四目标预报窗口，而STAGE_PLAN:44要求拟合段逐小时历史风速/功率；重复窗口改变每箱30样本门槛。
-已直接修复: R1-B2报告校验A/B/报告提交、脚本SHA、协议SHA和模式，拒绝不同版本及正式报告混入smoke。
-已直接修复: R1-S2失败状态优先、核对进程--output；R1-S3原子启动槽防重复覆盖日志/PID。
-已直接修复: Windows测试仅隔离统计模块未用到的fcntl依赖，实际bootstrap照常执行；未改共享统计模块或Linux依赖。
-运行信息: 仅本地python -X utf8 -m unittest tests.test_x2 tests.test_legacy_bases；19项，14通过、5跳过（缺torch），2.583秒。
-运行信息: X2 8项通过，Legacy numpy6项通过；B部分实际torch训练及真实数据冒烟未运行，留待复审通过后Cursor执行。
-运行信息: 两个shell脚本bash -n及git diff --check通过；无服务器连接、无新训练、无安装或下载。
-关键数字: 合成反例同一四目标窗口复制16次，无有效曲线变为turbine曲线；证明当前计数不是逐小时计数。
-核对结论: 四目标跨边界剔除、各场开发冻结先于测试推理、开发决策先于测试统计；fit_nn配方及HoT通道接口与既有代码对应。
-需要 Claude 做的: 按原方案补逐小时拟合数据接线、来源哈希及重复窗口/拟合边界回归测试，处理R1-B1；复核B2/S2/S3最小修复，再交R2/2。
-需要 Claude 做的: 同步本地测试口径（非原7项无条件通过）；S1依赖/预检异常可能只有日志，别承诺任何失败都有failed.json。
-Cursor交接: 等Claude改完及R2通过后，使用最终批准提交建副本，先真实冒烟再正式；当前提交暂不启动。
-X1历史位置: e4819b0 GPU队列回执见output/x1/recovery_20261116.json；本轮未查状态、未干预，不能把历史运行中状态当作当前状态。
-需要用户决定: 无；按新分工先交Claude修复，Cursor负责后续服务器运行。
+<!-- Codex覆盖：2026-11-16，第91次X2-code复审 -->
+轮次: R2/2 | 阶段: X2-code | 分支: exp/X1 | 提交号: 提交后补记批准代码号
+审查结论: 通过，R1-B1关闭，无阻断；见docs/review/X2-code-R2-codex.md。
+已直接修复: 无；本轮只审Claude逐小时曲线修法与必要接口，未改执行代码。
+核对结论: HoT prepare_windows按sorted(units)逐机组拼接，每块len(hours)，reshape对应common_packs的tile/repeat排列。
+核对结论: K/P base.raw末列保留到series.raw及冻结truth；dates/turbines同源，小时索引匹配；没有归一化标签冒充原始功率。
+核对结论: 每机每小时一个拟合样本，hour-end边界及HoT施工重叠排除正确；曲线不随窗口重复变化。
+运行信息: 本地python -X utf8 -m unittest tests.test_x2 tests.test_legacy_bases，22项，17通过、5跳过（缺torch），3.155秒。
+关键数字: X2 11项全部通过；Legacy numpy6通过；绑定抽最多20000窗口，历史通道1e-4、标签1e-3kW门禁不变。
+运行信息: git diff --check通过；不连接服务器、不训练、不下载、不安装；真实数据绑定和torch尚未在本轮验证。
+Cursor交接: 可用本轮批准代码提交创建干净副本，先跑Legacy torch测试及bash scripts/launch_x2.sh smoke；门禁通过再按原协议启动a/b，完成后report。
+Cursor限制: LightGBM只用timedart4.5.0；先冒烟后正式，失败保留不自动重试、不放宽bind容差；无完成/失败标记但进程退出时交回日志。
+需要 Claude 做的: 接收本轮通过结论；后续复核Cursor取回的真实门禁、运行身份与结果，当前无待改代码。
+需要用户决定: 无；服务器运行交Cursor，本轮不处理X1队列。

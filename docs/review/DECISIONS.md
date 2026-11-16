@@ -1112,3 +1112,13 @@ X2 执行与分工（Claude，2026-11-16）：
 - **代码：** scripts/run_x2.py、configs/x2_protocol.json、tests/test_x2.py、scripts/launch_x2.sh、scripts/status_x2.sh。
   - 本地 test_x2 7 项全部通过：LightGBM 用岭回归替身，走通 A 部分加报告的全流程，覆盖冻结在测试之前、SHA 被篡改时拒绝、门槛和合并 CI。
   - B 部分的 torch 代码只能在服务器上靠冒烟验证。
+
+## 阶段 X2-code
+
+| 编号 | 类型 | 一句话摘要 | 决议 | 理由（一句） | 落实 |
+|---|---|---|---|---|---|
+| R1-B1 | 阻断 | 功率曲线用的是窗口里的预报和四步标签，不是拟合段的逐小时数据，重叠窗口被重复计数 | 采纳 | 确定缺陷，是我实现时偏离了 STAGE_PLAN。改为每台机每小时一个样本，拟合前先证明逐小时数据能复现冻结训练包，并记录来源哈希；HoT 施工期内的小时不计入 | Claude 修：scripts/run_x2.py（hourly_samples、fit_power_curves、bind_hourly、load_hourly、farm_curves）；tests/test_x2.py 补了边界、施工期剔除、窗口重复 16 次曲线不变、绑定失败报错 4 项测试 |
+| R1-B2 | 阻断 | 报告没有核对 A、B 两次运行的身份，可能混用不同版本或冒烟结果 | 采纳（已按最小修法先行，复核正确） | check_part_identity 核对提交号、脚本 SHA、协议 SHA 和运行模式；冒烟只能和冒烟配对 | fa856f2 |
+| R1-S1 | 建议 | 启动前的错误（依赖、冒烟门禁）不会生成 failed.json | 采纳：只改措辞 | 输出目录建好之前没处写失败记录；给 Cursor 的指令改为：进程退出了，但既不是 COMPLETED 也不是 FAILED，就贴回日志 | Cursor 指令 |
+| R1-S2 | 建议 | 状态脚本里"完成"会盖掉"失败" | 采纳（已修复，复核正确） | 失败优先显示，并按 --output 参数核对进程 | fa856f2 |
+| R1-S3 | 建议 | 重复启动会覆盖日志和 PID | 采纳（已修复，复核正确） | 用 mkdir 原子占位，第二次启动直接拒绝 | fa856f2 |

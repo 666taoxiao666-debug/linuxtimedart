@@ -37,6 +37,52 @@ def make_pack(n_issue=120, units=3, start='2021-01-01T03', hot=False, seed=0, ra
     return pack
 
 
+CURVE = lambda w, rated=2050.: rated / (1 + np.exp(-(w - 9)))
+
+
+def make_world(n_hours=1500, units=3, start='2021-01-01T01', seed=0, rated=2050., fit=('2021-01-01', '2021-02-15')):
+    """Hourly sources (load_hourly layout): GFS history wind, per-turbine power, hour-end labels."""
+    rng = np.random.default_rng(seed)
+    hours = (np.datetime64(start, 'h') + np.arange(n_hours).astype('timedelta64[h]')).astype('datetime64[ns]')
+    hist = rng.uniform(2, 16, n_hours)
+    hist[rng.random(n_hours) < .03] = np.nan
+    power = {}
+    for u in range(units):
+        p = (CURVE(np.nan_to_num(hist, nan=9.), rated) + rng.normal(0, 40, n_hours)).clip(0, rated)
+        p[rng.random(n_hours) < .02] = np.nan
+        power[u] = p
+    return dict(hours=hours, hist=hist, power=power, exclude=None, fit_bounds=list(fit), nwp_mean=8.,
+                nwp_scale=3., identities={'synthetic': 'sha'})
+
+
+def windows_from_world(src, first, last, stride=3, hot=False, seed=0):
+    """Frozen-pack-like windows whose GFS history channel and labels come from the hourly sources."""
+    rng = np.random.default_rng(seed)
+    hist, hours, m, s = src['hist'], src['hours'], src['nwp_mean'], src['nwp_scale']
+    rows = []
+    for k in range(first, last, stride):
+        for u, p in src['power'].items():
+            if np.isfinite(p[k:k + 5]).all():
+                rows.append((k, u))
+    k = np.array([r[0] for r in rows])
+    u = np.array([r[1] for r in rows])
+    n = len(rows)
+    x50 = rng.normal(size=(n, 24, 50)).astype(np.float32)
+    h = hist[k[:, None] + np.arange(-23, 1)]
+    x50[:, :, 20] = np.where(np.isfinite(h), (h - m) / s, 0)
+    g = hist[k[:, None] + np.arange(-5, 8)]
+    gF = np.where(np.isfinite(g), g, 0).astype(np.float32)
+    power = np.stack([src['power'][int(a)] for a in u])
+    truth = power[np.arange(n)[:, None], k[:, None] + np.arange(1, 5)].astype(np.float32)
+    pack = dict(x50=x50, truth=truth, anchor=power[np.arange(n), k].astype(np.float32), gF=gF,
+                gF_mask=np.isfinite(g).astype(np.float32), turbines=u,
+                issue=hours[k].astype(np.int64), times=hours[k[:, None] + np.arange(1, 5)].astype(np.int64),
+                power_mean=np.array(700.), power_scale=np.array(600.))
+    if hot:
+        pack['retrofit'] = np.ones(n, np.float32)
+    return pack
+
+
 def fake_lgb():
     class Booster:
         def __init__(self, model_file=None, coef=None):
@@ -100,29 +146,72 @@ class Helpers(unittest.TestCase):
         self.assertFalse(set(x2.INFO['LG']) & set(x2.UPSTREAM))
         self.assertEqual(sorted(x2.LOCAL + x2.UPSTREAM + x2.GFS), list(range(50)))
 
+    def test_hourly_samples_fit_boundary_and_exclusion(self):
+        src = make_world(n_hours=100, start='2021-01-01T01', fit=('2021-01-01', '2021-01-02'))
+        src['hist'][:] = 5.
+        ex = {0: np.zeros(100, bool)}
+        ex[0][3] = True
+        smp = x2.hourly_samples(src['hours'], src['hist'], src['power'], src['fit_bounds'], ex)
+        fin = {u: np.isfinite(p[:24]) for u, p in src['power'].items()}     # labels 01:00 .. 24:00 are inside
+        self.assertEqual(len(smp[1][0]), int(fin[1].sum()))                 # hour-end 2021-01-02T00 counts, T01 not
+        self.assertEqual(len(smp[0][0]), int(fin[0].sum()) - int(fin[0][3]))  # works hour removed
+        src['hist'][5] = np.nan
+        smp2 = x2.hourly_samples(src['hours'], src['hist'], src['power'], src['fit_bounds'])
+        self.assertEqual(len(smp2[1][0]), int(fin[1].sum()) - int(fin[1][5]))
+
+    def test_curves_from_hourly_unaffected_by_window_duplication(self):
+        src = make_world()
+        train = windows_from_world(src, 30, 1000)
+        dup = x2.subset(train, np.repeat(np.arange(len(train['truth'])), 16))   # every window 16 times
+        cfg = dict(width=.5, minimum=30, min_bins=2)
+        a, meta = x2.farm_curves(src, train, cfg)
+        b, _ = x2.farm_curves(src, dup, cfg)
+        for u in a:
+            np.testing.assert_array_equal(a[u]['points'], b[u]['points'])
+            self.assertEqual(a[u]['samples'], b[u]['samples'])
+        self.assertEqual(meta['identities'], {'synthetic': 'sha'})
+        self.assertTrue(meta['bound_windows'] > 0)
+
+    def test_bind_hourly_rejects_mismatch(self):
+        src = make_world()
+        train = windows_from_world(src, 30, 600)
+        x2.bind_hourly(train, src)
+        bad = dict(train, x50=train['x50'].copy())
+        bad['x50'][:, 5, 20] += .5
+        with self.assertRaises(ValueError):
+            x2.bind_hourly(bad, src)
+        bad = dict(train, truth=train['truth'] + 5)
+        with self.assertRaises(ValueError):
+            x2.bind_hourly(bad, src)
+
     def test_curves_and_ani_features(self):
-        train, ev = make_pack(seed=1), make_pack(seed=2)
-        curves = x2.fit_power_curves(train, minimum=5)
+        src = make_world()
+        curves, _ = x2.farm_curves(src, windows_from_world(src, 30, 700), dict(width=.5, minimum=5, min_bins=2))
         self.assertEqual({c['source'] for c in curves.values()}, {'turbine'})
+        ev = windows_from_world(src, 800, 1400, seed=2)
         pcl = x2.ani_features(ev, curves, 2050., 'PCL')
         ani = x2.ani_features(ev, curves, 2050., 'ANI')
         self.assertEqual(pcl.shape[1], 5)
         self.assertEqual(ani.shape[1], 8)
         bad = ev['gF_mask'][:, 5] == 0
-        self.assertTrue(np.isnan(pcl[bad, 0]).all() and np.isnan(ani[bad, :]).all())
+        self.assertTrue(bad.any() and np.isnan(pcl[bad, 0]).all() and np.isnan(ani[bad, :]).all())
         ok = ~bad & (ev['gF_mask'][:, 6] > 0)
         np.testing.assert_allclose(ani[ok, 0], pcl[ok, 1] - pcl[ok, 0], rtol=1e-5, atol=1e-2)
         fin = np.isfinite(ani[:, 4:])
         self.assertTrue((ani[:, 4:][fin] >= 0).all() and (ani[:, 4:][fin] <= 2050.).all())
+        good = np.isfinite(pcl[:, 1])
+        self.assertLess(np.abs(pcl[good, 1] - CURVE(ev['gF'][good, 6])).mean(), 80)   # curve recovered
 
     def test_curve_fallbacks(self):
-        train = make_pack(seed=3)
-        train['turbines'] = np.where(np.arange(len(train['truth'])) < 3, 9, train['turbines'])  # turbine 9: 3 windows
-        curves = x2.fit_power_curves(train, minimum=5)
+        src = make_world()
+        smp = x2.hourly_samples(src['hours'], src['hist'], src['power'], src['fit_bounds'])
+        smp[9] = (smp[0][0][:3], smp[0][1][:3])                               # turbine 9: 3 hours only
+        curves = x2.fit_power_curves(smp, minimum=5)
         self.assertEqual(curves[9]['source'], 'pooled')
-        empty = x2.fit_power_curves(train, minimum=10 ** 6)
+        empty = x2.fit_power_curves(smp, minimum=10 ** 6)
         self.assertTrue(all(c['points'] is None for c in empty.values()))
-        self.assertTrue(np.isnan(x2.ani_features(make_pack(seed=4), empty, 2050., 'ANI')).all())
+        ev = windows_from_world(src, 800, 900)
+        self.assertTrue(np.isnan(x2.ani_features(ev, empty, 2050., 'ANI')).all())
 
     def test_pooled_effect_and_gates(self):
         def s(gain, lo, hi, ref=100.):
@@ -157,19 +246,25 @@ class PartAEndToEnd(unittest.TestCase):
         x1p = x2.read(ROOT / 'configs/x1_protocol.json')
         x1p = dict(x1p, datasets={'Syn_2022': dict(farm='Syn', rated_kw=2050, count=150, family='G1', year=2022)})
         bud = x2.budget(protocol, smoke=True)
-        train, v1, v2 = make_pack(300, seed=5), make_pack(80, seed=6, start='2021-02-01T00'), \
-            make_pack(80, seed=7, start='2021-08-01T00')
-        tests = {'Syn_2022': make_pack(50, seed=8, start='2022-03-01T00')}
+        src = make_world(n_hours=3000, fit=('2021-01-01', '2021-03-01'))
+        train = windows_from_world(src, 30, 1400)
+        v1, v2 = windows_from_world(src, 1450, 1900, seed=6), windows_from_world(src, 1950, 2400, seed=7)
+        tests = {'Syn_2022': windows_from_world(src, 2450, 2990, seed=8)}
+        curves, curve_meta = x2.farm_curves(src, train, protocol['part_a']['curve'])
         with tempfile.TemporaryDirectory() as tmp:
             out = Path(tmp)
             x2.save(out / 'launch.json', dict(mode='SMOKE', commit='synthetic',
                     script_sha256=x2.digest(x2.__file__), protocol_sha256=x2.digest(x2.PROTOCOL)))
             store = x2.Store(out)
             x2.save_keys(store, 'A', 'Syn', dict(V1=v1, V2=v2, **tests))
-            x2.run_a_farm(fake_lgb(), 'Syn', 2050., train, v1, v2, tests, protocol, x1p, store, bud, 2, out)
+            x2.run_a_farm(fake_lgb(), 'Syn', 2050., train, v1, v2, tests, protocol, x1p, store, bud, 2, out,
+                          curves, curve_meta)
             x2.save(out / 'A' / 'registry.json', store.registry)
             x2.save(out / 'A' / 'completed.json', dict(status='COMPLETED',
                                                       registry_sha256=x2.digest(out / 'A' / 'registry.json')))
+            saved_curves = x2.read(out / 'A' / 'Syn' / 'curves.json')
+            self.assertEqual(saved_curves['meta']['identities'], {'synthetic': 'sha'})
+            self.assertEqual(saved_curves['meta']['fit_bounds'], src['fit_bounds'])
             freeze = x2.read(out / 'A' / 'Syn' / 'dev_freeze.json')
             self.assertEqual(set(freeze['arms']), set(protocol['part_a']['arms']))
             self.assertFalse(any('Syn_2022' in k for k in freeze['predictions']))   # no test prediction in freeze

@@ -98,23 +98,146 @@ def tree_matrix(pack, info, hot):
 
 
 # ----------------------------------------------------------------------------- ANI / PCL (numpy)
-def fit_power_curves(train, width=.5, minimum=30, min_bins=2):
-    """Per-turbine GFS-forecast-wind -> power curve from the FIT period only (target cells h1-h4, gF cols 6-9).
+def hourly_samples(hours, hist, power, fit_bounds, exclude=None):
+    """Fit-period HOURLY (wind, power) pairs per turbine (X2 R1-B1): one pair per turbine-hour, never per window.
+
+    hours [H] hour-end labels; hist [H] raw GFS history wind (m/s, NaN = unavailable); power {turbine: [H] kW};
+    exclude {turbine: bool[H]} hours that are never samples (HoT AeroUp works).  Non-finite values are skipped."""
+    hist = np.asarray(hist, float)
+    fit = period(np.asarray(hours), fit_bounds)
+    if len(hist) != len(fit):
+        raise ValueError('Hourly wind and hour axis differ')
+    out = {}
+    for t, p in power.items():
+        p = np.asarray(p, float)
+        if len(p) != len(fit):
+            raise ValueError('Hourly power and hour axis differ')
+        use = fit & np.isfinite(hist) & np.isfinite(p) & (hist >= 0)
+        if exclude is not None and t in exclude:
+            use &= ~np.asarray(exclude[t], bool)
+        out[int(t)] = (hist[use], p[use])
+    return out
+
+
+def fit_power_curves(samples, width=.5, minimum=30, min_bins=2):
+    """Per-turbine GFS-history-wind -> power curve from fit-period hourly samples (hourly_samples).
     Turbines with < min_bins valid bins use the farm-pooled curve; a pooled curve with < min_bins is None."""
-    w = train['gF'][:, 6:10].astype(float)
-    y = train['truth'].astype(float)
-    valid = train['gF_mask'][:, 6:10] > 0
-    pooled = x1.curve_points(w, y, valid, width, minimum)
+    def points(w, y):
+        return x1.curve_points(w, y, np.ones(len(w), bool), width, minimum)
+    allw = np.concatenate([w for w, _ in samples.values()]) if samples else np.zeros(0)
+    ally = np.concatenate([y for _, y in samples.values()]) if samples else np.zeros(0)
+    pooled = points(allw, ally)
     pooled = pooled if len(pooled) >= min_bins else None
     curves = {}
-    for u in np.unique(train['turbines']):
-        take = train['turbines'] == u
-        own = x1.curve_points(w[take], y[take], valid[take], width, minimum)
+    for u, (w, y) in samples.items():
+        own = points(w, y)
         if len(own) >= min_bins:
-            curves[int(u)] = dict(points=own, source='turbine')
+            curves[int(u)] = dict(points=own, source='turbine', samples=int(len(w)))
         else:
-            curves[int(u)] = dict(points=pooled, source='pooled' if pooled is not None else 'none')
+            curves[int(u)] = dict(points=pooled, source='pooled' if pooled is not None else 'none', samples=int(len(w)))
     return curves
+
+
+def bind_hourly(pack, src, sample=20000, seed=0):
+    """Bind the hourly sources to a frozen pack: GFS history channel (x50[:, :, 20]) and labels must be reproduced
+    from the hourly arrays (same hour labels).  Raises on any mismatch; returns the number of checked windows."""
+    hours = np.asarray(src['hours']).astype('datetime64[ns]')
+    order = np.argsort(hours)
+    if not np.array_equal(order, np.arange(len(hours))) or len(np.unique(hours)) != len(hours):
+        raise ValueError('Hour axis must be sorted and unique')
+    n = len(pack['truth'])
+    pick = np.sort(np.random.default_rng(seed).choice(n, size=min(sample, n), replace=False))
+    issue = np.asarray(pack['issue'])[pick].astype('datetime64[ns]')
+    steps = issue[:, None] - (23 - np.arange(24)).astype('timedelta64[h]')
+
+    def index(t):
+        k = np.searchsorted(hours, t)
+        k = np.clip(k, 0, len(hours) - 1)
+        if not np.array_equal(hours[k], t):
+            raise ValueError('Window hour missing from the hourly axis')
+        return k
+    h = np.asarray(src['hist'], float)[index(steps)]
+    expected = np.where(np.isfinite(h), (h - src['nwp_mean']) / src['nwp_scale'], 0)
+    if not np.allclose(expected, pack['x50'][pick, :, 20], rtol=0, atol=1e-4):
+        raise ValueError('Hourly GFS history does not reproduce the frozen x50 history channel')
+    tidx = index(np.asarray(pack['times'])[pick].astype('datetime64[ns]'))
+    turbines = np.asarray(pack['turbines'])[pick]
+    labels = np.stack([np.asarray(src['power'][int(u)], float)[k] for u, k in zip(turbines, tidx)])
+    if not np.allclose(labels, pack['truth'][pick], rtol=0, atol=1e-3):
+        raise ValueError('Hourly power does not reproduce the frozen labels')
+    return int(len(pick))
+
+
+def load_hourly(logs, farm, item):
+    """Hourly fit-period sources from the SAME frozen preparation as the packs, with their identities.
+    HoT: hash-locked scada_rows.npz / nwp_hourly.npz (as run_x1.development).  Kelmarsh/Penmanshiel: hourly SCADA
+    from prepare_g1_batches.load_development and GFS history from the preparation's point caches (as run_x1.dense_pack);
+    both are bound to the frozen train pack by bind_hourly before any curve is fitted."""
+    import pandas as pd
+    logs = Path(logs)
+    identities = {}
+    if item['family'] == 'G1':
+        from scripts import prepare_g1_batches as prep
+        folder = logs / 'G1/g1c_27312d7_r2/prepared' / farm
+        meta = read(folder / 'prepared.json')
+        if meta != read(ROOT / 'output/g1/preparation_78/prepared' / farm / 'prepared.json'):
+            raise ValueError('Preparation identity differs')
+        series, _, _, _, hours, _, _ = prep.load_development(logs.parents[1], farm, meta['bounds'], identities)
+        cache = {}
+        for name in ('points_0.npz', 'points_1.npz'):
+            cache.update(x1.load_pack(folder / name))
+            identities[str(folder / name)] = digest(folder / name)
+        hours = np.asarray(pd.DatetimeIndex(hours).to_numpy()).astype('datetime64[ns]')
+        hist = x1.cached_hourly(hours, cache, meta)['historical'][:, 0]
+        row = pd.DatetimeIndex(hours).get_indexer(pd.DatetimeIndex(series.dates))
+        if (row < 0).any():
+            raise ValueError('SCADA hour outside the hourly axis')
+        power = {}
+        for u in np.unique(series.turbines):
+            take = series.turbines == u
+            p = np.full(len(hours), np.nan)
+            p[row[take]] = series.base.raw[take, -1]
+            power[int(u)] = p
+        return dict(hours=hours, hist=hist, power=power, exclude=None, fit_bounds=meta['bounds']['train'],
+                    nwp_mean=float(meta['nwp_mean']), nwp_scale=float(meta['nwp_scale']), identities=identities)
+    from scripts import train_g2b as g2, evaluate_g2b_sealed as sealed
+    freeze = logs / 'G2/g2b_4471499_shared_r1/formal'
+    frozen, _ = g2.frozen_gate(freeze, sealed.FREEZE_SHA)
+    stats = read(freeze / 'fit_statistics.json')
+    folder = logs / 'G2/hot_dev_f58f2ce_r5/prepared'
+    checked(folder / 'completed.json', frozen['preparation_sha256'])
+    meta = read(folder / 'completed.json')
+    rows = x1.load_pack(checked(folder / 'scada_rows.npz', meta['artifacts']['scada_rows.npz']))
+    hourly = x1.load_pack(checked(folder / 'nwp_hourly.npz', meta['artifacts']['nwp_hourly.npz']))
+    hours = rows['hours'].astype('datetime64[ns]')
+    if np.any(hours >= np.datetime64('2024-01-01')) or len(hourly['historical']) != len(hours):
+        raise ValueError('HoT hourly arrays misaligned or outside development')
+    units = rows['units']
+    raw = rows['raw'].reshape(len(units), len(hours), -1)        # turbine-major blocks (train_g2b.common_packs)
+    works_path = logs.parents[1] / 'datasets/external_validation/sealed/hill_of_towie/Hill_of_Towie_AeroUp_install_dates.csv'
+    checked(works_path, stats['works_sha256'])
+    works = pd.read_csv(works_path).set_index('Turbine')
+    exclude, power = {}, {}
+    for i, unit in enumerate(units):
+        first, end = g2.hot.works_bounds(*works.loc[unit].tolist())
+        first = np.datetime64(pd.Timestamp(first).tz_convert(None))
+        end = np.datetime64(pd.Timestamp(end).tz_convert(None))
+        exclude[i] = (hours - np.timedelta64(1, 'h') < end) & (hours > first)   # hour [t-1h, t) overlaps works
+        power[i] = raw[i, :, -1]
+    identities.update({str(folder / n): meta['artifacts'][n] for n in ('scada_rows.npz', 'nwp_hourly.npz')},
+                      **{str(folder / 'completed.json'): frozen['preparation_sha256'], str(works_path): stats['works_sha256']})
+    return dict(hours=hours, hist=hourly['historical'][:, 0], power=power, exclude=exclude,
+                fit_bounds=stats['bounds']['train'], nwp_mean=float(stats['nwp_mean']),
+                nwp_scale=float(stats['nwp_scale']), identities=identities)
+
+
+def farm_curves(src, train, curve_cfg):
+    """Bind hourly sources to the frozen train pack, then fit the curves on fit-period hours only."""
+    checked_windows = bind_hourly(train, src)
+    samples = hourly_samples(src['hours'], src['hist'], src['power'], src['fit_bounds'], src['exclude'])
+    curves = fit_power_curves(samples, **curve_cfg)
+    return curves, dict(bound_windows=checked_windows, fit_bounds=src['fit_bounds'], identities=src['identities'],
+                        excluded_hours={str(k): int(v.sum()) for k, v in (src['exclude'] or {}).items()})
 
 
 def curve_values(pack, curves, columns):
@@ -333,7 +456,7 @@ def booster_predict(lgb, folder, hashes, X):
     return np.stack(cols, axis=1)
 
 
-def run_a_farm(lgb, farm, rated, train, v1, v2, tests, protocol, x1p, store, bud, threads, out):
+def run_a_farm(lgb, farm, rated, train, v1, v2, tests, protocol, x1p, store, bud, threads, out, curves, curve_meta):
     hot = farm == 'HoT'
     cfg = x1p['lightgbm']
     rounds = bud.get('early_stopping_rounds', cfg['early_stopping_rounds'])
@@ -341,9 +464,9 @@ def run_a_farm(lgb, farm, rated, train, v1, v2, tests, protocol, x1p, store, bud
     probe = head(train, 1000)
     if not np.array_equal(tree_matrix(probe, 'LUG', hot), x1.tree_features(probe, hot)):
         raise ValueError('LUG features differ from the A1 feature set')
-    curves = fit_power_curves(train, **protocol['part_a']['curve'])
-    save(out / 'A' / farm / 'curves.json', {str(u): dict(source=c['source'], points=None if c['points'] is None
-                                                       else c['points'].tolist()) for u, c in curves.items()})
+    save(out / 'A' / farm / 'curves.json', dict(meta=curve_meta, curves={
+        str(u): dict(source=c['source'], samples=c['samples'], points=None if c['points'] is None else c['points'].tolist())
+        for u, c in curves.items()}))
     freeze = dict(curves_sha256=digest(out / 'A' / farm / 'curves.json'), arms={})
     grid = [(a, b) for a in cfg['num_leaves'] for b in cfg['min_child_samples']][:bud['grid_cells']]
     for arm, spec in protocol['part_a']['arms'].items():
@@ -409,7 +532,12 @@ def run_a(args, out=None, protocol=None, x1p=None):
             train, v1, v2, tests, counts = load_farm(args, farm, spec, protocol, bud)
             keys = save_keys(store, 'A', farm, dict(V1=v1, V2=v2, **tests))
             save(out / 'A' / f'{farm}_cohorts.json', dict(counts=counts, train=len(train['truth']), keys=keys))
-            run_a_farm(lgb, farm, spec['rated'], train, v1, v2, tests, protocol, x1p, store, bud, args.threads, out)
+            src = load_hourly(args.logs, farm, next(iter(spec['items'].values())))
+            curves, curve_meta = farm_curves(src, train, protocol['part_a']['curve'])
+            del src
+            beat(out, f'A {farm} curves: ' + str({u: c['source'] for u, c in curves.items()}))
+            run_a_farm(lgb, farm, spec['rated'], train, v1, v2, tests, protocol, x1p, store, bud, args.threads, out,
+                       curves, curve_meta)
             del train, v1, v2, tests
         save(out / 'A' / 'registry.json', store.registry)
         save(out / 'A' / 'completed.json', dict(status='COMPLETED', registry_sha256=digest(out / 'A' / 'registry.json')))
