@@ -21,19 +21,22 @@
 需要用户决定: 无（lightgbm 和 Chronos-2 的安装指令已给用户转 Cursor）
 
 ## Codex → Claude
-<!-- 由Codex覆盖。第86次X1：G2已合并，A0执行，A2缺测规则待决议 -->
-轮次: R1/2 | 阶段: X1 | 分支: exp/X1 | 提交号: 文档86d3045，主线合并26c82c7，A0实现1d8479b
-审查结论: A0通过；A2有1条阻断R1-B1，见docs/review/X1-R1-codex.md；A3/B按阶段暂缓。
-已直接修复: 无；A2回退规则不唯一，未代改Claude方案。
-合并: exp/G2已--no-ff合入codex/self-evolving-wiki并推送；从主线创建exp/X1，main未动。
-运行信息: A0正式PID1166199，2026-11-16T00:25:15Z启动，四集COMPLETED、进程退出；CPU2核/2线程，无新增拟合。
-服务器run: /home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/x1_1d8479b_r1/A0
-命令: scripts/run_x1.py --logs /home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs --output <run> --protocol-sha256 690397175db685e492c06cbaa85a72eb02e1cfe53dfa1177c2aceaf6b9cd0cc7
-验证: 本地与服务器各3项单测通过；固定测试包SHA、父完成记录与N前三seed预测SHA均在执行入口核对。
-结果: output/x1/A0/；服务器4个A0预测及results SHA复核通过，JSON/日志已取回。
-关键数字: N较A0 MAE增益(kW)：Kelmarsh47.4118 CI[42.5247,51.7403]；Penmanshiel37.0850 CI[29.3309,44.3887]。
-关键数字: HoT2024增益45.2094 CI[40.6728,49.8288]；HoT2025增益48.9252 CI[44.2101,53.7995]；四集判定通过。
-关键数字: A2测试gF_mask[:,6:10]无效单元：Kelmarsh96、Penmanshiel624；不得将占位0当真实静风或删窗口。
-依赖: timedart无lightgbm，A1未运行；Chronos-2等待Cursor回执，A3/B未运行；未下载或安装。
-需要 Claude 做的: 决议R1-B1，规定A2拟合有效样本与缺测预测回退规则；复核A0实现及结果；后续依赖就绪再交回。
-需要用户决定: 无；方案R1可由Claude在R2处理，无需用户重复授权。
+<!-- 由Codex覆盖。第87次X1：组件结果记录，A1已启动，尚非全部完成交回 -->
+轮次: R2/2 | 阶段: X1 | 分支: exp/X1 | 提交号: A2实现84f1b21，E1/E2实现c0e0800，组件结果5f64079，A1实现6e17435
+审查结论: R1-B1已按决议实施；小设计S1–S8见docs/review/X1-R2-codex.md，不另等交审。
+已直接修复: A2缺测持续法回退84f1b21；未改冻结模型、数据包和标签。
+运行信息: A2、E2完成并退出；E1和E2曾分别在CPU-2/CPU-1并行，各限制2核2线程。
+服务器根: /home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/
+A2 run: x1_84f1b21_r2/A2；E1/E2 run: x1_c0e0800_r3/E1和E2；JSON/日志已取回output/x1/对应目录。
+验证: A2四个预测SHA及结果SHA、E2结果SHA服务器复核通过，本地A2/E2结果SHA一致。
+关键数字: N较A2 MAE增益(kW)，K2022/P2021/HoT2024/HoT2025依次73.0382/73.0149/114.1880/98.0787；四集CI下界均>0。
+关键数字: E2剔除比例依次3.30%/1.72%/6.32%/3.03%；N正常格子MAE147.1255/162.7196/194.2384/183.9005 kW，仅描述。
+E2范围: 当前N、A0、A2共用同一正常格子；其余未完成臂尚未纳入，不宣称全臂已完成。
+E1停止: K/P完成；HoT_2024/truth重合标签一致性门禁失败，failed.json和日志已取回；按预定条件仅停止E1，不重跑、不放宽阈值。
+A1: LightGBM4.5.0于本轮后半程可用；本地及服务器各8项测试通过，已正式启动PID1195938，CPU2核2线程。
+A1 run: x1_6e17435_r4/A1；worktree /home/XT/nuist/pythoncode/TimeDARTFirst_X1_6e17435；启动回执output/x1/A1/launch_A1.json。
+A1命令: scripts/run_x1.py --arm A1 --logs <数据根>/outputs/logs --output <run> --protocol-sha256 50da39efbd74700c4d816fb13dd1fa2be88ffcd11d78f2153f2ee2ecee101a48
+A1状态: 已启动，结果待取回；每场固定4组×4时距，验证MAE选早停模型，测试每集一次，不重训N。
+GPU依赖: 已找到的Chronos回执仍INCOMPLETE/ConnectError，缺可核验的模型revision及完整清单；A3/B未启动，C1等待A1/A3a。
+需要 Claude 做的: 暂不要求新一轮放行；待A1及依赖就绪的部分完成后统一复核；E1门禁失败原样保留供定位。
+需要用户决定: 无新增设计裁决；仍需Cursor交回Chronos完整离线模型身份回执，本轮未下载、未安装。
