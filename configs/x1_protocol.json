@@ -1,6 +1,8 @@
 {
   "stage": "X1",
-  "version": 5,
+  "version": 6,
+  "A3": {"context_lengths": [24, 168], "cross_learning": false, "older_history": "timestamp_keyed_frozen_inputs_only", "missing_history": "NaN_no_window_drop"},
+  "B1": {"fits": 3, "finetune_mode": "full", "learning_rate": 0.000001, "num_steps": 1000, "batch_size": 256, "context_length": 24, "min_past": 24, "validation_every_steps": 100, "selection": "median_validation_mae", "seed": 2024},
   "authorized_ready_arms": ["A2", "E1", "E2", "A1", "C1", "A3", "B2", "B1"],
   "curve": {"bin_width": 0.5, "minimum_cells": 30, "missing_fallback": "persistence", "hot_post_retrofit_only": true},
   "lightgbm": {"num_leaves": [31, 127], "min_child_samples": [50, 200], "learning_rate": 0.05, "n_estimators": 4000, "early_stopping_rounds": 200, "feature_fraction": 0.8, "bagging_fraction": 0.8, "seed": 2024},

@@ -3,16 +3,63 @@ from pathlib import Path
 import unittest
 import numpy as np
 from scripts.run_x1 import persistence, checked, digest, curve_points, fit_curves, curve_predict
-from scripts.run_x1 import normal_cells, farm_metrics, tree_features, dense_equivalence
+from scripts.run_x1 import normal_cells, farm_metrics, tree_features, dense_equivalence, chronos_inputs, verify_chronos
+from scripts.run_x1 import history_grid, longer_context, chronos_training_inputs
 
 
 class X1Tests(unittest.TestCase):
+    def test_long_history_is_causal_and_preserves_last24(self):
+        issue = np.array(['2021-01-08T00', '2021-01-09T00'], dtype='datetime64[ns]')
+        pack = dict(issue=issue, turbines=np.zeros(2, dtype=int),
+                    x21=np.stack([np.ones((24,21)), np.full((24,21), 2)]), truth=np.zeros((2,4)))
+        grid = history_grid([pack])
+        context = longer_context(pack, grid, np.arange(2))
+        np.testing.assert_array_equal(context[:, -24:], pack['x21'])
+        self.assertTrue(np.isnan(context[0, :-24]).all())
+        np.testing.assert_array_equal(context[1, -48:-24], pack['x21'][0])
+        pack['truth'][:] = 999
+        np.testing.assert_array_equal(history_grid([pack])['grid_value'], grid['grid_value'])
+        broken = {**pack, 'x21': pack['x21']+1}
+        with self.assertRaises(ValueError):
+            history_grid([pack, broken])
+
+    def test_training_targets_and_unknown_future_covariates(self):
+        pack = dict(x21=np.ones((1,24,21)), gF=np.full((1,13), 8.), gF_mask=np.ones((1,13)),
+                    mean=np.zeros(21), scale=np.ones(21), historical=np.full((1,24), 7.),
+                    truth=np.array([[10.,11.,12.,13.]]))
+        row = chronos_training_inputs(pack)[0]
+        np.testing.assert_array_equal(row['target'][-4:], pack['truth'][0])
+        self.assertEqual(len(row['target']), 28)
+        self.assertTrue(np.isnan(row['past_covariates']['wind'][-4:]).all())
+        np.testing.assert_array_equal(row['past_covariates']['gfs'][-4:], np.full(4,8.))
+        self.assertEqual(row['future_covariates'], {'gfs': None})
+
+    def test_chronos_inputs_are_label_invariant_and_mask_future(self):
+        pack = dict(x21=np.ones((2, 24, 21)), gF=np.full((2, 13), 8.),
+                    gF_mask=np.ones((2, 13)), truth=np.zeros((2, 4)))
+        pack['gF_mask'][0, 6] = 0
+        mean, scale = np.arange(21), np.full(21, 2.)
+        hist = np.full((2, 24), 7.)
+        first = chronos_inputs(pack, mean, scale, hist, np.arange(2))
+        pack['truth'][:] = 1e6
+        second = chronos_inputs(pack, mean, scale, hist, np.arange(2))
+        np.testing.assert_array_equal(first[0]['target'], np.full(24, 22.))
+        np.testing.assert_array_equal(first[0]['target'], second[0]['target'])
+        self.assertTrue(np.isnan(first[0]['future_covariates']['gfs'][0]))
+        self.assertEqual(first[0]['past_covariates']['gfs'][0], 7.)
+        self.assertEqual(first[0]['past_covariates']['up_0'][0], 10.)
+
     def test_dense_truth_tolerance_does_not_relax_features(self):
         old = {k: np.zeros((2, 4)) for k in ('truth', 'anchor', 'x21', 'x50', 'gF', 'gF_mask')}
         pack = {k: v.copy() for k, v in old.items()}
         pack['truth'][:] = .000244140625
         audit = dense_equivalence(pack, old, np.arange(2), .01)
         self.assertEqual(audit['truth'], .000244140625)
+        self.assertEqual(audit['anchor'], 0)
+        pack['anchor'][:] = .000244140625
+        with self.assertRaises(ValueError):
+            dense_equivalence(pack, old, np.arange(2), .01)
+        pack['anchor'][:] = 0
         self.assertTrue(np.all(old['truth'] == 0))
         pack['truth'][:] = .0101
         with self.assertRaises(ValueError):

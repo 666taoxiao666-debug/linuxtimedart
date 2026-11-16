@@ -239,7 +239,7 @@ def farm_metrics(pred, truth, issue, turbines, rated, unit_count):
         lead_one_minus_nrmse=(1-np.sqrt(np.square(error).mean(0))).tolist())
 
 
-def frozen_predictions(logs, item, pack, arm):
+def frozen_predictions(logs, item, pack, arm, seeds=(2024, 2025, 2026)):
     import torch
     from scripts import train_g1 as g1, train_g2b as g2
     if item['family'] == 'G1':
@@ -253,14 +253,14 @@ def frozen_predictions(logs, item, pack, arm):
             data = pack
         protocol = read(ROOT/'configs/g1_protocol.json')
         factory = g1.make_model
-        keys = [f"{item['farm']}/{arm}/{s}" for s in (2024, 2025, 2026)]
+        keys = [f"{item['farm']}/{arm}/{s}" for s in seeds]
     else:
         parent = logs/'G2/g2b_4471499_shared_r1/formal'
         local = ROOT/'output/g2b/freeze/formal'
         protocol = read(ROOT/'configs/g2b_protocol.json')
         factory = g2.make_model
         data = g2.arm_pack(pack, arm, True)
-        keys = [f'{arm}_{s}' for s in (2024, 2025, 2026)]
+        keys = [f'{arm}_{s}' for s in seeds]
     frozen = read(parent/'selection_freeze.json')
     if frozen != read(local/'selection_freeze.json'):
         raise ValueError('Checkpoint manifest mismatch')
@@ -274,6 +274,548 @@ def frozen_predictions(logs, item, pack, arm):
         predictions.append(g1.predict(model, data, 'cpu'))
         del model
     return predictions
+
+
+def b2_pack(pack, quantiles, variant, hot=False):
+    from scripts import train_g2b as g2
+    result = g2.arm_pack(pack, 'N', True) if hot else dict(pack)
+    features = quantiles.reshape(len(quantiles), 12) if variant == 'quantiles' else quantiles[:, 1]
+    features = (features-float(pack['power_mean']))/float(pack['power_scale'])
+    x = result['x50']
+    result['x50'] = np.concatenate([x[..., :-1], np.broadcast_to(features[:,None,:],
+                                   (len(x),24,features.shape[1])), x[..., -1:]], -1).astype(np.float32)
+    return result
+
+
+def b2_model(pack, config, variant, device):
+    from models.NWPDisplacement import G1TSMixerModel
+    class ResidualModel(G1TSMixerModel):
+        def forward(self, x, batch=None):
+            return super().forward(x, batch)+x[:, -1, -5:-1].unsqueeze(-1)
+    cls = ResidualModel if variant == 'residual' else G1TSMixerModel
+    return cls('N', pack['x50'].shape[-1], None, blocks=config['blocks'], ff_dim=config['ff_dim'],
+               dropout=config['dropout'], norm_eps=config['norm_eps']).to(device)
+
+
+def run_b2(args):
+    import types
+    import torch
+    from scripts import train_g1 as g1
+    torch.set_num_threads(2)
+    torch.cuda.set_per_process_memory_fraction(.2)
+    checked(ROOT/'configs/x1_protocol.json', args.protocol_sha256)
+    protocol = read(ROOT/'configs/x1_protocol.json')
+    args.output.mkdir(parents=True, exist_ok=False)
+    save(args.output/'launch.json', dict(mode='B2', script_sha256=digest(__file__),
+        protocol_sha256=args.protocol_sha256, fits=27, selection='validation_only'))
+    try:
+        fits, scores, n_scores = [], {}, {}
+        items = {item['farm']:item for item in protocol['datasets'].values()}
+        for farm, item in items.items():
+            config = read(ROOT/('configs/g2b_protocol.json' if farm=='HoT' else 'configs/g1_protocol.json'))['fit']
+            train, val = development(args.logs, item)
+            qt = checked_a3(args.a3_results, farm+'_train', train)
+            qv = checked_a3(args.a3_results, farm+'_validation', val)
+            n_scores[farm] = float(np.mean([np.abs(p-val['truth']).mean()
+                                          for p in frozen_predictions(args.logs,item,val,'N')]))
+            scores[farm] = {}
+            for variant in protocol['B2']['variants']:
+                tr = b2_pack(train, qt, variant, farm=='HoT')
+                va = b2_pack(val, qv, variant, farm=='HoT')
+                factory = lambda arm, pack, conf, device: b2_model(pack,conf,variant,device)
+                fit = types.FunctionType(g1.fit_one.__code__, {**vars(g1), 'make_model':factory}, 'fit_one')
+                scores[farm][variant] = []
+                for seed in protocol['B2']['seeds']:
+                    folder = args.output/farm/variant/str(seed)
+                    result = fit('N', seed, tr, va, config, folder, 'cuda')
+                    fits.append(dict(farm=farm,variant=variant,seed=seed,checkpoint=str(folder/'selected.pt'),
+                                     sha256=result['sha256'],validation_mae=result['validation_mae']))
+                    scores[farm][variant].append(result['validation_mae'])
+                    print('FIT_COMPLETED',farm,variant,seed,flush=True)
+                del tr,va
+            del train,val,qt,qv
+        gain = {v: {f:1-float(np.mean(scores[f][v]))/n_scores[f] for f in items}
+                for v in protocol['B2']['variants']}
+        winner = max(protocol['B2']['variants'],key=lambda v:np.mean(list(gain[v].values())))
+        passed = all(x>=protocol['B2']['validation_gain_required'] for x in gain[winner].values())
+        freeze = dict(fits=fits,validation=scores,reference=n_scores,relative_gain=gain,
+                      selected=winner,passed=passed,test_started=False)
+        if len(fits)!=27:
+            raise ValueError('Incomplete fit budget')
+        for record in fits:
+            checked(record['checkpoint'],record['sha256'])
+        save(args.output/'selection_freeze.json',freeze)
+        reports, hashes = {}, {}
+        if passed:
+            save(args.output/'test_started.json',dict(freeze_sha256=digest(args.output/'selection_freeze.json')))
+            for name,item in protocol['datasets'].items():
+                farm=item['farm']
+                path,npaths=paths(args.logs,item)
+                pack=load_pack(path)
+                q=checked_a3(args.a3_results,name,pack)
+                data=b2_pack(pack,q,winner,farm=='HoT')
+                config=read(ROOT/('configs/g2b_protocol.json' if farm=='HoT' else 'configs/g1_protocol.json'))['fit']
+                predictions=[]
+                for record in [r for r in fits if r['farm']==farm and r['variant']==winner]:
+                    model=b2_model(data,config,winner,'cuda')
+                    model.load_state_dict(torch.load(checked(record['checkpoint'],record['sha256']),map_location='cuda',weights_only=True))
+                    pred=g1.predict(model,data,'cuda')
+                    target=args.output/(name+'_'+str(record['seed'])+'.npy')
+                    np.save(target,pred); hashes[target.name]=digest(target)
+                    predictions.append(pred)
+                    del model
+                reports[name]=g1.evaluate_arrays({'N':[np.load(p) for p in npaths],'B2':predictions},pack['truth'],
+                    pack['issue'].astype('datetime64[ns]'),None,protocol['statistics'],comparison_pairs={'B2_vs_N':('B2','N')})
+        save(args.output/'results.json',dict(exploratory_only=True,passed=passed,selected=winner,datasets=reports))
+        save(args.output/'completed.json',dict(status='COMPLETED',fits=27,predictions=hashes,
+            results_sha256=digest(args.output/'results.json')))
+    except Exception as exc:
+        save(args.output/'failed.json',dict(type=type(exc).__name__,message=str(exc)))
+        raise
+
+
+def select_weights(predictions, truth):
+    best, weights = float('inf'), None
+    for a in range(11):
+        for b in range(11-a):
+            w = np.array([a, b, 10-a-b])/10
+            score = float(np.abs(np.einsum('i,inj->nj', w, predictions)-truth).mean())
+            if score < best:
+                best, weights = score, w
+    return weights, best
+
+
+def checked_a3(directory, key, pack):
+    completed = read(directory/'completed.json')
+    if completed['status'] != 'COMPLETED' or (directory/'failed.json').exists():
+        raise ValueError('A3 parent incomplete')
+    name = key+'_quantiles.npy'
+    pred = np.load(checked(directory/name, completed['predictions'][name]))
+    key_file = key+'_keys.json'
+    keys = read(checked(directory/key_file, completed['artifacts'][key_file]))
+    for field in ('issue', 'turbines'):
+        tag = 'issue_sha256' if field == 'issue' else 'turbine_sha256'
+        if hashlib.sha256(pack[field].tobytes()).hexdigest() != keys[tag]:
+            raise ValueError('A3 sample keys mismatch')
+    if pred.shape != (len(pack['truth']), 3, 4):
+        raise ValueError('A3 shape mismatch')
+    return pred
+
+
+def run_c1(args):
+    import torch
+    from scripts.train_g1 import evaluate_arrays
+    torch.set_num_threads(2)
+    checked(ROOT/'configs/x1_protocol.json', args.protocol_sha256)
+    protocol = read(ROOT/'configs/x1_protocol.json')
+    args.output.mkdir(parents=True, exist_ok=False)
+    save(args.output/'launch.json', dict(mode='C1', new_fits=0, script_sha256=digest(__file__),
+        protocol_sha256=args.protocol_sha256))
+    try:
+        selected, reports, hashes = {}, {}, {}
+        parent = read(args.a1_results/'completed.json')
+        if parent['status'] != 'COMPLETED':
+            raise ValueError('A1 incomplete')
+        for name, item in protocol['datasets'].items():
+            farm = item['farm']
+            seeds = (2024,2025,2026,2027,2028) if farm == 'HoT' else (2024,2025,2026)
+            if farm not in selected:
+                _, val = development(args.logs, item)
+                n = np.mean(frozen_predictions(args.logs, item, val, 'N', seeds), 0)
+                sel = read(args.a1_results/(farm+'_selection.json'))
+                a1 = np.load(checked(args.a1_results/(farm+'_validation.npy'), sel['validation_prediction_sha256']))
+                a3 = checked_a3(args.a3_results, farm+'_validation', val)[:,1]
+                w, score = select_weights(np.stack([n,a1,a3]), val['truth'])
+                selected[farm] = w
+                save(args.output/(farm+'_selection.json'), dict(weights=w.tolist(), validation_mae=score,
+                    order=['N_ensemble','A1','A3a'], seeds=seeds, selection='validation_only'))
+                del val
+            path, _ = paths(args.logs, item)
+            pack = load_pack(path)
+            nparent = args.logs/('G2/g2c_2eeb23f_r1/formal' if farm == 'HoT' else 'G1/g1c_27312d7_r2/formal')
+            nr = read(nparent/'completed.json')
+            names = ([f"{item['year']}_N_{s}.npy" for s in seeds] if farm=='HoT'
+                     else [f'{farm}/N/{s}/prediction.npy' for s in seeds])
+            n = np.mean([np.load(checked(nparent/nm, nr['predictions'][nm])) for nm in names], 0)
+            a1 = np.load(checked(args.a1_results/(name+'_A1.npy'), parent['predictions'][name]))
+            a3 = checked_a3(args.a3_results, name, pack)[:,1]
+            pred = np.einsum('i,inj->nj', selected[farm], np.stack([n,a1,a3]))
+            target = args.output/(name+'_C1.npy')
+            np.save(target, pred); hashes[target.name] = digest(target)
+            reports[name] = evaluate_arrays({'N_ensemble':[n], 'C1':[pred]}, pack['truth'],
+                pack['issue'].astype('datetime64[ns]'), None, protocol['statistics'],
+                comparison_pairs={'C1_vs_N':('C1','N_ensemble')})
+            save(args.output/(name+'.json'), reports[name])
+        save(args.output/'results.json', dict(descriptive_only=True,datasets=reports))
+        save(args.output/'completed.json', dict(status='COMPLETED', predictions=hashes,
+            results_sha256=digest(args.output/'results.json')))
+    except Exception as exc:
+        save(args.output/'failed.json', dict(type=type(exc).__name__,message=str(exc)))
+        raise
+
+
+def verify_chronos(receipt_path, manifest_path):
+    receipt = read(receipt_path)
+    if receipt['revision'] != '29ec3766d36d6f73f0696f85560a422f50e8498c' or receipt['manifest_sha256'] != '758b5c252d2a0bbe0237554d3c1587b4bb5165b73d96ccdcec0cf98e31d0de5e':
+        raise ValueError('Chronos identity differs from user-approved receipt')
+    if receipt['status'] != 'READY':
+        raise ValueError('Chronos receipt is not READY')
+    checked(manifest_path, receipt['manifest_sha256'])
+    manifest = read(manifest_path)
+    if manifest['revision'] != receipt['revision'] or len(manifest['files']) != receipt['n_files']:
+        raise ValueError('Chronos identity mismatch')
+    root = Path(receipt['model_dir']).resolve()
+    for record in manifest['files']:
+        path = (root/record['path']).resolve()
+        if not path.is_relative_to(root) or path.stat().st_size != record['bytes']:
+            raise ValueError('Invalid model file')
+        checked(path, record['sha256'])
+    return receipt
+
+
+def chronos_inputs(pack, mean, scale, historical, indices):
+    """Only historical inputs and issue-time GFS; never read forecast labels."""
+    raw = pack['x21'][indices].astype(float)*np.asarray(scale)+np.asarray(mean)
+    result = []
+    for j, i in enumerate(indices):
+        cov = {'wind': raw[j, :, 0], 'up_missing': raw[j, :, 19], 'gfs': historical[j]}
+        cov.update({'up_'+str(k): raw[j, :, 8+k] for k in range(11)})
+        future = np.where(pack['gF_mask'][i, 6:10] > 0, pack['gF'][i, 6:10], np.nan)
+        result.append(dict(target=raw[j, :, -1], past_covariates=cov,
+                           future_covariates={'gfs': future}))
+    return result
+
+
+def chronos_history(logs, item):
+    if item['family'] == 'G1':
+        folder = logs/'G1/g1c_27312d7_r2/prepared'/item['farm']
+        meta = read(folder/'prepared.json')
+        if meta != read(ROOT/'output/g1/preparation_78/prepared'/item['farm']/'prepared.json'):
+            raise ValueError('Scaler metadata mismatch')
+        cache = {}
+        for name in ('points_0.npz', 'points_1.npz'):
+            cache.update(load_pack(folder/name))
+        import pandas as pd
+        hours = pd.date_range(meta['bounds']['train'][0], meta['bounds']['test'][1], freq='h', inclusive='left').to_numpy()
+        hourly = cached_hourly(hours, cache, meta)
+        stats = meta['scaler']
+    else:
+        freeze = logs/'G2/g2b_4471499_shared_r1/formal'
+        from scripts import train_g2b as g2, evaluate_g2b_sealed as sealed
+        frozen, _ = g2.frozen_gate(freeze, sealed.FREEZE_SHA)
+        stats = read(freeze/'fit_statistics.json')
+        folder = logs/'G2/hot_dev_f58f2ce_r5/prepared'
+        checked(folder/'completed.json', frozen['preparation_sha256'])
+        meta = read(folder/'completed.json')
+        hourly = load_pack(checked(folder/'nwp_hourly.npz', meta['artifacts']['nwp_hourly.npz']))
+        # Sealed years use the already approved 2023-2025 point cache, never 2026.
+        import pandas as pd
+        hours = pd.date_range('2023-01-01T01:00', '2026-01-01', freq='h', inclusive='left').to_numpy()
+        extended = cached_hourly(hours, load_pack(logs/'G2/g2b84_bc7730e_r1/sealed_prep/points.npz'), stats)
+        old_hours = hourly['hours'].astype('datetime64[ns]')
+        all_hours = np.union1d(old_hours, hours)
+        hist = np.full((len(all_hours), 1), np.nan)
+        hist[np.searchsorted(all_hours, hours), 0] = extended['historical'][:, 0]
+        hist[np.searchsorted(all_hours, old_hours), 0] = hourly['historical'][:, 0]
+        hourly = dict(hours=all_hours, historical=hist)
+    return stats, hourly
+
+
+def history_grid(packs):
+    """Recover timestamped historical features only; no forecast labels enter the grid."""
+    grid = {}
+    for pack in packs:
+        issue = pack['issue'].astype('datetime64[ns]').astype(np.int64)
+        for offset in range(24):
+            hours = issue - (23-offset)*3600000000000
+            for i, (unit, hour) in enumerate(zip(pack['turbines'], hours)):
+                key = (int(unit), int(hour))
+                value = pack['x21'][i, offset]
+                if key in grid and not np.array_equal(grid[key], value):
+                    raise ValueError('Conflicting historical context at '+str(key))
+                grid[key] = value.copy()
+    keys = sorted(grid)
+    return dict(grid_unit=np.array([k[0] for k in keys]),
+                grid_hour=np.array([k[1] for k in keys]),
+                grid_value=np.stack([grid[k] for k in keys]))
+
+
+def longer_context(pack, grid, indices, lookup=None):
+    lookup = lookup if lookup is not None else {(int(u), int(t)): i for i, (u, t) in
+                                               enumerate(zip(grid['grid_unit'], grid['grid_hour']))}
+    out = np.full((len(indices), 168, 21), np.nan, np.float32)
+    for j, i in enumerate(indices):
+        issue = int(pack['issue'][i].astype('datetime64[ns]').astype(np.int64))
+        for offset in range(144):
+            k = lookup.get((int(pack['turbines'][i]), issue-(167-offset)*3600000000000))
+            if k is not None:
+                out[j, offset] = grid['grid_value'][k]
+        out[j, -24:] = pack['x21'][i]
+    return out
+
+
+def infer_chronos(pipe, pack, context_length=24, grid=None, batch_size=1024):
+    qidx = [next(i for i, q in enumerate(pipe.quantiles) if abs(q-v)<1e-5) for v in (.1, .5, .9)]
+    output = np.empty((len(pack['x21']), 3, 4), np.float32)
+    lookup = None if grid is None else {(int(u), int(t)): i for i, (u, t) in
+                                     enumerate(zip(grid['grid_unit'], grid['grid_hour']))}
+    for lo in range(0, len(output), 2048):
+        ix = np.arange(lo, min(lo+2048, len(output)))
+        if context_length == 24:
+            inputs = chronos_inputs(pack, pack['mean'], pack['scale'], pack['historical'][ix], ix)
+        else:
+            part = dict(x21=longer_context(pack, grid, ix, lookup), gF=pack['gF'][ix],
+                        gF_mask=pack['gF_mask'][ix])
+            times = pack['issue'][ix].astype('datetime64[ns]')[:, None] - np.arange(167,-1,-1)*np.timedelta64(1,'h')
+            hours = grid['hours'].astype('datetime64[ns]')
+            pos = np.searchsorted(hours, times)
+            valid = (pos < len(hours)) & (hours[np.minimum(pos, len(hours)-1)] == times)
+            hist = np.full(times.shape, np.nan)
+            hist[valid] = grid['historical'][pos[valid], 0]
+            inputs = chronos_inputs(part, pack['mean'], pack['scale'], hist, np.arange(len(ix)))
+        prediction = pipe.predict(inputs, prediction_length=4, context_length=context_length,
+                                  batch_size=batch_size, cross_learning=False)
+        output[ix] = np.stack([p[0, qidx, :].detach().cpu().numpy() for p in prediction])
+        if not np.isfinite(output[ix]).all():
+            raise ValueError('Non-finite Chronos prediction')
+        if lo % 16384 == 0:
+            print('INFERENCE', context_length, lo, '/', len(output), flush=True)
+    return output
+
+
+def chronos_worker(args):
+    import torch
+    from chronos import Chronos2Pipeline
+    torch.set_num_threads(2)
+    torch.cuda.set_per_process_memory_fraction(.20)
+    receipt = verify_chronos(args.chronos_receipt, args.chronos_manifest)
+    pack = load_pack(checked(args.worker_input, args.worker_input_sha))
+    pipe = Chronos2Pipeline.from_pretrained(receipt['model_dir'], device_map='cuda', local_files_only=True)
+    output = infer_chronos(pipe, pack)
+    with args.output.open('xb') as f:
+        np.save(f, output)
+    grid = load_pack(checked(args.history_grid, args.history_grid_sha))
+    output = infer_chronos(pipe, pack, 168, grid)
+    with args.output.with_name(args.output.stem+'_168.npy').open('xb') as f:
+        np.save(f, output)
+
+
+def chronos_training_inputs(pack):
+    """A fixed 24/4 fit window: unknown future covariates remain missing."""
+    rows = chronos_inputs(pack, pack['mean'], pack['scale'], pack['historical'],
+                          np.arange(len(pack['x21'])))
+    for i, row in enumerate(rows):
+        row['target'] = np.r_[row['target'], pack['truth'][i]]
+        for key, values in row['past_covariates'].items():
+            future = row['future_covariates']['gfs'] if key == 'gfs' else np.full(4, np.nan)
+            row['past_covariates'][key] = np.r_[values, future]
+        row['future_covariates'] = {'gfs': None}
+    return rows
+
+
+def b1_worker(args):
+    import torch
+    from chronos import Chronos2Pipeline
+    from transformers import TrainerCallback
+    torch.set_num_threads(2)
+    torch.cuda.set_per_process_memory_fraction(.20)
+    receipt = verify_chronos(args.chronos_receipt, args.chronos_manifest)
+    spec = read(checked(args.worker_input, args.worker_input_sha))
+    train = load_pack(checked(spec['train'], spec['train_sha256']))
+    val = load_pack(checked(spec['validation'], spec['validation_sha256']))
+    args.output.mkdir(parents=True, exist_ok=False)
+    selected = args.output/'selected'
+
+    class SelectByMAE(TrainerCallback):
+        def __init__(self):
+            self.best = float('inf')
+            self.rows = []
+
+        def on_step_end(self, training_args, state, control, model=None, **kwargs):
+            if state.global_step % 100:
+                return control
+            was_training = model.training
+            model.eval()
+            pipeline = Chronos2Pipeline(model=model)
+            with torch.inference_mode():
+                prediction = infer_chronos(pipeline, val, batch_size=256)[:, 1]
+            score = float(np.abs(prediction-val['truth']).mean())
+            if not np.isfinite(score):
+                raise ValueError('Nonfinite B1 validation MAE')
+            self.rows.append(dict(step=int(state.global_step), validation_mae=score))
+            if score < self.best:
+                self.best = score
+                pipeline.save_pretrained(selected)
+                np.save(args.output/'selected_validation.npy', prediction)
+                save(args.output/'selection.json', dict(step=int(state.global_step), validation_mae=score))
+            model.train(was_training)
+            save(args.output/'validation_history.json', self.rows)
+            return control
+
+    selector = SelectByMAE()
+    pipe = Chronos2Pipeline.from_pretrained(receipt['model_dir'], device_map='cuda', local_files_only=True)
+    fitted = pipe.fit(chronos_training_inputs(train), prediction_length=4,
+                      context_length=24, min_past=24, output_dir=args.output/'fit',
+                      callbacks=[selector], seed=2024)
+    if len(selector.rows) != 10 or not selected.is_dir():
+        raise ValueError('B1 checkpoint selection did not complete all ten scheduled evaluations')
+    model_hashes = {str(p.relative_to(args.output)): digest(p) for p in selected.rglob('*') if p.is_file()}
+    save(args.output/'selection_freeze.json', dict(model_sha256=model_hashes,
+         selected=read(args.output/'selection.json'), fit_steps=1000, selection='validation_median_mae',
+         train_sha256=spec['train_sha256'], validation_sha256=spec['validation_sha256']))
+    del fitted, pipe, train, val
+    torch.cuda.empty_cache()
+    for name, sha in model_hashes.items():
+        checked(args.output/name, sha)
+    pipe = Chronos2Pipeline.from_pretrained(selected, device_map='cuda', local_files_only=True)
+    save(args.output/'test_started.json', dict(freeze_sha256=digest(args.output/'selection_freeze.json')))
+    hashes = {}
+    for record in spec['tests']:
+        pack = load_pack(checked(record['path'], record['sha256']))
+        pred = infer_chronos(pipe, pack)
+        target = args.output/(record['name']+'_quantiles.npy')
+        np.save(target, pred)
+        hashes[target.name] = digest(target)
+    save(args.output/'completed.json', dict(status='COMPLETED', predictions=hashes, fits=1,
+         freeze_sha256=digest(args.output/'selection_freeze.json')))
+
+
+def run_b1(args):
+    import subprocess
+    from scripts.train_g1 import evaluate_arrays
+    checked(ROOT/'configs/x1_protocol.json', args.protocol_sha256)
+    protocol = read(ROOT/'configs/x1_protocol.json')
+    verify_chronos(args.chronos_receipt, args.chronos_manifest)
+    parent = read(args.a3_results/'completed.json')
+    if parent['status'] != 'COMPLETED':
+        raise ValueError('A3 incomplete')
+    args.output.mkdir(parents=True, exist_ok=False)
+    save(args.output/'launch.json', dict(mode='B1', source_sha256=digest(__file__),
+         protocol_sha256=args.protocol_sha256, fits=3, checkpoint_selection='validation_mae'))
+    try:
+        reports, hashes = {}, {}
+        items = {item['farm']: item for item in protocol['datasets'].values()}
+        for farm, item in items.items():
+            train, val = development(args.logs, item)
+            prepared = []
+            for split, data in [('train', train), ('validation', val)]:
+                # Validate A3 sample order and context identity before adding development labels.
+                checked_a3(args.a3_results, farm+'_'+split, data)
+                keys = read(args.a3_results/(farm+'_'+split+'_keys.json'))
+                context = load_pack(checked(args.a3_results/(farm+'_'+split+'_context.npz'), keys['input_sha256']))
+                context['truth'] = data['truth']
+                target = args.output/(farm+'_'+split+'.npz')
+                np.savez(target, **context)
+                prepared.append((str(target), digest(target)))
+            tests = []
+            for name, test_item in protocol['datasets'].items():
+                if test_item['farm'] == farm:
+                    keys = read(args.a3_results/(name+'_keys.json'))
+                    path = checked(args.a3_results/(name+'_context.npz'), keys['input_sha256'])
+                    tests.append(dict(name=name, path=str(path), sha256=keys['input_sha256']))
+            spec = args.output/(farm+'_worker.json')
+            save(spec, dict(train=prepared[0][0], train_sha256=prepared[0][1],
+                 validation=prepared[1][0], validation_sha256=prepared[1][1], tests=tests))
+            subprocess.run([args.chronos_python, '-u', str(Path(__file__).resolve()), '--arm', 'B1-worker',
+                '--logs', str(args.logs), '--output', str(args.output/farm),
+                '--protocol-sha256', args.protocol_sha256, '--chronos-receipt', str(args.chronos_receipt),
+                '--chronos-manifest', str(args.chronos_manifest), '--worker-input', str(spec),
+                '--worker-input-sha', digest(spec)], check=True)
+            done = read(args.output/farm/'completed.json')
+            for rec in tests:
+                name = rec['name']
+                path, npaths = paths(args.logs, protocol['datasets'][name])
+                pack = load_pack(path)
+                file = name+'_quantiles.npy'
+                prediction = np.load(checked(args.output/farm/file, done['predictions'][file]))[:, 1]
+                a3 = checked_a3(args.a3_results, name, pack)[:, 1]
+                hashes[farm+'/'+file] = done['predictions'][file]
+                reports[name] = evaluate_arrays({'N': [np.load(p) for p in npaths], 'B1': [prediction],
+                    'A3a': [a3]}, pack['truth'], pack['issue'].astype('datetime64[ns]'), None,
+                    protocol['statistics'], comparison_pairs={'B1_vs_N': ('B1', 'N'), 'B1_vs_A3a': ('B1', 'A3a')})
+                save(args.output/(name+'.json'), reports[name])
+        save(args.output/'results.json', dict(exploratory_only=True, datasets=reports))
+        save(args.output/'completed.json', dict(status='COMPLETED', fits=3, predictions=hashes,
+             results_sha256=digest(args.output/'results.json')))
+    except Exception as exc:
+        save(args.output/'failed.json', dict(type=type(exc).__name__, message=str(exc), retry=False))
+        raise
+
+
+def run_a3(args):
+    import subprocess
+    checked(ROOT/'configs/x1_protocol.json', args.protocol_sha256)
+    protocol = read(ROOT/'configs/x1_protocol.json')
+    receipt = verify_chronos(args.chronos_receipt, args.chronos_manifest)
+    args.output.mkdir(parents=True, exist_ok=False)
+    save(args.output/'launch.json', dict(mode='A3a/A3b', script_sha256=digest(__file__),
+        protocol_sha256=args.protocol_sha256, model=receipt, context_lengths=[24,168], cross_learning=False))
+    try:
+        done, hashes, reports, grids, artifacts = set(), {}, {}, {}, {}
+        for name, item in protocol['datasets'].items():
+            stats, hourly = chronos_history(args.logs, item)
+            hours = hourly['hours'].astype('datetime64[ns]')
+            tasks = []
+            if item['farm'] not in done:
+                tr, va = development(args.logs, item)
+                tasks.extend([(item['farm']+'_train', tr, None), (item['farm']+'_validation', va, None)])
+                # Frozen historical windows provide an existing hourly series. Missing older hours
+                # remain NaN; all cohorts and the last 24 hours remain exactly unchanged.
+                source_packs = [tr, va]
+                for other in protocol['datasets'].values():
+                    if other['farm'] == item['farm']:
+                        source_packs.append(load_pack(paths(args.logs, other)[0]))
+                grid = history_grid(source_packs)
+                grid.update(hours=hours, historical=hourly['historical'])
+                gridpath = args.output/(item['farm']+'_history.npz')
+                np.savez(gridpath, **grid)
+                grids[item['farm']] = (gridpath, digest(gridpath))
+                artifacts[gridpath.name] = digest(gridpath)
+                del grid, source_packs
+                done.add(item['farm'])
+            path, npaths = paths(args.logs, item)
+            tasks.append((name, load_pack(path), npaths))
+            for key, pack, reference in tasks:
+                times = pack['issue'].astype('datetime64[ns]')[:, None]-np.arange(23, -1, -1)*np.timedelta64(1, 'h')
+                pos = np.searchsorted(hours, times)
+                if (pos >= len(hours)).any() or not np.array_equal(hours[pos], times):
+                    raise ValueError('Missing historical GFS hour')
+                context = args.output/(key+'_context.npz')
+                np.savez(context, x21=pack['x21'], gF=pack['gF'], gF_mask=pack['gF_mask'],
+                         historical=hourly['historical'][pos, 0], mean=stats['mean'], scale=stats['scale'],
+                         issue=pack['issue'], turbines=pack['turbines'])
+                target = args.output/(key+'_quantiles.npy')
+                input_sha = digest(context)
+                subprocess.run([args.chronos_python, '-u', str(Path(__file__).resolve()), '--arm', 'A3-worker',
+                    '--logs', str(args.logs), '--output', str(target), '--protocol-sha256', args.protocol_sha256,
+                    '--chronos-receipt', str(args.chronos_receipt), '--chronos-manifest', str(args.chronos_manifest),
+                    '--worker-input', str(context), '--worker-input-sha', input_sha,
+                    '--history-grid', str(grids[item['farm']][0]), '--history-grid-sha', grids[item['farm']][1]], check=True)
+                output = np.load(target)
+                hashes[target.name] = digest(target)
+                target168 = target.with_name(target.stem+'_168.npy')
+                hashes[target168.name] = digest(target168)
+                save(args.output/(key+'_keys.json'), dict(windows=len(output),
+                    input_sha256=input_sha,
+                    issue_sha256=hashlib.sha256(pack['issue'].tobytes()).hexdigest(),
+                    turbine_sha256=hashlib.sha256(pack['turbines'].tobytes()).hexdigest()))
+                artifacts[key+'_keys.json'] = digest(args.output/(key+'_keys.json'))
+                artifacts[context.name] = input_sha
+                if reference is not None:
+                    from scripts.train_g1 import evaluate_arrays
+                    reports[key] = evaluate_arrays({'N': [np.load(p) for p in reference], 'A3a': [output[:, 1]],
+                        'A3b': [np.load(target168)[:, 1]]},
+                        pack['truth'], pack['issue'].astype('datetime64[ns]'), None, protocol['statistics'],
+                        comparison_pairs={'N_vs_A3a': ('N', 'A3a'), 'N_vs_A3b': ('N', 'A3b')})
+                    save(args.output/(key+'.json'), reports[key])
+                print('COMPLETED', key, flush=True)
+            del tasks
+        save(args.output/'results.json', reports)
+        save(args.output/'completed.json', dict(status='COMPLETED', predictions=hashes, artifacts=artifacts,
+            results_sha256=digest(args.output/'results.json'), new_fits=0))
+    except Exception as exc:
+        save(args.output/'failed.json', dict(type=type(exc).__name__, message=str(exc)))
+        raise
 
 
 def dense_equivalence(pack, old, overlap, tolerance_kw):
@@ -574,6 +1116,8 @@ def tree_features(pack, hot=False):
 
 def run_a1(args):
     import lightgbm as lgb
+    if lgb.__version__ != '4.5.0' or Path(sys.prefix).name != 'timedart':
+        raise ValueError('LightGBM fits require timedart / 4.5.0')
     from scripts.train_g1 import evaluate_arrays
     checked(ROOT/'configs/x1_protocol.json', args.protocol_sha256)
     protocol = read(ROOT/'configs/x1_protocol.json')
@@ -650,13 +1194,33 @@ if __name__ == '__main__':
     p.add_argument('--logs', type=Path, required=True)
     p.add_argument('--output', type=Path, required=True)
     p.add_argument('--protocol-sha256', required=True)
-    p.add_argument('--arm', choices=['A0', 'A1', 'A2', 'E1', 'E2', 'E2-saved'], required=True)
+    p.add_argument('--arm', choices=['A0', 'A1', 'A2', 'A3', 'A3-worker', 'B1', 'B1-worker', 'B2', 'C1', 'E1', 'E2', 'E2-saved'], required=True)
     p.add_argument('--a2-results', type=Path)
     p.add_argument('--a1-results', type=Path)
+    p.add_argument('--a3-results', type=Path)
     p.add_argument('--e2-results', type=Path)
     p.add_argument('--e1-hot-only', action='store_true')
+    p.add_argument('--chronos-receipt', type=Path)
+    p.add_argument('--chronos-manifest', type=Path)
+    p.add_argument('--chronos-python', default='/home/XT/miniconda3/envs/tsfm/bin/python')
+    p.add_argument('--worker-input', type=Path)
+    p.add_argument('--worker-input-sha')
+    p.add_argument('--history-grid', type=Path)
+    p.add_argument('--history-grid-sha')
     args = p.parse_args()
-    if args.arm == 'E2-saved':
+    if args.arm == 'B1':
+        run_b1(args)
+    elif args.arm == 'B1-worker':
+        b1_worker(args)
+    elif args.arm == 'B2':
+        run_b2(args)
+    elif args.arm == 'C1':
+        run_c1(args)
+    elif args.arm == 'A3-worker':
+        chronos_worker(args)
+    elif args.arm == 'A3':
+        run_a3(args)
+    elif args.arm == 'E2-saved':
         run_e2_saved(args)
     elif args.arm == 'A1':
         run_a1(args)
