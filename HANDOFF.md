@@ -25,20 +25,19 @@
 需要用户决定: 无（Cursor 下载指令由我直接给用户）
 
 ## Codex → Claude
-<!-- 由Codex覆盖。第85次G2c：c0/c1完成，交回复核 -->
-轮次: R1/2 | 阶段: G2c | 分支: exp/G2 | 提交号: 实现2eeb23f；结果见本提交
-审查结论: 通过，docs/review/G2c-R1-codex.md；S1措辞建议不阻断。
-已直接修复: 无额外改动；G2c-C1追加入口，已有11函数AST一致，冻结源码及协议未改。
-运行信息: CPU2线程；c0副本+2023演练包PASS；c1正式一次COMPLETED，PID1027531，2026-11-15T14:13:02Z启动，无新增拟合/重试。
-服务器run: /home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/G2/g2c_2eeb23f_r1/formal
-命令: scripts/evaluate_g2b_sealed.py --mode evaluate；完整参数见output/g2b/sealed_eval/server/formal_launch.json。
-验证: 服务器22项21通过1跳过；冻结checkpoint/source、28预测、两数组及results SHA通过；本地验收见local_verification.json。
-关键数字: 2024/2025 Q1h增益14.9052/15.0538kW，CI[12.1928,17.5953]/[12.3972,17.7346]，p=8.4276e-27/2.4244e-29。
-关键数字: 2024/2025 Qe增益3.2810/2.9307kW，CI[3.0935,3.4761]/[2.7600,3.1031]，p=1.0392e-246/6.0550e-248。
-关键数字: 两年最大p再Holm：Q1h=8.4276e-27、Qe=2.0784e-246，均通过联合确认。
-关键数字: 集成MAE/RMSE/R²：2024=197.275/326.035/0.764740；2025=190.102/316.959/0.770600。
-关键数字: 次要N对N0增益0.9079/2.9931kW，2024 CI跨0、p=0.2158；不可声称两年均显著。
-结果: output/g2b/sealed_eval/SUMMARY.md及server/；arrays/两年19键小数组仅本地、忽略不提交。
-范围: 未读2026、不训练/调参/事后挑子组；两年共享模型不称独立，跨风场汇总仅描述；不合主线。
-需要 Claude 做的: 独立复算本地数组、复核全部原定检验及结论边界；处理S1措辞，复核后交用户决定是否合并。
-需要用户决定: 无；本轮完成后停下交回。
+<!-- 由Codex覆盖。第86次X1：G2已合并，A0执行，A2缺测规则待决议 -->
+轮次: R1/2 | 阶段: X1 | 分支: exp/X1 | 提交号: 文档86d3045，主线合并26c82c7，A0实现1d8479b
+审查结论: A0通过；A2有1条阻断R1-B1，见docs/review/X1-R1-codex.md；A3/B按阶段暂缓。
+已直接修复: 无；A2回退规则不唯一，未代改Claude方案。
+合并: exp/G2已--no-ff合入codex/self-evolving-wiki并推送；从主线创建exp/X1，main未动。
+运行信息: A0正式PID1166199，2026-11-16T00:25:15Z启动，四集COMPLETED、进程退出；CPU2核/2线程，无新增拟合。
+服务器run: /home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/x1_1d8479b_r1/A0
+命令: scripts/run_x1.py --logs /home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs --output <run> --protocol-sha256 690397175db685e492c06cbaa85a72eb02e1cfe53dfa1177c2aceaf6b9cd0cc7
+验证: 本地与服务器各3项单测通过；固定测试包SHA、父完成记录与N前三seed预测SHA均在执行入口核对。
+结果: output/x1/A0/；服务器4个A0预测及results SHA复核通过，JSON/日志已取回。
+关键数字: N较A0 MAE增益(kW)：Kelmarsh47.4118 CI[42.5247,51.7403]；Penmanshiel37.0850 CI[29.3309,44.3887]。
+关键数字: HoT2024增益45.2094 CI[40.6728,49.8288]；HoT2025增益48.9252 CI[44.2101,53.7995]；四集判定通过。
+关键数字: A2测试gF_mask[:,6:10]无效单元：Kelmarsh96、Penmanshiel624；不得将占位0当真实静风或删窗口。
+依赖: timedart无lightgbm，A1未运行；Chronos-2等待Cursor回执，A3/B未运行；未下载或安装。
+需要 Claude 做的: 决议R1-B1，规定A2拟合有效样本与缺测预测回退规则；复核A0实现及结果；后续依赖就绪再交回。
+需要用户决定: 无；方案R1可由Claude在R2处理，无需用户重复授权。

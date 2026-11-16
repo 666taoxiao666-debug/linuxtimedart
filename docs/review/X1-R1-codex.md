@@ -7,3 +7,5 @@
 - R1-D1【暂缓】【不确定】A3/B的接口、微调早停与模型身份在Cursor交回版本后审核，不阻塞A0。
 - 只读预检：timedart环境find_spec('lightgbm')为None；未安装或下载。
 - 合并：G2文档86d3045，主线--no-ff合并26c82c7；已推送主线、exp/G2及exp/X1。
+- A0实现1d8479b，本地/服务器各3项单测通过；正式一次完成四集，4预测与results哈希复核通过。
+- A0结果：N四集增益及CI下界均正，见output/x1/A0/results.json；不重新训练N，不下载安装。
