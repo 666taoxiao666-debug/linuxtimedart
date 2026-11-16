@@ -1,0 +1,67 @@
+{
+  "grid": [
+    {
+      "num_leaves": 31,
+      "min_child_samples": 50,
+      "validation_mae": 183.39471826316975,
+      "best_iterations": [
+        201,
+        424,
+        300,
+        271
+      ]
+    },
+    {
+      "num_leaves": 31,
+      "min_child_samples": 200,
+      "validation_mae": 182.91364566929354,
+      "best_iterations": [
+        280,
+        411,
+        473,
+        232
+      ]
+    },
+    {
+      "num_leaves": 127,
+      "min_child_samples": 50,
+      "validation_mae": 184.46957763401082,
+      "best_iterations": [
+        161,
+        252,
+        270,
+        208
+      ]
+    },
+    {
+      "num_leaves": 127,
+      "min_child_samples": 200,
+      "validation_mae": 184.03435927361494,
+      "best_iterations": [
+        142,
+        142,
+        163,
+        179
+      ]
+    }
+  ],
+  "selected": {
+    "num_leaves": 31,
+    "min_child_samples": 200,
+    "validation_mae": 182.91364566929354,
+    "best_iterations": [
+      280,
+      411,
+      473,
+      232
+    ]
+  },
+  "model_sha256": {
+    "Penmanshiel_h1.txt": "ad0d7faf7f1ac8a223dd3cd776de6f705982a0d76d36c5236474d32a7b39534e",
+    "Penmanshiel_h2.txt": "de51dfd17b3b7dd85c25d598f0e08d8a3f74feaf42f2edc7d79b55f8ac50b10b",
+    "Penmanshiel_h3.txt": "c14e59bce1f8cc88ef0d4faccc933bdee4e3433f71e9cb6a963f4be16cac11cc",
+    "Penmanshiel_h4.txt": "d3433134098a2976dea72d3122cc3695e18f6a739c23d92db10b67b1da7e9c46"
+  },
+  "selection": "validation_mae_only",
+  "validation_prediction_sha256": "1c07fa056e7d2834de4bd4bd9b145790dcfc4b65639f1508ec3f1eb8decaea92"
+}
