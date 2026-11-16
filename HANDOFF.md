@@ -3,29 +3,26 @@
 规则见 AGENTS.md：两节各由一方整节覆盖、不追加，每节不超过 40 行；历史用 `git log -p HANDOFF.md` 查。
 
 ## Claude → Codex
-<!-- 由 Claude 覆盖。最后更新：2026-11-15 第 85 次（G2b 3a/3b 复核通过；新阶段 G2c = 原 3c：冒烟 → 一次性评估 → 取回） -->
-轮次: R1/2 | 阶段: G2c | 分支: exp/G2 | 基线提交: 317e344
-请求: 审代码后运行（追加 evaluate 模式 → c0 冒烟通过 → c1 一次性评估 → 取回后交回）
+<!-- 由 Claude 覆盖。最后更新：2026-11-16 第 86 次（G2c 复核通过，用户同意合并 exp/G2；新阶段 X1：外部基线 + 时序大模型并行） -->
+轮次: R1/2 | 阶段: X1 | 分支: exp/X1 | 基线提交: 3254c75
+请求: 审方案后运行（先合并 G2，再从主线拉 exp/X1；A0–A2 先跑，A1 等 lightgbm，A3/B 等 Cursor 装好 Chronos-2）
 待审范围: git diff HEAD -- docs/STAGE_PLAN.md docs/review/DECISIONS.md
-允许改动: scripts/evaluate_g2b_sealed.py, tests/test_g2b.py, output/g2b/**, output/external_acquisition/gfs_g0/manifest_b1.json（本地未跟踪，不要提交、不要改）, output/g2/hot_dev/audit_metadata_r5.tar.gz（本地未跟踪，不要提交）
-审查文件: docs/review/G2c-R1-codex.md
-本轮决议: 采纳 1（G2c-C1）/ 反驳 0 / 暂缓 0 / 转实验 0。G2b 的 3a、3b 复核通过：新脚本逐行看过；演练最大差 3.05e-5 kW；GFS 清单和来源消息数、MIDAS、SCADA、两个数据包都已核对，详见 DECISIONS G2b 末段
+允许改动: scripts/run_x1.py, configs/x1_protocol.json, tests/test_x1.py, output/x1/**, output/external_acquisition/gfs_g0/manifest_b1.json（本地未跟踪，不要提交、不要改）, output/g2/hot_dev/audit_metadata_r5.tar.gz（本地未跟踪，不要提交）
+审查文件: docs/review/X1-R1-codex.md
+本轮决议: 采纳 1（G2c R1-S1：效应以改造后工况为前提）/ 反驳 0 / 暂缓 0 / 转实验 0。G2c 我用本地数组独立复算：两年的 MAE、RMSE、R²、5 组增益与 results.json 一致到小数点后 4 位，NW z 一致到 3 位；Q1h、Qe 两年都通过。结论边界见 DECISIONS G2c 末段
 
 需要你做的:
-1. **追加 evaluate 模式**（只追加，不改已有函数，规格见 STAGE_PLAN 和 G2c-C1）：
-   - 先核对冻结 SHA、协议 SHA、两个数据包的 SHA（写死在 STAGE_PLAN 里）和 prepared_complete；
-   - 确认输出目录是新的，在冻结目录里独占写入 test_evaluation_started.json；
-   - 调用冻结的 evaluate_sealed，用 CPU、2 线程；
-   - tests/test_g2b.py 追加三项测试。
-2. **c0 冒烟：** 用冻结目录的副本和 2023 演练数据包（两个年份键都用它），完整跑通 evaluate 模式。不通过就停下交回，不碰真正的冻结目录。
-3. **c1 一次性评估：** 在真正的冻结目录上只跑一次。失败就写 failed.json，停下交回，不重试。
-4. **取回：**
-   - 提交 results.json、completed.json、日志、标记文件和预测 SHA；
-   - 每年导出一个小数组包（truth、issue、turbines、times、anchor 和 14 组预测），拷到本地 output/g2b/sealed_eval/arrays/，加 .gitignore，不提交；
-   - 交接里列出 Q1h、Qe 两年的增益、CI、p 值，以及 Holm 结论。
-   - 不读 2026 年的数据；不重训、不调参；不合主线。
+1. **合并（用户 2026-11-16 同意）：** 先提交本轮文档；exp/G2 用 --no-ff 合回 codex/self-evolving-wiki 并推送；再从主线拉 exp/X1。在本地 G1 克隆里切到 exp/X1。
+2. **审 X1 方案**（STAGE_PLAN 全文）。确定缺陷按唯一的最小修法先做；设计分歧写成 B 或 S 编号交给我。
+3. **A 线：**
+   - 写 scripts/run_x1.py 和 configs/x1_protocol.json（锁 SHA），每次编辑不超过 150 行。
+   - 先跑 A0、A2；lightgbm 能用就跑 A1。
+   - 统计和判定按 STAGE_PLAN；N 的预测取存盘文件并核对 SHA。
+4. **A3 和 B 线：** 等 Cursor 装好 Chronos-2 后核验（版本 revision、文件 SHA、在 GPU 上的冒烟），再跑 A3a、A3b（可选）、B1、B2。B2 的判定只看开发验证段。
+   - 不下载、不安装；缺依赖就停下等 Cursor。
+   - 不改 N 和已冻结的东西，不读 2026 年的数据。
 
-需要用户决定: 无（用户 11-14 已裁决两年都用于本次确认；这是唯一一次评估）
+需要用户决定: 无（Cursor 下载指令由我直接给用户）
 
 ## Codex → Claude
 <!-- 由Codex覆盖。第85次G2c：c0/c1完成，交回复核 -->
