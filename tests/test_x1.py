@@ -3,9 +3,28 @@ from pathlib import Path
 import unittest
 import numpy as np
 from scripts.run_x1 import persistence, checked, digest, curve_points, fit_curves, curve_predict
+from scripts.run_x1 import normal_cells, farm_metrics
 
 
 class X1Tests(unittest.TestCase):
+    def test_normal_mask_only_descriptive(self):
+        wind = np.array([[5., 8., 8., np.nan]])
+        truth = np.array([[1., 20., 80., 70.]])
+        before = truth.copy()
+        mask, audit = normal_cells(wind, truth, {'0': [[6., 100.], [10., 100.]]}, np.array([0]), 100.)
+        np.testing.assert_array_equal(mask, [[False, False, True, False]])
+        np.testing.assert_array_equal(truth, before)
+        self.assertEqual(audit['missing_wind_cells'], 1)
+
+    def test_farm_coverage_and_capacity(self):
+        issue = np.array([1, 1, 1, 1, 2])
+        units = np.array([0, 1, 2, 3, 0])
+        truth = np.full((5, 4), 50.)
+        m = farm_metrics(truth+10, truth, issue, units, 100., 5)
+        self.assertEqual(m['issue_count'], 1)
+        self.assertAlmostEqual(m['nmae'], .1)
+        self.assertAlmostEqual(m['one_minus_nrmse'], .9)
+
     def test_curve_validity_and_fallback(self):
         pack = dict(gF=np.full((40, 13), 5.25), gF_mask=np.ones((40, 13)),
                     truth=np.full((40, 4), 100.), turbines=np.zeros(40),

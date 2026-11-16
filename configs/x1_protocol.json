@@ -1,6 +1,6 @@
 {
   "stage": "X1",
-  "version": 2,
+  "version": 3,
   "authorized_ready_arms": ["A2", "E1", "E2", "A1", "C1", "A3", "B2", "B1"],
   "curve": {"bin_width": 0.5, "minimum_cells": 30, "missing_fallback": "persistence", "hot_post_retrofit_only": true},
   "lightgbm": {"num_leaves": [31, 127], "min_child_samples": [50, 200], "learning_rate": 0.05, "n_estimators": 4000, "early_stopping_rounds": 200, "feature_fraction": 0.8, "bagging_fraction": 0.8, "seed": 2024},
