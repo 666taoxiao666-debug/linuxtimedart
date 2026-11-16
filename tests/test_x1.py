@@ -3,10 +3,25 @@ from pathlib import Path
 import unittest
 import numpy as np
 from scripts.run_x1 import persistence, checked, digest, curve_points, fit_curves, curve_predict
-from scripts.run_x1 import normal_cells, farm_metrics, tree_features
+from scripts.run_x1 import normal_cells, farm_metrics, tree_features, dense_equivalence
 
 
 class X1Tests(unittest.TestCase):
+    def test_dense_truth_tolerance_does_not_relax_features(self):
+        old = {k: np.zeros((2, 4)) for k in ('truth', 'anchor', 'x21', 'x50', 'gF', 'gF_mask')}
+        pack = {k: v.copy() for k, v in old.items()}
+        pack['truth'][:] = .000244140625
+        audit = dense_equivalence(pack, old, np.arange(2), .01)
+        self.assertEqual(audit['truth'], .000244140625)
+        self.assertTrue(np.all(old['truth'] == 0))
+        pack['truth'][:] = .0101
+        with self.assertRaises(ValueError):
+            dense_equivalence(pack, old, np.arange(2), .01)
+        pack['truth'][:] = 0
+        pack['x50'][:] = .000244140625
+        with self.assertRaises(ValueError):
+            dense_equivalence(pack, old, np.arange(2), .01)
+
     def test_tree_features_ignore_targets_and_keep_history(self):
         x = np.arange(2*24*50).reshape(2, 24, 50)
         pack = dict(x50=x, turbines=np.array([0, 2]), retrofit=np.array([0, 1]), truth=np.zeros((2, 4)))

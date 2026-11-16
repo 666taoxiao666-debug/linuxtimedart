@@ -276,6 +276,17 @@ def frozen_predictions(logs, item, pack, arm):
     return predictions
 
 
+def dense_equivalence(pack, old, overlap, tolerance_kw):
+    deltas = {}
+    for key in ('truth', 'anchor', 'x21', 'x50', 'gF', 'gF_mask'):
+        current, previous = pack[key][overlap], old[key]
+        tolerance = tolerance_kw if key == 'truth' else 1e-5
+        if current.shape != previous.shape or not np.allclose(current, previous, rtol=0, atol=tolerance):
+            raise ValueError('Dense input equivalence failed: '+key)
+        deltas[key] = float(np.max(np.abs(current-previous)))
+    return deltas
+
+
 def run_e1(args):
     import torch
     torch.set_num_threads(2)
@@ -291,15 +302,16 @@ def run_e1(args):
     try:
         results = {}
         for name, item in protocol['datasets'].items():
+            if args.e1_hot_only and item['farm'] != 'HoT':
+                continue
             path, _ = paths(args.logs, item)
             old = load_pack(path)
             pack = dense_pack(args.logs, item)
             index = {(int(t), int(u)): i for i, (t, u) in enumerate(zip(pack['issue'], pack['turbines']))}
             overlap = np.array([index[(int(t), int(u))] for t, u in zip(old['issue'], old['turbines'])])
-            for k in ('truth', 'anchor', 'x21', 'x50', 'gF', 'gF_mask'):
-                if not np.allclose(pack[k][overlap], old[k], rtol=0, atol=1e-5):
-                    raise ValueError('Dense input equivalence failed: '+name+'/'+k)
+            input_deltas = dense_equivalence(pack, old, overlap, protocol['E1']['equivalence_kw'])
             report = dict(windows=len(pack['truth']), overlap_windows=len(old['truth']), metrics={}, equivalence={})
+            report['input_max_abs_difference'] = input_deltas
             for arm in ('N', 'N0', 'B'):
                 predictions = frozen_predictions(args.logs, item, pack, arm)
                 if item['family'] == 'G1':
@@ -642,6 +654,7 @@ if __name__ == '__main__':
     p.add_argument('--a2-results', type=Path)
     p.add_argument('--a1-results', type=Path)
     p.add_argument('--e2-results', type=Path)
+    p.add_argument('--e1-hot-only', action='store_true')
     args = p.parse_args()
     if args.arm == 'E2-saved':
         run_e2_saved(args)
