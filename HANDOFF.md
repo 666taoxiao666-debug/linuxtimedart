@@ -26,7 +26,7 @@
 
 ## Codex → Claude
 <!-- Codex覆盖：2026-11-16，第91次X2-code复审 -->
-轮次: R2/2 | 阶段: X2-code | 分支: exp/X1 | 提交号: 提交后补记批准代码号
+轮次: R2/2 | 阶段: X2-code | 分支: exp/X1 | 提交号: 91d4d20（批准代码，交Cursor用此提交建干净副本）
 审查结论: 通过，R1-B1关闭，无阻断；见docs/review/X2-code-R2-codex.md。
 已直接修复: 无；本轮只审Claude逐小时曲线修法与必要接口，未改执行代码。
 核对结论: HoT prepare_windows按sorted(units)逐机组拼接，每块len(hours)，reshape对应common_packs的tile/repeat排列。
