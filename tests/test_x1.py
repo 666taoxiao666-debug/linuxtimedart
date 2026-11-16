@@ -3,10 +3,21 @@ from pathlib import Path
 import unittest
 import numpy as np
 from scripts.run_x1 import persistence, checked, digest, curve_points, fit_curves, curve_predict
-from scripts.run_x1 import normal_cells, farm_metrics
+from scripts.run_x1 import normal_cells, farm_metrics, tree_features
 
 
 class X1Tests(unittest.TestCase):
+    def test_tree_features_ignore_targets_and_keep_history(self):
+        x = np.arange(2*24*50).reshape(2, 24, 50)
+        pack = dict(x50=x, turbines=np.array([0, 2]), retrofit=np.array([0, 1]), truth=np.zeros((2, 4)))
+        result = tree_features(pack, True)
+        self.assertEqual(result.shape, (2, 100))
+        np.testing.assert_array_equal(result[:, :50], x[:, -1])
+        np.testing.assert_array_equal(result[:, 50:74], x[:, :, -1])
+        np.testing.assert_array_equal(result[:, 74:98], x[:, :, 0])
+        pack['truth'][:] = 999
+        np.testing.assert_array_equal(result, tree_features(pack, True))
+
     def test_normal_mask_only_descriptive(self):
         wind = np.array([[5., 8., 8., np.nan]])
         truth = np.array([[1., 20., 80., 70.]])

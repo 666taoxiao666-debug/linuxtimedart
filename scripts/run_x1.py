@@ -485,15 +485,104 @@ def run(args):
         raise
 
 
+def tree_features(pack, hot=False):
+    x = pack['x50']
+    if x.ndim != 3 or x.shape[1:] != (24, 50):
+        raise ValueError('Unexpected frozen feature dimensions')
+    parts = [x[:, -1, :], x[:, :, -1], x[:, :, 0]]
+    if hot:
+        parts.append(pack['retrofit'].reshape(-1, 1))
+    parts.append(pack['turbines'].reshape(-1, 1))
+    result = np.concatenate(parts, axis=1).astype(np.float32)
+    if not np.isfinite(result).all():
+        raise ValueError('Nonfinite tree inputs')
+    return result
+
+
+def run_a1(args):
+    import lightgbm as lgb
+    from scripts.train_g1 import evaluate_arrays
+    checked(ROOT/'configs/x1_protocol.json', args.protocol_sha256)
+    protocol = read(ROOT/'configs/x1_protocol.json')
+    if hasattr(os, 'sched_getaffinity'):
+        os.sched_setaffinity(0, sorted(os.sched_getaffinity(0))[:2])
+    args.output.mkdir(parents=True, exist_ok=False)
+    save(args.output/'launch.json', dict(mode='A1', protocol_sha256=args.protocol_sha256,
+         source_sha256=digest(__file__), lightgbm_version=lgb.__version__, threads=2))
+    try:
+        models, reports, hashes = {}, {}, {}
+        cfg = protocol['lightgbm']
+        for name, item in protocol['datasets'].items():
+            farm = item['farm']
+            if farm not in models:
+                train, val = development(args.logs, item)
+                xt, xv = [tree_features(p, item['family']=='G2') for p in (train, val)]
+                yt, yv = train['truth'], val['truth']
+                best, rows, selected = float('inf'), [], None
+                for leaves in cfg['num_leaves']:
+                    for child in cfg['min_child_samples']:
+                        candidates, pv = [], []
+                        for h in range(4):
+                            m = lgb.LGBMRegressor(objective='regression_l1', num_leaves=leaves,
+                                min_child_samples=child, learning_rate=cfg['learning_rate'],
+                                n_estimators=cfg['n_estimators'], colsample_bytree=cfg['feature_fraction'],
+                                subsample=cfg['bagging_fraction'], subsample_freq=1,
+                                random_state=cfg['seed'], n_jobs=2, verbosity=-1,
+                                deterministic=True, force_col_wise=True)
+                            m.fit(xt, yt[:, h], eval_set=[(xv, yv[:, h])], eval_metric='l1',
+                                  categorical_feature=[xt.shape[1]-1],
+                                  callbacks=[lgb.early_stopping(cfg['early_stopping_rounds'], verbose=False)])
+                            pv.append(m.predict(xv)); candidates.append(m)
+                        pv = np.stack(pv, axis=1)
+                        score = float(np.abs(pv-yv).mean())
+                        row = dict(num_leaves=leaves, min_child_samples=child, validation_mae=score,
+                                   best_iterations=[int(m.best_iteration_) for m in candidates])
+                        rows.append(row)
+                        print('GRID', farm, row, flush=True)
+                        if score < best:
+                            best, selected = score, row
+                            models[farm] = candidates
+                            np.save(args.output/(farm+'_validation.npy'), pv)
+                checkpoint_hashes = {}
+                for h, m in enumerate(models[farm]):
+                    target = args.output/(farm+'_h'+str(h+1)+'.txt')
+                    m.booster_.save_model(str(target))
+                    checkpoint_hashes[target.name] = digest(target)
+                save(args.output/(farm+'_selection.json'), dict(grid=rows, selected=selected,
+                     model_sha256=checkpoint_hashes, selection='validation_mae_only',
+                     validation_prediction_sha256=digest(args.output/(farm+'_validation.npy'))))
+                del train, val, xt, xv, yt, yv
+            path, npaths = paths(args.logs, item)
+            pack = load_pack(path)
+            features = tree_features(pack, item['family']=='G2')
+            prediction = np.stack([m.predict(features) for m in models[farm]], axis=1)
+            target = args.output/(name+'_A1.npy')
+            np.save(target, prediction); hashes[name] = digest(target)
+            reports[name] = evaluate_arrays({'N': [np.load(p) for p in npaths], 'A1': [prediction]},
+                pack['truth'], pack['issue'].astype('datetime64[ns]'), None, protocol['statistics'],
+                comparison_pairs={'N_vs_A1': ('N', 'A1')})
+            save(args.output/(name+'.json'), reports[name])
+            print('COMPLETED', name, flush=True)
+            del pack, features, prediction
+        save(args.output/'results.json', dict(arm='A1', datasets=reports))
+        save(args.output/'completed.json', dict(status='COMPLETED', predictions=hashes,
+             results_sha256=digest(args.output/'results.json')))
+    except Exception as exc:
+        save(args.output/'failed.json', dict(type=type(exc).__name__, message=str(exc), retry=False))
+        raise
+
+
 if __name__ == '__main__':
     p = argparse.ArgumentParser()
     p.add_argument('--logs', type=Path, required=True)
     p.add_argument('--output', type=Path, required=True)
     p.add_argument('--protocol-sha256', required=True)
-    p.add_argument('--arm', choices=['A0', 'A2', 'E1', 'E2'], required=True)
+    p.add_argument('--arm', choices=['A0', 'A1', 'A2', 'E1', 'E2'], required=True)
     p.add_argument('--a2-results', type=Path)
     args = p.parse_args()
-    if args.arm == 'E1':
+    if args.arm == 'A1':
+        run_a1(args)
+    elif args.arm == 'E1':
         run_e1(args)
     elif args.arm == 'E2':
         run_e2(args)
