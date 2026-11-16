@@ -485,6 +485,67 @@ def run(args):
         raise
 
 
+def run_e2_saved(args):
+    checked(ROOT/'configs/x1_protocol.json', args.protocol_sha256)
+    protocol = read(ROOT/'configs/x1_protocol.json')
+    if hasattr(os, 'sched_getaffinity'):
+        os.sched_setaffinity(0, sorted(os.sched_getaffinity(0))[:2])
+    original = read(checked(args.e2_results/'results.json', read(args.e2_results/'completed.json')['results_sha256']))
+    a1 = read(args.a1_results/'completed.json')
+    checked(args.a1_results/'results.json', a1['results_sha256'])
+    args.output.mkdir(parents=True, exist_ok=False)
+    save(args.output/'launch.json', dict(mode='E2-saved', new_predictions=0, new_fits=0,
+         protocol_sha256=args.protocol_sha256, script_sha256=digest(__file__)))
+    try:
+        reports = {}
+        for name, item in protocol['datasets'].items():
+            path, _ = paths(args.logs, item)
+            pack = load_pack(path)
+            mask_path = args.e2_results/(name+'_normal_mask.npy')
+            mask = np.load(mask_path)
+            if mask.dtype != bool or mask.shape != pack['truth'].shape:
+                raise ValueError('Invalid saved normal mask')
+            report = original[name]
+            if int(mask.sum()) != report['metrics']['N']['normal']['cells']:
+                raise ValueError('Saved mask count mismatch')
+            report['mask_sha256'] = digest(mask_path)
+            report['prediction_sha256'] = {}
+            predictions = {'A1': [checked(args.a1_results/(name+'_A1.npy'), a1['predictions'][name])]}
+            for arm in ('B', 'N0'):
+                if item['family'] == 'G1':
+                    parent = args.logs/('G1/g1c_27312d7_r2/formal' if arm=='B' else 'G2/g2a_e72e462_r1/formal')
+                    local = ROOT/('output/g1/results_78/formal' if arm=='B' else 'output/g2a/results81')
+                    names = [f"{item['farm']}/{arm}/{s}/prediction.npy" for s in (2024, 2025, 2026)]
+                else:
+                    parent = args.logs/'G2/g2c_2eeb23f_r1/formal'
+                    local = ROOT/'output/g2b/sealed_eval/server'
+                    names = [f"{item['year']}_{arm}_{s}.npy" for s in (2024, 2025, 2026)]
+                receipt = read(local/'completed.json')
+                if receipt != read(parent/'completed.json'):
+                    raise ValueError('Parent receipt mismatch')
+                predictions[arm] = [checked(parent/n, receipt['predictions'][n]) for n in names]
+            for arm, files in predictions.items():
+                preds = [np.load(p) for p in files]
+                if any(p.shape != mask.shape or not np.isfinite(p).all() for p in preds):
+                    raise ValueError('Invalid saved prediction')
+                report['prediction_sha256'][arm] = [digest(p) for p in files]
+                report['metrics'][arm] = {}
+                for scope, use in [('all', np.ones_like(mask)), ('normal', mask)]:
+                    mse = float(np.mean([np.square(p-pack['truth'])[use].mean() for p in preds]))
+                    variance = float(np.var(pack['truth'][use]))
+                    report['metrics'][arm][scope] = dict(
+                        mae=float(np.mean([np.abs(p-pack['truth'])[use].mean() for p in preds])),
+                        rmse=float(np.sqrt(mse)), r2=1-mse/variance if variance else None,
+                        cells=int(use.sum()))
+            reports[name] = report
+            print('COMPLETED', name, flush=True)
+        save(args.output/'results.json', reports)
+        save(args.output/'completed.json', dict(status='COMPLETED', results_sha256=digest(args.output/'results.json')))
+    except Exception as exc:
+        save(args.output/'failed.json', dict(type=type(exc).__name__, message=str(exc), retry=False))
+        raise
+
+
 def tree_features(pack, hot=False):
     x = pack['x50']
     if x.ndim != 3 or x.shape[1:] != (24, 50):
@@ -577,10 +638,14 @@ if __name__ == '__main__':
     p.add_argument('--logs', type=Path, required=True)
     p.add_argument('--output', type=Path, required=True)
     p.add_argument('--protocol-sha256', required=True)
-    p.add_argument('--arm', choices=['A0', 'A1', 'A2', 'E1', 'E2'], required=True)
+    p.add_argument('--arm', choices=['A0', 'A1', 'A2', 'E1', 'E2', 'E2-saved'], required=True)
     p.add_argument('--a2-results', type=Path)
+    p.add_argument('--a1-results', type=Path)
+    p.add_argument('--e2-results', type=Path)
     args = p.parse_args()
-    if args.arm == 'A1':
+    if args.arm == 'E2-saved':
+        run_e2_saved(args)
+    elif args.arm == 'A1':
         run_a1(args)
     elif args.arm == 'E1':
         run_e1(args)
