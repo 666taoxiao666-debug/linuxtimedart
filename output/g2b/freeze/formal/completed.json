@@ -1,0 +1,7 @@
+{
+  "status": "FROZEN_DEVELOPMENT_ONLY",
+  "fits": 14,
+  "freeze_sha256": "981f3ae27e6792f5da71c177af1c24a0e91c4dfcd880322773fb4f9fe34607f6",
+  "sealed_access": false,
+  "wait_for_claude": true
+}

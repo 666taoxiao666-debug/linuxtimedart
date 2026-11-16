@@ -1,0 +1,34 @@
+{
+  "pid": 550508,
+  "command": [
+    "/home/XT/miniconda3/envs/timedart/bin/python",
+    "-u",
+    "scripts/train_g1.py",
+    "--prepared",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/G1/g1c_27312d7_r2/prepared",
+    "--g2a-parent",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/G1/g1c_27312d7_r2/formal",
+    "--run-dir",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/G2/g2a_e72e462_r1/formal",
+    "--protocol-sha256",
+    "7280563d6404a45aefc3844ae61706746be74aaa8274fd7b541df0ec19ee199b",
+    "--device",
+    "cuda"
+  ],
+  "cwd": "/home/XT/nuist/pythoncode/TimeDARTFirst_G2_e72e462",
+  "utc": "2026-11-14T02:27:15.423438+00:00",
+  "gate": "PASS",
+  "reused_count": 12,
+  "B0_channels": [
+    "Wspd",
+    "Etmp",
+    "Ndir_sin",
+    "Ndir_cos",
+    "Pab_mean",
+    "rotor_speed",
+    "power_last10",
+    "wind_last10",
+    "power"
+  ],
+  "N0_layout": "8 SCADA, 1 historical GFS, 13 GFS forecast, 13 masks, age, missing_cycle, power"
+}

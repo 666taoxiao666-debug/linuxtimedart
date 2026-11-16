@@ -1,0 +1,14 @@
+test_2024_hour_label_not_retained (tests.test_prepare_hot_dev.HotDevelopmentTests) ... ok
+test_common_queue_missing_labels_and_construction (tests.test_prepare_hot_dev.HotDevelopmentTests) ... ok
+test_construction_exact_boundaries (tests.test_prepare_hot_dev.HotDevelopmentTests) ... ok
+test_duplicate_and_off_grid_ticks_refused (tests.test_prepare_hot_dev.HotDevelopmentTests) ... ok
+test_fresh_output_and_data_root_guard (tests.test_prepare_hot_dev.HotDevelopmentTests) ... ok
+test_hourly_labels_last10_and_incomplete_power (tests.test_prepare_hot_dev.HotDevelopmentTests) ... ok
+test_month_join_rejects_outside_year_and_duplicates (tests.test_prepare_hot_dev.HotDevelopmentTests) ... ok
+test_protected_year_rejected_before_zip_open (tests.test_prepare_hot_dev.HotDevelopmentTests) ... ok
+test_scada_channel_order_and_no_pitch_imputation (tests.test_prepare_hot_dev.HotDevelopmentTests) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 0.239s
+
+OK

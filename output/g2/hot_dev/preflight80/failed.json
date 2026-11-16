@@ -1,0 +1,5 @@
+{
+  "error_type": "ValueError",
+  "error": "SCADA year/month/unit/duplicate identity mismatch",
+  "restart": false
+}

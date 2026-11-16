@@ -1,0 +1,11 @@
+{
+  "status": "VERIFIED",
+  "remote_sha256": {
+    "cohorts.json": "806836a0318cf858adc40ef820a35d1c718fa1f54cda3493b394464c1f4351f1",
+    "fit_statistics.json": "f196697f1fe8d0c41866210d9ad6c82ea64ba79196ab243eb73edac0f92a8017",
+    "launch.json": "7f0e7cdf050ab3f32a93d2b05e1ad925e34f36d06c31ac6a415b1f8d039621fe",
+    "launch_receipt.json": "c260246bdc0b146b8dec11314cfeca52cd3c52ffe386bdc8230ad71013013e72",
+    "preflight_598a89d.log": "e9adfb762570b6a9678ae58dc4fffb3a8cd3fd753ec03666afb1ffe66870b2c3"
+  },
+  "resource_state": "mutable snapshot, not a completion marker"
+}

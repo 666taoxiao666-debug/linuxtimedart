@@ -1,0 +1,10 @@
+{
+  "status": "PASS",
+  "windows": 30056,
+  "models": 14,
+  "max_delta_kw": 3.0517578125e-05,
+  "freeze_sha256": "981f3ae27e6792f5da71c177af1c24a0e91c4dfcd880322773fb4f9fe34607f6",
+  "entrypoint_sha256": "cbdc1b980c652095978366b7f3f2ccdfa5160a52d59f930cb448fb7c9aee97fe",
+  "prepared_sha256": "8282e01984ee7a7a3da677ababce43d0d49fb0e83f2bc7c5820f4870b420986b",
+  "metrics_sha256": "b5e1fd3d92b17793eba98a452c16870a7701e6292b746f77d36d0965bcdce1e7"
+}

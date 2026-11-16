@@ -1,0 +1,21 @@
+{
+  "status": "COMPLETED",
+  "fits": 12,
+  "reused_fits": 12,
+  "predictions": {
+    "Kelmarsh/B0/2024/prediction.npy": "da363893f3e98b33fe4fee8316130b6005dc8a262af49b9e30cd15be55229db3",
+    "Kelmarsh/B0/2025/prediction.npy": "6210093ddac76d63bd8d227d921866729bf2d1baeb9916847195bb48f942f986",
+    "Kelmarsh/B0/2026/prediction.npy": "8a22df746810d74d6d8985c5965c4e806ab6085e1e81ce1af3a49bfdae94a7a9",
+    "Kelmarsh/N0/2024/prediction.npy": "82c8dbf64729c53c14618e618be7d8a766a8c0d9459f9fc0f484425e1d929a19",
+    "Kelmarsh/N0/2025/prediction.npy": "c62dbd92bd0c2998d15d775045b17444388fcc5fa4cc07eecd8d838fa448206f",
+    "Kelmarsh/N0/2026/prediction.npy": "9d0b7f645e75c5a2480363bea6a17b970208a1e00090a4af0578798e2eb60e72",
+    "Penmanshiel/B0/2024/prediction.npy": "123e7516ac8c4d31ba8f90c13d29e6705a34f1bf0de88e82141bbd1d95503bd7",
+    "Penmanshiel/B0/2025/prediction.npy": "b5048eae69206530088db8992f68618f5d3c8892ac932b0f4b80cee1a77f20df",
+    "Penmanshiel/B0/2026/prediction.npy": "5d8f0b5d74f5b200b4f3046a107f92e06032cb51531a61a75a6712e60614ff24",
+    "Penmanshiel/N0/2024/prediction.npy": "bffe93daab9bc7f60f5dcc83f59ccc9b328b60f4fa53d4738816b5fe6fa43c29",
+    "Penmanshiel/N0/2025/prediction.npy": "5998666d791683b1210ef3ac7b8ba08d4fb212a5975e452a796bc6883b95ef81",
+    "Penmanshiel/N0/2026/prediction.npy": "b07b6c11c7ed93564dc43fec114c8a0a59d64b6a5b72b861ee1e9aea094e4ee4"
+  },
+  "results_sha256": "6f917d7afd53b7870fce9cba8881913ae5f2f39b7b8c46a60196ae1e72db7187",
+  "freeze_sha256": "edc72f6fddba6c162d5f5111cb48f8f0b5f95c96d7f7473e295b91eee94a4c2f"
+}

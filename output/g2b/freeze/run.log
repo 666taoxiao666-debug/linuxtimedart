@@ -1,0 +1,18 @@
+/home/XT/nuist/pythoncode/TimeDARTFirst_G2_4471499/scripts/train_g2b.py:69: RuntimeWarning: Mean of empty slice
+  wind = np.nanmean(raw.reshape(len(units), len(hours), -1)[:, :, 0], axis=0)
+[RESOURCE] Shared GPU; PyTorch allocator <= 1024 MiB; CPU 2 threads
+[FIT 1/14] B_2024 val_mae=201.438858
+[FIT 2/14] B_2025 val_mae=205.274445
+[FIT 3/14] B_2026 val_mae=201.616898
+[FIT 4/14] N0_2024 val_mae=185.004761
+[FIT 5/14] N0_2025 val_mae=184.280289
+[FIT 6/14] N0_2026 val_mae=185.524490
+[FIT 7/14] B0_2024 val_mae=221.789154
+[FIT 8/14] B0_2025 val_mae=223.076584
+[FIT 9/14] B0_2026 val_mae=220.900558
+[FIT 10/14] N_2024 val_mae=182.525452
+[FIT 11/14] N_2025 val_mae=182.788498
+[FIT 12/14] N_2026 val_mae=181.359116
+[FIT 13/14] N_2027 val_mae=183.041031
+[FIT 14/14] N_2028 val_mae=181.748917
+[FROZEN] 14 fits; stop before sealed access

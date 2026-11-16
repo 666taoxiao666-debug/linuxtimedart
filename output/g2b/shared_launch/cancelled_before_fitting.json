@@ -1,0 +1,16 @@
+{
+  "status": "CANCELLED_BEFORE_FITTING",
+  "formal_fits": 0,
+  "pid": 719679,
+  "user_authorized": "2026-11-15 shared GPU with own resource limits",
+  "previous_resource_state": {
+    "status": "WAITING_FOR_GPU",
+    "existing_pids": [
+      "735570"
+    ],
+    "checked_utc": "2026-11-14T16:23:20.396162+00:00",
+    "interrupted_other_tasks": false
+  },
+  "utc": "2026-11-14T16:23:47.267523+00:00",
+  "other_tasks_untouched": true
+}

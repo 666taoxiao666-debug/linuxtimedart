@@ -1,0 +1,316 @@
+import unittest
+import json
+from pathlib import Path
+import tempfile
+import sys
+from unittest.mock import patch
+
+import numpy as np
+import pandas as pd
+
+from scripts import prepare_hot_dev as hot
+from scripts import train_g2b as train
+
+
+class RetrofitDiagnosticTests(unittest.TestCase):
+    def test_registered_thresholds_and_undetermined(self):
+        def select(values):
+            return hot.choose_retrofit_case({str(i): {'S2': v} for i, v in enumerate(values)})['case']
+        self.assertEqual(select([-.05]*11+[0.]*10), 'A')
+        self.assertEqual(select([.05]*11+[0.]*10), 'A')
+        self.assertEqual(select([.049]*14+[.08]*7), 'B')
+        self.assertEqual(select([-.08]*10+[.08]*10+[None]), 'STOP')
+
+    def test_calendar_physical_period_boundaries(self):
+        first, end = hot.works_bounds('2022-07-23', '2022-08-01')
+        times = pd.DatetimeIndex(['2021-04-30', '2021-05-01', '2022-07-23',
+                                  '2022-08-01', '2022-08-02', '2023-05-01', '2024-01-01'], tz='UTC')
+        masks = hot.retrofit_masks(times, first, end)
+        np.testing.assert_array_equal(masks['P0'], [False, True, False, False, False, False, False])
+        np.testing.assert_array_equal(masks['P1'], [False, False, False, False, True, False, False])
+        np.testing.assert_array_equal(masks['P2'], [False, False, False, False, False, True, False])
+
+    def test_equal_weight_bins_and_incomplete_not_imputed(self):
+        first, end = hot.works_bounds('2022-07-23', '2022-08-01')
+        before = pd.date_range('2021-05-01T01:00', periods=12, freq='h', tz='UTC')
+        after = pd.date_range('2023-05-01T01:00', periods=12, freq='h', tz='UTC')
+        u = pd.DataFrame({'wind_speed_mps': np.tile(np.arange(5.25, 11, .5), 2),
+                          'power_kw': [100.]*12+[90.]*12}, index=before.append(after))
+        result = hot.retrofit_scores(u, first, end)
+        self.assertAlmostEqual(result['S2'], -.1)
+        self.assertIsNone(result['S1'])
+        u.iloc[-1, u.columns.get_loc('power_kw')] = np.nan
+        self.assertIsNone(hot.retrofit_scores(u, first, end)['S2'])
+
+
+class G2bExecutionTests(unittest.TestCase):
+    def test_shared_budget_preserves_context_and_other_user_headroom(self):
+        ready, fraction = train.shared_gpu_budget(24576, 2560, 1024)
+        self.assertTrue(ready)
+        self.assertAlmostEqual(fraction*24576, 1024)
+        self.assertFalse(train.shared_gpu_budget(24576, 2559, 1024)[0])
+        with self.assertRaises(ValueError):
+            train.shared_gpu_budget(24576, 10000, 4096)
+
+    def test_recipe_and_seed_budget(self):
+        protocol = json.loads((train.ROOT/'configs/g2b_protocol.json').read_text())
+        train.validate_protocol(protocol)
+        self.assertEqual(sum(map(len, protocol['seeds'].values())), 14)
+        protocol['seeds']['N'].append(2029)
+        with self.assertRaises(ValueError):
+            train.validate_protocol(protocol)
+
+    def test_arm_channel_identity_and_power_last(self):
+        x = np.broadcast_to(np.arange(50), (2, 24, 50)).copy()
+        pack = dict(x21=x[..., :21], x50=x, truth=np.zeros((2, 4)), retrofit=np.array([0, 1], np.float32))
+        for arm, count in [('B0', 9), ('B', 21), ('N0', 38), ('N', 50)]:
+            key = 'x21' if arm in ('B0', 'B') else 'x50'
+            before = train.arm_pack(pack, arm, False)[key]
+            after = train.arm_pack(pack, arm, True)[key]
+            self.assertEqual(before.shape[-1], count)
+            self.assertEqual(after.shape[-1], count+1)
+            np.testing.assert_array_equal(before[..., -1], after[..., -1])
+            np.testing.assert_array_equal(after[:, 0, -2], [0, 1])
+            np.testing.assert_array_equal(before[..., :-1], after[..., :-2])
+
+    def test_scoped_preparation_does_not_weaken_development_guard(self):
+        scoped = train.scoped_functions(hot, YEARS=(2023, 2024, 2025), CUTOFF=pd.Timestamp('2026-01-01', tz='UTC'))
+        self.assertEqual(scoped.development_year(2025), 2025)
+        with self.assertRaises(ValueError):
+            scoped.development_year(2026)
+        with self.assertRaises(ValueError):
+            hot.development_year(2024)
+
+    def test_sealed_requires_authorization_before_any_file_read(self):
+        with patch.object(train, 'frozen_gate', side_effect=AssertionError('access before permission')):
+            with self.assertRaisesRegex(ValueError, 'authorization'):
+                train.prepare_sealed(Path('/x'), Path('/x'), 'bad', Path('/x'), Path('/x'), 'bad', None)
+
+    def test_sealed_one_shot_marker_precedes_labels(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            (root/'test_evaluation_started.json').write_text('{}')
+            with patch.object(train, 'frozen_gate', return_value=({}, {})), patch.object(train, 'scoped_functions', side_effect=AssertionError('labels opened')):
+                with self.assertRaises(FileExistsError):
+                    train.prepare_sealed(root, root, 'x', root/'new', root/'gfs.json', 'x', 'G2b-2024-2025-once')
+
+    @unittest.skipUnless(sys.platform == 'linux', 'shared statistics module requires Linux fcntl')
+    def test_joint_holm_uses_worst_year_and_both_ci(self):
+        reports = {str(y): {'primary': {q: dict(gain=1., ci95_low=.1, newey_west={'p_value_two_sided': .01})
+                                        for q in ('Q1h', 'Qe')}} for y in (2024, 2025)}
+        self.assertTrue(train.joint_test_decisions(reports)['Q1h']['passed'])
+        reports['2025']['primary']['Q1h']['newey_west']['p_value_two_sided'] = .2
+        self.assertFalse(train.joint_test_decisions(reports)['Q1h']['passed'])
+        reports['2024']['primary']['Qe']['ci95_low'] = -.01
+        self.assertFalse(train.joint_test_decisions(reports)['Qe']['passed'])
+
+    def test_frozen_gfs_scaler_and_protected_cycle(self):
+        hours = np.array(['2024-01-01T06', '2025-12-31T23'], dtype='datetime64[h]')
+        hourly = train.frozen_hourly(hours, {'2024010100': np.full((6, 13), 10.)}, {'nwp_mean': 7., 'nwp_scale': 2.})
+        self.assertEqual(hourly['nwp_mean'], 7.)
+        self.assertEqual(hourly['nwp_scale'], 2.)
+        self.assertEqual(hourly['cycle_ok'][1], 0.)
+        x = np.zeros((1, 24, 21), np.float32)
+        # A single repeated history position checks the exact normalized forecast slot.
+        out = train.prep.nwp_input(x, hourly, np.zeros((1, 24), int))
+        self.assertAlmostEqual(out[0, 0, 20], 1.5)
+
+    def test_common_cohorts_exclude_construction_and_split_crossing(self):
+        hours = pd.date_range('2023-06-26T01', periods=192, freq='h').to_numpy()
+        raw = np.ones((len(hours), 9))
+        raw[:, -1] = np.arange(len(hours))
+        stats = dict(upstream_fill=[0.]*11, mean=[0.]*21, scale=[1.]*21)
+        hourly = train.frozen_hourly(hours, {}, dict(nwp_mean=0., nwp_scale=1.))
+        with tempfile.TemporaryDirectory() as tmp:
+            works = Path(tmp)/'works.csv'
+            works.write_text('Turbine,start,end\nT01,2023-06-29,2023-06-29\n')
+            packs = train.common_packs(raw, hours, ['T01'], np.ones((len(hours), 11)), hourly, stats,
+                                       works, train.case_bounds('A'), '2024-01-01')
+        self.assertEqual(set(packs), {'train', 'val'})
+        for split, pack in packs.items():
+            self.assertTrue(train.prep.period_mask(pack['times'].astype('datetime64[ns]'), train.case_bounds('A')[split], hour_end=True).all())
+            issue = pd.DatetimeIndex(pack['issue'].astype('datetime64[ns]')).tz_localize('UTC')
+            excluded, _ = hot.window_works(issue, *hot.works_bounds('2023-06-29', '2023-06-29'))
+            self.assertFalse(excluded.any())
+            for arm in ('B', 'N', 'N0', 'B0'):
+                np.testing.assert_array_equal(train.arm_pack(pack, arm, True)['truth'], pack['truth'])
+        # A changed validation power label must remain exact, never clipped or imputed.
+        self.assertGreater(packs['val']['truth'].max(), 100.)
+
+    @unittest.skipUnless(sys.platform == 'linux', 'formal lock requires Linux fcntl')
+    def test_exact_budget_and_immutable_freeze_without_real_fits(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            diagnostic = root/'diagnostic'
+            diagnostic.mkdir()
+            (diagnostic/'completed.json').write_text(json.dumps(dict(artifacts={}, decision=dict(case='A'))))
+            prepared = root/'prepared'
+            prepared.mkdir()
+            (prepared/'completed.json').write_text('{}')
+            pack = dict(x21=np.zeros((2, 24, 21), np.float32), x50=np.zeros((2, 24, 50), np.float32),
+                truth=np.zeros((2, 4)), retrofit=np.array([0, 1]), times=np.ones((2, 4), np.int64))
+            calls = []
+            def fake_fit(arm, seed, tr, va, cfg, directory, device):
+                calls.append((arm, seed))
+                directory.mkdir()
+                (directory/'selected.pt').write_bytes(f'{arm}-{seed}'.encode())
+                return dict(arm=arm, seed=seed, validation_mae=1., sha256=train.prep.digest(directory/'selected.pt'))
+            with patch.object(train, 'input_state', return_value=({'train': pack, 'val': pack}, {})), patch.object(train.runner, 'fit_one', side_effect=fake_fit):
+                protocol_sha = train.prep.digest(train.ROOT/'configs/g2b_protocol.json')
+                train.fit_development(root, prepared, diagnostic, root/'run', protocol_sha, 'cpu')
+                with self.assertRaises(ValueError):
+                    train.fit_development(root, prepared, diagnostic, root/'run', protocol_sha, 'cpu')
+            self.assertEqual(len(calls), 14)
+            self.assertEqual(len(set(calls)), 14)
+            self.assertEqual(sum(a == 'N' for a, _ in calls), 5)
+            self.assertFalse((root/'run/test_evaluation_started.json').exists())
+            frozen = json.loads((root/'run/selection_freeze.json').read_text())
+            train.runner.check_freeze(frozen, 14, root/'run')
+            (root/'run/B_2024/selected.pt').write_bytes(b'changed')
+            with self.assertRaises(ValueError):
+                train.runner.check_freeze(frozen, 14, root/'run')
+
+    def test_all_arm_torch_forward_backward(self):
+        try:
+            import torch
+        except ImportError:
+            self.skipTest('torch available on server only')
+        protocol = json.loads((train.ROOT/'configs/g2b_protocol.json').read_text())
+        pack = dict(x21=np.zeros((2, 24, 21), np.float32), x50=np.zeros((2, 24, 50), np.float32),
+                    truth=np.ones((2, 4), np.float32), retrofit=np.array([0, 1], np.float32))
+        for retrofit in (False, True):
+            for arm in ('B0', 'B', 'N0', 'N'):
+                p = train.arm_pack(pack, arm, retrofit)
+                model = train.make_model(arm, p, protocol['fit'], 'cpu')
+                result = model(torch.from_numpy(p['x21' if arm in ('B0', 'B') else 'x50']))
+                self.assertEqual(tuple(result.shape[:2]), (2, 4))
+                result.square().mean().backward()
+                self.assertTrue(all(torch.isfinite(v.grad).all() for v in model.parameters() if v.grad is not None))
+
+
+class G2bPreparationTests(unittest.TestCase):
+    def test_existing_destination_has_no_attempt_side_effect(self):
+        from scripts import evaluate_g2b_sealed as entry
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            out = root/'existing'
+            out.mkdir()
+            with patch.object(entry, 'frozen_gate') as gate:
+                with self.assertRaisesRegex(ValueError, 'Fresh output'):
+                    entry.start_preparation(root, out, root/'freeze', [2023])
+                gate.assert_not_called()
+            self.assertEqual(list(out.iterdir()), [])
+
+    def test_protected_year_configuration_rejected_before_gate(self):
+        from scripts import evaluate_g2b_sealed as entry
+        with patch.object(entry, 'start_preparation') as start:
+            with self.assertRaisesRegex(ValueError, 'Unapproved'):
+                entry.prepare_sealed(Path('/data'), Path('/freeze'), Path('/out'),
+                    (2026,), ('2026-01-01', '2027-01-01'), {}, '2027-01-01')
+            start.assert_not_called()
+
+    def test_midas_conflict_masks_all_fields_and_preserves_units(self):
+        from scripts import evaluate_g2b_sealed as entry
+        frame = pd.DataFrame(dict(src_id=[1, 1, 1], version_num=[1, 1, 1],
+            ob_time=['2023-01-01 00:00', '2023-01-01 00:00', '2023-01-01 01:00'],
+            wind_speed=[5., np.nan, 6.], wind_direction=[20., 20., 30.], msl_pressure=[1000., 1000., 999.]))
+        frame.attrs['units'] = {'wind_speed': 'knots'}
+        actual, counts = entry.conflict_missing(frame, 2023)
+        self.assertEqual(counts, {'1': 1})
+        self.assertTrue(actual.loc[:1, ['wind_speed', 'wind_direction', 'msl_pressure']].isna().all().all())
+        self.assertEqual(actual.loc[2, 'wind_speed'], 6.)
+        self.assertEqual(actual.attrs, frame.attrs)
+
+    def test_boundary_merge_keeps_six_distinct_leads(self):
+        from scripts import evaluate_g2b_sealed as entry
+        try:
+            import xarray as xr
+        except ImportError:
+            self.skipTest('xarray in GFS runtime')
+        def dataset(leads):
+            return xr.Dataset({'u10': (('step', 'latitude', 'longitude'), np.ones((len(leads), 2, 2)))},
+                coords={'step': np.asarray(leads, dtype='timedelta64[h]'), 'latitude': [50., 51.], 'longitude': [0., 1.]})
+        merged = entry.merge_boundary_cycle(dataset([3, 6]), dataset([9, 12, 15, 18]))
+        np.testing.assert_array_equal(merged.step / np.timedelta64(1, 'h'), [3, 6, 9, 12, 15, 18])
+        with self.assertRaisesRegex(ValueError, 'Overlapping'):
+            entry.merge_boundary_cycle(dataset([3, 6]), dataset([6, 9]))
+        changed = dataset([9, 12, 15, 18]).assign_coords(latitude=[49., 50.])
+        with self.assertRaisesRegex(ValueError, 'grid'):
+            entry.merge_boundary_cycle(dataset([3, 6]), changed)
+
+    def test_gfs_or_midas_failure_never_opens_scada(self):
+        from contextlib import ExitStack
+        from scripts import evaluate_g2b_sealed as entry
+        for fail_stage in ('gfs', 'midas'):
+            with self.subTest(stage=fail_stage), tempfile.TemporaryDirectory() as tmp, ExitStack() as stack:
+                root = Path(tmp)
+                out = root/'out'
+                out.mkdir()
+                metadata = root/'datasets/external_validation/sealed/hill_of_towie/Hill_of_Towie_turbine_metadata.csv'
+                metadata.parent.mkdir(parents=True)
+                metadata.write_text('Latitude,Longitude\n57,0\n')
+                def read(path):
+                    name = Path(path).name
+                    if name == 'record_22662930.json':
+                        return {'files': [{'key': metadata.name, 'size': metadata.stat().st_size, 'checksum': 'md5:ok'}]}
+                    if name == 'qualified_stations.json':
+                        return {'stations': [{'latitude': 57., 'longitude': 0.}]*12}
+                    if name == 'gfs_test_inventory.json':
+                        return {'source_identities': {}}
+                    return {}
+                stack.enter_context(patch.object(entry, 'start_preparation', return_value=({}, {})))
+                stack.enter_context(patch.object(entry, 'read_json', side_effect=read))
+                stack.enter_context(patch.object(entry.hot, 'verified', side_effect=lambda p, s, i: p))
+                stack.enter_context(patch.object(entry.hot, 'sha', return_value='ok'))
+                stack.enter_context(patch.object(entry.prep, 'digest', return_value='digest'))
+                gfs = stack.enter_context(patch.object(entry.subprocess, 'run', side_effect=RuntimeError('gfs') if fail_stage == 'gfs' else None))
+                midas = stack.enter_context(patch.object(entry, 'sealed_midas', side_effect=RuntimeError('midas')))
+                scada = stack.enter_context(patch.object(entry.train, 'scoped_functions'))
+                with self.assertRaisesRegex(RuntimeError, fail_stage):
+                    entry.prepare_sealed(root, root/'freeze', out, *entry.preparation_config(True))
+                gfs.assert_called_once()
+                self.assertEqual(midas.call_count, int(fail_stage == 'midas'))
+                scada.assert_not_called()
+                self.assertTrue((out/'failed.json').exists())
+
+
+class G2cEvaluationGateTests(unittest.TestCase):
+    def test_wrong_package_hash_does_not_write_marker(self):
+        from scripts import evaluate_g2b_sealed as e
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            complete = dict(status='PREPARED_ONLY', entrypoint_sha256=e.PREPARATION_SHA,
+                freeze_sha256=e.FREEZE_SHA, packs={k:v[0] for k,v in e.EVALUATION_PACKS.items()},
+                counts={k:{'windows':v[1]} for k,v in e.EVALUATION_PACKS.items()})
+            (root/'prepared_complete.json').write_text(json.dumps(complete))
+            (root/'2024.npz').write_bytes(b'wrong')
+            with patch.object(e, 'frozen_gate', return_value=({'protocol_sha256':e.PROTOCOL_SHA}, {})):
+                with self.assertRaisesRegex(ValueError, 'hash/count'):
+                    e.evaluate_once(root, root, root/'new')
+            self.assertFalse((root/'test_evaluation_started.json').exists())
+            self.assertFalse((root/'new').exists())
+
+    def test_existing_marker_is_never_replaced(self):
+        from scripts import evaluate_g2b_sealed as e
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            marker = root/'test_evaluation_started.json'
+            marker.write_text('original')
+            with self.assertRaisesRegex(ValueError, 'already attempted'):
+                e.reserve_evaluation(root, root/'new', {})
+            self.assertEqual(marker.read_text(), 'original')
+            self.assertFalse((root/'new').exists())
+
+    def test_existing_output_refused_before_marker(self):
+        from scripts import evaluate_g2b_sealed as e
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            out = root/'exists'
+            out.mkdir()
+            with self.assertRaisesRegex(ValueError, 'output already exists'):
+                e.reserve_evaluation(root, out, {})
+            self.assertFalse((root/'test_evaluation_started.json').exists())
+
+
+if __name__ == '__main__':
+    unittest.main()

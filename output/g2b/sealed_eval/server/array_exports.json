@@ -1,0 +1,52 @@
+{
+  "2024": {
+    "sha256": "87a94b403c24fb875e9fc0e412037c2668c85d0628a1aee52a8114fbdb3247f2",
+    "bytes": 14394518,
+    "keys": [
+      "truth",
+      "issue",
+      "turbines",
+      "times",
+      "anchor",
+      "pred_B_2024",
+      "pred_B_2025",
+      "pred_B_2026",
+      "pred_N0_2024",
+      "pred_N0_2025",
+      "pred_N0_2026",
+      "pred_B0_2024",
+      "pred_B0_2025",
+      "pred_B0_2026",
+      "pred_N_2024",
+      "pred_N_2025",
+      "pred_N_2026",
+      "pred_N_2027",
+      "pred_N_2028"
+    ]
+  },
+  "2025": {
+    "sha256": "a09299ed0a3538e5af948e15cb05cf3f8cf80805c8f5ead489232ad5e5287e6c",
+    "bytes": 13744165,
+    "keys": [
+      "truth",
+      "issue",
+      "turbines",
+      "times",
+      "anchor",
+      "pred_B_2024",
+      "pred_B_2025",
+      "pred_B_2026",
+      "pred_N0_2024",
+      "pred_N0_2025",
+      "pred_N0_2026",
+      "pred_B0_2024",
+      "pred_B0_2025",
+      "pred_B0_2026",
+      "pred_N_2024",
+      "pred_N_2025",
+      "pred_N_2026",
+      "pred_N_2027",
+      "pred_N_2028"
+    ]
+  }
+}

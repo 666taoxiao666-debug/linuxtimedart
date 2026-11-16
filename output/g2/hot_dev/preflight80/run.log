@@ -1,0 +1,18 @@
+Traceback (most recent call last):
+  File "/home/XT/nuist/pythoncode/TimeDARTFirst_G2_7b0e3d6/scripts/prepare_hot_dev.py", line 316, in run
+    frame, meta, bounds = prepare_scada(directory, out)
+  File "/home/XT/nuist/pythoncode/TimeDARTFirst_G2_7b0e3d6/scripts/prepare_hot_dev.py", line 132, in prepare_scada
+    ticks = read_month(z, year, month, sid_to_unit)
+  File "/home/XT/nuist/pythoncode/TimeDARTFirst_G2_7b0e3d6/scripts/prepare_hot_dev.py", line 66, in read_month
+    raise ValueError('SCADA year/month/unit/duplicate identity mismatch')
+ValueError: SCADA year/month/unit/duplicate identity mismatch
+Traceback (most recent call last):
+  File "/home/XT/nuist/pythoncode/TimeDARTFirst_G2_7b0e3d6/scripts/prepare_hot_dev.py", line 358, in <module>
+    run(args.data_root.resolve(), args.output)
+  File "/home/XT/nuist/pythoncode/TimeDARTFirst_G2_7b0e3d6/scripts/prepare_hot_dev.py", line 316, in run
+    frame, meta, bounds = prepare_scada(directory, out)
+  File "/home/XT/nuist/pythoncode/TimeDARTFirst_G2_7b0e3d6/scripts/prepare_hot_dev.py", line 132, in prepare_scada
+    ticks = read_month(z, year, month, sid_to_unit)
+  File "/home/XT/nuist/pythoncode/TimeDARTFirst_G2_7b0e3d6/scripts/prepare_hot_dev.py", line 66, in read_month
+    raise ValueError('SCADA year/month/unit/duplicate identity mismatch')
+ValueError: SCADA year/month/unit/duplicate identity mismatch

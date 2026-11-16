@@ -1,0 +1,384 @@
+{
+  "descriptive_only": true,
+  "aggregation": "all turbines, raw export occurrences; endpoint duplicates may count twice",
+  "fields": {
+    "P0|tblSCTurGrid|wtc_ActRegSt_endvalue": {
+      "total": 4678656,
+      "distinct_values": 2,
+      "top5": [
+        [
+          "NotActive                                         ",
+          4678556
+        ],
+        [
+          "<missing>",
+          100
+        ]
+      ]
+    },
+    "P1|tblSCTurGrid|wtc_ActRegSt_endvalue": {
+      "total": 497057,
+      "distinct_values": 2,
+      "top5": [
+        [
+          "NotActive                                         ",
+          496989
+        ],
+        [
+          "<missing>",
+          68
+        ]
+      ]
+    },
+    "P2|tblSCTurGrid|wtc_ActRegSt_endvalue": {
+      "total": 725380,
+      "distinct_values": 2,
+      "top5": [
+        [
+          "NotActive                                         ",
+          725274
+        ],
+        [
+          "<missing>",
+          106
+        ]
+      ]
+    },
+    "P0|tblSCTurbine|wtc_BoostAva_min": {
+      "total": 3759989,
+      "distinct_values": 2,
+      "top5": [
+        [
+          "0.0",
+          3252374
+        ],
+        [
+          "<missing>",
+          507615
+        ]
+      ]
+    },
+    "P0|tblSCTurbine|wtc_BoostAva_max": {
+      "total": 3759989,
+      "distinct_values": 2,
+      "top5": [
+        [
+          "0.0",
+          3252374
+        ],
+        [
+          "<missing>",
+          507615
+        ]
+      ]
+    },
+    "P0|tblSCTurbine|wtc_BoostAva_mean": {
+      "total": 3759989,
+      "distinct_values": 2,
+      "top5": [
+        [
+          "0.0",
+          3252374
+        ],
+        [
+          "<missing>",
+          507615
+        ]
+      ]
+    },
+    "P0|tblSCTurbine|wtc_BoostAva_stddev": {
+      "total": 3759989,
+      "distinct_values": 2,
+      "top5": [
+        [
+          "0.0",
+          3252374
+        ],
+        [
+          "<missing>",
+          507615
+        ]
+      ]
+    },
+    "P1|tblSCTurbine|wtc_BoostAva_min": {
+      "total": 497057,
+      "distinct_values": 2,
+      "top5": [
+        [
+          "0.0",
+          496989
+        ],
+        [
+          "<missing>",
+          68
+        ]
+      ]
+    },
+    "P1|tblSCTurbine|wtc_BoostAva_max": {
+      "total": 497057,
+      "distinct_values": 2,
+      "top5": [
+        [
+          "0.0",
+          496989
+        ],
+        [
+          "<missing>",
+          68
+        ]
+      ]
+    },
+    "P1|tblSCTurbine|wtc_BoostAva_mean": {
+      "total": 497057,
+      "distinct_values": 2,
+      "top5": [
+        [
+          "0.0",
+          496989
+        ],
+        [
+          "<missing>",
+          68
+        ]
+      ]
+    },
+    "P1|tblSCTurbine|wtc_BoostAva_stddev": {
+      "total": 497057,
+      "distinct_values": 2,
+      "top5": [
+        [
+          "0.0",
+          496989
+        ],
+        [
+          "<missing>",
+          68
+        ]
+      ]
+    },
+    "P2|tblSCTurbine|wtc_BoostAva_min": {
+      "total": 725380,
+      "distinct_values": 2,
+      "top5": [
+        [
+          "0.0",
+          725274
+        ],
+        [
+          "<missing>",
+          106
+        ]
+      ]
+    },
+    "P2|tblSCTurbine|wtc_BoostAva_max": {
+      "total": 725380,
+      "distinct_values": 2,
+      "top5": [
+        [
+          "0.0",
+          725274
+        ],
+        [
+          "<missing>",
+          106
+        ]
+      ]
+    },
+    "P2|tblSCTurbine|wtc_BoostAva_mean": {
+      "total": 725380,
+      "distinct_values": 2,
+      "top5": [
+        [
+          "0.0",
+          725274
+        ],
+        [
+          "<missing>",
+          106
+        ]
+      ]
+    },
+    "P2|tblSCTurbine|wtc_BoostAva_stddev": {
+      "total": 725380,
+      "distinct_values": 2,
+      "top5": [
+        [
+          "0.0",
+          725274
+        ],
+        [
+          "<missing>",
+          106
+        ]
+      ]
+    },
+    "P0|tblSCTurbine|wtc_BoostAct_min": {
+      "total": 274564,
+      "distinct_values": 2,
+      "top5": [
+        [
+          "0.0",
+          274473
+        ],
+        [
+          "<missing>",
+          91
+        ]
+      ]
+    },
+    "P0|tblSCTurbine|wtc_BoostAct_max": {
+      "total": 274564,
+      "distinct_values": 2,
+      "top5": [
+        [
+          "0.0",
+          274473
+        ],
+        [
+          "<missing>",
+          91
+        ]
+      ]
+    },
+    "P0|tblSCTurbine|wtc_BoostAct_mean": {
+      "total": 274564,
+      "distinct_values": 2,
+      "top5": [
+        [
+          "0.0",
+          274473
+        ],
+        [
+          "<missing>",
+          91
+        ]
+      ]
+    },
+    "P0|tblSCTurbine|wtc_BoostAct_stddev": {
+      "total": 274564,
+      "distinct_values": 2,
+      "top5": [
+        [
+          "0.0",
+          274473
+        ],
+        [
+          "<missing>",
+          91
+        ]
+      ]
+    },
+    "P1|tblSCTurbine|wtc_BoostAct_min": {
+      "total": 470766,
+      "distinct_values": 2,
+      "top5": [
+        [
+          "0.0",
+          470218
+        ],
+        [
+          "<missing>",
+          548
+        ]
+      ]
+    },
+    "P1|tblSCTurbine|wtc_BoostAct_max": {
+      "total": 470766,
+      "distinct_values": 2,
+      "top5": [
+        [
+          "0.0",
+          470218
+        ],
+        [
+          "<missing>",
+          548
+        ]
+      ]
+    },
+    "P1|tblSCTurbine|wtc_BoostAct_mean": {
+      "total": 470766,
+      "distinct_values": 2,
+      "top5": [
+        [
+          "0.0",
+          470218
+        ],
+        [
+          "<missing>",
+          548
+        ]
+      ]
+    },
+    "P1|tblSCTurbine|wtc_BoostAct_stddev": {
+      "total": 470766,
+      "distinct_values": 2,
+      "top5": [
+        [
+          "0.0",
+          470218
+        ],
+        [
+          "<missing>",
+          548
+        ]
+      ]
+    },
+    "P2|tblSCTurbine|wtc_BoostAct_min": {
+      "total": 725380,
+      "distinct_values": 2,
+      "top5": [
+        [
+          "0.0",
+          725274
+        ],
+        [
+          "<missing>",
+          106
+        ]
+      ]
+    },
+    "P2|tblSCTurbine|wtc_BoostAct_max": {
+      "total": 725380,
+      "distinct_values": 2,
+      "top5": [
+        [
+          "0.0",
+          725274
+        ],
+        [
+          "<missing>",
+          106
+        ]
+      ]
+    },
+    "P2|tblSCTurbine|wtc_BoostAct_mean": {
+      "total": 725380,
+      "distinct_values": 2,
+      "top5": [
+        [
+          "0.0",
+          725274
+        ],
+        [
+          "<missing>",
+          106
+        ]
+      ]
+    },
+    "P2|tblSCTurbine|wtc_BoostAct_stddev": {
+      "total": 725380,
+      "distinct_values": 2,
+      "top5": [
+        [
+          "0.0",
+          725274
+        ],
+        [
+          "<missing>",
+          106
+        ]
+      ]
+    }
+  }
+}

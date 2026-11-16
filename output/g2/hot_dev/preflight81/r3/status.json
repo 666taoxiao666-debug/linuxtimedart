@@ -1,0 +1,8 @@
+{
+  "utc": "2026-11-14T03:12:05.399611+00:00",
+  "run": "hot_dev_c12d799_r3",
+  "pid": 561997,
+  "alive": true,
+  "command": "/home/XT/miniconda3/envs/timedart/bin/python -u scripts/prepare_hot_dev.py --data-root /home/XT/nuist/pythoncode/TimeDARTFirst --output /home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/G2/hot_dev_c12d799_r3/prepared ",
+  "tail": ""
+}

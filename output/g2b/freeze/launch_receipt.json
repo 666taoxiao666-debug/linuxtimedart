@@ -1,0 +1,32 @@
+{
+  "pid": 739134,
+  "command": [
+    "/home/XT/miniconda3/envs/timedart/bin/python",
+    "-u",
+    "scripts/train_g2b.py",
+    "--data-root",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst",
+    "--prepared",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/G2/hot_dev_f58f2ce_r5/prepared",
+    "--diagnostic",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/G2/g2b_retrofit_d667d1b_r1/diagnostic",
+    "--output",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/G2/g2b_4471499_shared_r1/formal",
+    "--protocol-sha256",
+    "da809d691e93b7bb284fc7ce282f1c16a59ecd0fe5342f68ceab0e8530966a53",
+    "--device",
+    "cuda",
+    "--shared-gpu-memory-mib",
+    "1024"
+  ],
+  "worktree": "/home/XT/nuist/pythoncode/TimeDARTFirst_G2_4471499",
+  "started_utc": "2026-11-14T16:33:19.829142+00:00",
+  "protocol_sha256": "da809d691e93b7bb284fc7ce282f1c16a59ecd0fe5342f68ceab0e8530966a53",
+  "script_sha256": "411095d75a8eb8bcaa6ad3cfd5641f5e3a0a3fd909e5316f5ee2cfeec4985823",
+  "formal_fits": 14,
+  "sealed_access": false,
+  "replaces_cancelled_zero_fit_run": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/G2/g2b_598a89d_r1",
+  "allocator_limit_mib": 1024,
+  "cpu_cores": 2,
+  "nice": 10
+}

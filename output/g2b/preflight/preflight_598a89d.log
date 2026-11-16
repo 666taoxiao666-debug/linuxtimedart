@@ -1,0 +1,39 @@
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/matplotlib/_fontconfig_pattern.py:64: PyparsingDeprecationWarning: 'oneOf' deprecated - use 'one_of'
+  prop = Group((name + Suppress("=") + comma_separated(value)) | oneOf(_CONSTANTS))
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/matplotlib/_fontconfig_pattern.py:85: PyparsingDeprecationWarning: 'parseString' deprecated - use 'parse_string'
+  parse = parser.parseString(pattern)
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/matplotlib/_fontconfig_pattern.py:89: PyparsingDeprecationWarning: 'resetCache' deprecated - use 'reset_cache'
+  parser.resetCache()
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/matplotlib/_mathtext.py:45: PyparsingDeprecationWarning: 'enablePackrat' deprecated - use 'enable_packrat'
+  ParserElement.enablePackrat()
+In /home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/matplotlib/mpl-data/stylelib/classic.mplstyle: 'parseString' deprecated - use 'parse_string'
+In /home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/matplotlib/mpl-data/stylelib/classic.mplstyle: 'resetCache' deprecated - use 'reset_cache'
+...[FIT 1/14] B_2024 val_mae=1.000000
+[FIT 2/14] B_2025 val_mae=1.000000
+[FIT 3/14] B_2026 val_mae=1.000000
+[FIT 4/14] N0_2024 val_mae=1.000000
+[FIT 5/14] N0_2025 val_mae=1.000000
+[FIT 6/14] N0_2026 val_mae=1.000000
+[FIT 7/14] B0_2024 val_mae=1.000000
+[FIT 8/14] B0_2025 val_mae=1.000000
+[FIT 9/14] B0_2026 val_mae=1.000000
+[FIT 10/14] N_2024 val_mae=1.000000
+[FIT 11/14] N_2025 val_mae=1.000000
+[FIT 12/14] N_2026 val_mae=1.000000
+[FIT 13/14] N_2027 val_mae=1.000000
+[FIT 14/14] N_2028 val_mae=1.000000
+[FROZEN] 14 fits; stop before sealed access
+................[DIAGNOSTIC] 2016 complete
+[DIAGNOSTIC] 2017 complete
+[DIAGNOSTIC] 2018 complete
+[DIAGNOSTIC] 2019 complete
+[DIAGNOSTIC] 2020 complete
+[DIAGNOSTIC] 2021 complete
+[DIAGNOSTIC] 2022 complete
+[DIAGNOSTIC] 2023 complete
+[DIAGNOSTIC] STOP: ['beyond_rounding_keys_exceed_one_percent', 'entire_annual_boundary_batch_differs']
+............
+----------------------------------------------------------------------
+Ran 31 tests in 8.209s
+
+OK

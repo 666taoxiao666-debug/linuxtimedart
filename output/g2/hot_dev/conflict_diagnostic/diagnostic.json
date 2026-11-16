@@ -1,0 +1,4886 @@
+{
+  "status": "DIAGNOSED",
+  "stop_reasons": [],
+  "development_years": [
+    2016,
+    2017,
+    2018,
+    2019,
+    2020,
+    2021,
+    2022,
+    2023
+  ],
+  "duplicate_keys": 1981,
+  "beyond_rounding_keys": 0,
+  "beyond_rounding_fraction": 0.0,
+  "groups": [
+    {
+      "boundary": "2016-02-01 00:00:00+00:00",
+      "table": "tblSCTurbine",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AcWindSp_mean": {
+          "same": 21
+        },
+        "wtc_NacelPos_mean": {
+          "same": 21
+        },
+        "wtc_MainSRpm_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosA_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosB_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosC_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2016-02-01 00:00:00+00:00",
+      "table": "tblSCTurGrid",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_ActPower_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2016-02-01 00:00:00+00:00",
+      "table": "tblSCTurTemp",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AmbieTmp_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2016-03-01 00:00:00+00:00",
+      "table": "tblSCTurbine",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AcWindSp_mean": {
+          "same": 21
+        },
+        "wtc_NacelPos_mean": {
+          "same": 21
+        },
+        "wtc_MainSRpm_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosA_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosB_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosC_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2016-03-01 00:00:00+00:00",
+      "table": "tblSCTurGrid",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_ActPower_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2016-03-01 00:00:00+00:00",
+      "table": "tblSCTurTemp",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AmbieTmp_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2016-04-01 00:00:00+00:00",
+      "table": "tblSCTurbine",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AcWindSp_mean": {
+          "same": 21
+        },
+        "wtc_NacelPos_mean": {
+          "same": 21
+        },
+        "wtc_MainSRpm_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosA_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosB_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosC_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2016-04-01 00:00:00+00:00",
+      "table": "tblSCTurGrid",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_ActPower_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2016-04-01 00:00:00+00:00",
+      "table": "tblSCTurTemp",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AmbieTmp_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2016-05-01 00:00:00+00:00",
+      "table": "tblSCTurbine",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AcWindSp_mean": {
+          "same": 21
+        },
+        "wtc_NacelPos_mean": {
+          "same": 21
+        },
+        "wtc_MainSRpm_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosA_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosB_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosC_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2016-05-01 00:00:00+00:00",
+      "table": "tblSCTurGrid",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_ActPower_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2016-05-01 00:00:00+00:00",
+      "table": "tblSCTurTemp",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AmbieTmp_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2016-06-01 00:00:00+00:00",
+      "table": "tblSCTurbine",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AcWindSp_mean": {
+          "same": 21
+        },
+        "wtc_NacelPos_mean": {
+          "same": 21
+        },
+        "wtc_MainSRpm_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosA_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosB_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosC_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2016-06-01 00:00:00+00:00",
+      "table": "tblSCTurGrid",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_ActPower_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2016-06-01 00:00:00+00:00",
+      "table": "tblSCTurTemp",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AmbieTmp_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2016-07-01 00:00:00+00:00",
+      "table": "tblSCTurbine",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AcWindSp_mean": {
+          "same": 21
+        },
+        "wtc_NacelPos_mean": {
+          "same": 21
+        },
+        "wtc_MainSRpm_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosA_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosB_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosC_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2016-07-01 00:00:00+00:00",
+      "table": "tblSCTurGrid",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_ActPower_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2016-07-01 00:00:00+00:00",
+      "table": "tblSCTurTemp",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AmbieTmp_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2016-08-01 00:00:00+00:00",
+      "table": "tblSCTurbine",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AcWindSp_mean": {
+          "same": 21
+        },
+        "wtc_NacelPos_mean": {
+          "same": 21
+        },
+        "wtc_MainSRpm_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosA_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosB_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosC_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2016-08-01 00:00:00+00:00",
+      "table": "tblSCTurGrid",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_ActPower_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2016-08-01 00:00:00+00:00",
+      "table": "tblSCTurTemp",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AmbieTmp_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2016-09-01 00:00:00+00:00",
+      "table": "tblSCTurbine",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AcWindSp_mean": {
+          "same": 21
+        },
+        "wtc_NacelPos_mean": {
+          "same": 21
+        },
+        "wtc_MainSRpm_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosA_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosB_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosC_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2016-09-01 00:00:00+00:00",
+      "table": "tblSCTurGrid",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_ActPower_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2016-09-01 00:00:00+00:00",
+      "table": "tblSCTurTemp",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AmbieTmp_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2016-10-01 00:00:00+00:00",
+      "table": "tblSCTurbine",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AcWindSp_mean": {
+          "same": 21
+        },
+        "wtc_NacelPos_mean": {
+          "same": 21
+        },
+        "wtc_MainSRpm_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosA_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosB_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosC_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2016-10-01 00:00:00+00:00",
+      "table": "tblSCTurGrid",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_ActPower_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2016-10-01 00:00:00+00:00",
+      "table": "tblSCTurTemp",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AmbieTmp_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2016-11-01 00:00:00+00:00",
+      "table": "tblSCTurbine",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AcWindSp_mean": {
+          "same": 21
+        },
+        "wtc_NacelPos_mean": {
+          "same": 21
+        },
+        "wtc_MainSRpm_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosA_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosB_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosC_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2016-11-01 00:00:00+00:00",
+      "table": "tblSCTurGrid",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_ActPower_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2016-11-01 00:00:00+00:00",
+      "table": "tblSCTurTemp",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AmbieTmp_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2016-12-01 00:00:00+00:00",
+      "table": "tblSCTurbine",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AcWindSp_mean": {
+          "same": 21
+        },
+        "wtc_NacelPos_mean": {
+          "same": 21
+        },
+        "wtc_MainSRpm_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosA_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosB_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosC_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2016-12-01 00:00:00+00:00",
+      "table": "tblSCTurGrid",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_ActPower_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2016-12-01 00:00:00+00:00",
+      "table": "tblSCTurTemp",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AmbieTmp_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2017-01-01 00:00:00+00:00",
+      "table": "tblSCTurbine",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AcWindSp_mean": {
+          "same": 21
+        },
+        "wtc_NacelPos_mean": {
+          "same": 21
+        },
+        "wtc_MainSRpm_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosA_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosB_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosC_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2017-01-01 00:00:00+00:00",
+      "table": "tblSCTurGrid",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_ActPower_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2017-01-01 00:00:00+00:00",
+      "table": "tblSCTurTemp",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AmbieTmp_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2017-02-01 00:00:00+00:00",
+      "table": "tblSCTurbine",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AcWindSp_mean": {
+          "same": 21
+        },
+        "wtc_NacelPos_mean": {
+          "same": 21
+        },
+        "wtc_MainSRpm_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosA_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosB_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosC_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2017-02-01 00:00:00+00:00",
+      "table": "tblSCTurGrid",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_ActPower_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2017-02-01 00:00:00+00:00",
+      "table": "tblSCTurTemp",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AmbieTmp_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2017-03-01 00:00:00+00:00",
+      "table": "tblSCTurbine",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AcWindSp_mean": {
+          "same": 21
+        },
+        "wtc_NacelPos_mean": {
+          "same": 21
+        },
+        "wtc_MainSRpm_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosA_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosB_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosC_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2017-03-01 00:00:00+00:00",
+      "table": "tblSCTurGrid",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_ActPower_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2017-03-01 00:00:00+00:00",
+      "table": "tblSCTurTemp",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AmbieTmp_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2017-04-01 00:00:00+00:00",
+      "table": "tblSCTurbine",
+      "duplicate_keys": 20,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AcWindSp_mean": {
+          "same": 20
+        },
+        "wtc_NacelPos_mean": {
+          "same": 20
+        },
+        "wtc_MainSRpm_mean": {
+          "same": 20
+        },
+        "wtc_PitcPosA_mean": {
+          "same": 20
+        },
+        "wtc_PitcPosB_mean": {
+          "same": 20
+        },
+        "wtc_PitcPosC_mean": {
+          "same": 20
+        }
+      }
+    },
+    {
+      "boundary": "2017-04-01 00:00:00+00:00",
+      "table": "tblSCTurGrid",
+      "duplicate_keys": 20,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_ActPower_mean": {
+          "same": 20
+        }
+      }
+    },
+    {
+      "boundary": "2017-04-01 00:00:00+00:00",
+      "table": "tblSCTurTemp",
+      "duplicate_keys": 20,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AmbieTmp_mean": {
+          "same": 20
+        }
+      }
+    },
+    {
+      "boundary": "2017-05-01 00:00:00+00:00",
+      "table": "tblSCTurbine",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AcWindSp_mean": {
+          "same": 21
+        },
+        "wtc_NacelPos_mean": {
+          "same": 21
+        },
+        "wtc_MainSRpm_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosA_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosB_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosC_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2017-05-01 00:00:00+00:00",
+      "table": "tblSCTurGrid",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_ActPower_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2017-05-01 00:00:00+00:00",
+      "table": "tblSCTurTemp",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AmbieTmp_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2017-06-01 00:00:00+00:00",
+      "table": "tblSCTurbine",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AcWindSp_mean": {
+          "same": 21
+        },
+        "wtc_NacelPos_mean": {
+          "same": 21
+        },
+        "wtc_MainSRpm_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosA_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosB_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosC_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2017-06-01 00:00:00+00:00",
+      "table": "tblSCTurGrid",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_ActPower_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2017-06-01 00:00:00+00:00",
+      "table": "tblSCTurTemp",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AmbieTmp_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2017-07-01 00:00:00+00:00",
+      "table": "tblSCTurbine",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AcWindSp_mean": {
+          "same": 21
+        },
+        "wtc_NacelPos_mean": {
+          "same": 21
+        },
+        "wtc_MainSRpm_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosA_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosB_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosC_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2017-07-01 00:00:00+00:00",
+      "table": "tblSCTurGrid",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_ActPower_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2017-07-01 00:00:00+00:00",
+      "table": "tblSCTurTemp",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AmbieTmp_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2017-08-01 00:00:00+00:00",
+      "table": "tblSCTurbine",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AcWindSp_mean": {
+          "same": 21
+        },
+        "wtc_NacelPos_mean": {
+          "same": 21
+        },
+        "wtc_MainSRpm_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosA_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosB_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosC_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2017-08-01 00:00:00+00:00",
+      "table": "tblSCTurGrid",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_ActPower_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2017-08-01 00:00:00+00:00",
+      "table": "tblSCTurTemp",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AmbieTmp_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2017-09-01 00:00:00+00:00",
+      "table": "tblSCTurbine",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AcWindSp_mean": {
+          "same": 21
+        },
+        "wtc_NacelPos_mean": {
+          "same": 21
+        },
+        "wtc_MainSRpm_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosA_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosB_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosC_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2017-09-01 00:00:00+00:00",
+      "table": "tblSCTurGrid",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_ActPower_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2017-09-01 00:00:00+00:00",
+      "table": "tblSCTurTemp",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AmbieTmp_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2017-10-01 00:00:00+00:00",
+      "table": "tblSCTurbine",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AcWindSp_mean": {
+          "same": 21
+        },
+        "wtc_NacelPos_mean": {
+          "same": 21
+        },
+        "wtc_MainSRpm_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosA_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosB_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosC_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2017-10-01 00:00:00+00:00",
+      "table": "tblSCTurGrid",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_ActPower_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2017-10-01 00:00:00+00:00",
+      "table": "tblSCTurTemp",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AmbieTmp_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2017-11-01 00:00:00+00:00",
+      "table": "tblSCTurbine",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AcWindSp_mean": {
+          "same": 21
+        },
+        "wtc_NacelPos_mean": {
+          "same": 21
+        },
+        "wtc_MainSRpm_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosA_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosB_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosC_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2017-11-01 00:00:00+00:00",
+      "table": "tblSCTurGrid",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_ActPower_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2017-11-01 00:00:00+00:00",
+      "table": "tblSCTurTemp",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AmbieTmp_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2017-12-01 00:00:00+00:00",
+      "table": "tblSCTurbine",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AcWindSp_mean": {
+          "same": 21
+        },
+        "wtc_NacelPos_mean": {
+          "same": 21
+        },
+        "wtc_MainSRpm_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosA_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosB_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosC_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2017-12-01 00:00:00+00:00",
+      "table": "tblSCTurGrid",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_ActPower_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2017-12-01 00:00:00+00:00",
+      "table": "tblSCTurTemp",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AmbieTmp_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2018-01-01 00:00:00+00:00",
+      "table": "tblSCTurbine",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AcWindSp_mean": {
+          "same": 21
+        },
+        "wtc_NacelPos_mean": {
+          "same": 21
+        },
+        "wtc_MainSRpm_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosA_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosB_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosC_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2018-01-01 00:00:00+00:00",
+      "table": "tblSCTurGrid",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_ActPower_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2018-01-01 00:00:00+00:00",
+      "table": "tblSCTurTemp",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AmbieTmp_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2018-02-01 00:00:00+00:00",
+      "table": "tblSCTurbine",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AcWindSp_mean": {
+          "same": 21
+        },
+        "wtc_NacelPos_mean": {
+          "same": 21
+        },
+        "wtc_MainSRpm_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosA_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosB_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosC_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2018-02-01 00:00:00+00:00",
+      "table": "tblSCTurGrid",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_ActPower_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2018-02-01 00:00:00+00:00",
+      "table": "tblSCTurTemp",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AmbieTmp_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2018-03-01 00:00:00+00:00",
+      "table": "tblSCTurbine",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AcWindSp_mean": {
+          "same": 21
+        },
+        "wtc_NacelPos_mean": {
+          "same": 21
+        },
+        "wtc_MainSRpm_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosA_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosB_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosC_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2018-03-01 00:00:00+00:00",
+      "table": "tblSCTurGrid",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_ActPower_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2018-03-01 00:00:00+00:00",
+      "table": "tblSCTurTemp",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AmbieTmp_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2018-04-01 00:00:00+00:00",
+      "table": "tblSCTurbine",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AcWindSp_mean": {
+          "same": 21
+        },
+        "wtc_NacelPos_mean": {
+          "same": 21
+        },
+        "wtc_MainSRpm_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosA_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosB_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosC_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2018-04-01 00:00:00+00:00",
+      "table": "tblSCTurGrid",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_ActPower_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2018-04-01 00:00:00+00:00",
+      "table": "tblSCTurTemp",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AmbieTmp_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2018-05-01 00:00:00+00:00",
+      "table": "tblSCTurbine",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AcWindSp_mean": {
+          "same": 21
+        },
+        "wtc_NacelPos_mean": {
+          "same": 21
+        },
+        "wtc_MainSRpm_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosA_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosB_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosC_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2018-05-01 00:00:00+00:00",
+      "table": "tblSCTurGrid",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_ActPower_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2018-05-01 00:00:00+00:00",
+      "table": "tblSCTurTemp",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AmbieTmp_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2018-06-01 00:00:00+00:00",
+      "table": "tblSCTurbine",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AcWindSp_mean": {
+          "same": 21
+        },
+        "wtc_NacelPos_mean": {
+          "same": 21
+        },
+        "wtc_MainSRpm_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosA_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosB_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosC_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2018-06-01 00:00:00+00:00",
+      "table": "tblSCTurGrid",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_ActPower_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2018-06-01 00:00:00+00:00",
+      "table": "tblSCTurTemp",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AmbieTmp_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2018-07-01 00:00:00+00:00",
+      "table": "tblSCTurbine",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AcWindSp_mean": {
+          "same": 21
+        },
+        "wtc_NacelPos_mean": {
+          "same": 21
+        },
+        "wtc_MainSRpm_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosA_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosB_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosC_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2018-07-01 00:00:00+00:00",
+      "table": "tblSCTurGrid",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_ActPower_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2018-07-01 00:00:00+00:00",
+      "table": "tblSCTurTemp",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AmbieTmp_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2018-08-01 00:00:00+00:00",
+      "table": "tblSCTurbine",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AcWindSp_mean": {
+          "same": 21
+        },
+        "wtc_NacelPos_mean": {
+          "same": 21
+        },
+        "wtc_MainSRpm_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosA_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosB_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosC_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2018-08-01 00:00:00+00:00",
+      "table": "tblSCTurGrid",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_ActPower_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2018-08-01 00:00:00+00:00",
+      "table": "tblSCTurTemp",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AmbieTmp_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2018-09-01 00:00:00+00:00",
+      "table": "tblSCTurbine",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AcWindSp_mean": {
+          "same": 21
+        },
+        "wtc_NacelPos_mean": {
+          "same": 21
+        },
+        "wtc_MainSRpm_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosA_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosB_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosC_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2018-09-01 00:00:00+00:00",
+      "table": "tblSCTurGrid",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_ActPower_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2018-09-01 00:00:00+00:00",
+      "table": "tblSCTurTemp",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AmbieTmp_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2018-10-01 00:00:00+00:00",
+      "table": "tblSCTurbine",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AcWindSp_mean": {
+          "same": 21
+        },
+        "wtc_NacelPos_mean": {
+          "same": 21
+        },
+        "wtc_MainSRpm_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosA_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosB_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosC_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2018-10-01 00:00:00+00:00",
+      "table": "tblSCTurGrid",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_ActPower_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2018-10-01 00:00:00+00:00",
+      "table": "tblSCTurTemp",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AmbieTmp_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2018-11-01 00:00:00+00:00",
+      "table": "tblSCTurbine",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AcWindSp_mean": {
+          "same": 21
+        },
+        "wtc_NacelPos_mean": {
+          "same": 21
+        },
+        "wtc_MainSRpm_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosA_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosB_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosC_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2018-11-01 00:00:00+00:00",
+      "table": "tblSCTurGrid",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_ActPower_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2018-11-01 00:00:00+00:00",
+      "table": "tblSCTurTemp",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AmbieTmp_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2018-12-01 00:00:00+00:00",
+      "table": "tblSCTurbine",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AcWindSp_mean": {
+          "same": 21
+        },
+        "wtc_NacelPos_mean": {
+          "same": 21
+        },
+        "wtc_MainSRpm_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosA_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosB_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosC_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2018-12-01 00:00:00+00:00",
+      "table": "tblSCTurGrid",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_ActPower_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2018-12-01 00:00:00+00:00",
+      "table": "tblSCTurTemp",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AmbieTmp_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2019-01-01 00:00:00+00:00",
+      "table": "tblSCTurbine",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AcWindSp_mean": {
+          "same": 21
+        },
+        "wtc_NacelPos_mean": {
+          "same": 21
+        },
+        "wtc_MainSRpm_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosA_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosB_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosC_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2019-01-01 00:00:00+00:00",
+      "table": "tblSCTurGrid",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_ActPower_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2019-01-01 00:00:00+00:00",
+      "table": "tblSCTurTemp",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AmbieTmp_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2019-02-01 00:00:00+00:00",
+      "table": "tblSCTurbine",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AcWindSp_mean": {
+          "same": 21
+        },
+        "wtc_NacelPos_mean": {
+          "same": 21
+        },
+        "wtc_MainSRpm_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosA_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosB_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosC_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2019-02-01 00:00:00+00:00",
+      "table": "tblSCTurGrid",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_ActPower_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2019-02-01 00:00:00+00:00",
+      "table": "tblSCTurTemp",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AmbieTmp_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2019-03-01 00:00:00+00:00",
+      "table": "tblSCTurbine",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AcWindSp_mean": {
+          "same": 21
+        },
+        "wtc_NacelPos_mean": {
+          "same": 21
+        },
+        "wtc_MainSRpm_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosA_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosB_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosC_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2019-03-01 00:00:00+00:00",
+      "table": "tblSCTurGrid",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_ActPower_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2019-03-01 00:00:00+00:00",
+      "table": "tblSCTurTemp",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AmbieTmp_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2019-04-01 00:00:00+00:00",
+      "table": "tblSCTurbine",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AcWindSp_mean": {
+          "same": 21
+        },
+        "wtc_NacelPos_mean": {
+          "same": 21
+        },
+        "wtc_MainSRpm_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosA_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosB_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosC_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2019-04-01 00:00:00+00:00",
+      "table": "tblSCTurGrid",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_ActPower_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2019-04-01 00:00:00+00:00",
+      "table": "tblSCTurTemp",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AmbieTmp_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2019-05-01 00:00:00+00:00",
+      "table": "tblSCTurbine",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AcWindSp_mean": {
+          "same": 21
+        },
+        "wtc_NacelPos_mean": {
+          "same": 21
+        },
+        "wtc_MainSRpm_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosA_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosB_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosC_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2019-05-01 00:00:00+00:00",
+      "table": "tblSCTurGrid",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_ActPower_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2019-05-01 00:00:00+00:00",
+      "table": "tblSCTurTemp",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AmbieTmp_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2019-06-01 00:00:00+00:00",
+      "table": "tblSCTurbine",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AcWindSp_mean": {
+          "same": 21
+        },
+        "wtc_NacelPos_mean": {
+          "same": 21
+        },
+        "wtc_MainSRpm_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosA_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosB_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosC_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2019-06-01 00:00:00+00:00",
+      "table": "tblSCTurGrid",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_ActPower_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2019-06-01 00:00:00+00:00",
+      "table": "tblSCTurTemp",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AmbieTmp_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2019-07-01 00:00:00+00:00",
+      "table": "tblSCTurbine",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AcWindSp_mean": {
+          "same": 21
+        },
+        "wtc_NacelPos_mean": {
+          "same": 21
+        },
+        "wtc_MainSRpm_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosA_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosB_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosC_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2019-07-01 00:00:00+00:00",
+      "table": "tblSCTurGrid",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_ActPower_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2019-07-01 00:00:00+00:00",
+      "table": "tblSCTurTemp",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AmbieTmp_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2019-08-01 00:00:00+00:00",
+      "table": "tblSCTurbine",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AcWindSp_mean": {
+          "same": 21
+        },
+        "wtc_NacelPos_mean": {
+          "same": 21
+        },
+        "wtc_MainSRpm_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosA_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosB_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosC_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2019-08-01 00:00:00+00:00",
+      "table": "tblSCTurGrid",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_ActPower_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2019-08-01 00:00:00+00:00",
+      "table": "tblSCTurTemp",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AmbieTmp_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2019-09-01 00:00:00+00:00",
+      "table": "tblSCTurbine",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AcWindSp_mean": {
+          "same": 21
+        },
+        "wtc_NacelPos_mean": {
+          "same": 21
+        },
+        "wtc_MainSRpm_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosA_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosB_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosC_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2019-09-01 00:00:00+00:00",
+      "table": "tblSCTurGrid",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_ActPower_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2019-09-01 00:00:00+00:00",
+      "table": "tblSCTurTemp",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AmbieTmp_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2019-10-01 00:00:00+00:00",
+      "table": "tblSCTurbine",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AcWindSp_mean": {
+          "same": 21
+        },
+        "wtc_NacelPos_mean": {
+          "same": 21
+        },
+        "wtc_MainSRpm_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosA_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosB_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosC_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2019-10-01 00:00:00+00:00",
+      "table": "tblSCTurGrid",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_ActPower_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2019-10-01 00:00:00+00:00",
+      "table": "tblSCTurTemp",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AmbieTmp_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2019-11-01 00:00:00+00:00",
+      "table": "tblSCTurbine",
+      "duplicate_keys": 20,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AcWindSp_mean": {
+          "same": 20
+        },
+        "wtc_NacelPos_mean": {
+          "same": 20
+        },
+        "wtc_MainSRpm_mean": {
+          "same": 20
+        },
+        "wtc_PitcPosA_mean": {
+          "same": 20
+        },
+        "wtc_PitcPosB_mean": {
+          "same": 20
+        },
+        "wtc_PitcPosC_mean": {
+          "same": 20
+        }
+      }
+    },
+    {
+      "boundary": "2019-11-01 00:00:00+00:00",
+      "table": "tblSCTurGrid",
+      "duplicate_keys": 20,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_ActPower_mean": {
+          "same": 20
+        }
+      }
+    },
+    {
+      "boundary": "2019-11-01 00:00:00+00:00",
+      "table": "tblSCTurTemp",
+      "duplicate_keys": 20,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AmbieTmp_mean": {
+          "same": 20
+        }
+      }
+    },
+    {
+      "boundary": "2019-12-01 00:00:00+00:00",
+      "table": "tblSCTurbine",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AcWindSp_mean": {
+          "same": 21
+        },
+        "wtc_NacelPos_mean": {
+          "same": 21
+        },
+        "wtc_MainSRpm_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosA_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosB_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosC_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2019-12-01 00:00:00+00:00",
+      "table": "tblSCTurGrid",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_ActPower_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2019-12-01 00:00:00+00:00",
+      "table": "tblSCTurTemp",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AmbieTmp_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2020-01-01 00:00:00+00:00",
+      "table": "tblSCTurbine",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AcWindSp_mean": {
+          "same": 21
+        },
+        "wtc_NacelPos_mean": {
+          "same": 21
+        },
+        "wtc_MainSRpm_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosA_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosB_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosC_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2020-01-01 00:00:00+00:00",
+      "table": "tblSCTurGrid",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_ActPower_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2020-01-01 00:00:00+00:00",
+      "table": "tblSCTurTemp",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AmbieTmp_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2020-02-01 00:00:00+00:00",
+      "table": "tblSCTurbine",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AcWindSp_mean": {
+          "same": 21
+        },
+        "wtc_NacelPos_mean": {
+          "same": 21
+        },
+        "wtc_MainSRpm_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosA_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosB_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosC_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2020-02-01 00:00:00+00:00",
+      "table": "tblSCTurGrid",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_ActPower_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2020-02-01 00:00:00+00:00",
+      "table": "tblSCTurTemp",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AmbieTmp_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2020-03-01 00:00:00+00:00",
+      "table": "tblSCTurbine",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AcWindSp_mean": {
+          "same": 21
+        },
+        "wtc_NacelPos_mean": {
+          "same": 21
+        },
+        "wtc_MainSRpm_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosA_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosB_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosC_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2020-03-01 00:00:00+00:00",
+      "table": "tblSCTurGrid",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_ActPower_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2020-03-01 00:00:00+00:00",
+      "table": "tblSCTurTemp",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AmbieTmp_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2020-04-01 00:00:00+00:00",
+      "table": "tblSCTurbine",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AcWindSp_mean": {
+          "same": 21
+        },
+        "wtc_NacelPos_mean": {
+          "same": 21
+        },
+        "wtc_MainSRpm_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosA_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosB_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosC_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2020-04-01 00:00:00+00:00",
+      "table": "tblSCTurGrid",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_ActPower_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2020-04-01 00:00:00+00:00",
+      "table": "tblSCTurTemp",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AmbieTmp_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2020-05-01 00:00:00+00:00",
+      "table": "tblSCTurbine",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AcWindSp_mean": {
+          "same": 21
+        },
+        "wtc_NacelPos_mean": {
+          "same": 21
+        },
+        "wtc_MainSRpm_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosA_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosB_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosC_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2020-05-01 00:00:00+00:00",
+      "table": "tblSCTurGrid",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_ActPower_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2020-05-01 00:00:00+00:00",
+      "table": "tblSCTurTemp",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AmbieTmp_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2020-06-01 00:00:00+00:00",
+      "table": "tblSCTurbine",
+      "duplicate_keys": 20,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AcWindSp_mean": {
+          "same": 20
+        },
+        "wtc_NacelPos_mean": {
+          "same": 20
+        },
+        "wtc_MainSRpm_mean": {
+          "same": 20
+        },
+        "wtc_PitcPosA_mean": {
+          "same": 20
+        },
+        "wtc_PitcPosB_mean": {
+          "same": 20
+        },
+        "wtc_PitcPosC_mean": {
+          "same": 20
+        }
+      }
+    },
+    {
+      "boundary": "2020-06-01 00:00:00+00:00",
+      "table": "tblSCTurGrid",
+      "duplicate_keys": 20,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_ActPower_mean": {
+          "same": 20
+        }
+      }
+    },
+    {
+      "boundary": "2020-06-01 00:00:00+00:00",
+      "table": "tblSCTurTemp",
+      "duplicate_keys": 20,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AmbieTmp_mean": {
+          "same": 20
+        }
+      }
+    },
+    {
+      "boundary": "2020-07-01 00:00:00+00:00",
+      "table": "tblSCTurbine",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AcWindSp_mean": {
+          "same": 21
+        },
+        "wtc_NacelPos_mean": {
+          "same": 21
+        },
+        "wtc_MainSRpm_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosA_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosB_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosC_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2020-07-01 00:00:00+00:00",
+      "table": "tblSCTurGrid",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_ActPower_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2020-07-01 00:00:00+00:00",
+      "table": "tblSCTurTemp",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AmbieTmp_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2020-08-01 00:00:00+00:00",
+      "table": "tblSCTurbine",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AcWindSp_mean": {
+          "same": 21
+        },
+        "wtc_NacelPos_mean": {
+          "same": 21
+        },
+        "wtc_MainSRpm_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosA_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosB_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosC_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2020-08-01 00:00:00+00:00",
+      "table": "tblSCTurGrid",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_ActPower_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2020-08-01 00:00:00+00:00",
+      "table": "tblSCTurTemp",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AmbieTmp_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2020-09-01 00:00:00+00:00",
+      "table": "tblSCTurbine",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AcWindSp_mean": {
+          "same": 21
+        },
+        "wtc_NacelPos_mean": {
+          "same": 21
+        },
+        "wtc_MainSRpm_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosA_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosB_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosC_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2020-09-01 00:00:00+00:00",
+      "table": "tblSCTurGrid",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_ActPower_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2020-09-01 00:00:00+00:00",
+      "table": "tblSCTurTemp",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AmbieTmp_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2020-10-01 00:00:00+00:00",
+      "table": "tblSCTurbine",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AcWindSp_mean": {
+          "same": 21
+        },
+        "wtc_NacelPos_mean": {
+          "same": 21
+        },
+        "wtc_MainSRpm_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosA_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosB_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosC_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2020-10-01 00:00:00+00:00",
+      "table": "tblSCTurGrid",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_ActPower_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2020-10-01 00:00:00+00:00",
+      "table": "tblSCTurTemp",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AmbieTmp_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2020-11-01 00:00:00+00:00",
+      "table": "tblSCTurbine",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AcWindSp_mean": {
+          "same": 21
+        },
+        "wtc_NacelPos_mean": {
+          "same": 21
+        },
+        "wtc_MainSRpm_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosA_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosB_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosC_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2020-11-01 00:00:00+00:00",
+      "table": "tblSCTurGrid",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_ActPower_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2020-11-01 00:00:00+00:00",
+      "table": "tblSCTurTemp",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AmbieTmp_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2020-12-01 00:00:00+00:00",
+      "table": "tblSCTurbine",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AcWindSp_mean": {
+          "same": 21
+        },
+        "wtc_NacelPos_mean": {
+          "same": 21
+        },
+        "wtc_MainSRpm_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosA_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosB_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosC_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2020-12-01 00:00:00+00:00",
+      "table": "tblSCTurGrid",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_ActPower_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2020-12-01 00:00:00+00:00",
+      "table": "tblSCTurTemp",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AmbieTmp_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2021-01-01 00:00:00+00:00",
+      "table": "tblSCTurbine",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AcWindSp_mean": {
+          "same": 21
+        },
+        "wtc_NacelPos_mean": {
+          "same": 21
+        },
+        "wtc_MainSRpm_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosA_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosB_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosC_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2021-01-01 00:00:00+00:00",
+      "table": "tblSCTurGrid",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_ActPower_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2021-01-01 00:00:00+00:00",
+      "table": "tblSCTurTemp",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AmbieTmp_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2021-02-01 00:00:00+00:00",
+      "table": "tblSCTurbine",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AcWindSp_mean": {
+          "same": 21
+        },
+        "wtc_NacelPos_mean": {
+          "same": 21
+        },
+        "wtc_MainSRpm_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosA_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosB_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosC_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2021-02-01 00:00:00+00:00",
+      "table": "tblSCTurGrid",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_ActPower_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2021-02-01 00:00:00+00:00",
+      "table": "tblSCTurTemp",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AmbieTmp_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2021-03-01 00:00:00+00:00",
+      "table": "tblSCTurbine",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AcWindSp_mean": {
+          "same": 21
+        },
+        "wtc_NacelPos_mean": {
+          "same": 21
+        },
+        "wtc_MainSRpm_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosA_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosB_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosC_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2021-03-01 00:00:00+00:00",
+      "table": "tblSCTurGrid",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_ActPower_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2021-03-01 00:00:00+00:00",
+      "table": "tblSCTurTemp",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AmbieTmp_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2021-04-01 00:00:00+00:00",
+      "table": "tblSCTurbine",
+      "duplicate_keys": 20,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AcWindSp_mean": {
+          "same": 20
+        },
+        "wtc_NacelPos_mean": {
+          "same": 20
+        },
+        "wtc_MainSRpm_mean": {
+          "same": 20
+        },
+        "wtc_PitcPosA_mean": {
+          "same": 20
+        },
+        "wtc_PitcPosB_mean": {
+          "same": 20
+        },
+        "wtc_PitcPosC_mean": {
+          "same": 20
+        }
+      }
+    },
+    {
+      "boundary": "2021-04-01 00:00:00+00:00",
+      "table": "tblSCTurGrid",
+      "duplicate_keys": 20,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_ActPower_mean": {
+          "same": 20
+        }
+      }
+    },
+    {
+      "boundary": "2021-04-01 00:00:00+00:00",
+      "table": "tblSCTurTemp",
+      "duplicate_keys": 20,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AmbieTmp_mean": {
+          "same": 20
+        }
+      }
+    },
+    {
+      "boundary": "2021-05-01 00:00:00+00:00",
+      "table": "tblSCTurbine",
+      "duplicate_keys": 16,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AcWindSp_mean": {
+          "same": 16
+        },
+        "wtc_NacelPos_mean": {
+          "same": 16
+        },
+        "wtc_MainSRpm_mean": {
+          "same": 16
+        },
+        "wtc_PitcPosA_mean": {
+          "same": 16
+        },
+        "wtc_PitcPosB_mean": {
+          "same": 16
+        },
+        "wtc_PitcPosC_mean": {
+          "same": 16
+        }
+      }
+    },
+    {
+      "boundary": "2021-05-01 00:00:00+00:00",
+      "table": "tblSCTurGrid",
+      "duplicate_keys": 15,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_ActPower_mean": {
+          "same": 15
+        }
+      }
+    },
+    {
+      "boundary": "2021-05-01 00:00:00+00:00",
+      "table": "tblSCTurTemp",
+      "duplicate_keys": 15,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AmbieTmp_mean": {
+          "same": 15
+        }
+      }
+    },
+    {
+      "boundary": "2021-06-01 00:00:00+00:00",
+      "table": "tblSCTurbine",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AcWindSp_mean": {
+          "same": 21
+        },
+        "wtc_NacelPos_mean": {
+          "same": 21
+        },
+        "wtc_MainSRpm_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosA_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosB_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosC_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2021-06-01 00:00:00+00:00",
+      "table": "tblSCTurGrid",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_ActPower_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2021-06-01 00:00:00+00:00",
+      "table": "tblSCTurTemp",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AmbieTmp_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2021-07-01 00:00:00+00:00",
+      "table": "tblSCTurbine",
+      "duplicate_keys": 20,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AcWindSp_mean": {
+          "same": 20
+        },
+        "wtc_NacelPos_mean": {
+          "same": 20
+        },
+        "wtc_MainSRpm_mean": {
+          "same": 20
+        },
+        "wtc_PitcPosA_mean": {
+          "same": 20
+        },
+        "wtc_PitcPosB_mean": {
+          "same": 20
+        },
+        "wtc_PitcPosC_mean": {
+          "same": 20
+        }
+      }
+    },
+    {
+      "boundary": "2021-07-01 00:00:00+00:00",
+      "table": "tblSCTurGrid",
+      "duplicate_keys": 20,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_ActPower_mean": {
+          "same": 20
+        }
+      }
+    },
+    {
+      "boundary": "2021-07-01 00:00:00+00:00",
+      "table": "tblSCTurTemp",
+      "duplicate_keys": 20,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AmbieTmp_mean": {
+          "same": 20
+        }
+      }
+    },
+    {
+      "boundary": "2021-08-01 00:00:00+00:00",
+      "table": "tblSCTurbine",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AcWindSp_mean": {
+          "same": 21
+        },
+        "wtc_NacelPos_mean": {
+          "same": 21
+        },
+        "wtc_MainSRpm_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosA_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosB_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosC_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2021-08-01 00:00:00+00:00",
+      "table": "tblSCTurGrid",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_ActPower_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2021-08-01 00:00:00+00:00",
+      "table": "tblSCTurTemp",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AmbieTmp_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2021-09-01 00:00:00+00:00",
+      "table": "tblSCTurbine",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AcWindSp_mean": {
+          "same": 21
+        },
+        "wtc_NacelPos_mean": {
+          "same": 21
+        },
+        "wtc_MainSRpm_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosA_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosB_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosC_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2021-09-01 00:00:00+00:00",
+      "table": "tblSCTurGrid",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_ActPower_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2021-09-01 00:00:00+00:00",
+      "table": "tblSCTurTemp",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AmbieTmp_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2021-10-01 00:00:00+00:00",
+      "table": "tblSCTurbine",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AcWindSp_mean": {
+          "same": 21
+        },
+        "wtc_NacelPos_mean": {
+          "same": 21
+        },
+        "wtc_MainSRpm_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosA_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosB_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosC_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2021-10-01 00:00:00+00:00",
+      "table": "tblSCTurGrid",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_ActPower_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2021-10-01 00:00:00+00:00",
+      "table": "tblSCTurTemp",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AmbieTmp_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2021-11-01 00:00:00+00:00",
+      "table": "tblSCTurbine",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AcWindSp_mean": {
+          "same": 21
+        },
+        "wtc_NacelPos_mean": {
+          "same": 21
+        },
+        "wtc_MainSRpm_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosA_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosB_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosC_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2021-11-01 00:00:00+00:00",
+      "table": "tblSCTurGrid",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_ActPower_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2021-11-01 00:00:00+00:00",
+      "table": "tblSCTurTemp",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AmbieTmp_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2021-12-01 00:00:00+00:00",
+      "table": "tblSCTurbine",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AcWindSp_mean": {
+          "same": 21
+        },
+        "wtc_NacelPos_mean": {
+          "same": 21
+        },
+        "wtc_MainSRpm_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosA_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosB_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosC_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2021-12-01 00:00:00+00:00",
+      "table": "tblSCTurGrid",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_ActPower_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2021-12-01 00:00:00+00:00",
+      "table": "tblSCTurTemp",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AmbieTmp_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2022-01-01 00:00:00+00:00",
+      "table": "tblSCTurbine",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AcWindSp_mean": {
+          "same": 21
+        },
+        "wtc_NacelPos_mean": {
+          "same": 21
+        },
+        "wtc_MainSRpm_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosA_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosB_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosC_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2022-01-01 00:00:00+00:00",
+      "table": "tblSCTurGrid",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_ActPower_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2022-01-01 00:00:00+00:00",
+      "table": "tblSCTurTemp",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AmbieTmp_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2022-02-01 00:00:00+00:00",
+      "table": "tblSCTurbine",
+      "duplicate_keys": 19,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AcWindSp_mean": {
+          "same": 19
+        },
+        "wtc_NacelPos_mean": {
+          "same": 19
+        },
+        "wtc_MainSRpm_mean": {
+          "same": 19
+        },
+        "wtc_PitcPosA_mean": {
+          "same": 19
+        },
+        "wtc_PitcPosB_mean": {
+          "same": 19
+        },
+        "wtc_PitcPosC_mean": {
+          "same": 19
+        }
+      }
+    },
+    {
+      "boundary": "2022-02-01 00:00:00+00:00",
+      "table": "tblSCTurGrid",
+      "duplicate_keys": 19,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_ActPower_mean": {
+          "same": 19
+        }
+      }
+    },
+    {
+      "boundary": "2022-02-01 00:00:00+00:00",
+      "table": "tblSCTurTemp",
+      "duplicate_keys": 19,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AmbieTmp_mean": {
+          "same": 19
+        }
+      }
+    },
+    {
+      "boundary": "2022-03-01 00:00:00+00:00",
+      "table": "tblSCTurbine",
+      "duplicate_keys": 20,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AcWindSp_mean": {
+          "same": 20
+        },
+        "wtc_NacelPos_mean": {
+          "same": 20
+        },
+        "wtc_MainSRpm_mean": {
+          "same": 20
+        },
+        "wtc_PitcPosA_mean": {
+          "same": 20
+        },
+        "wtc_PitcPosB_mean": {
+          "same": 20
+        },
+        "wtc_PitcPosC_mean": {
+          "same": 20
+        }
+      }
+    },
+    {
+      "boundary": "2022-03-01 00:00:00+00:00",
+      "table": "tblSCTurGrid",
+      "duplicate_keys": 20,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_ActPower_mean": {
+          "same": 20
+        }
+      }
+    },
+    {
+      "boundary": "2022-03-01 00:00:00+00:00",
+      "table": "tblSCTurTemp",
+      "duplicate_keys": 20,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AmbieTmp_mean": {
+          "same": 20
+        }
+      }
+    },
+    {
+      "boundary": "2022-04-01 00:00:00+00:00",
+      "table": "tblSCTurbine",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AcWindSp_mean": {
+          "same": 21
+        },
+        "wtc_NacelPos_mean": {
+          "same": 21
+        },
+        "wtc_MainSRpm_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosA_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosB_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosC_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2022-04-01 00:00:00+00:00",
+      "table": "tblSCTurGrid",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_ActPower_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2022-04-01 00:00:00+00:00",
+      "table": "tblSCTurTemp",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AmbieTmp_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2022-05-01 00:00:00+00:00",
+      "table": "tblSCTurbine",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AcWindSp_mean": {
+          "same": 21
+        },
+        "wtc_NacelPos_mean": {
+          "same": 21
+        },
+        "wtc_MainSRpm_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosA_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosB_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosC_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2022-05-01 00:00:00+00:00",
+      "table": "tblSCTurGrid",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_ActPower_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2022-05-01 00:00:00+00:00",
+      "table": "tblSCTurTemp",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AmbieTmp_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2022-06-01 00:00:00+00:00",
+      "table": "tblSCTurbine",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AcWindSp_mean": {
+          "same": 21
+        },
+        "wtc_NacelPos_mean": {
+          "same": 21
+        },
+        "wtc_MainSRpm_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosA_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosB_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosC_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2022-06-01 00:00:00+00:00",
+      "table": "tblSCTurGrid",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_ActPower_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2022-06-01 00:00:00+00:00",
+      "table": "tblSCTurTemp",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AmbieTmp_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2022-07-01 00:00:00+00:00",
+      "table": "tblSCTurbine",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AcWindSp_mean": {
+          "same": 21
+        },
+        "wtc_NacelPos_mean": {
+          "same": 21
+        },
+        "wtc_MainSRpm_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosA_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosB_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosC_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2022-07-01 00:00:00+00:00",
+      "table": "tblSCTurGrid",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_ActPower_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2022-07-01 00:00:00+00:00",
+      "table": "tblSCTurTemp",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AmbieTmp_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2022-08-01 00:00:00+00:00",
+      "table": "tblSCTurbine",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AcWindSp_mean": {
+          "same": 21
+        },
+        "wtc_NacelPos_mean": {
+          "same": 21
+        },
+        "wtc_MainSRpm_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosA_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosB_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosC_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2022-08-01 00:00:00+00:00",
+      "table": "tblSCTurGrid",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_ActPower_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2022-08-01 00:00:00+00:00",
+      "table": "tblSCTurTemp",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AmbieTmp_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2022-09-01 00:00:00+00:00",
+      "table": "tblSCTurbine",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AcWindSp_mean": {
+          "same": 21
+        },
+        "wtc_NacelPos_mean": {
+          "same": 21
+        },
+        "wtc_MainSRpm_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosA_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosB_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosC_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2022-09-01 00:00:00+00:00",
+      "table": "tblSCTurGrid",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_ActPower_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2022-09-01 00:00:00+00:00",
+      "table": "tblSCTurTemp",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AmbieTmp_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2022-10-01 00:00:00+00:00",
+      "table": "tblSCTurbine",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AcWindSp_mean": {
+          "same": 21
+        },
+        "wtc_NacelPos_mean": {
+          "same": 21
+        },
+        "wtc_MainSRpm_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosA_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosB_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosC_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2022-10-01 00:00:00+00:00",
+      "table": "tblSCTurGrid",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_ActPower_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2022-10-01 00:00:00+00:00",
+      "table": "tblSCTurTemp",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AmbieTmp_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2022-11-01 00:00:00+00:00",
+      "table": "tblSCTurbine",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AcWindSp_mean": {
+          "same": 21
+        },
+        "wtc_NacelPos_mean": {
+          "same": 21
+        },
+        "wtc_MainSRpm_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosA_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosB_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosC_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2022-11-01 00:00:00+00:00",
+      "table": "tblSCTurGrid",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_ActPower_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2022-11-01 00:00:00+00:00",
+      "table": "tblSCTurTemp",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AmbieTmp_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2022-12-01 00:00:00+00:00",
+      "table": "tblSCTurbine",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AcWindSp_mean": {
+          "same": 21
+        },
+        "wtc_NacelPos_mean": {
+          "same": 21
+        },
+        "wtc_MainSRpm_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosA_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosB_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosC_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2022-12-01 00:00:00+00:00",
+      "table": "tblSCTurGrid",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_ActPower_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2022-12-01 00:00:00+00:00",
+      "table": "tblSCTurTemp",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AmbieTmp_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2023-01-01 00:00:00+00:00",
+      "table": "tblSCTurbine",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AcWindSp_mean": {
+          "same": 21
+        },
+        "wtc_NacelPos_mean": {
+          "same": 21
+        },
+        "wtc_MainSRpm_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosA_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosB_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosC_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2023-01-01 00:00:00+00:00",
+      "table": "tblSCTurGrid",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_ActPower_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2023-01-01 00:00:00+00:00",
+      "table": "tblSCTurTemp",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AmbieTmp_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2023-02-01 00:00:00+00:00",
+      "table": "tblSCTurbine",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AcWindSp_mean": {
+          "same": 21
+        },
+        "wtc_NacelPos_mean": {
+          "same": 21
+        },
+        "wtc_MainSRpm_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosA_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosB_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosC_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2023-02-01 00:00:00+00:00",
+      "table": "tblSCTurGrid",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_ActPower_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2023-02-01 00:00:00+00:00",
+      "table": "tblSCTurTemp",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AmbieTmp_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2023-03-01 00:00:00+00:00",
+      "table": "tblSCTurbine",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AcWindSp_mean": {
+          "same": 21
+        },
+        "wtc_NacelPos_mean": {
+          "same": 21
+        },
+        "wtc_MainSRpm_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosA_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosB_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosC_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2023-03-01 00:00:00+00:00",
+      "table": "tblSCTurGrid",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_ActPower_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2023-03-01 00:00:00+00:00",
+      "table": "tblSCTurTemp",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AmbieTmp_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2023-04-01 00:00:00+00:00",
+      "table": "tblSCTurbine",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AcWindSp_mean": {
+          "same": 21
+        },
+        "wtc_NacelPos_mean": {
+          "same": 21
+        },
+        "wtc_MainSRpm_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosA_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosB_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosC_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2023-04-01 00:00:00+00:00",
+      "table": "tblSCTurGrid",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_ActPower_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2023-04-01 00:00:00+00:00",
+      "table": "tblSCTurTemp",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AmbieTmp_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2023-05-01 00:00:00+00:00",
+      "table": "tblSCTurbine",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AcWindSp_mean": {
+          "same": 21
+        },
+        "wtc_NacelPos_mean": {
+          "same": 21
+        },
+        "wtc_MainSRpm_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosA_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosB_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosC_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2023-05-01 00:00:00+00:00",
+      "table": "tblSCTurGrid",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_ActPower_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2023-05-01 00:00:00+00:00",
+      "table": "tblSCTurTemp",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AmbieTmp_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2023-06-01 00:00:00+00:00",
+      "table": "tblSCTurbine",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AcWindSp_mean": {
+          "same": 21
+        },
+        "wtc_NacelPos_mean": {
+          "same": 21
+        },
+        "wtc_MainSRpm_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosA_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosB_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosC_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2023-06-01 00:00:00+00:00",
+      "table": "tblSCTurGrid",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_ActPower_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2023-06-01 00:00:00+00:00",
+      "table": "tblSCTurTemp",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AmbieTmp_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2023-07-01 00:00:00+00:00",
+      "table": "tblSCTurbine",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AcWindSp_mean": {
+          "same": 21
+        },
+        "wtc_NacelPos_mean": {
+          "same": 21
+        },
+        "wtc_MainSRpm_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosA_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosB_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosC_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2023-07-01 00:00:00+00:00",
+      "table": "tblSCTurGrid",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_ActPower_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2023-07-01 00:00:00+00:00",
+      "table": "tblSCTurTemp",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AmbieTmp_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2023-08-01 00:00:00+00:00",
+      "table": "tblSCTurbine",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AcWindSp_mean": {
+          "same": 21
+        },
+        "wtc_NacelPos_mean": {
+          "same": 21
+        },
+        "wtc_MainSRpm_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosA_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosB_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosC_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2023-08-01 00:00:00+00:00",
+      "table": "tblSCTurGrid",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_ActPower_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2023-08-01 00:00:00+00:00",
+      "table": "tblSCTurTemp",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AmbieTmp_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2023-09-01 00:00:00+00:00",
+      "table": "tblSCTurbine",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AcWindSp_mean": {
+          "same": 21
+        },
+        "wtc_NacelPos_mean": {
+          "same": 21
+        },
+        "wtc_MainSRpm_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosA_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosB_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosC_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2023-09-01 00:00:00+00:00",
+      "table": "tblSCTurGrid",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_ActPower_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2023-09-01 00:00:00+00:00",
+      "table": "tblSCTurTemp",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AmbieTmp_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2023-10-01 00:00:00+00:00",
+      "table": "tblSCTurbine",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AcWindSp_mean": {
+          "same": 21
+        },
+        "wtc_NacelPos_mean": {
+          "same": 21
+        },
+        "wtc_MainSRpm_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosA_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosB_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosC_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2023-10-01 00:00:00+00:00",
+      "table": "tblSCTurGrid",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_ActPower_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2023-10-01 00:00:00+00:00",
+      "table": "tblSCTurTemp",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AmbieTmp_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2023-11-01 00:00:00+00:00",
+      "table": "tblSCTurbine",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AcWindSp_mean": {
+          "same": 21
+        },
+        "wtc_NacelPos_mean": {
+          "same": 21
+        },
+        "wtc_MainSRpm_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosA_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosB_mean": {
+          "same": 21
+        },
+        "wtc_PitcPosC_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2023-11-01 00:00:00+00:00",
+      "table": "tblSCTurGrid",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_ActPower_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2023-11-01 00:00:00+00:00",
+      "table": "tblSCTurTemp",
+      "duplicate_keys": 21,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AmbieTmp_mean": {
+          "same": 21
+        }
+      }
+    },
+    {
+      "boundary": "2023-12-01 00:00:00+00:00",
+      "table": "tblSCTurbine",
+      "duplicate_keys": 20,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AcWindSp_mean": {
+          "same": 20
+        },
+        "wtc_NacelPos_mean": {
+          "same": 20
+        },
+        "wtc_MainSRpm_mean": {
+          "same": 20
+        },
+        "wtc_PitcPosA_mean": {
+          "same": 20
+        },
+        "wtc_PitcPosB_mean": {
+          "same": 20
+        },
+        "wtc_PitcPosC_mean": {
+          "same": 20
+        }
+      }
+    },
+    {
+      "boundary": "2023-12-01 00:00:00+00:00",
+      "table": "tblSCTurGrid",
+      "duplicate_keys": 20,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_ActPower_mean": {
+          "same": 20
+        }
+      }
+    },
+    {
+      "boundary": "2023-12-01 00:00:00+00:00",
+      "table": "tblSCTurTemp",
+      "duplicate_keys": 20,
+      "changed_keys": 0,
+      "beyond_rounding_keys": 0,
+      "columns": {
+        "wtc_AmbieTmp_mean": {
+          "same": 20
+        }
+      }
+    }
+  ],
+  "examples": [],
+  "nonboundary": [],
+  "annual_batches": [],
+  "missing_also_conflicts_in_existing_merge": true,
+  "source_sha256": "4d746c28e908ee2ef8fe309584568c6dcde0e5af4a4427e817e274272f7bce1b",
+  "input_hashes": {
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/output/external_acquisition/hill_of_towie/record_22662930.json": "7064b838681db88aa70eb7c9783e3383b074204a41e621bd62681c8abe50b5d0",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/output/external_acquisition/hill_of_towie/manifest.json": "a9be55ed7b8b609ec1e827592f1bb25e5f0ba63b9dfa5768124a28477bbf34d2",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/hill_of_towie/2016.zip": "800bb3d399e6b79278758bbd95e234e364b062a9ff7643a7f9c045b0db9e9738",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/hill_of_towie/2017.zip": "a49c11def85623b7f0537988debfa499cca15fc6ec971256051597d91224ab1f",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/hill_of_towie/2018.zip": "4d59191bd12ad0e85eb4de44f2f8f7d8e2556452341e89cd194a816debc48761",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/hill_of_towie/2019.zip": "24a9b9bfdf32558d80c518a11954d7230254f5ba384671d3df6ba3e53deb5b26",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/hill_of_towie/2020.zip": "3e55de08be27e6a6e702a99bfcccd57e20abfa69e7c65d5901caf581f128f020",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/hill_of_towie/2021.zip": "2284741792b4bfc7ca08234f49440dad4820bac5e73098011745a3f69e295c19",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/hill_of_towie/2022.zip": "1b0f8657273ddbb8c4f84042a0bcb1c5eb1fb7833849b4c491f2b9f10604700d",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/hill_of_towie/2023.zip": "e65f7acd65664584e5b72e4ad7ccd4c0f0af4ad68f618b8cf0b4e5c1f4a69521",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/hill_of_towie/Hill_of_Towie_turbine_metadata.csv": "dd40789c2bf2268da9d77890cc48617266f3ed9d13c5af2be6d6535671f261bc",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/hill_of_towie/Hill_of_Towie_AeroUp_install_dates.csv": "fca916cb2b32dfdd8cdf7d6fbb98e9f2ce15792267da3a717d861cd093d95191",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/datasets/external_validation/sealed/hill_of_towie/Hill_of_Towie_data_dictionary.md": "f7f4fc2f3fd58a925e1894e2f7ac00d6bde9c69883563a4653b1cf8c5f25cfc7"
+  },
+  "training": false,
+  "preparation_started": false
+}
