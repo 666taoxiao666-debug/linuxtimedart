@@ -1,0 +1,125 @@
+{
+  "status": "PASS",
+  "fingerprints": {
+    "Kelmarsh": {
+      "keys": {
+        "train": {
+          "issue": "bbac6dd8a491169b8dd4a72cc8c7d146c4b3619f2b3d3bb853b45580238c3dd0",
+          "turbines": "cb68fd236aef4867cc61f1016419525bd09eb82419c802c76c4039a1b9ecb575",
+          "truth": "8b91d2ce42476754f1879672483082a9e475888664b6dff8041ab3235be8e61e"
+        },
+        "V1": {
+          "issue": "7810d46cd81d30cb9c9666da0f70433a235c6f46b2af1d8f927dff47af9dff8c",
+          "turbines": "aea065485b99528ad273ada03c574f05c8e86dc2bb29faa252c07c5f01314823",
+          "truth": "80146c1901d66056db94585024cdde5ef8a3ac7a378505dac99750b8d8659189"
+        },
+        "V2": {
+          "issue": "2094b2ebd4ca402c48593cfca39752955bc033345ec36c07e847283ed89073a9",
+          "turbines": "23c911e507fa9eb897e73a795ff52e4a9431d833d8f6371093ae7e7e354a13e0",
+          "truth": "b123f412699802b42f1252a7e70a351b16093195f7d31b70505f337acad2f10f"
+        },
+        "Kelmarsh_2022": {
+          "issue": "37f98f06894af06bc4a8d0ac85e5861fd5c9de36a04430a477358bce1c5b9353",
+          "turbines": "475458f0c0aaee7eed3a71d9548f91b1cc8f34f5f580618d2c38d26599e8aff5",
+          "truth": "73bcf655b7c8e11e6e48d82a7816ec3be07ca0892e94349e22dcb3666350cd3f"
+        }
+      },
+      "hist6": {
+        "train": "f7e4e59954decf20bbe770caa9681732e83fa979ae446fad612260f17d3548d9",
+        "V1": "e8c4baba187c4c3e9f3d0268325bbcc570da488309514a0e23a714a927a8bcdb",
+        "V2": "5075eea32f7071a8f056a66e6fd3a26b1747fcab0723f1fb1a05e50d0d4dfe6a",
+        "Kelmarsh_2022": "25e0652fd33c35d016db18153216d1c67d895ca45f4d7b72ead8b3eede659c9d"
+      },
+      "curves_g": "0e756825ea42a52cecb1415d74f511249089fb81c016d970eaea55a9421ae5bf",
+      "curves_o": "027605a95ab3f64df52f7ed178e55118ad564bb53a74780b6a64a79af02efdf6",
+      "scalers": {
+        "wind_mean": 6.124781300944703,
+        "wind_scale": 2.6244130839663065,
+        "nwp_mean": 4.649866244640943,
+        "nwp_scale": 2.217332137398861
+      }
+    },
+    "Penmanshiel": {
+      "keys": {
+        "train": {
+          "issue": "cf0d4069dc45d37128adb85931f32220fdc6726a4918eb17c6a906b1e3bb866a",
+          "turbines": "4398685a9396e872bed0ce162691fc198bf6056489133a717d6328b542a22fc6",
+          "truth": "11107298e504a15a292683f3463d40d6a711eb9fd8ddd46d081f2bf173773cca"
+        },
+        "V1": {
+          "issue": "c37bbde3aec2de949d3b4a02bbc7a97d74077bb0e2f89f1002e1f5bfaec8f739",
+          "turbines": "dc224f87eb3dc2de2ebb4a3f52cea570125e50979cb6d73a7006a26fecb41619",
+          "truth": "e02de90c967167ff4f685842033d690bd701ad7d5c41bb6ded886b63b3c375e0"
+        },
+        "V2": {
+          "issue": "4c235a58761df138e051c10a3f0f853c1d4faa3f138ed94e00b2de698d40d993",
+          "turbines": "56304f1aacef759b99ceee899e9a1d5ff998fb6e2fbacc8fc927b14e9a1634ca",
+          "truth": "30ca0c85b4efa19ae4c03f7d233ce228f8f76426d629bb84190eac5a2fc1704a"
+        },
+        "Penmanshiel_2021": {
+          "issue": "dbd20449c5fb771ea62695da8f7011b13d64444dadf1bdc472885049c1b46017",
+          "turbines": "0d79e54b5dd06cd03303b12403820c976355f44c6862f2aa5a703dcd0a74aa0a",
+          "truth": "b8bd30264f0e2ed3b31ee2253712956bfb6806d0fd8cafe15d823fd1964107ff"
+        }
+      },
+      "hist6": {
+        "train": "aa12bda406d08ef044ddc62471b8bbc15bacc1b140450206d7a4fbe1565f437b",
+        "V1": "44675c54ed3d434186b3054f33e5dbff7072739a794df88d7296e02f7e1f9c5c",
+        "V2": "a43228e7eb1351792c312bbe24d76a008989a9dd7e06484f8d5eaa7978398f80",
+        "Penmanshiel_2021": "c32d387d5878ba1599f22c56fb63c81d32efcb5ac4ab8d5e9d6c1529e7eb2045"
+      },
+      "curves_g": "7b3bd3ae9cc23077092322bd4465aaa53072613841053e3bcd4011eb0c08cb8b",
+      "curves_o": "778450bc1260295fe9ebadcdedf6f2e3ac2102af06db160d7cb03a9019544903",
+      "scalers": {
+        "wind_mean": 7.122516981854915,
+        "wind_scale": 3.710276149720468,
+        "nwp_mean": 6.039576776904598,
+        "nwp_scale": 2.7983884000013877
+      }
+    },
+    "HoT": {
+      "keys": {
+        "train": {
+          "issue": "dbc894dc0468e10e753761d67c5e99b1cf89e93c490dc50410110eb646bdb921",
+          "turbines": "36c158cf95a02c51a5543e48f1eddba808e845a98e2703f262118d430818236d",
+          "truth": "9cba77c40f189ad866c792734b56296ce47adaca19427aa1fe73d5a68e5cc207"
+        },
+        "V1": {
+          "issue": "e7834f4ff0d2b131889cbf087b7f80cda015e6cb77546620f09dd396b09ddf7c",
+          "turbines": "28f82c1bb092c68f6f55abf3783bcc92fc3eec486c742159e1ee5e4d192cd165",
+          "truth": "3b153e420644e1e411d9ca4e2dcbaa7a11dee7ec04594b5e44e70b8cbbed3001"
+        },
+        "V2": {
+          "issue": "33bea1175a8cffe82ff05c5887c3d3768e81be7c7a06030987a47d13c804d04e",
+          "turbines": "296e38519c54cae3bcf74f0114cc6d810e544c2d928608f3153207901fcfebe6",
+          "truth": "999c45e30334ce4764417018432246a5dee518a199bff63374062f3431f34db5"
+        },
+        "HoT_2024": {
+          "issue": "283dbe3e76e314255e3d3d54a27bf6a60eded4269a4149b0d20946972231e4cd",
+          "turbines": "7ee4a94631d962532326d94a0eb8b3f132c07a9ed8d24c73051a9183f98fa4a0",
+          "truth": "2f9c747d3a68121f1f0858657abb2a2216854b7803100a9904b93ebec38fab6a"
+        },
+        "HoT_2025": {
+          "issue": "e120fec61a58a8e753ec6b41c9fc854c50f12da247adfbe79790d371e2c07b86",
+          "turbines": "4db76b04b9439cfd9611a64adfbfdd899955e88250b70e40aeb9307b52d5817c",
+          "truth": "b07bd0123dcb8b0b9295b2eafd05700c69b4e618e952361049da8fe6ea04fa6b"
+        }
+      },
+      "hist6": {
+        "train": "0840db84af9e4327cda137c2bf600d579a46d4d7519bc996465ec5d790dcdad7",
+        "V1": "6680b47f59e05eb262eeef9b3f93870216a1d7b097fc57aa9b9c48ce37bffed9",
+        "V2": "1d7256a3c4acf5ba98b27e3ee5628839a34f3d552df425660b3743152219bf6a",
+        "HoT_2024": "763b9c64b858960a4c816400f17ad0da348e9cdfbbc927763529c401d49ad29d",
+        "HoT_2025": "a3a2d175fd08254c26edcbe37869c7bc41b2816853ae0f8fd7ab82648dc78ed1"
+      },
+      "curves_g": "d7867aa9a7555539bb534783e7c18a05431b52e0defccd4e32faa33eef918324",
+      "curves_o": "517fd3d2e9ec78479df0223a19b31d3e427f2f7d2886ee2c0ed719cdd3b48dea",
+      "scalers": {
+        "wind_mean": 6.616039887480154,
+        "wind_scale": 3.5875314242674388,
+        "nwp_mean": 4.21224430898862,
+        "nwp_scale": 2.441899127867903
+      }
+    }
+  }
+}

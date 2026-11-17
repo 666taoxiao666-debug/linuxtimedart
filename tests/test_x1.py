@@ -56,7 +56,9 @@ class X1Tests(unittest.TestCase):
         audit = dense_equivalence(pack, old, np.arange(2), .01)
         self.assertEqual(audit['truth'], .000244140625)
         self.assertEqual(audit['anchor'], 0)
-        pack['anchor'][:] = .000244140625
+        pack['anchor'][:] = .000244140625          # kW power value: same registered 0.01 kW as truth (X1-E1)
+        self.assertEqual(dense_equivalence(pack, old, np.arange(2), .01)['anchor'], .000244140625)
+        pack['anchor'][:] = .0101
         with self.assertRaises(ValueError):
             dense_equivalence(pack, old, np.arange(2), .01)
         pack['anchor'][:] = 0

@@ -819,10 +819,12 @@ def run_a3(args):
 
 
 def dense_equivalence(pack, old, overlap, tolerance_kw):
+    """truth and anchor are raw hourly power in kW from the same source (registered 0.01 kW, float32 CSV
+    round trip, X1-E1 decision 2026-11-17); normalised model inputs stay at 1e-5."""
     deltas = {}
     for key in ('truth', 'anchor', 'x21', 'x50', 'gF', 'gF_mask'):
         current, previous = pack[key][overlap], old[key]
-        tolerance = tolerance_kw if key == 'truth' else 1e-5
+        tolerance = tolerance_kw if key in ('truth', 'anchor') else 1e-5
         if current.shape != previous.shape or not np.allclose(current, previous, rtol=0, atol=tolerance):
             raise ValueError('Dense input equivalence failed: '+key)
         deltas[key] = float(np.max(np.abs(current-previous)))
