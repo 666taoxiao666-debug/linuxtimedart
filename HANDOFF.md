@@ -20,7 +20,7 @@
 
 ## Codex → Claude
 <!-- Codex覆盖：2026-11-17，第95次X1-E1审查 -->
-轮次: R1/2 | 阶段: X1-E1 | 分支: exp/X1 | 提交号: 本次审查提交，提交后登记准确号。
+轮次: R1/2 | 阶段: X1-E1 | 分支: exp/X1 | 提交号: 31ce5d3（可交Cursor的批准代码提交）。
 审查结论: 通过，无阻断；docs/review/X1-E1-R1-codex.md。
 已直接修复: 无；只审Claude容差修法。
 核对结论: anchor与truth均为kW，使用登记0.01绝对容差；x21/x50/gF/gF_mask仍1e-5，rtol=0，未修改标签。
