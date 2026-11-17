@@ -636,20 +636,44 @@ def run_a(args, out=None, protocol=None, x1p=None):
 
 # ----------------------------------------------------------------------------- part B: neural bases
 def predict_nn(model, pack, device, batch=512):
-    """Same as train_g1.predict for x50 models (no station block): normalised output -> kW."""
+    """Same as train_g1.predict for x50 models (no station block): normalised output -> kW.
+    The whole cohort is moved to the device once (X2-B2 speed fix)."""
     import torch
     model.eval()
-    x, outs = pack['x50'], []
+    x, outs = torch.as_tensor(pack['x50'], dtype=torch.float32, device=device), []
     with torch.no_grad():
         for lo in range(0, len(x), batch):
-            xb = torch.as_tensor(x[lo:lo + batch], dtype=torch.float32, device=device)
-            outs.append(model(xb, None).detach().cpu().numpy().reshape(-1, 4))
-    return np.concatenate(outs) * float(pack['power_scale']) + float(pack['power_mean'])
+            outs.append(model(x[lo:lo + batch], None).reshape(-1, 4))
+    return torch.cat(outs).detach().cpu().numpy() * float(pack['power_scale']) + float(pack['power_mean'])
 
 
-def fit_nn(factory, train, val, config, seed, folder, device, domains=None, lam_end=None, min_epochs=0):
-    """train_g1.fit_one, unchanged except: plain x50 input, optional domain-adversarial term (standard GRL,
-    LegacyBases.da_loss) and no early stop before `min_epochs`.  `val` is V1 (early stopping only)."""
+class EarlyStopper:
+    """Best-checkpoint and patience bookkeeping of train_g1.fit_one, plus a selection window (X2-B2):
+    epochs <= select_after are trained but can never be selected and do not count towards patience, so the
+    domain-adversarial arm (and its TCN control) is selected only after the warm-up, when lambda > 0."""
+
+    def __init__(self, patience, select_after=0, initial=None):
+        self.patience, self.select_after, self.stale = patience, select_after, 0
+        use_initial = initial is not None and select_after == 0      # fit_one keeps the epoch-0 model as candidate
+        self.best = initial if use_initial else float('inf')
+        self.best_epoch = 0 if use_initial else None
+
+    def update(self, epoch, score):
+        """Returns (improved, stop)."""
+        if epoch <= self.select_after:
+            return False, False
+        if score < self.best:
+            self.best, self.best_epoch, self.stale = score, epoch, 0
+            return True, False
+        self.stale += 1
+        return False, self.stale >= self.patience
+
+
+def fit_nn(factory, train, val, config, seed, folder, device, domains=None, lam_end=None, select_after=0, tag=''):
+    """train_g1.fit_one recipe (optimiser, schedule, loss, clipping, seeds, epoch order) with X2-B2 changes:
+    data kept on the device, one finiteness check per epoch instead of per step (no per-step host sync),
+    cuDNN benchmark (non-deterministic kernels, same for every B arm), optional domain-adversarial term
+    (standard GRL, LegacyBases.da_loss) and a selection window after the warm-up.  `val` is V1."""
     import random
     import torch
     lb = legacy()
@@ -658,54 +682,62 @@ def fit_nn(factory, train, val, config, seed, folder, device, domains=None, lam_
     torch.manual_seed(seed)
     if torch.cuda.is_available():
         torch.cuda.manual_seed_all(seed)
-    torch.backends.cudnn.benchmark = False
-    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = True
+    torch.backends.cudnn.deterministic = False
     model = factory(device)
     optimizer = torch.optim.AdamW(model.parameters(), lr=config['learning_rate'], weight_decay=config['weight_decay'])
     scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=config['max_epochs'], eta_min=config['eta_min'])
-    best = float(np.abs(predict_nn(model, val, device) - val['truth']).mean())
-    state = {k: v.detach().cpu().clone() for k, v in model.state_dict().items()}
-    epoch_best, stale, history = 0, 0, [dict(epoch=0, val_mae=best)]
-    xs = train['x50']
-    y = (train['truth'] - float(train['power_mean'])) / float(train['power_scale'])
+    initial = float(np.abs(predict_nn(model, val, device) - val['truth']).mean())
+    stopper = EarlyStopper(config['patience'], select_after, initial)
+    state = {k: v.detach().cpu().clone() for k, v in model.state_dict().items()} if stopper.best_epoch == 0 else None
+    history, seconds = [dict(epoch=0, val_mae=initial)], []
+    xs = torch.as_tensor(train['x50'], dtype=torch.float32, device=device)
+    y = torch.as_tensor((train['truth'] - float(train['power_mean'])) / float(train['power_scale']),
+                        dtype=torch.float32, device=device)
     dom = None if domains is None else torch.as_tensor(np.asarray(domains), dtype=torch.long, device=device)
     for epoch in range(1, config['max_epochs'] + 1):
+        start = time.perf_counter()
         model.train()
         lam = 0.0 if dom is None else lb.lambda_schedule(epoch, config['max_epochs'], lam_end)
-        order = np.random.default_rng(seed + epoch).permutation(len(xs))
+        order = torch.as_tensor(np.random.default_rng(seed + epoch).permutation(len(xs)), device=device)
+        bad = torch.zeros((), dtype=torch.bool, device=device)
         for lo in range(0, len(xs), config['batch_size']):
             ix = order[lo:lo + config['batch_size']]
-            xb = torch.as_tensor(xs[ix], dtype=torch.float32, device=device)
-            target = torch.as_tensor(y[ix], dtype=torch.float32, device=device)
+            xb, target = xs[ix], y[ix]
             optimizer.zero_grad(set_to_none=True)
             if dom is None:
                 error = model(xb, None).reshape(-1, 4) - target
                 loss = config['mae_weight'] * error.abs().mean() + config['mse_weight'] * error.square().mean()
             else:
-                loss, _, _ = lb.da_loss(model, xb, target, dom[torch.as_tensor(ix, device=device)], lam,
-                                        config['mae_weight'], config['mse_weight'])
-            if not torch.isfinite(loss):
-                raise ValueError('Non-finite training loss')
+                loss, _, _ = lb.da_loss(model, xb, target, dom[ix], lam, config['mae_weight'], config['mse_weight'])
+            bad |= ~torch.isfinite(loss)
             loss.backward()
             torch.nn.utils.clip_grad_norm_(model.parameters(), config['grad_clip'])
             optimizer.step()
+        if bool(bad):
+            raise ValueError('Non-finite training loss')
         scheduler.step()
         score = float(np.abs(predict_nn(model, val, device) - val['truth']).mean())
         if not np.isfinite(score):
             raise ValueError('Non-finite validation score')
-        history.append(dict(epoch=epoch, val_mae=score, lam=lam))
-        if score < best:
-            best, epoch_best, stale = score, epoch, 0
+        seconds.append(time.perf_counter() - start)
+        history.append(dict(epoch=epoch, val_mae=score, lam=lam, seconds=seconds[-1]))
+        print(f'[X2] {tag} epoch {epoch} val {score:.3f} lam {lam:.4g} {seconds[-1]:.1f}s', flush=True)
+        improved, stop = stopper.update(epoch, score)
+        if improved:
             state = {k: v.detach().cpu().clone() for k, v in model.state_dict().items()}
-        else:
-            stale += 1
-        if stale >= config['patience'] and epoch >= min_epochs:
+        if stop:
             break
+    if state is None:
+        raise ValueError('No epoch inside the selection window')
     folder = Path(folder)
     folder.mkdir(parents=True, exist_ok=False)
     torch.save(state, folder / 'selected.pt')
-    result = dict(seed=seed, v1_mae=best, best_epoch=epoch_best, epochs=len(history) - 1, lam_end=lam_end,
-                  min_epochs=min_epochs, sha256=digest(folder / 'selected.pt'), history=history)
+    lams = [h['lam'] for h in history[1:]]
+    result = dict(seed=seed, v1_mae=stopper.best, best_epoch=stopper.best_epoch, epochs=len(history) - 1,
+                  lam_end=lam_end, select_after=select_after, selected_lambda=lams[stopper.best_epoch - 1] if stopper.best_epoch else 0.0,
+                  seconds_per_epoch=float(np.mean(seconds)), cudnn='benchmark, non-deterministic',
+                  sha256=digest(folder / 'selected.pt'), history=history)
     save(folder / 'trained.json', result)
     model.load_state_dict(state)
     return model, result
@@ -766,12 +798,17 @@ def run_b(args, out=None, protocol=None, x1p=None):
                     runs[tag] = {}
                     for seed in aspec['seeds'][:bud['seeds']]:
                         folder = out / 'B' / farm / 'models' / arm / tag / str(seed)
+                        select_after = int(.4 * config['max_epochs']) if aspec.get('select_after_warmup') else 0
                         model, result = fit_nn(factory, train, v1, config, seed, folder, device,
-                                               domains if lam is not None else None, lam, aspec.get('min_epochs', 0))
+                                               domains if lam is not None else None, lam, select_after,
+                                               tag=f'B {farm} {arm} lam={tag} seed {seed}')
                         store.put(f'B/{farm}/{arm}/{tag}/{seed}/V1.npy', predict_nn(model, v1, device))
                         store.put(f'B/{farm}/{arm}/{tag}/{seed}/V2.npy', predict_nn(model, v2, device))
-                        runs[tag][str(seed)] = {k: result[k] for k in ('v1_mae', 'best_epoch', 'epochs', 'sha256')}
-                        beat(out, f'B {farm} {arm} lam={tag} seed {seed} V1 MAE {result["v1_mae"]:.3f}')
+                        runs[tag][str(seed)] = {k: result[k] for k in ('v1_mae', 'best_epoch', 'epochs', 'sha256',
+                                                                     'selected_lambda', 'seconds_per_epoch')}
+                        beat(out, f'B {farm} {arm} lam={tag} seed {seed} V1 MAE {result["v1_mae"]:.3f} '
+                                  f'best epoch {result["best_epoch"]} lambda {result["selected_lambda"]:.4g} '
+                                  f'{result["seconds_per_epoch"]:.1f} s/epoch')
                         del model
                         if device == 'cuda':
                             torch.cuda.empty_cache()

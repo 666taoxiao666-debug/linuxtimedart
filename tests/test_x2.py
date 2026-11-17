@@ -241,6 +241,41 @@ class Helpers(unittest.TestCase):
         self.assertEqual(x2.select_base(mae)['selected'], 'CNN')
 
 
+class EarlyStopping(unittest.TestCase):
+    def test_plain_arm_matches_fit_one(self):
+        stop = x2.EarlyStopper(patience=2, select_after=0, initial=10.)
+        self.assertEqual(stop.best_epoch, 0)                     # epoch-0 model is a candidate, as in fit_one
+        self.assertEqual(stop.update(1, 11.), (False, False))
+        self.assertEqual(stop.update(2, 12.), (False, True))     # 2 stale epochs -> stop, best stays epoch 0
+        self.assertEqual((stop.best_epoch, stop.best), (0, 10.))
+
+    def test_adversarial_arm_selected_only_after_warmup(self):
+        """The 91d4d20 run stopped every DA fit at epoch 16 with lambda 0; now nothing up to the warm-up end can be
+        selected or count towards patience, so the chosen model has lambda > 0."""
+        legacy = x2.legacy()
+        warm = int(.4 * 40)
+        stop = x2.EarlyStopper(patience=5, select_after=warm, initial=1.)
+        self.assertIsNone(stop.best_epoch)
+        for e in range(1, warm + 1):                             # excellent early scores are ignored
+            self.assertEqual(stop.update(e, .5), (False, False))
+        self.assertEqual(stop.update(warm + 1, 9.), (True, False))
+        for e in range(warm + 2, warm + 6):
+            self.assertFalse(stop.update(e, 9.5)[1])
+        self.assertEqual(stop.update(warm + 6, 9.5), (False, True))   # patience counted after the warm-up
+        self.assertEqual(stop.best_epoch, warm + 1)
+        self.assertGreater(legacy.lambda_schedule(stop.best_epoch, 40, .05), 0)
+        self.assertEqual(legacy.lambda_schedule(warm, 40, .05), 0)
+        smoke = x2.EarlyStopper(patience=5, select_after=int(.4 * 1), initial=1.)   # smoke: 1 epoch, window open
+        self.assertEqual(smoke.update(1, 2.), (False, False))
+        self.assertEqual(smoke.best_epoch, 0)
+
+    def test_protocol_b_rerun_settings(self):
+        b = x2.read(x2.PROTOCOL)['part_b']['arms']
+        self.assertEqual(b['DATCNGRU']['lambda_end'], [0.05, 0.5])
+        self.assertTrue(b['DATCNGRU']['select_after_warmup'] and b['TCNGRU']['select_after_warmup'])
+        self.assertFalse(any('min_epochs' in a for a in b.values()))
+
+
 class VariantsA2(unittest.TestCase):
     def test_degenerate_statistics_cannot_be_reported_as_negative(self):
         stats = {'farm': dict(gain=0., reference_mean_loss=100., ci95_low=0., ci95_high=0.)}

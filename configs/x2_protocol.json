@@ -1,6 +1,6 @@
 {
   "stage": "X2",
-  "version": 2,
+  "version": 3,
   "author": "Claude 2026-11-16; GPT reviews, Cursor runs (user split 2026-11-16)",
   "plan": "docs/STAGE_PLAN.md (X2); decisions in docs/review/DECISIONS.md (stage X2)",
   "splits": {
@@ -39,12 +39,13 @@
     "fit": "configs/g1_protocol.json fit (Kelmarsh, Penmanshiel) / configs/g2b_protocol.json fit (HoT); early stopping on V1",
     "arms": {
       "N_v1": {"seeds": [2024, 2025, 2026]},
-      "TCNGRU": {"seeds": [2024, 2025, 2026], "min_epochs": 16},
-      "DATCNGRU": {"seeds": [2024, 2025, 2026], "min_epochs": 16, "lambda_end": [0.005, 0.05]},
+      "TCNGRU": {"seeds": [2024, 2025, 2026], "select_after_warmup": true},
+      "DATCNGRU": {"seeds": [2024, 2025, 2026], "select_after_warmup": true, "lambda_end": [0.05, 0.5]},
       "CNN": {"seeds": [2024, 2025, 2026]},
       "BILSTM": {"seeds": [2024, 2025, 2026]}
     },
     "domains": 3,
+    "rerun_x2b2": "2026-11-17: the 91d4d20 B run never activated lambda (all DA fits stopped at epoch 16 = end of the 40% warm-up) and the TCN path ran 266-307 s/epoch; it was stopped and is archived, not used. Rerun: TCN and DA selected only after the warm-up (epoch > int(0.4 max_epochs)), patience counted from there; lambda_end grid {0.05, 0.5}; every B arm uses device-resident data, one finiteness check per epoch and cuDNN benchmark (non-deterministic)",
     "fusion": {"members": ["CNN", "BILSTM", "LUG"], "alphas": [0.1, 1, 10, 20, 50], "blocks": 3, "fit": "V1 only"},
     "selection": {"reference": "LUG", "margin": 0.01}
   },
