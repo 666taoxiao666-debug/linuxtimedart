@@ -1,0 +1,577 @@
+{
+  "curves_sha256": "ab4bd0670fce9c46af97fc56cb5678d717e488b36c140081724b553a2efc54d9",
+  "arms": {
+    "L0": {
+      "grid": [
+        {
+          "num_leaves": 31,
+          "min_child_samples": 50,
+          "v1_mae": 228.68159976039172,
+          "best_iterations": [
+            151,
+            174,
+            150,
+            242
+          ]
+        },
+        {
+          "num_leaves": 31,
+          "min_child_samples": 200,
+          "v1_mae": 228.4249618367184,
+          "best_iterations": [
+            143,
+            137,
+            183,
+            189
+          ]
+        },
+        {
+          "num_leaves": 127,
+          "min_child_samples": 50,
+          "v1_mae": 231.3140486568241,
+          "best_iterations": [
+            160,
+            103,
+            113,
+            115
+          ]
+        },
+        {
+          "num_leaves": 127,
+          "min_child_samples": 200,
+          "v1_mae": 230.055638238346,
+          "best_iterations": [
+            135,
+            107,
+            103,
+            139
+          ]
+        }
+      ],
+      "selected": {
+        "num_leaves": 31,
+        "min_child_samples": 200,
+        "v1_mae": 228.4249618367184,
+        "best_iterations": [
+          143,
+          137,
+          183,
+          189
+        ]
+      },
+      "seeds": {
+        "2024": {
+          "boosters": {
+            "h1.txt": "3b8edddd852ab2c8ee7228212d8b9db864d64d2d4cc9c30f97de6d73a2385cf6",
+            "h2.txt": "c42236102fe50a128a737856f454ebf21cbb46b0481989f7a36815b188fd0b7d",
+            "h3.txt": "876c1795b0105496c84cd683b7fea51890e300dea28565f70815df9eb4d5c76b",
+            "h4.txt": "c256c3fc5eecd54ca16c03cbf0598fb45f5289220ee116abc30da6750ebd926e"
+          },
+          "v1_mae": 228.4249618367184,
+          "best_iterations": [
+            143,
+            137,
+            183,
+            189
+          ]
+        }
+      }
+    },
+    "LU": {
+      "grid": [
+        {
+          "num_leaves": 31,
+          "min_child_samples": 50,
+          "v1_mae": 213.0073916261277,
+          "best_iterations": [
+            180,
+            265,
+            305,
+            350
+          ]
+        },
+        {
+          "num_leaves": 31,
+          "min_child_samples": 200,
+          "v1_mae": 212.4003447560066,
+          "best_iterations": [
+            205,
+            282,
+            218,
+            206
+          ]
+        },
+        {
+          "num_leaves": 127,
+          "min_child_samples": 50,
+          "v1_mae": 215.31793642315156,
+          "best_iterations": [
+            168,
+            178,
+            210,
+            139
+          ]
+        },
+        {
+          "num_leaves": 127,
+          "min_child_samples": 200,
+          "v1_mae": 213.64504155266968,
+          "best_iterations": [
+            144,
+            157,
+            149,
+            154
+          ]
+        }
+      ],
+      "selected": {
+        "num_leaves": 31,
+        "min_child_samples": 200,
+        "v1_mae": 212.4003447560066,
+        "best_iterations": [
+          205,
+          282,
+          218,
+          206
+        ]
+      },
+      "seeds": {
+        "2024": {
+          "boosters": {
+            "h1.txt": "f454e44410526c5e6200d4cf432ed21404e675ccc2b64f2ab8acdebdc055d530",
+            "h2.txt": "15cee3abbca95dcb7acb4d2a00767cb547ab1d5c5b8dba1edcb2035f4e0eee15",
+            "h3.txt": "1b5db546c8ed4731c22d73be68eacb535cafdb33bfeec7f731076b5526a99b5f",
+            "h4.txt": "e55cf6e6387c3f1c873f0d06fca1f691d1e6d87d6634b9048aed8b5917463949"
+          },
+          "v1_mae": 212.4003447560066,
+          "best_iterations": [
+            205,
+            282,
+            218,
+            206
+          ]
+        }
+      }
+    },
+    "LG": {
+      "grid": [
+        {
+          "num_leaves": 31,
+          "min_child_samples": 50,
+          "v1_mae": 191.92090461788382,
+          "best_iterations": [
+            288,
+            126,
+            248,
+            146
+          ]
+        },
+        {
+          "num_leaves": 31,
+          "min_child_samples": 200,
+          "v1_mae": 191.54315268488463,
+          "best_iterations": [
+            141,
+            120,
+            282,
+            284
+          ]
+        },
+        {
+          "num_leaves": 127,
+          "min_child_samples": 50,
+          "v1_mae": 193.94986050735065,
+          "best_iterations": [
+            127,
+            120,
+            114,
+            255
+          ]
+        },
+        {
+          "num_leaves": 127,
+          "min_child_samples": 200,
+          "v1_mae": 192.9092375775011,
+          "best_iterations": [
+            134,
+            138,
+            132,
+            197
+          ]
+        }
+      ],
+      "selected": {
+        "num_leaves": 31,
+        "min_child_samples": 200,
+        "v1_mae": 191.54315268488463,
+        "best_iterations": [
+          141,
+          120,
+          282,
+          284
+        ]
+      },
+      "seeds": {
+        "2024": {
+          "boosters": {
+            "h1.txt": "90604dc65c1f528668e8040e5d8b5aaefc06308f21623fe6584c9a426c4722b2",
+            "h2.txt": "defdbd8104c578824c7cb29c31f5ed706921035432b8885dda5b0449c5531eb9",
+            "h3.txt": "4a585978b8b0ad69ea070c41de2d6f3805992abc239941aea81748fdaf629774",
+            "h4.txt": "452a39e9be5d0509d4281c449d8e3ec4e17165701e1afbc1c152be5628b1b7b6"
+          },
+          "v1_mae": 191.54315268488463,
+          "best_iterations": [
+            141,
+            120,
+            282,
+            284
+          ]
+        }
+      }
+    },
+    "LUG": {
+      "grid": [
+        {
+          "num_leaves": 31,
+          "min_child_samples": 50,
+          "v1_mae": 188.8639022357039,
+          "best_iterations": [
+            201,
+            307,
+            315,
+            271
+          ]
+        },
+        {
+          "num_leaves": 31,
+          "min_child_samples": 200,
+          "v1_mae": 188.6482353674052,
+          "best_iterations": [
+            280,
+            217,
+            575,
+            206
+          ]
+        },
+        {
+          "num_leaves": 127,
+          "min_child_samples": 50,
+          "v1_mae": 189.8272434998138,
+          "best_iterations": [
+            141,
+            239,
+            270,
+            236
+          ]
+        },
+        {
+          "num_leaves": 127,
+          "min_child_samples": 200,
+          "v1_mae": 189.4600694989701,
+          "best_iterations": [
+            144,
+            120,
+            163,
+            238
+          ]
+        }
+      ],
+      "selected": {
+        "num_leaves": 31,
+        "min_child_samples": 200,
+        "v1_mae": 188.6482353674052,
+        "best_iterations": [
+          280,
+          217,
+          575,
+          206
+        ]
+      },
+      "seeds": {
+        "2024": {
+          "boosters": {
+            "h1.txt": "25f626b1762fb56ce4094bf118a1966bf8d8bb795998bd8e5dd00088bd679b35",
+            "h2.txt": "2dc94137c78869211415d216ac21108c8e7c7dbee78e074460697672eaf84d99",
+            "h3.txt": "66667ceb1f09fb874a07d365f64f6126fdad1398f9c3e10eebe502591058abf8",
+            "h4.txt": "23083234f889d9fc4e4d2494182d5866b2a2376adaf81d0fbfda5eb85a0e6c19"
+          },
+          "v1_mae": 188.6482353674052,
+          "best_iterations": [
+            280,
+            217,
+            575,
+            206
+          ]
+        },
+        "2025": {
+          "boosters": {
+            "h1.txt": "6aa61d9d43432760ca0c6d031109f07910fa3a8058defeeb7eb72fb37b859fad",
+            "h2.txt": "f6a9c0a2854b845dffc39f174282bb8ce8558e3674f2985ef1521fa230403f15",
+            "h3.txt": "f4590ac7ee2d138210114a08dc236fd78855901c076e1f26f7980fe275a35ed9",
+            "h4.txt": "6fe6395fc6005de4dd93eb5036115bfd94355d5a9070ba4a02879f23020b6941"
+          },
+          "v1_mae": 188.47548429041947,
+          "best_iterations": [
+            253,
+            202,
+            389,
+            513
+          ]
+        },
+        "2026": {
+          "boosters": {
+            "h1.txt": "d2a7d7ac73dda918ca85b5bb8de6077fe17c767e20d4f7ed9bc107f4d5c8fe0a",
+            "h2.txt": "ce3a41e463c07d8e003156433e9637676d4772d1294512019cf1335148464028",
+            "h3.txt": "9db6e6d2ca919e04ccf0e1b6c7524ba03a710f63f40815d49fd444750c1c5479",
+            "h4.txt": "ab70f3b025575b69e309af989f0f4f454f5a070ebbd0093ecb5338a9af117bdb"
+          },
+          "v1_mae": 188.4566223823577,
+          "best_iterations": [
+            254,
+            209,
+            326,
+            272
+          ]
+        }
+      }
+    },
+    "LUG_PCL": {
+      "grid": [
+        {
+          "num_leaves": 31,
+          "min_child_samples": 50,
+          "v1_mae": 188.6912752862862,
+          "best_iterations": [
+            211,
+            155,
+            238,
+            132
+          ]
+        },
+        {
+          "num_leaves": 31,
+          "min_child_samples": 200,
+          "v1_mae": 188.3413010672877,
+          "best_iterations": [
+            228,
+            210,
+            291,
+            338
+          ]
+        },
+        {
+          "num_leaves": 127,
+          "min_child_samples": 50,
+          "v1_mae": 189.9899665120293,
+          "best_iterations": [
+            185,
+            136,
+            161,
+            202
+          ]
+        },
+        {
+          "num_leaves": 127,
+          "min_child_samples": 200,
+          "v1_mae": 189.2157643375492,
+          "best_iterations": [
+            168,
+            133,
+            150,
+            247
+          ]
+        }
+      ],
+      "selected": {
+        "num_leaves": 31,
+        "min_child_samples": 200,
+        "v1_mae": 188.3413010672877,
+        "best_iterations": [
+          228,
+          210,
+          291,
+          338
+        ]
+      },
+      "seeds": {
+        "2024": {
+          "boosters": {
+            "h1.txt": "760dd69cad434ebd17cda18fa32d84905656b63f729ee400d9ce2a22ab5a0356",
+            "h2.txt": "7b9874aa322b36479a1f9314b9ed5d6a2bd44c2e67ab00e9af18df0901798dc9",
+            "h3.txt": "6c5027063a2ba58f4f406469a9e3667a15ddc63c5e6c55efa094e1a656678b80",
+            "h4.txt": "4cea3502b695a88dd1d3f8993fee613be59db8f25ee014d8003c265e6c1a70ae"
+          },
+          "v1_mae": 188.3413010672877,
+          "best_iterations": [
+            228,
+            210,
+            291,
+            338
+          ]
+        },
+        "2025": {
+          "boosters": {
+            "h1.txt": "c9bd78e3fca61fa70d9eda90c390eee09ffa6f40f8f74d9ed00516b4bbe86609",
+            "h2.txt": "557a6a7007fea1214e18b9bde3acecaafc7c29a695a72fd943d2fa9a453984da",
+            "h3.txt": "de2d2e8dd40d8865afd8562a2b269ec19993da94eb9d2b1e323b0d54d311d8cf",
+            "h4.txt": "2d57bfdefb4aadec0d12c8dc45b06628bcc56e148acf4c2498271f69d07fe79c"
+          },
+          "v1_mae": 188.09193474782117,
+          "best_iterations": [
+            215,
+            208,
+            280,
+            438
+          ]
+        },
+        "2026": {
+          "boosters": {
+            "h1.txt": "aecd6ef7757d4db8dffb597f87df338433c08610bc903469d13c3a383560ee9c",
+            "h2.txt": "58b6088381869bb7a8ac2e4e3a0f5d1a1f0b1de8f8b7f89d755c2421f1ddd1c6",
+            "h3.txt": "364a4cdeaeab8dbde095076afcc2a53a0c8d7c9fe42caaa06b6d4fc84179c4d1",
+            "h4.txt": "568323c5fe5ba0ffab50bd2393fd2898eca747a283f4454d55c530b40280317f"
+          },
+          "v1_mae": 188.12971153723896,
+          "best_iterations": [
+            285,
+            182,
+            278,
+            429
+          ]
+        }
+      }
+    },
+    "LUG_ANI": {
+      "grid": [
+        {
+          "num_leaves": 31,
+          "min_child_samples": 50,
+          "v1_mae": 189.52303833516382,
+          "best_iterations": [
+            167,
+            144,
+            308,
+            266
+          ]
+        },
+        {
+          "num_leaves": 31,
+          "min_child_samples": 200,
+          "v1_mae": 188.72581833704152,
+          "best_iterations": [
+            145,
+            288,
+            241,
+            218
+          ]
+        },
+        {
+          "num_leaves": 127,
+          "min_child_samples": 50,
+          "v1_mae": 190.08318799221183,
+          "best_iterations": [
+            188,
+            132,
+            243,
+            176
+          ]
+        },
+        {
+          "num_leaves": 127,
+          "min_child_samples": 200,
+          "v1_mae": 189.26489938635078,
+          "best_iterations": [
+            151,
+            157,
+            208,
+            311
+          ]
+        }
+      ],
+      "selected": {
+        "num_leaves": 31,
+        "min_child_samples": 200,
+        "v1_mae": 188.72581833704152,
+        "best_iterations": [
+          145,
+          288,
+          241,
+          218
+        ]
+      },
+      "seeds": {
+        "2024": {
+          "boosters": {
+            "h1.txt": "43435df57937479badde36de87feb7116928a6e167d73c24eeeabb072c203ee3",
+            "h2.txt": "d4e913c647e090fba2197d03d5602cfdf076717db7aace62c108d18373ee53b3",
+            "h3.txt": "da2824ef338add39c32296a1ec7f26724965e9822d21e2deac628d53ab20b032",
+            "h4.txt": "bbb3650213a1b673477c5b650424e02fe84757bcea6dbccb78ee677ec52dc3e5"
+          },
+          "v1_mae": 188.72581833704152,
+          "best_iterations": [
+            145,
+            288,
+            241,
+            218
+          ]
+        },
+        "2025": {
+          "boosters": {
+            "h1.txt": "43391ab8b2ee43a8cb47212640172cc115fa4bce4be04c95ce9672c7b3c7bfb3",
+            "h2.txt": "f2fa27baf12341c5797e39e19c807817a8f190c5e50a12d8284c238b6bea991a",
+            "h3.txt": "b9f5e207ad34c8a9ac45586ab5bf87609117801f3756a0e4e43db249ca4702ba",
+            "h4.txt": "b04941044f64d6e68524b5be07b703a3a5a979529bc35e16ffd07e3579a48688"
+          },
+          "v1_mae": 188.87075670080378,
+          "best_iterations": [
+            260,
+            219,
+            318,
+            226
+          ]
+        },
+        "2026": {
+          "boosters": {
+            "h1.txt": "bd87f91a507ab103cafe1a2ff5f99b343d263b82e4c866a003e829d287d1042b",
+            "h2.txt": "4ba8e7464f09324dd99219bbdfc09ea0c2e5dc8dc6497e4ab3b59ad5ef98df03",
+            "h3.txt": "e08f5acc119243dbec71be55e8491574393b0216e403f8cab2d03e7792678194",
+            "h4.txt": "15a708d2b7118f45f04bc9a585e7f92ba1818bf5361ae6d9239a756a73b27600"
+          },
+          "v1_mae": 188.84635875063756,
+          "best_iterations": [
+            272,
+            222,
+            272,
+            228
+          ]
+        }
+      }
+    }
+  },
+  "predictions": {
+    "A/Penmanshiel/L0/2024/V1.npy": "3cc9f6fdfb327c84fbdfceb3f7989569ecba5915f0107942f82b0f7c84e91526",
+    "A/Penmanshiel/L0/2024/V2.npy": "1ae904b1bb520927ee6a9ef5fb83be313d0f08000e69f4eb95977750dce5f8ec",
+    "A/Penmanshiel/LU/2024/V1.npy": "0155fe41d8b204c8dbcb493519703dd4e3544951fdf4a4e4d2e1142c2c5b061a",
+    "A/Penmanshiel/LU/2024/V2.npy": "51cba4943a6af45d9aafdd4f2cc4e6396f7946c953e371985ca09cfab319b8fa",
+    "A/Penmanshiel/LG/2024/V1.npy": "510d764f0d9de31da31c7a54f338b4c61a37282f45c68d73f1debd08473e70b0",
+    "A/Penmanshiel/LG/2024/V2.npy": "8f2b9a03a1762c9dc20b1dc24d35bb2c65ea6477abe30d7ccedef8e3aac6b992",
+    "A/Penmanshiel/LUG/2024/V1.npy": "a69850dea5d39c416b00cf53ec87aea7e8ff93aa72189afc64d01c39542a8b04",
+    "A/Penmanshiel/LUG/2024/V2.npy": "7c2312657499cedfcffea3a4202d116df1d24ab41e18f334fce922d7a7be2ae7",
+    "A/Penmanshiel/LUG/2025/V1.npy": "a5ff1da8297cfbb46ade12a47cb8ac6d3cb3edac4a06aec60f0deffa0cdba2af",
+    "A/Penmanshiel/LUG/2025/V2.npy": "cd121f72adf9c33cb6d22d3b494f3a2f4a08e05dac90c48c5dc8f3c42e9fe08f",
+    "A/Penmanshiel/LUG/2026/V1.npy": "b0e9bf46f0204b373ff07f679c798c240e46f30d811d15a7c9beb32f0e878049",
+    "A/Penmanshiel/LUG/2026/V2.npy": "5c6fca747a1fab4cb0d1576c7d235c98fbc535405ea67bdb0f41a035c452b53f",
+    "A/Penmanshiel/LUG_PCL/2024/V1.npy": "164a36339bd1597c359ca8e91587d944290de56de5e659e8be60c41e55073e31",
+    "A/Penmanshiel/LUG_PCL/2024/V2.npy": "2435f893cb37adccb5d79a36bb8a03dd5770a28863d621de5b389f56f13c6c05",
+    "A/Penmanshiel/LUG_PCL/2025/V1.npy": "97005d641cd99008fd46a6f32eccc1a733bb13d0dd4532561b31f1a5ab27df66",
+    "A/Penmanshiel/LUG_PCL/2025/V2.npy": "809d20cee4f9a3b98d888cf5da707c63a9ee1b68f0bf8ee2e9fb9e36eac58da1",
+    "A/Penmanshiel/LUG_PCL/2026/V1.npy": "98e9a4f2f2d35a30961ca15c78d0ce9d2dcafff7eb4912d6c57b132f08494461",
+    "A/Penmanshiel/LUG_PCL/2026/V2.npy": "36441f97798d99d8df932b269f2269298a456c4f6e716658282413d5a26d5d07",
+    "A/Penmanshiel/LUG_ANI/2024/V1.npy": "913ba93b7f779dedec33c8513fdafc1d7e3f48f3d6b50713fea7d51ce2bc5419",
+    "A/Penmanshiel/LUG_ANI/2024/V2.npy": "6d337d3dc1add25e43c292efef404d3acd13cc1fed7478cb22d5d0a8635c980c",
+    "A/Penmanshiel/LUG_ANI/2025/V1.npy": "695c1e03fc32c536278301e472a7666d70fb4208e93a1ca1a2c9d9ab8d2886e3",
+    "A/Penmanshiel/LUG_ANI/2025/V2.npy": "5b4b20af5fee663f4e00b1388a519e3dfb6f925b8a7a2bfb119e4bc0d4f31707",
+    "A/Penmanshiel/LUG_ANI/2026/V1.npy": "3ba3104a4f5502351a9f546b511d501866a76de92f58189d71778966e4531e4c",
+    "A/Penmanshiel/LUG_ANI/2026/V2.npy": "e24da78bc4b4c81766ba1c0ce980591b5a84658c0a351873dd95ad2e7e1fea2d"
+  }
+}

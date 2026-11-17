@@ -1,0 +1,277 @@
+{
+  "curves_sha256": "a298a080d1e9dc4ad5c3467bcf1b509311cb14e8cb47f14c62c7bbaa88f05575",
+  "arms": {
+    "L0": {
+      "grid": [
+        {
+          "num_leaves": 31,
+          "min_child_samples": 50,
+          "v1_mae": 341.17247433493554,
+          "best_iterations": [
+            40,
+            40,
+            40,
+            40
+          ]
+        }
+      ],
+      "selected": {
+        "num_leaves": 31,
+        "min_child_samples": 50,
+        "v1_mae": 341.17247433493554,
+        "best_iterations": [
+          40,
+          40,
+          40,
+          40
+        ]
+      },
+      "seeds": {
+        "2024": {
+          "boosters": {
+            "h1.txt": "ae3ae630a813627b60236a7ea3efedb3aab1b1ef7a6d52f95a28f3ed1d132051",
+            "h2.txt": "c27169bd6af053f0100e091bd22640e58268abc86ba7e2ec6811c7938cc32aa1",
+            "h3.txt": "722b3b92ae020d78197d7317fbb27aa268cac2b6a46497d31e7c853577da66d9",
+            "h4.txt": "be040be74bb4668dffce4b86301e13a8ca411fcc3b3ee81e398b68ac34b2ff5e"
+          },
+          "v1_mae": 341.17247433493554,
+          "best_iterations": [
+            40,
+            40,
+            40,
+            40
+          ]
+        }
+      }
+    },
+    "LU": {
+      "grid": [
+        {
+          "num_leaves": 31,
+          "min_child_samples": 50,
+          "v1_mae": 325.9906147957453,
+          "best_iterations": [
+            40,
+            40,
+            40,
+            40
+          ]
+        }
+      ],
+      "selected": {
+        "num_leaves": 31,
+        "min_child_samples": 50,
+        "v1_mae": 325.9906147957453,
+        "best_iterations": [
+          40,
+          40,
+          40,
+          40
+        ]
+      },
+      "seeds": {
+        "2024": {
+          "boosters": {
+            "h1.txt": "67536ce552036d7ca4aec1b676264c96952834ccdac9827cad4570ba8c78a21c",
+            "h2.txt": "565940d1ed0befba147ddf5c6054d04d39effb58299aca1535bf46ace610e5e7",
+            "h3.txt": "8b5c5e6dd75d00ecf4fca0f513c85011e051fe6b32756cf79b18b38de686d01b",
+            "h4.txt": "8a20b789564013efd3a1ee46288e892d80ec97a44a3bf14e06be269c50b09372"
+          },
+          "v1_mae": 325.9906147957453,
+          "best_iterations": [
+            40,
+            40,
+            40,
+            40
+          ]
+        }
+      }
+    },
+    "LG": {
+      "grid": [
+        {
+          "num_leaves": 31,
+          "min_child_samples": 50,
+          "v1_mae": 302.66871212756405,
+          "best_iterations": [
+            40,
+            40,
+            40,
+            40
+          ]
+        }
+      ],
+      "selected": {
+        "num_leaves": 31,
+        "min_child_samples": 50,
+        "v1_mae": 302.66871212756405,
+        "best_iterations": [
+          40,
+          40,
+          40,
+          40
+        ]
+      },
+      "seeds": {
+        "2024": {
+          "boosters": {
+            "h1.txt": "b5fed04a472f930e065f2a553938f9e82271d6cb538a3769b0254417f0f91e09",
+            "h2.txt": "b4efb44f50bb370e082b15b992cae82d70c2789f07b86b72f8accfc9c30c44e3",
+            "h3.txt": "e1756f1f864f6236b28b93fd9a9fefff4e2bf7c5249c22d23f1defd6bf72e302",
+            "h4.txt": "72157945f1054c73da20318bda4641b137fc53882aa652f0b69a53246a1a9b63"
+          },
+          "v1_mae": 302.66871212756405,
+          "best_iterations": [
+            40,
+            40,
+            40,
+            40
+          ]
+        }
+      }
+    },
+    "LUG": {
+      "grid": [
+        {
+          "num_leaves": 31,
+          "min_child_samples": 50,
+          "v1_mae": 300.8757910199398,
+          "best_iterations": [
+            40,
+            40,
+            40,
+            40
+          ]
+        }
+      ],
+      "selected": {
+        "num_leaves": 31,
+        "min_child_samples": 50,
+        "v1_mae": 300.8757910199398,
+        "best_iterations": [
+          40,
+          40,
+          40,
+          40
+        ]
+      },
+      "seeds": {
+        "2024": {
+          "boosters": {
+            "h1.txt": "e7a37103f7750ca17b05fee67a79e2a03905482ec03cf013106d23777f3c445a",
+            "h2.txt": "75534c61b13b4800c51719791b41a5856a96b8ebf853e2be7c2155e094355288",
+            "h3.txt": "3ac82af88a56b605eb051d10818abb6bfa86526f37e598d8fbec01be3e8c9521",
+            "h4.txt": "40c60772d5dfbb495dcca0d71ed2b71e422e09eaf0b96c1446f91c235d805957"
+          },
+          "v1_mae": 300.8757910199398,
+          "best_iterations": [
+            40,
+            40,
+            40,
+            40
+          ]
+        }
+      }
+    },
+    "LUG_PCL": {
+      "grid": [
+        {
+          "num_leaves": 31,
+          "min_child_samples": 50,
+          "v1_mae": 300.9322269937066,
+          "best_iterations": [
+            40,
+            40,
+            40,
+            40
+          ]
+        }
+      ],
+      "selected": {
+        "num_leaves": 31,
+        "min_child_samples": 50,
+        "v1_mae": 300.9322269937066,
+        "best_iterations": [
+          40,
+          40,
+          40,
+          40
+        ]
+      },
+      "seeds": {
+        "2024": {
+          "boosters": {
+            "h1.txt": "8c73aa5dbae0c8a29e71e995e6890ad7b163701921ae8daa4e0cc7e6f7f7f5c3",
+            "h2.txt": "2ac721a1b71ec37b2136be492b1b6d01d156a2fc2f5ed31eb46ffb11f02fccb6",
+            "h3.txt": "34ca8689d24ab24951f24aa0ff95cb963bd11e25fad915b15813781749396efe",
+            "h4.txt": "60aba8c490a410914b0381c86d99d188e255d279a8dfcb3abdb726da789c05f5"
+          },
+          "v1_mae": 300.9322269937066,
+          "best_iterations": [
+            40,
+            40,
+            40,
+            40
+          ]
+        }
+      }
+    },
+    "LUG_ANI": {
+      "grid": [
+        {
+          "num_leaves": 31,
+          "min_child_samples": 50,
+          "v1_mae": 299.2437228553059,
+          "best_iterations": [
+            40,
+            40,
+            40,
+            40
+          ]
+        }
+      ],
+      "selected": {
+        "num_leaves": 31,
+        "min_child_samples": 50,
+        "v1_mae": 299.2437228553059,
+        "best_iterations": [
+          40,
+          40,
+          40,
+          40
+        ]
+      },
+      "seeds": {
+        "2024": {
+          "boosters": {
+            "h1.txt": "87ea209749abc163d1d14aac2d7c99d706227c21b92d4c86304869130c9c0d44",
+            "h2.txt": "6f516d585c88142d94421092f67192d179aa3bda2b77199a86e970edf9a44806",
+            "h3.txt": "30fa96650a0de4b6ee89cf8b79f5a6a155d6927f72f70ba8c0d95e5bef9d229a",
+            "h4.txt": "d80039714fd77bfbe029ff56773355d4bf6c794d63a115c412a0bb125a7dd79e"
+          },
+          "v1_mae": 299.2437228553059,
+          "best_iterations": [
+            40,
+            40,
+            40,
+            40
+          ]
+        }
+      }
+    }
+  },
+  "predictions": {
+    "A/Penmanshiel/L0/2024/V1.npy": "8711e440d8a69b3912e9b5f651cf8f1e46095d572958ee264eaa985496602dc8",
+    "A/Penmanshiel/L0/2024/V2.npy": "3916c0283284042ad211035ba242755c07cb92b3f506d803eeb57808115fdb74",
+    "A/Penmanshiel/LU/2024/V1.npy": "e9d8ca24ddc34bdbd7d1d36e9164f666b14e57a466949952610e70a29119e6f1",
+    "A/Penmanshiel/LU/2024/V2.npy": "9547f6a651f70e6c604ff69181b97a8f18bc7c92324bbde6afe6f94e802b9b03",
+    "A/Penmanshiel/LG/2024/V1.npy": "5efbb2e6f5c5d802a028b3edc2d1212b76783f0b86b1ebd43e98b772eec6b3ec",
+    "A/Penmanshiel/LG/2024/V2.npy": "90e206a9b757762efb4efc5a4fbffea9abf9a90409b6bc971f6663beb767d775",
+    "A/Penmanshiel/LUG/2024/V1.npy": "6867a521f897e44ae35b500d0882e2bb87b9031a2eee33f2c8e0aaf59755107f",
+    "A/Penmanshiel/LUG/2024/V2.npy": "cdd4d58e76565ec8ef309e6aba9c9fc09fafedd5d9506768ebabfa6a37f8b3f0",
+    "A/Penmanshiel/LUG_PCL/2024/V1.npy": "0fd4a1e2743e6307b5ec4acc0bc2eabe5506e72e901943c002561edaddf55b83",
+    "A/Penmanshiel/LUG_PCL/2024/V2.npy": "e0aa13cf37ef5d7a6c143b926a7486180129246c424e1f3cd028b8773071469f",
+    "A/Penmanshiel/LUG_ANI/2024/V1.npy": "9e2fe6cb242a7df2e1f5ee77a5e8e25e2846cdce04e8b52c25d4ec9b62126e04",
+    "A/Penmanshiel/LUG_ANI/2024/V2.npy": "05b5bcc698200b53c59bc1c6cce67a967e98672772e17b5b0f5d07bbf0816227"
+  }
+}

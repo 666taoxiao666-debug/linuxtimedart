@@ -1,0 +1,25 @@
+{
+  "counts": {
+    "V1": 7431,
+    "V2": 8249,
+    "crossing_dropped": 0
+  },
+  "train": 4000,
+  "keys": {
+    "V1": {
+      "issue": "1d98f6996e1952f487e7858c45aa43ae523c31dc3741efdb2a46b41a43093e96",
+      "turbines": "af83813d84fd51b9e50428e3acf34214c5d97f8a765fafc18195274748405eb3",
+      "truth": "aa6e3db9ce02c07eba5a6a043b911a9ad5a89c2015b2b33e4afda81012fbb211"
+    },
+    "V2": {
+      "issue": "c677918ce1b470000a8c671630766bf69496b0fa588a819d9e69b91abc21cb0f",
+      "turbines": "af83813d84fd51b9e50428e3acf34214c5d97f8a765fafc18195274748405eb3",
+      "truth": "d74a55b4ccde57b6b8120b4162fdc64574d63cfa4fe46e6514bb96e6f162bcb4"
+    },
+    "Kelmarsh_2022": {
+      "issue": "cc0844d4645631689ffbcf2a8d635c4498d8c1cdcdc2c5752d55507eed36135b",
+      "turbines": "af83813d84fd51b9e50428e3acf34214c5d97f8a765fafc18195274748405eb3",
+      "truth": "ed2d11da3f00354a71a53d32c6a01d9770f7fd74f8595c406b2ff5fa148265dd"
+    }
+  }
+}
