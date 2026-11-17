@@ -46,13 +46,14 @@ def make_world(n_hours=1500, units=3, start='2021-01-01T01', seed=0, rated=2050.
     hours = (np.datetime64(start, 'h') + np.arange(n_hours).astype('timedelta64[h]')).astype('datetime64[ns]')
     hist = rng.uniform(2, 16, n_hours)
     hist[rng.random(n_hours) < .03] = np.nan
-    power = {}
+    power, wind = {}, {}
     for u in range(units):
-        p = (CURVE(np.nan_to_num(hist, nan=9.), rated) + rng.normal(0, 40, n_hours)).clip(0, rated)
+        w = (np.nan_to_num(hist, nan=9.) + rng.normal(0, .3, n_hours)).clip(0, None)   # nacelle wind
+        p = (CURVE(w, rated) + rng.normal(0, 40, n_hours)).clip(0, rated)
         p[rng.random(n_hours) < .02] = np.nan
-        power[u] = p
-    return dict(hours=hours, hist=hist, power=power, exclude=None, fit_bounds=list(fit), nwp_mean=8.,
-                nwp_scale=3., identities={'synthetic': 'sha'})
+        power[u], wind[u] = p, w
+    return dict(hours=hours, hist=hist, power=power, wind=wind, exclude=None, fit_bounds=list(fit), nwp_mean=8.,
+                nwp_scale=3., wind_mean=8.5, wind_scale=3.5, identities={'synthetic': 'sha'})
 
 
 def windows_from_world(src, first, last, stride=3, hot=False, seed=0):
@@ -70,6 +71,8 @@ def windows_from_world(src, first, last, stride=3, hot=False, seed=0):
     x50 = rng.normal(size=(n, 24, 50)).astype(np.float32)
     h = hist[k[:, None] + np.arange(-23, 1)]
     x50[:, :, 20] = np.where(np.isfinite(h), (h - m) / s, 0)
+    wind = np.stack([src['wind'][int(a)] for a in u])
+    x50[:, :, 0] = (wind[np.arange(n)[:, None], k[:, None] + np.arange(-23, 1)] - src['wind_mean']) / src['wind_scale']
     g = hist[k[:, None] + np.arange(-5, 8)]
     gF = np.where(np.isfinite(g), g, 0).astype(np.float32)
     power = np.stack([src['power'][int(a)] for a in u])
@@ -236,6 +239,103 @@ class Helpers(unittest.TestCase):
         self.assertEqual(x2.select_base(mae)['selected'], 'LUG')
         mae['CNN'] = {'K': 98., 'P': 98.}
         self.assertEqual(x2.select_base(mae)['selected'], 'CNN')
+
+
+class VariantsA2(unittest.TestCase):
+    def test_degenerate_statistics_cannot_be_reported_as_negative(self):
+        stats = {'farm': dict(gain=0., reference_mean_loss=100., ci95_low=0., ci95_high=0.)}
+        gates = x2.gate_decisions(stats, stats, z=x2.bonferroni_z(3))
+        with self.assertRaisesRegex(ValueError, 'technical statistical failure'):
+            x2.require_valid_variant_gates({'LUG_VN': dict(gates=gates)})
+        x2.require_valid_variant_gates({'LUG_VN': dict(gates={'outcome': 'NEGATIVE'})})
+
+    def ctx(self, src, train):
+        cfg = dict(width=.5, minimum=5, min_bins=2)
+        g, _ = x2.farm_curves(src, train, cfg)
+        o = x2.fit_power_curves(x2.hourly_samples(src['hours'], src['wind'], src['power'], src['fit_bounds']), **cfg)
+        return dict(g=g, o=o, **{k: src[k] for k in ('wind_mean', 'wind_scale', 'nwp_mean', 'nwp_scale')})
+
+    def test_bind_checks_nacelle_wind(self):
+        src = make_world()
+        train = windows_from_world(src, 30, 600)
+        x2.bind_hourly(train, src)
+        bad = dict(train, x50=train['x50'].copy())
+        bad['x50'][:, 3, 0] += .2
+        with self.assertRaises(ValueError):
+            x2.bind_hourly(bad, src)
+
+    def test_observed_wind_and_variants(self):
+        src = make_world()
+        train, ev = windows_from_world(src, 30, 700), windows_from_world(src, 800, 1400, seed=3)
+        ctx = self.ctx(src, train)
+        obs, hist = x2.observed_wind(ev, ctx)
+        k = np.searchsorted(src['hours'], ev['issue'].astype('datetime64[ns]'))
+        np.testing.assert_allclose(obs[:, -1], [src['wind'][int(u)][i] for u, i in zip(ev['turbines'], k)], atol=1e-4)
+        self.assertTrue(np.isnan(hist[ev['x50'][:, :, 20] == 0]).all())
+        vn, vr, vb = (x2.variant_features(ev, ctx, 2050., kind) for kind in ('VN', 'VR', 'VB'))
+        self.assertEqual((vn.shape[1], vr.shape[1], vb.shape[1]), (8, 4, 5))
+        same = ev.copy()                                   # no forecast change -> P* = PC_obs(w_obs), dP* = 0
+        same['gF'] = np.repeat(ev['gF'][:, 5:6], 13, axis=1)
+        same['gF_mask'] = np.repeat(ev['gF_mask'][:, 5:6], 13, axis=1)
+        v0 = x2.variant_features(same, ctx, 2050., 'VN')
+        fin = np.isfinite(v0[:, 4])
+        self.assertTrue(fin.any())
+        np.testing.assert_allclose(v0[fin, 4:], 0, atol=1e-3)
+        r0 = x2.variant_features(same, ctx, 2050., 'VR')
+        fin = np.isfinite(r0[:, 0]) & (x2.curve_values(same, ctx['g'], [5])[:, 0] > 20.5)
+        np.testing.assert_allclose(r0[fin, 0], same['anchor'][fin], rtol=1e-4)
+        self.assertTrue(((vr[np.isfinite(vr)] >= 0) & (vr[np.isfinite(vr)] <= 2050)).all())
+        b = vb[:, -1]
+        diff = obs[:, -6:] - hist[:, -6:]
+        enough = np.isfinite(diff).sum(1) >= 3
+        np.testing.assert_allclose(b[enough], np.nanmean(diff[enough], 1), atol=1e-4)
+        self.assertTrue(np.isnan(b[~enough]).all())
+
+    def test_a2_round_and_report2(self):
+        protocol = x2.read(x2.PROTOCOL)
+        x1p = dict(x2.read(ROOT / 'configs/x1_protocol.json'),
+                   datasets={'Syn_2022': dict(farm='Syn', rated_kw=2050, count=150, family='G1', year=2022)})
+        bud = x2.budget(protocol, smoke=True)
+        src = make_world(n_hours=3000, fit=('2021-01-01', '2021-03-01'))
+        train = windows_from_world(src, 30, 1400)
+        v1, v2 = windows_from_world(src, 1450, 1900, seed=6), windows_from_world(src, 1950, 2400, seed=7)
+        tests = {'Syn_2022': windows_from_world(src, 2450, 2990, seed=8)}
+        ref = protocol['part_a2']['reference']
+        with tempfile.TemporaryDirectory() as t1, tempfile.TemporaryDirectory() as t2, tempfile.TemporaryDirectory() as t3:
+            r1, r2, rep = Path(t1), Path(t2), Path(t3)
+            x2.save(r1 / 'launch.json', dict(mode='A', commit=ref['commit'], protocol_sha256=ref['protocol_sha256']))
+            st1 = x2.Store(r1)
+            x2.save_keys(st1, 'A', 'Syn', dict(V1=v1, V2=v2, **tests))
+            ctx = self.ctx(src, train)
+            x2.run_a_farm(fake_lgb(), 'Syn', 2050., train, v1, v2, tests, protocol, x1p, st1, bud, 2, r1, ctx['g'], {})
+            x2.save(r1 / 'A' / 'registry.json', st1.registry)
+            x2.save(r1 / 'A' / 'completed.json', dict(status='COMPLETED', registry_sha256=x2.digest(r1 / 'A' / 'registry.json')))
+            ident = dict(commit='round2', script_sha256='s', protocol_sha256='p')
+            x2.save(r2 / 'launch.json', dict(ident, mode='A2'))
+            st2 = x2.Store(r2)
+            x2.save_keys(st2, 'A2', 'Syn', dict(V1=v1, V2=v2, **tests))
+            x2.run_a_farm(fake_lgb(), 'Syn', 2050., train, v1, v2, tests, protocol, x1p, st2, bud, 2, r2, ctx['g'], {},
+                          part='A2', arms=protocol['part_a2']['arms'], ctx=ctx)
+            x2.save(r2 / 'A2' / 'registry.json', st2.registry)
+            x2.save(r2 / 'A2' / 'completed.json', dict(status='COMPLETED', registry_sha256=x2.digest(r2 / 'A2' / 'registry.json')))
+            freeze = x2.read(r2 / 'A2' / 'Syn' / 'dev_freeze.json')
+            self.assertEqual(set(freeze['arms']), {'LUG_VN', 'LUG_VR', 'LUG_VB'})
+            self.assertFalse(any('Syn_2022' in k for k in freeze['predictions']))
+            x2.save(rep / 'launch.json', dict(ident, mode='REPORT2'))
+            args = types.SimpleNamespace(a_results=r1, a2_results=r2, skip_frozen_n=True, logs=rep)
+            with patch.dict(sys.modules, {'fcntl': types.ModuleType('fcntl')}) if sys.platform == 'win32' else patch.dict({}):
+                x2.run_report2(args, rep, protocol, x1p)
+            dec = x2.read(rep / 'dev_decisions.json')
+            self.assertEqual(dec['family'], 3)
+            self.assertAlmostEqual(dec['z'], 2.3939797998185104, places=6)
+            self.assertIn(dec['outcome'], ('VARIANT_PASS_RUN_GATE3', 'NEAR_PASS_ROUND3_NEEDS_REGISTRATION',
+                                           'NEGATIVE_STOP_A_LINE'))
+            res = x2.read(rep / 'results.json')
+            self.assertEqual(res['dev_decisions_sha256'], x2.digest(rep / 'dev_decisions.json'))
+            self.assertIn('LUG_VN', res['tests']['Syn_2022']['vs_LUG'])
+            x2.save(r1 / 'launch.json', dict(mode='A', commit='other', protocol_sha256=ref['protocol_sha256']))
+            with self.assertRaises(ValueError):                    # round-1 reference must be the pinned run
+                x2.reference_round1(r1, protocol)
 
 
 class PartAEndToEnd(unittest.TestCase):

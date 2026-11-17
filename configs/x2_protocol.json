@@ -1,6 +1,6 @@
 {
   "stage": "X2",
-  "version": 1,
+  "version": 2,
   "author": "Claude 2026-11-16; GPT reviews, Cursor runs (user split 2026-11-16)",
   "plan": "docs/STAGE_PLAN.md (X2); decisions in docs/review/DECISIONS.md (stage X2)",
   "splits": {
@@ -20,6 +20,20 @@
     },
     "curve": {"width": 0.5, "minimum": 30, "min_bins": 2},
     "gates": {"min_gain": 0.01, "min_positive": 2}
+  },
+  "part_a2": {
+    "registered": "2026-11-17, before any A2 fit; user asked for another A-line round after the round-1 NEGATIVE",
+    "reference": {"commit": "91d4d207ad7e0af36eadd01e51be201bb1fc3523", "protocol_sha256": "ad53ec6cd15d3ecc6b62394a7810355b59734b29e0c3a5df12daf48641c290e2",
+                  "reused": ["LUG", "LUG_PCL", "LUG_ANI"]},
+    "arms": {
+      "LUG_VN": {"info": "LUG", "extra": "VN", "seeds": [2024, 2025, 2026]},
+      "LUG_VR": {"info": "LUG", "extra": "VR", "seeds": [2024, 2025, 2026]},
+      "LUG_VB": {"info": "LUG", "extra": "VB", "seeds": [2024, 2025, 2026]}
+    },
+    "nacelle_curve": "same width/minimum/min_bins; fit-period hourly nacelle wind vs power, HoT works hours excluded",
+    "gates": {"min_gain": 0.01, "min_positive": 2},
+    "multiplicity": "Bonferroni over the 3 variants for the pooled interval (z = 2.394)",
+    "stop": "no variant passes and none is a near pass (all farms positive) -> the A line stops; a near pass needs a registered round 3"
   },
   "part_b": {
     "fit": "configs/g1_protocol.json fit (Kelmarsh, Penmanshiel) / configs/g2b_protocol.json fit (HoT); early stopping on V1",

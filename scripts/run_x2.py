@@ -103,19 +103,20 @@ def hourly_samples(hours, hist, power, fit_bounds, exclude=None):
 
     hours [H] hour-end labels; hist [H] raw GFS history wind (m/s, NaN = unavailable); power {turbine: [H] kW};
     exclude {turbine: bool[H]} hours that are never samples (HoT AeroUp works).  Non-finite values are skipped."""
-    hist = np.asarray(hist, float)
     fit = period(np.asarray(hours), fit_bounds)
-    if len(hist) != len(fit):
+    shared = None if isinstance(hist, dict) else np.asarray(hist, float)    # dict = per-turbine wind (nacelle)
+    if shared is not None and len(shared) != len(fit):
         raise ValueError('Hourly wind and hour axis differ')
     out = {}
     for t, p in power.items():
         p = np.asarray(p, float)
-        if len(p) != len(fit):
-            raise ValueError('Hourly power and hour axis differ')
-        use = fit & np.isfinite(hist) & np.isfinite(p) & (hist >= 0)
+        w = shared if shared is not None else np.asarray(hist[t], float)
+        if len(p) != len(fit) or len(w) != len(fit):
+            raise ValueError('Hourly power/wind and hour axis differ')
+        use = fit & np.isfinite(w) & np.isfinite(p) & (w >= 0)
         if exclude is not None and t in exclude:
             use &= ~np.asarray(exclude[t], bool)
-        out[int(t)] = (hist[use], p[use])
+        out[int(t)] = (w[use], p[use])
     return out
 
 
@@ -162,6 +163,11 @@ def bind_hourly(pack, src, sample=20000, seed=0):
         raise ValueError('Hourly GFS history does not reproduce the frozen x50 history channel')
     tidx = index(np.asarray(pack['times'])[pick].astype('datetime64[ns]'))
     turbines = np.asarray(pack['turbines'])[pick]
+    if 'wind' in src:   # nacelle wind channel x50[:, :, 0] (A2 round)
+        sidx = index(steps)
+        w = np.stack([np.asarray(src['wind'][int(u)], float)[k] for u, k in zip(turbines, sidx)])
+        if not np.allclose((w - src['wind_mean']) / src['wind_scale'], pack['x50'][pick, :, 0], rtol=0, atol=1e-4):
+            raise ValueError('Hourly nacelle wind does not reproduce the frozen x50 wind channel')
     labels = np.stack([np.asarray(src['power'][int(u)], float)[k] for u, k in zip(turbines, tidx)])
     if not np.allclose(labels, pack['truth'][pick], rtol=0, atol=1e-3):
         raise ValueError('Hourly power does not reproduce the frozen labels')
@@ -192,14 +198,17 @@ def load_hourly(logs, farm, item):
         row = pd.DatetimeIndex(hours).get_indexer(pd.DatetimeIndex(series.dates))
         if (row < 0).any():
             raise ValueError('SCADA hour outside the hourly axis')
-        power = {}
+        power, wind = {}, {}
         for u in np.unique(series.turbines):
             take = series.turbines == u
-            p = np.full(len(hours), np.nan)
+            p, w = np.full(len(hours), np.nan), np.full(len(hours), np.nan)
             p[row[take]] = series.base.raw[take, -1]
-            power[int(u)] = p
-        return dict(hours=hours, hist=hist, power=power, exclude=None, fit_bounds=meta['bounds']['train'],
-                    nwp_mean=float(meta['nwp_mean']), nwp_scale=float(meta['nwp_scale']), identities=identities)
+            w[row[take]] = series.base.raw[take, 0]          # Wspd, x50 channel 0
+            power[int(u)], wind[int(u)] = p, w
+        return dict(hours=hours, hist=hist, power=power, wind=wind, exclude=None, fit_bounds=meta['bounds']['train'],
+                    nwp_mean=float(meta['nwp_mean']), nwp_scale=float(meta['nwp_scale']),
+                    wind_mean=float(meta['scaler']['mean'][0]), wind_scale=float(meta['scaler']['scale'][0]),
+                    identities=identities)
     from scripts import train_g2b as g2, evaluate_g2b_sealed as sealed
     freeze = logs / 'G2/g2b_4471499_shared_r1/formal'
     frozen, _ = g2.frozen_gate(freeze, sealed.FREEZE_SHA)
@@ -217,18 +226,20 @@ def load_hourly(logs, farm, item):
     works_path = logs.parents[1] / 'datasets/external_validation/sealed/hill_of_towie/Hill_of_Towie_AeroUp_install_dates.csv'
     checked(works_path, stats['works_sha256'])
     works = pd.read_csv(works_path).set_index('Turbine')
-    exclude, power = {}, {}
+    exclude, power, wind = {}, {}, {}
     for i, unit in enumerate(units):
         first, end = g2.hot.works_bounds(*works.loc[unit].tolist())
         first = np.datetime64(pd.Timestamp(first).tz_convert(None))
         end = np.datetime64(pd.Timestamp(end).tz_convert(None))
         exclude[i] = (hours - np.timedelta64(1, 'h') < end) & (hours > first)   # hour [t-1h, t) overlaps works
         power[i] = raw[i, :, -1]
+        wind[i] = raw[i, :, 0]                                     # wind_speed_mps, x50 channel 0
     identities.update({str(folder / n): meta['artifacts'][n] for n in ('scada_rows.npz', 'nwp_hourly.npz')},
                       **{str(folder / 'completed.json'): frozen['preparation_sha256'], str(works_path): stats['works_sha256']})
-    return dict(hours=hours, hist=hourly['historical'][:, 0], power=power, exclude=exclude,
+    return dict(hours=hours, hist=hourly['historical'][:, 0], power=power, wind=wind, exclude=exclude,
                 fit_bounds=stats['bounds']['train'], nwp_mean=float(stats['nwp_mean']),
-                nwp_scale=float(stats['nwp_scale']), identities=identities)
+                nwp_scale=float(stats['nwp_scale']), wind_mean=float(stats['mean'][0]),
+                wind_scale=float(stats['scale'][0]), identities=identities)
 
 
 def farm_curves(src, train, curve_cfg):
@@ -240,19 +251,67 @@ def farm_curves(src, train, curve_cfg):
                         excluded_hours={str(k): int(v.sum()) for k, v in (src['exclude'] or {}).items()})
 
 
-def curve_values(pack, curves, columns):
-    """PC(gF[:, c]) for each requested gF column; NaN where the mask/value is invalid or no curve exists."""
-    w = pack['gF'][:, columns].astype(float)
-    ok = (pack['gF_mask'][:, columns] > 0) & np.isfinite(w) & (w >= 0)
+def curve_eval(curves, turbines, w):
+    """PC_turbine(w) for a wind matrix [n, k]; NaN where w is NaN/negative or the turbine has no curve."""
+    w = np.asarray(w, float)
+    ok = np.isfinite(w) & (w >= 0)
     out = np.full(w.shape, np.nan)
-    for u in np.unique(pack['turbines']):
+    for u in np.unique(turbines):
         points = curves.get(int(u), dict(points=None))['points']
         if points is None:
             continue
-        rows = pack['turbines'] == u
-        cell = rows[:, None] & ok
+        cell = (turbines == u)[:, None] & ok
         out[cell] = np.interp(w[cell], points[:, 0], points[:, 1])
     return out
+
+
+def gfs_columns(pack, columns):
+    w = pack['gF'][:, columns].astype(float)
+    return np.where((pack['gF_mask'][:, columns] > 0) & np.isfinite(w), w, np.nan)
+
+
+def curve_values(pack, curves, columns):
+    """PC(gF[:, c]) for each requested gF column; NaN where the mask/value is invalid or no curve exists."""
+    return curve_eval(curves, pack['turbines'], gfs_columns(pack, columns))
+
+
+def observed_wind(pack, ctx):
+    """Nacelle wind (m/s) over the 24 input hours and GFS history (m/s, NaN = unavailable) from the frozen x50.
+    x50 history channel stores 0 for missing values, so an exact 0 is read as missing."""
+    x = pack['x50']
+    obs = x[:, :, 0].astype(float) * ctx['wind_scale'] + ctx['wind_mean']
+    raw = x[:, :, 20].astype(float)
+    hist = np.where(raw != 0, raw * ctx['nwp_scale'] + ctx['nwp_mean'], np.nan)
+    return obs, hist
+
+
+def variant_features(pack, ctx, rated, kind):
+    """X2-A2 round (registered before the run):
+    VN  wind-anchored increment through the turbine's OWN curve: w*_h = w_obs(t0) + g(t0+h) - g(t0);
+        [PC_obs(w*_h), PC_obs(w*_h) - PC_obs(w_obs(t0))]                                         (8)
+    VR  ratio anchor: clip(P(t0) * PC_g(g(t0+h)) / max(PC_g(g(t0)), 1% rated), 0, rated)          (4)
+    VB  recent-bias correction: b = mean_{last 6 h}(w_obs - g_hist) (>= 3 valid hours);
+        [PC_obs(g(t0+h) + b), b]                                                                  (5)"""
+    tb = pack['turbines']
+    g = gfs_columns(pack, [5, 6, 7, 8, 9])
+    if kind == 'VR':
+        pc = curve_eval(ctx['g'], tb, g)
+        ratio = pc[:, 1:] / np.maximum(pc[:, :1], .01 * rated)
+        return np.clip(pack['anchor'].astype(float)[:, None] * ratio, 0, rated).astype(np.float32)
+    obs, hist = observed_wind(pack, ctx)
+    if kind == 'VN':
+        w0 = obs[:, -1:]
+        star = np.maximum(w0 + g[:, 1:] - g[:, :1], 0)
+        p_star = curve_eval(ctx['o'], tb, star)
+        return np.concatenate([p_star, p_star - curve_eval(ctx['o'], tb, w0)], axis=1).astype(np.float32)
+    if kind == 'VB':
+        diff = obs[:, -6:] - hist[:, -6:]
+        valid = np.isfinite(diff).sum(1) >= 3
+        b = np.full(len(diff), np.nan)
+        b[valid] = np.nanmean(diff[valid], axis=1)
+        corrected = np.maximum(g[:, 1:] + b[:, None], 0)
+        return np.concatenate([curve_eval(ctx['o'], tb, corrected), b[:, None]], axis=1).astype(np.float32)
+    raise ValueError('kind must be VN, VR or VB')
 
 
 def ani_features(pack, curves, rated, kind):
@@ -270,8 +329,9 @@ def ani_features(pack, curves, rated, kind):
 
 
 # ----------------------------------------------------------------------------- decisions (numpy)
-def pooled_effect(stats):
-    """Inverse-variance pooled RELATIVE gain (STAGE_PLAN X2, R1-B2).  stats: farm -> paired_loss_statistics dict."""
+def pooled_effect(stats, z=Z95):
+    """Inverse-variance pooled RELATIVE gain (STAGE_PLAN X2, R1-B2).  stats: farm -> paired_loss_statistics dict.
+    Per-farm SE comes from the 95% bootstrap CI; the pooled interval uses `z` (Bonferroni in the A2 round)."""
     rows = {}
     for farm, s in stats.items():
         width = s['ci95_high'] - s['ci95_low']
@@ -284,12 +344,12 @@ def pooled_effect(stats):
     total = sum(w.values())
     est = sum(w[f] * rows[f]['relative_gain'] for f in rows) / total
     se = (1 / total) ** .5
-    return dict(status='OK', farms=rows, pooled_relative_gain=est, pooled_se=se,
-                ci95_low=est - Z95 * se, ci95_high=est + Z95 * se)
+    return dict(status='OK', farms=rows, pooled_relative_gain=est, pooled_se=se, z=z,
+                ci95_low=est - z * se, ci95_high=est + z * se)
 
 
-def gate_decisions(ani_vs_lug, ani_vs_pcl, min_gain=.01, min_positive=2):
-    p1, p2 = pooled_effect(ani_vs_lug), pooled_effect(ani_vs_pcl)
+def gate_decisions(ani_vs_lug, ani_vs_pcl, min_gain=.01, min_positive=2, z=Z95):
+    p1, p2 = pooled_effect(ani_vs_lug, z), pooled_effect(ani_vs_pcl, z)
     if p1['status'] != 'OK' or p2['status'] != 'OK':
         return dict(gate1=None, gate2=None, pooled_ani_vs_lug=p1, pooled_ani_vs_pcl=p2, outcome='TECHNICAL_FAILURE')
     g1 = bool(all(r['relative_gain'] >= min_gain for r in p1['farms'].values()) and p1['ci95_low'] > 0)
@@ -419,12 +479,14 @@ def lgb_params(cfg, leaves, child, seed, threads, bud):
                 random_state=seed, n_jobs=threads, verbosity=-1, deterministic=True, force_col_wise=True)
 
 
-def arm_matrix(pack, spec, hot, curves, rated):
-    """tree_matrix of the arm's information set; ANI/PCL columns inserted before the categorical turbine id."""
+def arm_matrix(pack, spec, hot, ctx, rated):
+    """tree_matrix of the arm's information set; extra columns inserted before the categorical turbine id.
+    ctx: {'g': GFS-wind curves, 'o': nacelle-wind curves (A2), scalers (A2)}."""
     base = tree_matrix(pack, spec['info'], hot)
     if not spec.get('extra'):
         return base
-    extra = ani_features(pack, curves, rated, spec['extra'])
+    kind = spec['extra']
+    extra = ani_features(pack, ctx['g'], rated, kind) if kind in ('PCL', 'ANI') else variant_features(pack, ctx, rated, kind)
     return np.concatenate([base[:, :-1], extra, base[:, -1:]], axis=1).astype(np.float32)
 
 
@@ -456,22 +518,26 @@ def booster_predict(lgb, folder, hashes, X):
     return np.stack(cols, axis=1)
 
 
-def run_a_farm(lgb, farm, rated, train, v1, v2, tests, protocol, x1p, store, bud, threads, out, curves, curve_meta):
+def run_a_farm(lgb, farm, rated, train, v1, v2, tests, protocol, x1p, store, bud, threads, out, curves, curve_meta,
+               part='A', arms=None, ctx=None):
+    """LightGBM arms of one farm.  part 'A' = round 1 (protocol part_a), 'A2' = round 2 (part_a2, ctx with nacelle curves)."""
+    arms = arms if arms is not None else protocol['part_a']['arms']
+    ctx = ctx if ctx is not None else dict(g=curves)
     hot = farm == 'HoT'
     cfg = x1p['lightgbm']
     rounds = bud.get('early_stopping_rounds', cfg['early_stopping_rounds'])
-    (out / 'A' / farm).mkdir(parents=True, exist_ok=True)
+    (out / part / farm).mkdir(parents=True, exist_ok=True)
     probe = head(train, 1000)
     if not np.array_equal(tree_matrix(probe, 'LUG', hot), x1.tree_features(probe, hot)):
         raise ValueError('LUG features differ from the A1 feature set')
-    save(out / 'A' / farm / 'curves.json', dict(meta=curve_meta, curves={
+    save(out / part / farm / 'curves.json', dict(meta=curve_meta, curves={
         str(u): dict(source=c['source'], samples=c['samples'], points=None if c['points'] is None else c['points'].tolist())
         for u, c in curves.items()}))
-    freeze = dict(curves_sha256=digest(out / 'A' / farm / 'curves.json'), arms={})
+    freeze = dict(curves_sha256=digest(out / part / farm / 'curves.json'), arms={})
     grid = [(a, b) for a in cfg['num_leaves'] for b in cfg['min_child_samples']][:bud['grid_cells']]
-    for arm, spec in protocol['part_a']['arms'].items():
+    for arm, spec in arms.items():
         seeds = spec['seeds'][:bud['seeds']]
-        X = {k: arm_matrix(p, spec, hot, curves, rated) for k, p in (('train', train), ('V1', v1), ('V2', v2))}
+        X = {k: arm_matrix(p, spec, hot, ctx, rated) for k, p in (('train', train), ('V1', v1), ('V2', v2))}
         rows, best = [], None
         for leaves, child in grid:
             models = fit_horizons(lgb, X['train'], train['truth'], X['V1'], v1['truth'],
@@ -480,7 +546,7 @@ def run_a_farm(lgb, farm, rated, train, v1, v2, tests, protocol, x1p, store, bud
             row = dict(num_leaves=leaves, min_child_samples=child, v1_mae=float(np.abs(pv1 - v1['truth']).mean()),
                        best_iterations=[int(m.best_iteration_ or 0) for m in models])
             rows.append(row)
-            beat(out, f'A {farm} {arm} grid {row}')
+            beat(out, f'{part} {farm} {arm} grid {row}')
             if best is None or row['v1_mae'] < best[0]['v1_mae']:  # ties keep the earlier grid cell
                 best = (row, models, pv1)
         selected, record = best[0], dict(grid=rows, selected=best[0], seeds={})
@@ -492,30 +558,30 @@ def run_a_farm(lgb, farm, rated, train, v1, v2, tests, protocol, x1p, store, bud
                                       lgb_params(cfg, selected['num_leaves'], selected['min_child_samples'], seed,
                                                  threads, bud), rounds)
                 pv1_mem = np.stack([m.predict(X['V1']) for m in models], axis=1)
-            folder = out / 'A' / farm / 'models' / arm / str(seed)
+            folder = out / part / farm / 'models' / arm / str(seed)
             hashes = save_boosters(models, folder)
             pv1 = booster_predict(lgb, folder, hashes, X['V1'])
             if not np.allclose(pv1, pv1_mem, rtol=1e-6, atol=1e-3):
                 raise ValueError('Saved booster does not reproduce in-memory predictions')
             pv2 = booster_predict(lgb, folder, hashes, X['V2'])
-            store.put(f'A/{farm}/{arm}/{seed}/V1.npy', pv1)
-            store.put(f'A/{farm}/{arm}/{seed}/V2.npy', pv2)
+            store.put(f'{part}/{farm}/{arm}/{seed}/V1.npy', pv1)
+            store.put(f'{part}/{farm}/{arm}/{seed}/V2.npy', pv2)
             record['seeds'][str(seed)] = dict(boosters=hashes, v1_mae=float(np.abs(pv1 - v1['truth']).mean()),
                                               best_iterations=[int(m.best_iteration_ or 0) for m in models])
-            beat(out, f'A {farm} {arm} seed {seed} V1 MAE {record["seeds"][str(seed)]["v1_mae"]:.3f}')
+            beat(out, f'{part} {farm} {arm} seed {seed} V1 MAE {record["seeds"][str(seed)]["v1_mae"]:.3f}')
         freeze['arms'][arm] = record
         del X
-    freeze['predictions'] = {k: v for k, v in store.registry.items() if k.startswith(f'A/{farm}/')}
-    save(out / 'A' / farm / 'dev_freeze.json', freeze)          # frozen BEFORE any test prediction of this farm
+    freeze['predictions'] = {k: v for k, v in store.registry.items() if k.startswith(f'{part}/{farm}/')}
+    save(out / part / farm / 'dev_freeze.json', freeze)          # frozen BEFORE any test prediction of this farm
     for name, pack in tests.items():
-        for arm, spec in protocol['part_a']['arms'].items():
-            Xt = arm_matrix(pack, spec, hot, curves, rated)
+        for arm, spec in arms.items():
+            Xt = arm_matrix(pack, spec, hot, ctx, rated)
             for seed, rec in freeze['arms'][arm]['seeds'].items():
-                pred = booster_predict(lgb, out / 'A' / farm / 'models' / arm / seed, rec['boosters'], Xt)
-                store.put(f'A/{farm}/{arm}/{seed}/{name}.npy', pred)
-        beat(out, f'A {farm} test {name} predicted')
-    save(out / 'A' / farm / 'test_predictions.json',
-         {k: v for k, v in store.registry.items() if k.startswith(f'A/{farm}/') and k not in freeze['predictions']})
+                pred = booster_predict(lgb, out / part / farm / 'models' / arm / seed, rec['boosters'], Xt)
+                store.put(f'{part}/{farm}/{arm}/{seed}/{name}.npy', pred)
+        beat(out, f'{part} {farm} test {name} predicted')
+    save(out / part / farm / 'test_predictions.json',
+         {k: v for k, v in store.registry.items() if k.startswith(f'{part}/{farm}/') and k not in freeze['predictions']})
 
 
 def run_a(args, out=None, protocol=None, x1p=None):
@@ -749,9 +815,9 @@ class Saved:
         return self.freeze[farm]
 
     def preds(self, farm, arm, split, seeds=None, tag=None):
-        if self.part == 'A':
+        if self.part in ('A', 'A2'):
             seeds = seeds or list(self.dev(farm)['arms'][arm]['seeds'])
-            rels = [f'A/{farm}/{arm}/{s}/{split}.npy' for s in seeds]
+            rels = [f'{self.part}/{farm}/{arm}/{s}/{split}.npy' for s in seeds]
         else:
             rec = self.dev(farm)['arms'][arm]
             tag = tag or rec['selected']
@@ -871,6 +937,144 @@ def run_report(args, out=None, protocol=None, x1p=None):
     return out
 
 
+# ----------------------------------------------------------------------------- A2: second round of the A line
+def reference_round1(root, protocol):
+    """Round-1 part A run pinned by commit + protocol SHA (X2-A2 reuses its LUG / LUG_PCL / LUG_ANI predictions)."""
+    ref = protocol['part_a2']['reference']
+    launch = read(Path(root) / 'launch.json')
+    if (launch.get('commit') != ref['commit'] or launch.get('protocol_sha256') != ref['protocol_sha256']
+            or launch.get('mode') != 'A'):
+        raise ValueError('Round-1 part A reference identity differs')
+    return Saved(root, 'A')
+
+
+def same_cohort(a, b):
+    return all(np.array_equal(a[k], b[k]) for k in ('truth', 'issue', 'turbines'))
+
+
+def run_a2(args):
+    """Round 2 (user 11-17): three registered variants VN/VR/VB on the same LightGBM base, same cohorts, grid and
+    seeds as round 1; references (LUG, LUG_PCL) are the frozen round-1 predictions."""
+    import lightgbm as lgb
+    if lgb.__version__ != '4.5.0':
+        raise ValueError('LightGBM fits require the timedart environment with lightgbm 4.5.0')
+    out, protocol, x1p = start_run(args, 'A2', dict(lightgbm=lgb.__version__, threads=args.threads))
+    bud = budget(protocol, False)
+    store = Store(out)
+    (out / 'A2').mkdir(parents=True, exist_ok=True)
+    try:
+        ref = reference_round1(args.a_results, protocol)
+        cfg = protocol['part_a']['curve']
+        for farm, spec in farms(x1p).items():
+            train, v1, v2, tests, counts = load_farm(args, farm, spec, protocol, bud)
+            packs = dict(V1=v1, V2=v2, **tests)
+            for split, pack in packs.items():                    # identical cohorts BEFORE any fit
+                if not same_cohort(ref.keys(farm, split), pack):
+                    raise ValueError(f'Cohort differs from round 1: {farm} {split}')
+            keys = save_keys(store, 'A2', farm, packs)
+            save(out / 'A2' / f'{farm}_cohorts.json', dict(counts=counts, train=len(train['truth']), keys=keys))
+            src = load_hourly(args.logs, farm, next(iter(spec['items'].values())))
+            curves_g, meta = farm_curves(src, train, cfg)          # binds GFS history, nacelle wind and labels
+            old = read(Path(args.a_results) / 'A' / farm / 'curves.json')['curves']
+            for u, c in curves_g.items():
+                o = old[str(u)]['points']
+                if (o is None) != (c['points'] is None) or (o is not None and not np.allclose(np.asarray(o), c['points'])):
+                    raise ValueError(f'GFS curve differs from round 1: {farm} turbine {u}')
+            curves_o = fit_power_curves(hourly_samples(src['hours'], src['wind'], src['power'], src['fit_bounds'],
+                                                       src['exclude']), **cfg)
+            scalers = {k: src[k] for k in ('wind_mean', 'wind_scale', 'nwp_mean', 'nwp_scale')}
+            meta.update(scalers=scalers, nacelle_curves={
+                str(u): dict(source=c['source'], samples=c['samples'],
+                             points=None if c['points'] is None else c['points'].tolist()) for u, c in curves_o.items()})
+            del src
+            beat(out, f'A2 {farm} nacelle curves: ' + str({u: c['source'] for u, c in curves_o.items()}))
+            run_a_farm(lgb, farm, spec['rated'], train, v1, v2, tests, protocol, x1p, store, bud, args.threads, out,
+                       curves_g, meta, part='A2', arms=protocol['part_a2']['arms'], ctx=dict(g=curves_g, o=curves_o, **scalers))
+            del train, v1, v2, tests
+        save(out / 'A2' / 'registry.json', store.registry)
+        save(out / 'A2' / 'completed.json', dict(status='COMPLETED', registry_sha256=digest(out / 'A2' / 'registry.json')))
+    except Exception as exc:
+        fail(out, exc)
+        raise
+    return out
+
+
+def bonferroni_z(family, alpha=.05):
+    from statistics import NormalDist
+    return NormalDist().inv_cdf(1 - alpha / (2 * family))
+
+
+def require_valid_variant_gates(variants):
+    failed = [arm for arm, result in variants.items()
+              if result['gates']['outcome'] == 'TECHNICAL_FAILURE']
+    if failed:
+        raise ValueError('A2 technical statistical failure: ' + ', '.join(failed))
+
+
+def run_report2(args, out=None, protocol=None, x1p=None):
+    """A2 decisions (V2 only, written first), then exploratory test statistics."""
+    from utils.kelmarsh_backbone_information import paired_loss_statistics
+    if out is None:
+        out, protocol, x1p = start_run(args, 'REPORT2')
+    check_part_identity(args.a2_results, 'A2', read(out / 'launch.json'))
+    st = protocol['statistics']
+
+    def paired(cand, ref, issue):
+        return paired_loss_statistics(cand, ref, np.asarray(issue).astype('datetime64[ns]'),
+                                      block_length=st['block_length'], replicates=st['replicates'], seed=st['seed'])
+    try:
+        A, A2 = reference_round1(args.a_results, protocol), Saved(args.a2_results, 'A2')
+        arms = list(protocol['part_a2']['arms'])
+        z = bonferroni_z(len(arms))
+        vs_lug, vs_pcl, v2 = {a: {} for a in arms}, {a: {} for a in arms}, {}
+        for farm, spec in farms(x1p).items():
+            k2 = A.keys(farm, 'V2')
+            if not same_cohort(k2, A2.keys(farm, 'V2')):
+                raise ValueError('V2 cohort differs between rounds: ' + farm)
+            y2, i2 = k2['truth'], k2['issue']
+            lug, pcl = loss(A.preds(farm, 'LUG', 'V2'), y2), loss(A.preds(farm, 'LUG_PCL', 'V2'), y2)
+            v2[farm] = {'LUG': metrics(A.preds(farm, 'LUG', 'V2'), y2, spec['rated'])}
+            for a in arms:
+                p = A2.preds(farm, a, 'V2')
+                v2[farm][a] = metrics(p, y2, spec['rated'])
+                vs_lug[a][farm], vs_pcl[a][farm] = paired(loss(p, y2), lug, i2), paired(loss(p, y2), pcl, i2)
+        variants = {a: dict(gates=gate_decisions(vs_lug[a], vs_pcl[a], z=z, **protocol['part_a2']['gates']),
+                            vs_LUG=vs_lug[a], vs_PCL=vs_pcl[a]) for a in arms}
+        require_valid_variant_gates(variants)
+        passing = [a for a in arms if variants[a]['gates']['outcome'] == 'GATES_1_2_PASS_RUN_GATE3']
+        near = [a for a in arms if variants[a]['gates'].get('near_pass')]
+        outcome = ('VARIANT_PASS_RUN_GATE3' if passing else 'NEAR_PASS_ROUND3_NEEDS_REGISTRATION' if near
+                   else 'NEGATIVE_STOP_A_LINE')
+        save(out / 'dev_decisions.json', dict(outcome=outcome, passing=passing, near_pass=near, family=len(arms),
+             z=z, variants=variants, v2_metrics=v2,
+             note='V2 used before (R1-S3); Bonferroni over the registered variants; development-stage evidence only'))
+        beat(out, 'A2 dev decisions written: ' + outcome)
+        tests = {}
+        for farm, spec in farms(x1p).items():
+            for name, item in spec['items'].items():
+                k = A.keys(farm, name)
+                if not same_cohort(k, A2.keys(farm, name)):
+                    raise ValueError('Test cohort differs between rounds: ' + name)
+                y, issue = k['truth'], k['issue']
+                P = {a: A.preds(farm, a, name) for a in ('LUG', 'LUG_PCL', 'LUG_ANI')}
+                P.update({a: A2.preds(farm, a, name) for a in arms})
+                if not args.skip_frozen_n:
+                    _, npaths = x1.paths(Path(args.logs), item)
+                    P['N_frozen'] = [np.load(p) for p in npaths]
+                ref = loss(P['LUG'], y)
+                tests[name] = dict(metrics={a: metrics(p, y, spec['rated']) for a, p in P.items()},
+                                   vs_LUG={a: paired(loss(p, y), ref, issue) for a, p in P.items() if a != 'LUG'})
+                beat(out, f'A2 test {name} done')
+        save(out / 'results.json', dict(exploratory_only=True, dev_decisions_sha256=digest(out / 'dev_decisions.json'),
+                                        tests=tests))
+        save(out / 'completed.json', dict(status='COMPLETED', results_sha256=digest(out / 'results.json'),
+                                          dev_decisions_sha256=digest(out / 'dev_decisions.json')))
+    except Exception as exc:
+        fail(out, exc)
+        raise
+    return out
+
+
 # ----------------------------------------------------------------------------- entry point
 def run_smoke(args):
     """Tiny real slices through A -> B -> report in ONE fresh directory (budget['smoke']); nothing is reported."""
@@ -885,7 +1089,7 @@ def run_smoke(args):
 
 def main(argv=None):
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument('--mode', choices=['smoke', 'a', 'b', 'report'], required=True)
+    p.add_argument('--mode', choices=['smoke', 'a', 'b', 'report', 'a2', 'report2'], required=True)
     p.add_argument('--logs', type=Path, required=True, help='<data root>/outputs/logs')
     p.add_argument('--output', type=Path, required=True, help='fresh directory (must not exist)')
     p.add_argument('--protocol-sha256', required=True, help='sha256 of configs/x2_protocol.json')
@@ -894,6 +1098,7 @@ def main(argv=None):
     p.add_argument('--gpu-fraction', type=float, default=.35)
     p.add_argument('--a-results', type=Path, help='report: finished part A run directory')
     p.add_argument('--b-results', type=Path, help='report: finished part B run directory (optional)')
+    p.add_argument('--a2-results', type=Path, help='report2: finished A2 run directory')
     p.add_argument('--skip-frozen-n', action='store_true', help='report: no comparison with the frozen N predictions')
     p.add_argument('--smoke-result', type=Path, help='a/b: passed smoke run directory of the same commit')
     p.add_argument('--allow-dirty', action='store_true', help='tests only; formal runs need a clean worktree')
@@ -904,6 +1109,14 @@ def main(argv=None):
         run_a(args)
     elif args.mode == 'b':
         run_b(args)
+    elif args.mode == 'a2':
+        if args.a_results is None:
+            p.error('a2 needs --a-results (round-1 part A run)')
+        run_a2(args)
+    elif args.mode == 'report2':
+        if args.a_results is None or args.a2_results is None:
+            p.error('report2 needs --a-results and --a2-results')
+        run_report2(args)
     else:
         if args.a_results is None:
             p.error('report needs --a-results')

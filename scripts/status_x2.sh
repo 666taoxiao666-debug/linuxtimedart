@@ -5,7 +5,7 @@ HERE=$(cd "$(dirname "$0")/.." && pwd)
 COMMIT=$(git -C "$HERE" rev-parse --short=7 HEAD)
 BASE=$DATA/outputs/logs/X2/x2_${COMMIT}
 echo "== X2 runs under $BASE"
-for MODE in smoke a b report; do
+for MODE in smoke a b report a2 report2; do
   [ -e "$BASE/$MODE.pid" ] || continue
   PID=$(cat "$BASE/$MODE.pid")
   STATE=exited
@@ -20,7 +20,7 @@ for MODE in smoke a b report; do
   fi
   RESULT=-
   [ -e "$BASE/$MODE/failed.json" ] && RESULT=FAILED
-  for DONE in "$BASE/$MODE/completed.json" "$BASE/$MODE/A/completed.json" "$BASE/$MODE/B/completed.json"; do
+  for DONE in "$BASE/$MODE/completed.json" "$BASE/$MODE/A/completed.json" "$BASE/$MODE/B/completed.json" "$BASE/$MODE/A2/completed.json"; do
     [ -e "$DONE" ] && [ "$MODE" != smoke ] && RESULT=COMPLETED
   done
   [ -e "$BASE/$MODE/smoke_passed.json" ] && RESULT=SMOKE_PASSED
