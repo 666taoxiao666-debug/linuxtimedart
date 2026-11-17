@@ -268,10 +268,12 @@ class VariantsA2(unittest.TestCase):
         src = make_world()
         train, ev = windows_from_world(src, 30, 700), windows_from_world(src, 800, 1400, seed=3)
         ctx = self.ctx(src, train)
-        obs, hist = x2.observed_wind(ev, ctx)
+        obs = x2.observed_wind(ev, ctx)
+        ev['hist6'] = x2.past_history(ev, src)
+        hist = np.full(obs.shape, np.nan)
+        hist[:, -6:] = ev['hist6']
         k = np.searchsorted(src['hours'], ev['issue'].astype('datetime64[ns]'))
         np.testing.assert_allclose(obs[:, -1], [src['wind'][int(u)][i] for u, i in zip(ev['turbines'], k)], atol=1e-4)
-        self.assertTrue(np.isnan(hist[ev['x50'][:, :, 20] == 0]).all())
         vn, vr, vb = (x2.variant_features(ev, ctx, 2050., kind) for kind in ('VN', 'VR', 'VB'))
         self.assertEqual((vn.shape[1], vr.shape[1], vb.shape[1]), (8, 4, 5))
         same = ev.copy()                                   # no forecast change -> P* = PC_obs(w_obs), dP* = 0
@@ -290,6 +292,85 @@ class VariantsA2(unittest.TestCase):
         enough = np.isfinite(diff).sum(1) >= 3
         np.testing.assert_allclose(b[enough], np.nanmean(diff[enough], 1), atol=1e-4)
         self.assertTrue(np.isnan(b[~enough]).all())
+
+    def test_vb_history_validity_from_hourly_array(self):
+        """R1-B1: a valid hour whose GFS history equals the mean is stored as 0 in x50, exactly like a missing hour;
+        VB must count it (3 valid of 6) because validity comes from the hourly array."""
+        src = make_world()
+        k = 600
+        src['hist'][k - 5:k - 2] = src['nwp_mean']          # 3 valid hours, normalised value exactly 0
+        src['hist'][k - 2:k + 1] = np.nan                   # 3 missing hours, also stored as 0
+        train = windows_from_world(src, 30, 500)
+        ev = windows_from_world(src, k, k + 1)
+        self.assertTrue(np.all(ev['x50'][:, -6:, 20] == 0))
+        x2.bind_history(ev, src)
+        ev['hist6'] = x2.past_history(ev, src)
+        self.assertEqual(int(np.isfinite(ev['hist6']).sum(1)[0]), 3)
+        ctx = self.ctx(src, train)
+        b = x2.variant_features(ev, ctx, 2050., 'VB')[:, -1]
+        obs = x2.observed_wind(ev, ctx)
+        np.testing.assert_allclose(b, (obs[:, -6:-3] - src['nwp_mean']).mean(1), atol=1e-4)
+        src['hist'][k - 3] = np.nan                         # only 2 valid hours left -> b undefined
+        ev['hist6'] = x2.past_history(ev, src)
+        self.assertTrue(np.isnan(x2.variant_features(ev, ctx, 2050., 'VB')[:, -1]).all())
+        del ev['hist6']
+        with self.assertRaises(ValueError):                 # never fall back to guessing from x50
+            x2.variant_features(ev, ctx, 2050., 'VB')
+
+    def test_history_binding_and_missing_hours(self):
+        src = make_world()
+        ev = windows_from_world(src, 800, 1000)
+        x2.bind_history(ev, src)
+        bad = dict(ev, x50=ev['x50'].copy())
+        bad['x50'][:, -2, 20] += .3
+        with self.assertRaises(ValueError):
+            x2.bind_history(bad, src)
+        short = dict(src, hours=src['hours'][:700], hist=src['hist'][:700])
+        with self.assertRaises(ValueError):
+            x2.past_history(ev, short)
+
+    def test_preflight_completes_for_all_farms_before_any_fit(self):
+        fits = []
+
+        def prepare(farm):
+            if farm == 'H':
+                raise ValueError('Cohort differs from round 1: H V2')
+            return dict(fingerprint={'farm': farm})
+        with tempfile.TemporaryDirectory() as tmp:
+            out = Path(tmp)
+            (out / 'A2').mkdir()
+            with self.assertRaises(ValueError):
+                x2.a2_execute(['K', 'P', 'H'], prepare, lambda f, st: fits.append(f), out)
+            self.assertEqual(fits, [])                       # last farm failed -> no farm was fitted
+            self.assertFalse((out / 'A2' / 'preflight.json').exists())
+            calls = {}
+
+            def drifting(farm):
+                calls[farm] = calls.get(farm, 0) + 1
+                return dict(fingerprint={'farm': farm, 'call': 1 if farm != 'P' else calls[farm]})
+            with self.assertRaises(ValueError):
+                x2.a2_execute(['K', 'P', 'H'], drifting, lambda f, st: fits.append(f), out)
+            self.assertEqual(fits, ['K'])                    # P's inputs changed after preflight -> stop before P
+            self.assertEqual(x2.read(out / 'A2' / 'preflight.json')['status'], 'PASS')
+
+    def test_round1_curves_checked_by_sha_and_content(self):
+        src = make_world()
+        curves, _ = x2.farm_curves(src, windows_from_world(src, 30, 600), dict(width=.5, minimum=5, min_bins=2))
+        with tempfile.TemporaryDirectory() as tmp:
+            folder = Path(tmp) / 'A' / 'Syn'
+            folder.mkdir(parents=True)
+            body = dict(meta={}, curves={str(u): dict(source=c['source'], samples=c['samples'],
+                                                      points=c['points'].tolist()) for u, c in curves.items()})
+            x2.save(folder / 'curves.json', body)
+            x2.save(folder / 'dev_freeze.json', dict(curves_sha256=x2.digest(folder / 'curves.json')))
+            x2.check_round1_curves(tmp, 'Syn', curves)
+            changed = {u: dict(c, samples=c['samples'] + 1) for u, c in curves.items()}
+            with self.assertRaises(ValueError):
+                x2.check_round1_curves(tmp, 'Syn', changed)
+            body['curves']['0']['samples'] += 1                       # file edited after the freeze
+            x2.save(folder / 'curves.json', body)
+            with self.assertRaises(ValueError):
+                x2.check_round1_curves(tmp, 'Syn', curves)
 
     def test_a2_round_and_report2(self):
         protocol = x2.read(x2.PROTOCOL)
@@ -314,6 +395,8 @@ class VariantsA2(unittest.TestCase):
             x2.save(r2 / 'launch.json', dict(ident, mode='A2'))
             st2 = x2.Store(r2)
             x2.save_keys(st2, 'A2', 'Syn', dict(V1=v1, V2=v2, **tests))
+            for pack in (train, v1, v2, *tests.values()):
+                pack['hist6'] = x2.past_history(pack, src)
             x2.run_a_farm(fake_lgb(), 'Syn', 2050., train, v1, v2, tests, protocol, x1p, st2, bud, 2, r2, ctx['g'], {},
                           part='A2', arms=protocol['part_a2']['arms'], ctx=ctx)
             x2.save(r2 / 'A2' / 'registry.json', st2.registry)

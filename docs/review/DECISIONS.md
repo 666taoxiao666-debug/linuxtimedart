@@ -1152,6 +1152,13 @@ X2 A 线结果复核（Claude，2026-11-17，提交 91d4d20，本地副本在 ou
 
 | 编号 | 类型 | 一句话摘要 | 决议 | 理由（一句） | 落实 |
 |---|---|---|---|---|---|
+| R1-B1 | 阻断 | observed_wind 把 x50 里的 0 当成缺测，但"恰好等于均值"的有效小时也存成 0，会影响 VB"至少 3 个有效小时"的判定 | 采纳 | 确定缺陷。改为从逐小时数组按起报时刻取过去 6 小时的 GFS 历史值，判断是否有效；开发段用 load_hourly，HoT 测试年用 sealed_prep 的点缓存；每个样本包先用 bind_history 核对 | Claude 修：scripts/run_x2.py（past_history、bind_history、hot_test_history，VB 改读 hist6）；tests 加"恰等于均值算有效"、"缺少 hist6 就报错"、"绑定不一致"测试 |
+| R1-B2 | 阻断 | 一致性检查逐场做完就开始拟合，后面的风场不一致时，前面的风场已经训练了 | 采纳 | 确定缺陷。改为两步：三场全部预检（不拟合）并保存指纹，之后每场重新准备、指纹一致才拟合 | Claude 修：a2_execute、prepare_a2；tests 加"最后一场失败时拟合次数为 0"和"预检后输入变化就停"两项测试 |
+| R1-B3 | 阻断 | report2 把 TECHNICAL_FAILURE 记成 NEGATIVE | 采纳（已按最小修法先行，复核正确） | require_valid_variant_gates 放在汇总之前，技术失败直接报错，不写负结论 | 1c1318a |
+| R1-S1 | 建议 | 状态脚本不认 A2/completed.json | 采纳（已修复，复核正确） | — | 1c1318a |
+| R1-S2 | 建议 | VN、VB 把小于 0 的风速截成 0，方案里没写 | 采纳 | 物理下限，已写进 STAGE_PLAN | STAGE_PLAN X2-A2 |
+
+审查文件末尾的未编号建议（第 1 轮 curves.json 要按 SHA 核对）：采纳。先按 dev_freeze 登记的 SHA 核对文件，再逐台机核对机组集合、来源、样本数和曲线点（check_round1_curves，已补测试）。
 
 X2-A2 方向说明（Claude，2026-11-17）：
 

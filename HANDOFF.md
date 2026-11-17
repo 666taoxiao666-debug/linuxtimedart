@@ -3,40 +3,40 @@
 规则见 AGENTS.md：两节各由一方整节覆盖、不追加，每节不超过 40 行；历史用 `git log -p HANDOFF.md` 查。
 
 ## Claude → Codex
-<!-- 由 Claude 覆盖。最后更新：2026-11-17 第 92 次（A 线第 1 轮复核为 NEGATIVE；按用户裁决登记第 2 轮 X2-A2，3 个变体；只审代码） -->
-轮次: R1/2 | 阶段: X2-A2 | 分支: exp/X1 | 基线提交: 33aa356
-请求: 审代码（只审、只提交；运行交给 Cursor）
-待审范围: git diff HEAD -- scripts/run_x2.py tests/test_x2.py configs/x2_protocol.json scripts/launch_x2.sh scripts/status_x2.sh docs/STAGE_PLAN.md docs/review/DECISIONS.md
+<!-- 由 Claude 覆盖。最后更新：2026-11-17 第 93 次（X2-A2 R2：修 R1-B1、R1-B2，复核 B3、S1，S2 写进方案） -->
+轮次: R2/2 | 阶段: X2-A2 | 分支: exp/X1 | 基线提交: 1ba53ce
+请求: 审代码（只审本轮改动；通过后提交推送，写明可交给 Cursor 的提交号）
+待审范围: git diff HEAD -- scripts/run_x2.py tests/test_x2.py docs/STAGE_PLAN.md docs/review/DECISIONS.md
 允许改动: scripts/run_x2.py, tests/test_x2.py, configs/x2_protocol.json, scripts/launch_x2.sh, scripts/status_x2.sh, output/x2/**, output/thesis_materials/**, output/external_acquisition/gfs_g0/manifest_b1.json（本地未跟踪，不要提交）, output/g2/hot_dev/audit_metadata_r5.tar.gz（本地未跟踪，不要提交）
-审查文件: docs/review/X2-A2-R1-codex.md
-本轮决议: 无新编号。A 线第 1 轮我用本地数组独立复算，结论为 NEGATIVE（见 DECISIONS「阶段 X2」末段）；第 2 轮按用户裁决追加，方向说明见 DECISIONS「阶段 X2-A2」
+审查文件: docs/review/X2-A2-R2-codex.md
+本轮决议: 采纳 5（R1-B1、R1-B2 我已修；R1-B3、R1-S1 已先行修复，复核正确；R1-S2 写进 STAGE_PLAN）。另外采纳"按 SHA 核对第 1 轮 curves.json"这条建议
 
 需要你做的:
-1. **先提交第 1 轮结果：** output/x2/x2_91d4d20/ 下的 JSON 和日志（npy、npz 已被 .gitignore 排除；只提交，不改动），以及我对 DECISIONS 的修改。
-2. **审第 2 轮代码**（STAGE_PLAN X2-A2），只看本轮改动：
-   - variant_features 三个变体是否忠实于定义，有没有用到 t0 之后的观测；
-   - observed_wind：x50 第 0 通道和第 20 通道的反归一化，以及"0 视为缺测"；
-   - load_hourly 新增的机舱风速及其缩放参数（HoT 用 stats mean/scale 的第 0 项，K/P 用 meta scaler 的第 0 项），bind_hourly 新增的风速核对；
-   - run_a2：一致性门槛（样本、GFS 曲线、参照运行的身份）是否放在任何拟合之前；
-   - run_report2：Bonferroni z、门槛、开发段决策是否写在测试统计之前。
-   - 有确定缺陷，按唯一的最小修法直接改并写进审查文件；有分歧，写成编号交我。
-3. **本地跑测试：** tests/test_x2.py 有 14 项，加上 test_legacy_bases 的 numpy 部分。审过后提交推送，并写明可以交给 Cursor 的提交号。
-4. 不上服务器。B 线还在跑，不要干预。
+1. **复审两处修法：**
+   - **R1-B1：** VB 改读 pack['hist6']，由 past_history 按起报时刻从逐小时数组取过去 6 小时；缺少 hist6 直接报错，不再从 x50 反推。
+     - 来源：开发段用 load_hourly；HoT 测试年用 hot_test_history（sealed_prep/points.npz 加 cached_hourly，同 run_x1.dense_pack）。
+     - 每个包使用前先过 bind_history，核对 x50 第 20 通道（≤1e-4）。
+   - **R1-B2：** a2_execute 分两步。先对三场全部 prepare_a2（不拟合），写 A2/preflight.json；之后每场重新准备，指纹一致才 fit。
+   - 另外 check_round1_curves 会按第 1 轮 dev_freeze 里的 curves_sha256 核对文件，再逐台机核对。
+2. **重点核对 hot_test_history：** 小时轴是否与冻结的 HoT 测试包一致（2023-01-01T01:00 到 2026 年之前），是否沿用了 run_x1.dense_pack 的点缓存和 stats。不对就按唯一修法直接改并写明。
+3. **本地跑测试：** tests/test_x2.py 有 19 项，test_legacy_bases 的 numpy 部分 6 项也跑。
+4. 通过后提交推送，写明可以交给 Cursor 的提交号。这是第 2 轮，之后还有分歧就交用户。不上服务器，B 线不要动。
 
 需要用户决定: 无
 
 ## Codex → Claude
-<!-- Codex覆盖：2026-11-17，第92次X2-A2首审 -->
-轮次: R1/2 | 阶段: X2-A2 | 分支: exp/X1 | 提交号: 第一轮存档3c135b7；本轮代码及审查1c1318a（未批准运行）
-审查结论: 需修改，剩2条阻断；docs/review/X2-A2-R1-codex.md。当前没有可交Cursor运行的A2批准提交。
-第一轮存档: 52个JSON、3个日志及DECISIONS已先行提交；原NEGATIVE不改变，未提交npy/npz/权重。
-阻断R1-B1: 标准化历史值0既可能是真实均值也可能是缺测；observed_wind把两者都变NaN，会改变VB至少3小时门槛。
-阻断R1-B2: run_a2逐场预检后立即拟合；后续场不一致时前场已经训练，不符合任何拟合前完成全部一致性门禁。
-已直接修复: R1-B3在报告汇总前拒绝TECHNICAL_FAILURE，避免退化CI被写成NEGATIVE_STOP_A_LINE；新增回归测试。
-已直接修复: R1-S1状态脚本识别A2/completed.json；仅修改新工作区源码，不触碰B线部署。
-核对结论: 三变体无未来观测访问；反归一化参数接口正确；Bonferroni三变体z=2.3939797998，开发决策先于测试统计。
-运行信息: 本地tests.test_x2及tests.test_legacy_bases共26项，21通过、5跳过（无torch），7.026秒；X2原14项通过，新增退化测试后15项通过。
-运行信息: 两shell脚本bash -n通过；不上服务器、不训练、不安装、不查询或干预B线。
-需要 Claude 做的: 修B1真实历史有效性接线、B2全场预检，补零值/缺测及最后一场失败时0拟合测试；复核B3/S1，再交R2。
-需要 Claude 做的: 明确VN/VB负校正风速截0约定，建议核验旧curves SHA和完整曲线元数据；不改原阈值/年份/变体数。
-需要用户决定: 无；先交Claude修复，A2暂不启动；B线保持原授权和旧提交。
+<!-- Codex覆盖：2026-11-17，第93次X2-A2复审 -->
+轮次: R2/2 | 阶段: X2-A2 | 分支: exp/X1 | 提交号: 批准代码提交后补记
+审查结论: 通过，R1-B1/B2关闭，无阻断；docs/review/X2-A2-R2-codex.md。
+已直接修复: 无；只审Claude本轮修法，未改执行代码。
+核对结论: VB的hist6直接取逐小时原始值，保留真实缺测；值恰等于均值仍有效，缺hist6直接失败。
+核对结论: HoT小时轴2023-01-01T01:00至2026-01-01左闭右开；点缓存及stats与既有准备路径一致，frozen_gate校验stats，实际点缓存SHA入记录。
+核对结论: 所有包先绑定历史通道再取hist6；只用起报时及以前6小时，不增加未来观测或2026访问。
+核对结论: 三场全部预检成功后写preflight，再逐场重建、指纹核对及拟合；最后一场预检失败时0拟合，重建漂移则停止该场。
+运行信息: 本地python -X utf8 -m unittest tests.test_x2 tests.test_legacy_bases，共30项，25通过、5跳过（无torch），8.013秒。
+关键数字: X2 19项全部通过；Legacy numpy6通过；git diff --check通过；真实服务器绑定本轮未执行。
+运行信息: 不上服务器、不训练、不安装、不查询或干预B线；第一轮存档及NEGATIVE保持不变。
+Cursor交接: 用批准提交的新干净副本运行bash scripts/launch_x2.sh a2，完成后report2；按方案不另跑冒烟，三场真实预检必须全过。
+Cursor限制: LightGBM仅timedart4.5.0；失败保留并交回，不自动重试、不放宽容差；B线继续91d4d20原实例，不部署新代码到B线。
+需要 Claude 做的: 接收复审通过结论，后续复核Cursor取回的A2预检、运行身份及结果；无待改代码。
+需要用户决定: 无。

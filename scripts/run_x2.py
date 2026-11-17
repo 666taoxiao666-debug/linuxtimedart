@@ -139,28 +139,50 @@ def fit_power_curves(samples, width=.5, minimum=30, min_bins=2):
     return curves
 
 
+def hour_index(hours, t):
+    """Positions of hour labels t in a sorted, unique hour axis; every label must exist."""
+    hours = np.asarray(hours).astype('datetime64[ns]')
+    if len(np.unique(hours)) != len(hours) or not np.all(hours[1:] > hours[:-1]):
+        raise ValueError('Hour axis must be sorted and unique')
+    t = np.asarray(t).astype('datetime64[ns]')
+    k = np.clip(np.searchsorted(hours, t), 0, len(hours) - 1)
+    if not np.array_equal(hours[k], t):
+        raise ValueError('Window hour missing from the hourly axis')
+    return k
+
+
+def window_steps(pack, rows=None):
+    issue = np.asarray(pack['issue'] if rows is None else pack['issue'][rows]).astype('datetime64[ns]')
+    return issue[:, None] - (23 - np.arange(24)).astype('timedelta64[h]')
+
+
+def bind_history(pack, src, sample=20000, seed=0):
+    """The hourly GFS history (raw m/s, NaN = unavailable) must reproduce the frozen x50 history channel."""
+    n = len(pack['truth'])
+    pick = np.sort(np.random.default_rng(seed).choice(n, size=min(sample, n), replace=False))
+    h = np.asarray(src['hist'], float)[hour_index(src['hours'], window_steps(pack, pick))]
+    expected = np.where(np.isfinite(h), (h - src['nwp_mean']) / src['nwp_scale'], 0)
+    if not np.allclose(expected, pack['x50'][pick, :, 20], rtol=0, atol=1e-4):
+        raise ValueError('Hourly GFS history does not reproduce the frozen x50 history channel')
+    return pick
+
+
+def past_history(pack, src, hours_back=6):
+    """Raw GFS history for the last `hours_back` input hours (t0-5 .. t0) from the hourly array, with its true
+    validity (X2-A2 R1-B1): never inferred from the normalised x50 value, where 0 also encodes a missing hour."""
+    steps = window_steps(pack)[:, -hours_back:]
+    return np.asarray(src['hist'], float)[hour_index(src['hours'], steps)]
+
+
 def bind_hourly(pack, src, sample=20000, seed=0):
     """Bind the hourly sources to a frozen pack: GFS history channel (x50[:, :, 20]) and labels must be reproduced
     from the hourly arrays (same hour labels).  Raises on any mismatch; returns the number of checked windows."""
     hours = np.asarray(src['hours']).astype('datetime64[ns]')
-    order = np.argsort(hours)
-    if not np.array_equal(order, np.arange(len(hours))) or len(np.unique(hours)) != len(hours):
-        raise ValueError('Hour axis must be sorted and unique')
-    n = len(pack['truth'])
-    pick = np.sort(np.random.default_rng(seed).choice(n, size=min(sample, n), replace=False))
-    issue = np.asarray(pack['issue'])[pick].astype('datetime64[ns]')
-    steps = issue[:, None] - (23 - np.arange(24)).astype('timedelta64[h]')
+    pick = bind_history(pack, src, sample, seed)
+    steps = window_steps(pack, pick)
 
     def index(t):
-        k = np.searchsorted(hours, t)
-        k = np.clip(k, 0, len(hours) - 1)
-        if not np.array_equal(hours[k], t):
-            raise ValueError('Window hour missing from the hourly axis')
-        return k
-    h = np.asarray(src['hist'], float)[index(steps)]
-    expected = np.where(np.isfinite(h), (h - src['nwp_mean']) / src['nwp_scale'], 0)
-    if not np.allclose(expected, pack['x50'][pick, :, 20], rtol=0, atol=1e-4):
-        raise ValueError('Hourly GFS history does not reproduce the frozen x50 history channel')
+        return hour_index(hours, t)
     tidx = index(np.asarray(pack['times'])[pick].astype('datetime64[ns]'))
     turbines = np.asarray(pack['turbines'])[pick]
     if 'wind' in src:   # nacelle wind channel x50[:, :, 0] (A2 round)
@@ -276,13 +298,9 @@ def curve_values(pack, curves, columns):
 
 
 def observed_wind(pack, ctx):
-    """Nacelle wind (m/s) over the 24 input hours and GFS history (m/s, NaN = unavailable) from the frozen x50.
-    x50 history channel stores 0 for missing values, so an exact 0 is read as missing."""
-    x = pack['x50']
-    obs = x[:, :, 0].astype(float) * ctx['wind_scale'] + ctx['wind_mean']
-    raw = x[:, :, 20].astype(float)
-    hist = np.where(raw != 0, raw * ctx['nwp_scale'] + ctx['nwp_mean'], np.nan)
-    return obs, hist
+    """Nacelle wind (m/s) over the 24 input hours from x50 channel 0 (always finite in a valid window).
+    GFS history for VB comes from pack['hist6'] (past_history), never from the normalised x50 channel."""
+    return pack['x50'][:, :, 0].astype(float) * ctx['wind_scale'] + ctx['wind_mean']
 
 
 def variant_features(pack, ctx, rated, kind):
@@ -290,22 +308,25 @@ def variant_features(pack, ctx, rated, kind):
     VN  wind-anchored increment through the turbine's OWN curve: w*_h = w_obs(t0) + g(t0+h) - g(t0);
         [PC_obs(w*_h), PC_obs(w*_h) - PC_obs(w_obs(t0))]                                         (8)
     VR  ratio anchor: clip(P(t0) * PC_g(g(t0+h)) / max(PC_g(g(t0)), 1% rated), 0, rated)          (4)
-    VB  recent-bias correction: b = mean_{last 6 h}(w_obs - g_hist) (>= 3 valid hours);
-        [PC_obs(g(t0+h) + b), b]                                                                  (5)"""
+    VB  recent-bias correction: b = mean_{last 6 h}(w_obs - g_hist) (>= 3 valid hours, validity from the hourly
+        array via pack['hist6']); [PC_obs(g(t0+h) + b), b]                                        (5)
+    Corrected or anchored winds below 0 are set to 0 (physical lower bound; the curve then gives its first bin)."""
     tb = pack['turbines']
     g = gfs_columns(pack, [5, 6, 7, 8, 9])
     if kind == 'VR':
         pc = curve_eval(ctx['g'], tb, g)
         ratio = pc[:, 1:] / np.maximum(pc[:, :1], .01 * rated)
         return np.clip(pack['anchor'].astype(float)[:, None] * ratio, 0, rated).astype(np.float32)
-    obs, hist = observed_wind(pack, ctx)
+    obs = observed_wind(pack, ctx)
     if kind == 'VN':
         w0 = obs[:, -1:]
         star = np.maximum(w0 + g[:, 1:] - g[:, :1], 0)
         p_star = curve_eval(ctx['o'], tb, star)
         return np.concatenate([p_star, p_star - curve_eval(ctx['o'], tb, w0)], axis=1).astype(np.float32)
     if kind == 'VB':
-        diff = obs[:, -6:] - hist[:, -6:]
+        if 'hist6' not in pack or pack['hist6'].shape != (len(obs), 6):
+            raise ValueError('VB needs the hourly GFS history of the last 6 input hours (hist6)')
+        diff = obs[:, -6:] - pack['hist6']
         valid = np.isfinite(diff).sum(1) >= 3
         b = np.full(len(diff), np.nan)
         b[valid] = np.nanmean(diff[valid], axis=1)
@@ -952,6 +973,96 @@ def same_cohort(a, b):
     return all(np.array_equal(a[k], b[k]) for k in ('truth', 'issue', 'turbines'))
 
 
+def hot_test_history(logs):
+    """GFS history over 2023-01-01..2025 for the HoT test packs, from the sealed preparation's point cache
+    (as run_x1.dense_pack); bound to each test pack by bind_history before use."""
+    import pandas as pd
+    from scripts import train_g2b as g2, evaluate_g2b_sealed as sealed
+    logs = Path(logs)
+    freeze = logs / 'G2/g2b_4471499_shared_r1/formal'
+    g2.frozen_gate(freeze, sealed.FREEZE_SHA)
+    stats = read(freeze / 'fit_statistics.json')
+    path = logs / 'G2/g2b84_bc7730e_r1/sealed_prep/points.npz'
+    hours = pd.date_range('2023-01-01T01:00', '2026-01-01', freq='h', inclusive='left').to_numpy().astype('datetime64[ns]')
+    hist = x1.cached_hourly(hours, x1.load_pack(path), stats)['historical'][:, 0]
+    return dict(hours=hours, hist=hist, nwp_mean=float(stats['nwp_mean']), nwp_scale=float(stats['nwp_scale']),
+                identities={str(path): digest(path)})
+
+
+def curves_digest(curves):
+    canon = {str(u): dict(source=c['source'], samples=int(c['samples']),
+                          points=None if c['points'] is None else np.round(np.asarray(c['points'], float), 9).tolist())
+             for u, c in sorted(curves.items())}
+    return hashlib.sha256(json.dumps(canon, sort_keys=True).encode()).hexdigest()
+
+
+def check_round1_curves(a_results, farm, curves_g):
+    """Round-1 curves.json, verified against the SHA in round-1 dev_freeze.json, must equal the recomputed curves
+    (same turbines, sources, sample counts and points)."""
+    folder = Path(a_results) / 'A' / farm
+    old = read(checked(folder / 'curves.json', read(folder / 'dev_freeze.json')['curves_sha256']))['curves']
+    if set(old) != {str(u) for u in curves_g}:
+        raise ValueError(f'GFS curve turbines differ from round 1: {farm}')
+    for u, c in curves_g.items():
+        o = old[str(u)]
+        same = (o['source'] == c['source'] and o['samples'] == c['samples']
+                and (o['points'] is None) == (c['points'] is None)
+                and (o['points'] is None or np.allclose(np.asarray(o['points']), c['points'], rtol=0, atol=1e-9)))
+        if not same:
+            raise ValueError(f'GFS curve differs from round 1: {farm} turbine {u}')
+
+
+def prepare_a2(args, farm, spec, protocol, ref):
+    """Everything A2 needs for one farm, plus a fingerprint; no fitting here."""
+    cfg = protocol['part_a']['curve']
+    bud = budget(protocol, False)
+    train, v1, v2, tests, counts = load_farm(args, farm, spec, protocol, bud)
+    packs = dict(V1=v1, V2=v2, **tests)
+    for split, pack in packs.items():
+        if not same_cohort(ref.keys(farm, split), pack):
+            raise ValueError(f'Cohort differs from round 1: {farm} {split}')
+    src = load_hourly(args.logs, farm, next(iter(spec['items'].values())))
+    curves_g, meta = farm_curves(src, train, cfg)            # binds GFS history, nacelle wind and labels (train)
+    check_round1_curves(args.a_results, farm, curves_g)
+    curves_o = fit_power_curves(hourly_samples(src['hours'], src['wind'], src['power'], src['fit_bounds'],
+                                               src['exclude']), **cfg)
+    test_src = hot_test_history(args.logs) if farm == 'HoT' else src
+    for split, pack in dict(train=train, **packs).items():
+        hsrc = test_src if split in tests else src
+        if split != 'train':
+            bind_history(pack, hsrc)
+        pack['hist6'] = past_history(pack, hsrc)
+    scalers = {k: src[k] for k in ('wind_mean', 'wind_scale', 'nwp_mean', 'nwp_scale')}
+    meta.update(scalers=scalers, test_history_identities=test_src['identities'], nacelle_curves={
+        str(u): dict(source=c['source'], samples=c['samples'],
+                     points=None if c['points'] is None else c['points'].tolist()) for u, c in curves_o.items()})
+    fingerprint = dict(keys={k: key_bytes(p) for k, p in dict(train=train, **packs).items()},
+                       hist6={k: hashlib.sha256(np.ascontiguousarray(p['hist6']).tobytes()).hexdigest()
+                              for k, p in dict(train=train, **packs).items()},
+                       curves_g=curves_digest(curves_g), curves_o=curves_digest(curves_o), scalers=scalers)
+    return dict(train=train, v1=v1, v2=v2, tests=tests, counts=counts, curves_g=curves_g, curves_o=curves_o,
+                meta=meta, scalers=scalers, fingerprint=fingerprint)
+
+
+def a2_execute(farm_names, prepare, fit, out):
+    """X2-A2 R1-B2: phase 1 prepares and checks ALL farms (no fitting) and saves the fingerprints; phase 2 re-prepares
+    each farm, requires the identical fingerprint, then fits.  Any inconsistency stops before the first fit."""
+    fingerprints = {}
+    for farm in farm_names:
+        state = prepare(farm)
+        fingerprints[farm] = state['fingerprint']
+        del state
+        beat(out, f'A2 preflight {farm} passed')
+    save(out / 'A2' / 'preflight.json', dict(status='PASS', fingerprints=fingerprints))
+    for farm in farm_names:
+        state = prepare(farm)
+        if state['fingerprint'] != fingerprints[farm]:
+            raise ValueError(f'A2 inputs changed between preflight and fit: {farm}')
+        fit(farm, state)
+        del state
+    return fingerprints
+
+
 def run_a2(args):
     """Round 2 (user 11-17): three registered variants VN/VR/VB on the same LightGBM base, same cohorts, grid and
     seeds as round 1; references (LUG, LUG_PCL) are the frozen round-1 predictions."""
@@ -964,33 +1075,20 @@ def run_a2(args):
     (out / 'A2').mkdir(parents=True, exist_ok=True)
     try:
         ref = reference_round1(args.a_results, protocol)
-        cfg = protocol['part_a']['curve']
-        for farm, spec in farms(x1p).items():
-            train, v1, v2, tests, counts = load_farm(args, farm, spec, protocol, bud)
-            packs = dict(V1=v1, V2=v2, **tests)
-            for split, pack in packs.items():                    # identical cohorts BEFORE any fit
-                if not same_cohort(ref.keys(farm, split), pack):
-                    raise ValueError(f'Cohort differs from round 1: {farm} {split}')
-            keys = save_keys(store, 'A2', farm, packs)
-            save(out / 'A2' / f'{farm}_cohorts.json', dict(counts=counts, train=len(train['truth']), keys=keys))
-            src = load_hourly(args.logs, farm, next(iter(spec['items'].values())))
-            curves_g, meta = farm_curves(src, train, cfg)          # binds GFS history, nacelle wind and labels
-            old = read(Path(args.a_results) / 'A' / farm / 'curves.json')['curves']
-            for u, c in curves_g.items():
-                o = old[str(u)]['points']
-                if (o is None) != (c['points'] is None) or (o is not None and not np.allclose(np.asarray(o), c['points'])):
-                    raise ValueError(f'GFS curve differs from round 1: {farm} turbine {u}')
-            curves_o = fit_power_curves(hourly_samples(src['hours'], src['wind'], src['power'], src['fit_bounds'],
-                                                       src['exclude']), **cfg)
-            scalers = {k: src[k] for k in ('wind_mean', 'wind_scale', 'nwp_mean', 'nwp_scale')}
-            meta.update(scalers=scalers, nacelle_curves={
-                str(u): dict(source=c['source'], samples=c['samples'],
-                             points=None if c['points'] is None else c['points'].tolist()) for u, c in curves_o.items()})
-            del src
-            beat(out, f'A2 {farm} nacelle curves: ' + str({u: c['source'] for u, c in curves_o.items()}))
-            run_a_farm(lgb, farm, spec['rated'], train, v1, v2, tests, protocol, x1p, store, bud, args.threads, out,
-                       curves_g, meta, part='A2', arms=protocol['part_a2']['arms'], ctx=dict(g=curves_g, o=curves_o, **scalers))
-            del train, v1, v2, tests
+        specs = farms(x1p)
+
+        def prepare(farm):
+            return prepare_a2(args, farm, specs[farm], protocol, ref)
+
+        def fit(farm, st):
+            keys = save_keys(store, 'A2', farm, dict(V1=st['v1'], V2=st['v2'], **st['tests']))
+            save(out / 'A2' / f'{farm}_cohorts.json', dict(counts=st['counts'], train=len(st['train']['truth']), keys=keys))
+            beat(out, f'A2 {farm} nacelle curves: ' + str({u: c['source'] for u, c in st['curves_o'].items()}))
+            run_a_farm(lgb, farm, specs[farm]['rated'], st['train'], st['v1'], st['v2'], st['tests'], protocol, x1p,
+                       store, bud, args.threads, out, st['curves_g'], st['meta'], part='A2',
+                       arms=protocol['part_a2']['arms'], ctx=dict(g=st['curves_g'], o=st['curves_o'], **st['scalers']))
+
+        a2_execute(list(specs), prepare, fit, out)
         save(out / 'A2' / 'registry.json', store.registry)
         save(out / 'A2' / 'completed.json', dict(status='COMPLETED', registry_sha256=digest(out / 'A2' / 'registry.json')))
     except Exception as exc:
