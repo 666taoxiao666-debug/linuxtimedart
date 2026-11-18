@@ -1,0 +1,49 @@
+{
+  "stage": "X3",
+  "version": 1,
+  "plan": "docs/STAGE_PLAN.md (X3, R2 approved 30df3b9); decisions docs/review/DECISIONS.md stage X3",
+  "references": {
+    "a3": {"dir": "X1/x1_e4819b0_gpu_r1/A3", "completed_sha256": "b8c5cf17f95de1893e34231c0b4889c24b05d712a813d98a4b60e648730c6462"},
+    "x2_a": {"dir": "X2/x2_91d4d20/a", "completed_sha256": "1e8ed09c41f9d664817a26b6eb52784144f75e63c134e4ecde62c73bddef28b6", "commit": "91d4d207ad7e0af36eadd01e51be201bb1fc3523"},
+    "x2_b": {"dir": "X2/x2_0f24875/b", "completed_sha256": "3299474f002ecd1aba09a6c6b62550ec0b208a2f7e0ea4a78f2d9b0300cc8b45", "commit": "0f24875ea598c4a659352b427f91f4212ca88696"}
+  },
+  "chronos": {"revision": "29ec3766d36d6f73f0696f85560a422f50e8498c", "manifest_sha256": "758b5c252d2a0bbe0237554d3c1587b4bb5165b73d96ccdcec0cf98e31d0de5e", "package": "chronos-forecasting 2.3.2, not upgraded"},
+  "splits": {
+    "Kelmarsh": {"V1": ["2021-01-01", "2021-07-01"], "V2": ["2021-07-01", "2022-01-01"]},
+    "Penmanshiel": {"V1": ["2020-01-01", "2020-07-01"], "V2": ["2020-07-01", "2021-01-01"]},
+    "HoT": {"V1": ["2023-07-01", "2023-10-01"], "V2": ["2023-10-01", "2024-01-01"]}
+  },
+  "gpu_fraction": 0.7,
+  "family_z": 2.3939797998185104,
+  "q1": {
+    "context_lengths": [168, 512, 1024],
+    "modes": ["single", "group"],
+    "group_key": "(farm, issue_time); exactly one issue group per predict call; members' history ends at the issue hour",
+    "check": {"farm": "Kelmarsh", "context_length": 168, "groups": 60, "groups_smoke": 6, "tolerance_kw": 1.0},
+    "selection": "per farm, lowest V1 MAE of the median; ties -> shorter context, then single"
+  },
+  "q2": {
+    "modes": ["full", "lora"],
+    "mode_rule": "first mode passing the preflight on every farm, frozen before any formal fine-tune",
+    "training_mode": "single-series windows with the farm's Q1-selected context length",
+    "train_windows": 20000, "train_windows_smoke": 512, "seed": 2024,
+    "learning_rate": 0.000001, "batch_size": 256,
+    "num_steps": 1000, "num_steps_smoke": 4, "eval_every": 100, "eval_every_smoke": 2,
+    "preflight_windows": 2048, "preflight_steps": 20, "preflight_steps_smoke": 2,
+    "selection": "V1 median MAE by custom callback (not eval_loss)",
+    "margin": 0.01
+  },
+  "q3": {"w_step": 0.05, "min_gain": 0.01, "control": "w*LUG + (1-w)*N_v1 with the identical search"},
+  "q4": {
+    "deployment": {"Kelmarsh": "2021-01-01", "Penmanshiel": "2020-01-01", "HoT": "2023-07-01"},
+    "k_months": [1, 3], "zs_context": 512, "es_fraction": 0.2,
+    "n_estimators": 4000, "n_estimators_smoke": 20,
+    "lightgbm": {"num_leaves": 31, "min_child_samples": 50, "learning_rate": 0.05, "feature_fraction": 0.8,
+                 "bagging_fraction": 0.8, "seed": 2024, "early_stopping_rounds": 200},
+    "evaluation": "target V1 (right after D_T); primary pair C_zs vs L_1X; L_k and k=3 descriptive"
+  },
+  "statistics": {"block_length": 8, "replicates": 5000, "seed": 2024},
+  "statistics_smoke": {"block_length": 8, "replicates": 200, "seed": 2024},
+  "smoke": {"issues": 40},
+  "no_2026_data": true
+}

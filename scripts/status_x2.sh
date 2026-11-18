@@ -30,3 +30,21 @@ for MODE in smoke a b report a2 report2; do
   [ -e "$BASE/$MODE/failed.json" ] && cat "$BASE/$MODE/failed.json"
   tail -n 3 "$BASE/$MODE.log" 2>/dev/null
 done
+X3BASE=$DATA/outputs/logs/X3/x3_${COMMIT}
+if [ -d "$X3BASE" ]; then
+  echo "== X3 runs under $X3BASE"
+  for CHAIN in x3smoke x3gpu x3q4 x3final; do
+    [ -e "$X3BASE/$CHAIN.pid" ] || continue
+    PID=$(cat "$X3BASE/$CHAIN.pid"); STATE=exited
+    if [[ "$PID" =~ ^[0-9]+$ ]] && kill -0 "$PID" 2>/dev/null; then STATE=running; fi
+    echo "-- chain $CHAIN pid=$PID $STATE"; tail -n 3 "$X3BASE/$CHAIN.log" 2>/dev/null
+  done
+  for D in "$X3BASE"/*/; do
+    [ -d "$D" ] || continue
+    R=running_or_not_started
+    [ -e "$D/completed.json" ] && R=COMPLETED
+    [ -e "$D/failed.json" ] && R=FAILED
+    echo "   $(basename "$D"): $R"
+    [ -e "$D/failed.json" ] && cat "$D/failed.json"
+  done
+fi

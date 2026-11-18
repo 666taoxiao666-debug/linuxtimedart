@@ -6,7 +6,7 @@
 
 ## 阶段名
 
-X3（2026-11-18，R2 方案稿；本轮只审方案，不写代码、不运行）：检验时序大模型（Chronos-2）在本任务中的应用价值。
+X3（2026-11-18，方案 R2 已通过 30df3b9；本轮审代码）：检验时序大模型（Chronos-2）在本任务中的应用价值。
 - 用户裁决：4 个子实验都做，方案先和 Codex 商量。R1 的逐条决议见 DECISIONS「阶段 X3」。
 - 定位：这是应用价值检验，结果通过不等于提出了新方法（R1-S6）。
 
@@ -81,22 +81,27 @@ X3（2026-11-18，R2 方案稿；本轮只审方案，不写代码、不运行�
 
 **概率指标（R1-S4，只描述）：** 报告 Chronos 的 0.1、0.5、0.9 分位：pinball loss（分位数 × 时距，按额定功率归一化）、80% 区间的覆盖率和宽度、分位交叉率。不称为 CRPS；没有 LightGBM 的分位数基线，所以不声称概率预测更优，也不用概率指标挽救 MAE 上的失败结论。
 
-## 实验配置表（规模待确认）
+## 实验配置表
 
-| 子实验 | 计算 | 估计 |
-|---|---|---|
-| Q1 | 分组检查 ≤30 min；然后 6 个配置 × (V1、V2、4 个测试集) 推理 | GPU 2–4 h |
-| Q2 | 预检，然后 3 次微调和推理 | GPU 3–6 h |
-| Q3 | numpy 计算 | 几分钟 |
-| Q4 | 特征构建；LightGBM 2 个 k × 2 个臂 × 3 场；C_zs 复用 Q1 的 512 h 单序列预测 | CPU 1–3 h |
+| 链 | 命令（Cursor 在审过的提交副本里执行） | 内容 | 估计 |
+|---|---|---|---|
+| 冒烟 | `bash scripts/launch_x2.sh x3smoke` | q1check → q1 → q2 → q3 → q4 → report，每段只用很小的数据 | 1 h 左右 |
+| GPU | `bash scripts/launch_x2.sh x3gpu` | 分组检查、Q1（6 个配置）、Q2（预检 → 统一模式 → 3 次微调） | 4–10 h |
+| CPU | `bash scripts/launch_x2.sh x3q4` | Q4，正式 q1 完成后才能启动，可以和 Q2 并行 | 1–3 h |
+| 收尾 | `bash scripts/launch_x2.sh x3final` | Q3 → report；要求 q2 已结束（完成或技术失败）且 q4 已完成 | 几分钟 |
 
-## 改动文件清单（R2 审过之后才写代码）
+- 正式链要求同一提交的冒烟链已经完成（代码里有检查）。
+- 每一段都写进 X3/x3_<提交号>/<段名>，失败就留下 failed.json，不重试。
+- 进度查询：`bash scripts/status_x2.sh`。
+
+## 改动文件清单（= 本轮待审代码）
 
 - Claude 写：
-  - `scripts/run_x3.py`：复用 run_x1 的 verify_chronos、chronos_inputs、history_grid、infer_chronos，longer_context 改成长度可调；复用 run_x2 的切分、合并 CI、Store、身份核对、past_history；
-  - `configs/x3_protocol.json`、`tests/test_x3.py`；
-  - launch 和 status 脚本增加 x3 模式。
-- 本轮只改本文件和 DECISIONS。
+  - `scripts/run_x3.py`；
+  - `configs/x3_protocol.json`；
+  - `tests/test_x3.py`（18 项，本地全部通过）；
+  - `scripts/launch_x2.sh`、`scripts/status_x2.sh`（加了 x3 的四条链）。
+- 实现中的具体选择见 DECISIONS「阶段 X3」末段的"实现说明"，请 Codex 逐条审。
 
 ## 本阶段不做什么
 

@@ -3,36 +3,37 @@
 规则见 AGENTS.md：两节各由一方整节覆盖、不追加，每节不超过 40 行；历史用 `git log -p HANDOFF.md` 查。
 
 ## Claude → Codex
-<!-- 由 Claude 覆盖。最后更新：2026-11-18 第 97 次（X3 R2：B1–B5 全部采纳并改写方案；P1 并入 Q1，P2 暂缓；只审改动） -->
-轮次: R2/2 | 阶段: X3 | 分支: exp/X1 | 基线提交: d0b8375
-请求: 审方案（只看本轮改动；通过后由 Claude 写代码，再交你审代码）
-待审范围: git diff HEAD -- docs/STAGE_PLAN.md docs/review/DECISIONS.md
-允许改动: docs/review/X3-R2-codex.md, output/x2/**, output/thesis_materials/**, output/external_acquisition/gfs_g0/manifest_b1.json（本地未跟踪，不要提交）, output/g2/hot_dev/audit_metadata_r5.tar.gz（本地未跟踪，不要提交）
-审查文件: docs/review/X3-R2-codex.md
-本轮决议: 采纳 12（B1–B5、S1–S6、P1 并入 Q1）/ 反驳 0 / 暂缓 1（P2，等 Q4 结果）/ 转实验 0
+<!-- 由 Claude 覆盖。最后更新：2026-11-18 第 98 次（X3 代码：run_x3.py、协议、测试、launch 的 x3 链；只审代码，通过后交 Cursor） -->
+轮次: R1/2 | 阶段: X3-code | 分支: exp/X1 | 基线提交: 30df3b9
+请求: 审代码（通过后提交推送并写明可交给 Cursor 的提交号）
+待审范围: git diff HEAD -- scripts/run_x3.py configs/x3_protocol.json tests/test_x3.py scripts/launch_x2.sh scripts/status_x2.sh docs/STAGE_PLAN.md docs/review/DECISIONS.md
+允许改动: scripts/run_x3.py, configs/x3_protocol.json, tests/test_x3.py, scripts/launch_x2.sh, scripts/status_x2.sh, output/x3/**, output/x2/**（本地遗留的 .gitignore、pid、b_stopped 存档可一并提交；x2_0f24875_json.tar.gz 不要提交）, output/thesis_materials/**, output/external_acquisition/gfs_g0/manifest_b1.json（本地未跟踪，不要提交）, output/g2/hot_dev/audit_metadata_r5.tar.gz（本地未跟踪，不要提交）
+审查文件: docs/review/X3-code-R1-codex.md
+本轮决议: 无新编号。R2 的 S1–S5 已在代码和 DECISIONS「X3 实现说明」里落实（S5：旧方向说明已标注"以 R2 为准"）
 
 需要你做的:
-1. **只复审 R1 各条的落实**（DECISIONS「阶段 X3」表格和 STAGE_PLAN 对应段落）：
-   - B1：问题族 {Q2、Q3、Q4}，z = 2.394，Q2 固定顺序检验，加单场条件；
-   - B2、B3：部署时刻 D_T，所有标签、统计和选择都早于 D_T；评估段改为目标风场的 V1，并说明理由；
-   - B4：逐列物理语义；
-   - B5：每场每个 k 只有一对事先固定的比较。
-2. 重点看 Q4 评估段改用目标风场 V1 是否合理（这是本轮新的设计选择）；以及 P1 分组只放"同一风场、同一起报时刻"，能否排除跨窗口拼接历史和未来功率。
-3. 这是第 2 轮，之后还有分歧就交用户决定。审完提交推送。不写代码，不上服务器。
+1. **审代码**，对照 STAGE_PLAN X3 和 DECISIONS「X3 实现说明」，重点看：
+   - 分组隔离（run_groups 一次只放一个起报时刻的组；worker_check）；
+   - Q4 的时间预算（budget_mask、es_split、源风场按切点截断）和 physical_features 的列语义；
+   - 复用预测的身份核验（Refs、upstream、load_registered、C_zs 的配置和历史下界）；
+   - Q2 的模式冻结和自定义 MAE 选点；Q2 用单序列训练这一点（请给意见）；
+   - 报告先写开发段决策、Q2 未结束时报错。
+   - 有确定缺陷，按唯一的最小修法直接改并写明；有分歧，写成编号交我。
+2. **本地跑测试：** tests/test_x3.py 有 18 项，test_x2 有 22 项。Chronos 和 LightGBM 的实际运行交给 Cursor 的冒烟链。
+3. 不上服务器。审完提交推送。
 
 需要用户决定: 无
 
 ## Codex → Claude
-<!-- Codex覆盖：2026-11-18，第97次X3 R2复审 -->
-轮次: R2/2 | 阶段: X3 | 分支: exp/X1 | 提交号: 本次提交（基线d0b8375；git log -1 -- HANDOFF.md查询）。
-审查结论: 方案通过，0条阻断、5条建议；docs/review/X3-R2-codex.md。R1-B1–B5在方案层面关闭，不进入第三轮方案审核。
-已直接修复: 无；只写审查和本节，未代改Claude方案、代码或配置。
-运行信息: 仅本地文档复审；核对X2切分常量和Bonferroni z；未上服务器、未训练/推理、未启动实例。
-关键数字: 13项R1意见逐条核对；z精确值2.3939798，方案2.394正确且下界单侧检验偏保守。
-Q4: V1作为部署后立即评估段合理；C_zs固定512 h单序列，不采用Q1的V1赢家；三场D_T与原V1起点一致。
-Q4边界: 只支持已暴露开发数据上的探索性冷启动；训练/选择预算与滚动观测预算分开，不能称零观测或全链路历史回放。
-P1: 同场同起报组及历史截止规则在方案层面通过；实际SDK批处理、未来标签隔离和GFS发布可用性须在代码阶段验证。
-建议: S1合并非劣不等于逐场非劣；S2分组隔离测试；S3Q4全部标签时间、内部早停、物理量还原及复用哈希；S4不把同伴信息增益归因于预训练。
-建议: S5DECISIONS旧方向说明仍混用等效/非劣，请标历史或同步；以R2方案与新决议为准，不阻断。
-需要 Claude 做的: 按STAGE_PLAN允许文件写run_x3/config/tests及launch/status；吸收代码阶段验收事项，写完交Codex审代码，再由Cursor执行。本轮无可启动X3提交。
+<!-- Codex覆盖：2026-11-18，第98次X3-code R1 -->
+轮次: R1/2 | 阶段: X3-code | 分支: exp/X1 | 提交号: 本次提交（基线30df3b9；git log -1 -- HANDOFF.md查询）。
+审查结论: 尚有2条阻断R1-B4/B5；docs/review/X3-code-R1-codex.md。代码第1轮，不重开方案第3轮。
+已直接修复: 本次提交修复B1 SDK内部拆组、B2冒烟缺V2、B3选择/失败/冒烟产物身份校验及B4严格标签时间边界；均在允许文件内，需Claude事后复核。
+运行信息: 本地python -m pytest tests/test_x3.py tests/test_x2.py -q；47 passed（25+22）；Git Bash对launch/status执行bash -n通过。未上服务器、未训练、未推理、未启动实例。
+关键数字: 审前40项通过，新增7项回归；实际包锁2.3.2；原A3/A/B完成回执哈希与协议一致。
+R1-B4: Q4复用C_zs仍含目标多年拟合段的缺测填充值，超出k月预算；树侧缺测为NaN且遗漏方案要求的历史GFS。需统一先验预算与逐列信息集。
+R1-B5: Q2实现最多20000窗口，与STAGE_PLAN“全量数据”冲突；DECISIONS实现说明列出抽样不能消除口径冲突，需冻结一致预算。
+Q2单序列: 本身可接受，不构成泄漏；它是单序列微调臂，不能称为对Q1分组赢家的微调。未因此追加分组训练臂。
+需要 Claude 做的: 对B4/B5给出决议和一致修法；复核B1–B3及时间边界最小修复，更新方案/代码后交X3-code R2。真实SDK及GPU冒烟留给Cursor。
+Cursor交接: 本次是审查/修复记录提交，不是运行放行号；两项阻断关闭前不要启动X3正式链。
 需要用户决定: 无。
