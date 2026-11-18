@@ -83,6 +83,59 @@ class Context(unittest.TestCase):
         short = dict(grid, hours=grid['hours'][j - 10:], historical=grid['historical'][j - 10:])
         self.assertTrue(np.isnan(x3.gfs_history(ctx, short, np.arange(1), 30)[0, :19]).all())
 
+    def test_masked_inputs_drop_upstream_fill_only_on_flagged_hours(self):
+        """R1-B4: the Q4 C_zs input must not carry the multi-year fill value; unflagged hours stay unchanged."""
+        ctx, _, _, hours = make_ctx()
+        mean, scale = ctx['mean'], ctx['scale']
+        x21 = ctx['x21'].copy()
+        flagged = ctx['turbines'] == 2                                      # every hour of unit 2 is flagged
+        x21[:, :, 19] = np.where(flagged[:, None], (1 - mean[19]) / scale[19], (0 - mean[19]) / scale[19])
+        ctx = dict(ctx, x21=x21)
+        grid = x1.history_grid([ctx])
+        grid.update(hours=hours.astype('datetime64[ns]'), historical=np.full((len(hours), 2), 5.0))
+        table, idx = x3.HourTable(grid), np.arange(len(ctx['issue']))[-9:]
+        plain, _ = x3.build_inputs(ctx, table, grid, idx, 48)
+        masked, _ = x3.build_inputs(ctx, table, grid, idx, 48, masked=True)
+        for row, i in enumerate(idx):
+            seen = np.isfinite(plain[row]['target'])
+            for k in range(11):
+                up = masked[row]['past_covariates'][f'up_{k}']
+                if flagged[i]:
+                    self.assertTrue(np.isnan(up).all())
+                else:
+                    np.testing.assert_array_equal(up, plain[row]['past_covariates'][f'up_{k}'])
+            np.testing.assert_array_equal(masked[row]['target'][seen], plain[row]['target'][seen])
+            np.testing.assert_array_equal(masked[row]['past_covariates']['up_missing'],
+                                          plain[row]['past_covariates']['up_missing'])
+        direct = x3.mask_flagged_upstream(x21[:2], mean, scale)
+        self.assertTrue(np.isnan(direct[flagged[:2]][..., 8:19]).all())
+        np.testing.assert_array_equal(x21[:2][..., :8], direct[..., :8])     # other channels untouched
+
+    def test_q1_masked_variant_only_on_validation_context(self):
+        ctx, grid, _, _ = make_ctx()
+        seen = []
+
+        def fake_predict(pipe, c, table, g, L, mode, masked=False):
+            seen.append((L, mode, masked))
+            return np.zeros((len(c['issue']), 3, 4), np.float32), np.ones(len(c['issue']), np.float32)
+        with tempfile.TemporaryDirectory() as tmp:
+            out = Path(tmp)
+            recs = []
+            for name in ('K_validation', 'K_2022'):
+                np.savez(out / f'{name}.npz', **ctx)
+                recs.append(dict(name=name, path=str(out / f'{name}.npz'), sha256=x1.digest(out / f'{name}.npz')))
+            np.savez(out / 'grid.npz', **grid)
+            spec = dict(farm='K', contexts=recs, grid=dict(path=str(out / 'grid.npz'), sha256=x1.digest(out / 'grid.npz')),
+                        configs=[[24, 'single'], [48, 'group']], masked_configs=[[48, 'single']],
+                        masked_context='K_validation')
+            with patch.object(x3, 'load_pipe', return_value=None), patch.object(x3, 'predict_context', fake_predict):
+                x3.worker_q1(spec, out)
+            names = sorted(p.name for p in out.glob('K_*.npy'))
+            self.assertEqual(names, ['K_2022_24_single.npy', 'K_2022_48_group.npy', 'K_validation_24_single.npy',
+                                     'K_validation_48_group.npy', 'K_validation_48_single_masked.npy'])
+            self.assertEqual(sum(m for *_, m in seen), 1)
+            self.assertIn('K_validation_48_single_masked', x1.read(out / 'coverage_K.json'))
+
 
 class Groups(unittest.TestCase):
     def test_sdk_group_batch_counts_covariates_and_keeps_all_turbines(self):
@@ -246,6 +299,41 @@ class ColdStart(unittest.TestCase):
         p = self.pack('2020-12-31T20', 1)
         self.assertFalse(x3.budget_mask(p, '2020-12-01', '2021-01-01')[0])
 
+    def test_target_inputs_must_also_lie_inside_the_budget(self):
+        """Same rule as the C_zs history bound: the first input hour (issue - 23 h) must be >= D - k months."""
+        early, ok = self.pack('2020-12-01T22', 1, units=(0,)), self.pack('2020-12-01T23', 1, units=(0,))
+        self.assertFalse(x3.budget_mask(early, '2020-12-01', '2021-01-01')[0])
+        self.assertTrue(x3.budget_mask(ok, '2020-12-01', '2021-01-01')[0])
+
+    def test_gfs_binding(self):
+        rng = np.random.default_rng(3)
+        h = rng.uniform(1, 15, (6, 24))
+        h[2, 5] = h[4, 0] = np.nan
+        x50 = np.zeros((6, 24, 50), np.float32)
+        x50[:, :, 20] = np.where(np.isfinite(h), (h - 4.6) / 2.2, 0)
+        self.assertEqual(x3.gfs_binding(x50, h, 4.6, 2.2), dict(hours=144, missing=2))
+        bad = x50.copy()
+        bad[1, 3, 20] += .01
+        with self.assertRaisesRegex(ValueError, 'channel 20 at 1 of 144'):
+            x3.gfs_binding(bad, h, 4.6, 2.2)
+        bad = x50.copy()
+        bad[2, 5, 20] = .3                                                   # pack saw a value the array lacks
+        with self.assertRaises(ValueError):
+            x3.gfs_binding(bad, h, 4.6, 2.2)
+
+    def test_gfs_binding_rejects_nonfinite_channel_and_invalid_scaler(self):
+        h = np.full((1, 24), 5.0)
+        x = np.zeros((1, 24, 50), np.float32)
+        x[:, :, 20] = 1.0
+        for value in (np.nan, np.inf, -np.inf):
+            bad = x.copy()
+            bad[0, 0, 20] = value
+            with self.assertRaisesRegex(ValueError, 'Non-finite'):
+                x3.gfs_binding(bad, h, 3.0, 2.0)
+        for mean, scale in ((np.nan, 2.), (np.inf, 2.), (3., np.nan), (3., np.inf), (3., 0.), (3., -2.)):
+            with self.assertRaisesRegex(ValueError, 'normalisation'):
+                x3.gfs_binding(x, h, mean, scale)
+
     def test_physical_features(self):
         rng = np.random.default_rng(0)
         n = 5
@@ -259,9 +347,18 @@ class ColdStart(unittest.TestCase):
         gF, mask = rng.uniform(2, 12, (n, 13)), np.ones((n, 13))
         mask[0, 3] = 0
         pack = dict(x50=x50, gF=gF, gF_mask=mask, turbines=np.arange(n), retrofit=np.ones(n))
-        X = x3.physical_features(pack, 'HoT', mean, scale, 2300.)
+        gh = rng.uniform(1, 15, (n, 24))
+        gh[3, 7] = np.nan
+        X = x3.physical_features(pack, 'HoT', mean, scale, 2300., gh)
         self.assertEqual(X.shape, (n, len(x3.PHYS_NAMES)))
+        self.assertEqual(len(x3.PHYS_NAMES), 111)
         col = {k: i for i, k in enumerate(x3.PHYS_NAMES)}
+        self.assertEqual([x3.PHYS_NAMES[i] for i in x3.CATEGORICAL], ['farm', 'farm_turbine'])
+        hist = X[:, col['gfs_hist_0']:col['gfs_hist_23'] + 1]
+        np.testing.assert_allclose(hist[np.isfinite(gh)], gh[np.isfinite(gh)], rtol=1e-6)
+        self.assertTrue(np.isnan(hist[3, 7]) and np.isfinite(hist).sum() == n * 24 - 1)
+        with self.assertRaises(ValueError):
+            x3.physical_features(pack, 'HoT', mean, scale, 2300., gh[:, :23])
         np.testing.assert_allclose(X[:, col['wspd']], raw[:, -1, 0], rtol=1e-5)
         np.testing.assert_allclose(X[:, col['power_last10_pu']], raw[:, -1, 6] / 2300, rtol=1e-4)
         np.testing.assert_allclose(X[:, col['p_hist_0']], raw[:, 0, 20] / 2300, rtol=1e-4)
@@ -269,7 +366,7 @@ class ColdStart(unittest.TestCase):
         self.assertTrue(np.isnan(X[0, col['gfs_3']]))
         self.assertEqual(X[0, col['farm']], 2)
         self.assertEqual(X[4, col['farm_turbine']], 2004)
-        K = x3.physical_features(dict(pack, retrofit=np.ones(n)), 'Kelmarsh', mean, scale, 2050.)
+        K = x3.physical_features(dict(pack, retrofit=np.ones(n)), 'Kelmarsh', mean, scale, 2050., gh)
         self.assertTrue((K[:, col['retrofit']] == 0).all() and (K[:, col['retrofit_applicable']] == 0).all())
 
     def test_training_arrays_layout(self):

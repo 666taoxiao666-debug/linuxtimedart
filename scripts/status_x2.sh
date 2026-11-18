@@ -36,7 +36,9 @@ if [ -d "$X3BASE" ]; then
   for CHAIN in x3smoke x3gpu x3q4 x3final; do
     [ -e "$X3BASE/$CHAIN.pid" ] || continue
     PID=$(cat "$X3BASE/$CHAIN.pid"); STATE=exited
-    if [[ "$PID" =~ ^[0-9]+$ ]] && kill -0 "$PID" 2>/dev/null; then STATE=running; fi
+    # R1-S2: a reused PID is not "running" unless its command line is still the X3 chain
+    if [[ "$PID" =~ ^[0-9]+$ ]] && kill -0 "$PID" 2>/dev/null \
+       && tr '\0' ' ' < "/proc/$PID/cmdline" 2>/dev/null | grep -q "run_x3.py"; then STATE=running; fi
     echo "-- chain $CHAIN pid=$PID $STATE"; tail -n 3 "$X3BASE/$CHAIN.log" 2>/dev/null
   done
   for D in "$X3BASE"/*/; do

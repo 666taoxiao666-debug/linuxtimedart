@@ -102,9 +102,22 @@ def coverage(x):
     return np.isfinite(x[:, :, -1]).mean(1)
 
 
-def build_inputs(ctx, table, grid, idx, L):
-    """Chronos input dicts (run_x1.chronos_inputs) with an L-hour context; only issue-time information."""
+def mask_flagged_upstream(x, mean, scale):
+    """Strict Q4 budget (X3-code R1-B4): on hours whose raw upstream-missing flag is set, the 11 upstream channels
+    hold the frozen fill value (a mean over the multi-year fit segment).  Set them to NaN.  x: normalised [..., 21]."""
+    x = np.array(x, np.float32, copy=True)
+    flag = x[..., 19].astype(float) * float(scale[19]) + float(mean[19]) > .5
+    up = x[..., 8:19]
+    up[flag] = np.nan
+    return x
+
+
+def build_inputs(ctx, table, grid, idx, L, masked=False):
+    """Chronos input dicts (run_x1.chronos_inputs) with an L-hour context; only issue-time information.
+    masked=True: upstream fill values removed (Q4 C_zs only)."""
     x = context_window(ctx, table, idx, L)
+    if masked:
+        x = mask_flagged_upstream(x, ctx['mean'], ctx['scale'])
     hist = gfs_history(ctx, grid, idx, L)
     part = dict(x21=x, gF=ctx['gF'][idx], gF_mask=ctx['gF_mask'][idx])
     return x1.chronos_inputs(part, ctx['mean'], ctx['scale'], hist, np.arange(len(idx))), coverage(x)
@@ -199,12 +212,13 @@ def label_times(pack):
     return np.asarray(pack['times']).astype('datetime64[ns]')
 
 
-def budget_mask(pack, lo, hi):
-    """Use actual label availability times, not the calendar bucket of an hour-end label."""
+def budget_mask(pack, lo, hi, input_hours=24):
+    """Window inside the observation budget [lo, hi): every input hour (issue-23 h .. issue) >= lo, the same rule as
+    the C_zs history bound, and every label < hi by its actual time (a label stamped hi is not available before hi)."""
     t = label_times(pack)
     issue = np.asarray(pack['issue']).astype('datetime64[ns]')
     lo, hi = np.datetime64(lo, 'ns'), np.datetime64(hi, 'ns')
-    return (issue >= lo) & (t >= lo).all(1) & (t < hi).all(1)
+    return (issue - (input_hours - 1) * HOUR >= lo) & (t >= lo).all(1) & (t < hi).all(1)
 
 
 def es_split(issue, times, frac=.2):
@@ -219,33 +233,57 @@ def es_split(issue, times, frac=.2):
 PHYS_NAMES = (['wspd', 'temp', 'ndir_sin', 'ndir_cos', 'pitch', 'rotor', 'power_last10_pu', 'wind_last10']
               + [f'up_{i}' for i in range(11)] + ['up_missing'] + [f'gfs_{i}' for i in range(13)]
               + ['gfs_age', 'gfs_cycle_missing'] + [f'p_hist_{i}' for i in range(24)] + [f'w_hist_{i}' for i in range(24)]
-              + ['retrofit', 'retrofit_applicable', 'farm', 'farm_turbine'])
+              + [f'gfs_hist_{i}' for i in range(24)] + ['retrofit', 'retrofit_applicable', 'farm', 'farm_turbine'])
 CATEGORICAL = (len(PHYS_NAMES) - 2, len(PHYS_NAMES) - 1)
 
 
-def physical_features(pack, farm, mean, scale, rated):
+def gfs_binding(x50, gfs_hist, nwp_mean, nwp_scale, atol=1e-4):
+    """The hourly-array GFS history must be what the frozen pack saw: x50 channel 20 = (hist - m)/s where the
+    history is finite and exactly 0 where it is missing.  m, s are used for this check only, never as features."""
+    ch = np.asarray(x50)[:, :, 20].astype(float)
+    h = np.asarray(gfs_hist, float)
+    if h.shape != ch.shape:
+        raise ValueError('GFS history shape differs from the pack')
+    if not np.isfinite(ch).all():
+        raise ValueError('Non-finite frozen GFS channel 20')
+    if not np.isfinite([nwp_mean, nwp_scale]).all() or float(nwp_scale) <= 0:
+        raise ValueError('Invalid GFS binding normalisation')
+    fin = np.isfinite(h)
+    bad = np.zeros(h.shape, bool)
+    bad[fin] = np.abs((h[fin] - float(nwp_mean)) / float(nwp_scale) - ch[fin]) > atol
+    bad[~fin] = ch[~fin] != 0
+    if bad.any():
+        raise ValueError(f'GFS history differs from frozen x50 channel 20 at {int(bad.sum())} of {bad.size} hours')
+    return dict(hours=int(bad.size), missing=int((~fin).sum()))
+
+
+def physical_features(pack, farm, mean, scale, rated, gfs_hist):
     """Fixed-order physical columns from one farm's frozen normalisation (inverse transform only, nothing fitted).
     Power columns are divided by rated power; upstream features are NaN on flagged rows (no fill values); GFS
-    comes from gF with its own mask; categorical farm and farm*1000+turbine codes."""
-    x = np.asarray(pack['x50'], np.float64)
+    comes from gF with its own mask; GFS history (raw m/s, NaN = missing) from the hourly arrays (bound to x50
+    channel 20 by gfs_binding); categorical farm and farm*1000+turbine codes."""
+    x = np.asarray(pack['x50'])
     mean, scale = np.asarray(mean, float), np.asarray(scale, float)
     if x.ndim != 3 or x.shape[1:] != (24, 50) or mean.shape != (21,) or scale.shape != (21,):
         raise ValueError('Unexpected frozen layout')
-    last = x[:, -1, :20] * scale[:20] + mean[:20]
+    n = len(x)
+    gh = np.asarray(gfs_hist, float)
+    if gh.shape != (n, 24):
+        raise ValueError('GFS history must be [n, 24]')
+    last = x[:, -1, :20].astype(float) * scale[:20] + mean[:20]
     last[:, 6] /= rated
     flag = last[:, 19] > .5
     last[flag, 8:19] = np.nan
     last[:, 19] = flag
     gfs = np.where(np.asarray(pack['gF_mask']) > 0, np.asarray(pack['gF'], float), np.nan)
-    age, missing = x[:, -1, 47], x[:, -1, 48]
-    p_hist = (x[:, :, 49] * scale[20] + mean[20]) / rated
-    w_hist = x[:, :, 0] * scale[0] + mean[0]
-    n = len(x)
+    age, missing = x[:, -1, 47].astype(float), x[:, -1, 48].astype(float)
+    p_hist = (x[:, :, 49].astype(float) * scale[20] + mean[20]) / rated
+    w_hist = x[:, :, 0].astype(float) * scale[0] + mean[0]
     retro = np.asarray(pack['retrofit'], float) if farm == 'HoT' else np.zeros(n)
     applicable = np.full(n, 1.0 if farm == 'HoT' else 0.0)
     code = np.full(n, FARM_CODE[farm], float)
     ft = FARM_CODE[farm] * 1000 + np.asarray(pack['turbines'], float)
-    out = np.column_stack([last, gfs, age, missing, p_hist, w_hist, retro, applicable, code, ft]).astype(np.float32)
+    out = np.column_stack([last, gfs, age, missing, p_hist, w_hist, gh, retro, applicable, code, ft]).astype(np.float32)
     if out.shape[1] != len(PHYS_NAMES):
         raise ValueError('Physical feature count differs')
     return out
@@ -268,7 +306,7 @@ def quantile_index(pipe):
     return [next(i for i, q in enumerate(pipe.quantiles) if abs(q - v) < 1e-5) for v in (.1, .5, .9)]
 
 
-def predict_context(pipe, ctx, table, grid, L, mode, batch_size=1024, chunk=2048):
+def predict_context(pipe, ctx, table, grid, L, mode, batch_size=1024, chunk=2048, masked=False):
     """[n, 3, 4] quantiles (0.1/0.5/0.9) for every window of a context, plus per-window history coverage."""
     qidx = quantile_index(pipe)
     n = len(ctx['issue'])
@@ -278,12 +316,12 @@ def predict_context(pipe, ctx, table, grid, L, mode, batch_size=1024, chunk=2048
         f = chronos_predict_fn(pipe, L, False, qidx)
         for lo in range(0, n, chunk):
             ix = np.arange(lo, min(lo + chunk, n))
-            inputs, c = build_inputs(ctx, table, grid, ix, L)
+            inputs, c = build_inputs(ctx, table, grid, ix, L, masked)
             out[ix], cov[ix] = np.stack(f(inputs, batch_size)), c
     else:
         f = chronos_predict_fn(pipe, L, True, qidx)
         for g in issue_groups(ctx['issue']):
-            inputs, c = build_inputs(ctx, table, grid, g, L)
+            inputs, c = build_inputs(ctx, table, grid, g, L, masked)
             out[g], cov[g] = np.stack(run_groups(f, inputs, [np.arange(len(g))])), c
     if not np.isfinite(out).all():
         raise ValueError('Non-finite Chronos prediction')
@@ -337,6 +375,15 @@ def worker_check(spec, out):
          note='one issue group per call is enforced by run_groups; mixed-call difference is descriptive only'))
 
 
+def q1_jobs(spec, name):
+    """(L, mode, masked, file stem) for one context: every Q1 candidate; plus the registered Q4 C_zs variant with
+    upstream fill removed, on the validation context only (never a Q1 selection candidate)."""
+    jobs = [(int(L), m, False, f'{name}_{L}_{m}') for L, m in spec['configs']]
+    if name == spec.get('masked_context'):
+        jobs += [(int(L), m, True, f'{name}_{L}_{m}_masked') for L, m in spec['masked_configs']]
+    return jobs
+
+
 def worker_q1(spec, out):
     pipe = load_pipe(spec)
     grid = checked_npz(spec['grid'])
@@ -348,14 +395,13 @@ def worker_q1(spec, out):
         both = np.isfinite(hist24) & np.isfinite(ctx['historical'])
         if not np.allclose(hist24[both], np.asarray(ctx['historical'])[both], rtol=0, atol=1e-6):
             raise ValueError('Grid GFS history differs from the A3 context: ' + rec['name'])
-        for L, mode in spec['configs']:
-            pred, cov = predict_context(pipe, ctx, table, grid, int(L), mode)
-            target = out / f"{rec['name']}_{L}_{mode}.npy"
-            with target.open('xb') as fh:
+        for L, mode, masked, stem in q1_jobs(spec, rec['name']):
+            pred, cov = predict_context(pipe, ctx, table, grid, L, mode, masked=masked)
+            with (out / f'{stem}.npy').open('xb') as fh:
                 np.save(fh, pred)
-            coverage_report[f"{rec['name']}_{L}_{mode}"] = dict(mean=float(cov.mean()), min=float(cov.min()))
-            print('[X3] Q1', rec['name'], L, mode, 'coverage', round(float(cov.mean()), 4), flush=True)
-    save(out / 'coverage.json', coverage_report)
+            coverage_report[stem] = dict(mean=float(cov.mean()), min=float(cov.min()))
+            print('[X3] Q1', stem, 'coverage', round(float(cov.mean()), 4), flush=True)
+    save(out / f"coverage_{spec['farm']}.json", coverage_report)     # one file per farm (all farms share out)
 
 
 def training_series(train_npz):
@@ -418,6 +464,8 @@ def worker_q2(spec, out):
     from chronos import Chronos2Pipeline
     pipe = load_pipe(spec)
     rows = training_series(checked_npz(spec['train']))
+    if len(rows) != int(spec['budget']['train_windows']):
+        raise ValueError('Q2 training windows differ from the registered budget')
     val, grid = checked_npz(spec['validation']), checked_npz(spec['grid'])
     table, L = HourTable(grid), int(spec['context_length'])
     v1 = np.asarray(spec['v1_positions'], np.int64)
@@ -428,7 +476,16 @@ def worker_q2(spec, out):
 
     class SelectByMAE(TrainerCallback):
         def __init__(self):
-            self.best, self.rows = float('inf'), []
+            self.best, self.rows, self.trainer = float('inf'), [], {}
+
+        def on_train_begin(self, training_args, state, control, **kwargs):
+            # R1-S1: record what the trainer actually used (getattr: recording must never stop the run)
+            self.trainer = {k: getattr(training_args, k, None) for k in (
+                'per_device_train_batch_size', 'gradient_accumulation_steps', 'max_steps', 'learning_rate',
+                'n_gpu', 'world_size', 'seed', 'bf16', 'fp16')}
+            self.trainer = {k: (v if isinstance(v, (int, float, bool, str)) or v is None else str(v))
+                            for k, v in self.trainer.items()}
+            return control
 
         def on_step_end(self, training_args, state, control, model=None, **kwargs):
             if state.global_step % every:
@@ -457,7 +514,8 @@ def worker_q2(spec, out):
         raise ValueError('Checkpoint selection did not run at every registered evaluation')
     model_hashes = {str(p.relative_to(out)): digest(p) for p in selected.rglob('*') if p.is_file()}
     save(out / 'selection_freeze.json', dict(model_sha256=model_hashes, selected=read(out / 'selection.json'),
-         mode=spec['mode'], steps=steps, selection='V1 median MAE (custom callback, not eval_loss)'))
+         mode=spec['mode'], steps=steps, selection='V1 median MAE (custom callback, not eval_loss)',
+         train_windows=len(rows), budget=spec['budget'], trainer=sel.trainer))
     del pipe
     torch.cuda.empty_cache()
     for name, sha in model_hashes.items():
@@ -651,6 +709,7 @@ def mode_q1(args, protocol, x1p, out):
     configs = [[L, 'single'] for L in protocol['q1']['context_lengths']]
     if check['status'] == 'PASS':
         configs += [[L, 'group'] for L in protocol['q1']['context_lengths']]
+    masked = [[int(protocol['q4']['zs_context']), 'single']]     # Q4 C_zs, upstream fill removed (R1-B4)
     selection, records = {}, {}
     for farm, spec in x2.farms(x1p).items():
         ctxs = [refs.context(farm + '_validation')] + [refs.context(n) for n in spec['items']]
@@ -658,12 +717,13 @@ def mode_q1(args, protocol, x1p, out):
             ctxs = [shrink_context(c, out, protocol['smoke']['issues'],
                                   protocol['splits'][farm] if c['name'] == farm + '_validation' else None)
                     for c in ctxs]
-        call_worker(args, dict(worker_base(protocol, args, 'q1', out), contexts=ctxs, grid=refs.grid(farm),
-                               configs=configs), out, 'q1_' + farm)
+        wspec = dict(worker_base(protocol, args, 'q1', out), farm=farm, contexts=ctxs, grid=refs.grid(farm),
+                     configs=configs, masked_configs=masked, masked_context=farm + '_validation')
+        call_worker(args, wspec, out, 'q1_' + farm)
         for c in ctxs:
-            for L, mode in configs:
-                rel = f"{c['name']}_{L}_{mode}.npy"
-                store.registry[rel] = digest(out / rel)
+            for *_, stem in q1_jobs(wspec, c['name']):
+                store.registry[stem + '.npy'] = digest(out / (stem + '.npy'))
+        store.registry[f'coverage_{farm}.json'] = digest(out / f'coverage_{farm}.json')
         records[farm] = ctxs
         pos, keys = positions(ctxs[0], refs.keys(farm, 'V1'), args.smoke)
         v1 = {(L, m): float(np.abs(load_registered(dict(root=out, registry=store.registry),
@@ -672,7 +732,8 @@ def mode_q1(args, protocol, x1p, out):
         L, m = select_config(v1)
         selection[farm] = dict(context_length=L, mode=m, v1_mae={f'{a}_{b}': v for (a, b), v in v1.items()})
     save(out / 'selection.json', dict(selection=selection, configs=configs, check_status=check['status'],
-         rule='per farm lowest V1 MAE of the median; ties -> shorter, then single', contexts=records))
+         rule='per farm lowest V1 MAE of the median; ties -> shorter, then single', contexts=records,
+         q4_masked=masked, q4_masked_note='validation context only, upstream NaN on flagged hours; not a Q1 candidate'))
     finish(out, store, dict(selection_sha256=digest(out / 'selection.json')))
 
 
@@ -708,7 +769,8 @@ def mode_q2(args, protocol, x1p, out):
     refs, store, cfg = Refs(args.logs, protocol), x2.Store(out), protocol['q2']
     q1 = upstream(args, 'q1')
     sel = read(q1['root'] / 'selection.json')
-    specs = {}
+    specs, budgets = {}, {}
+    variates = 1 + len(COVARIATE_NAMES)                     # target + covariates = SDK batch units per window
     for farm, spec in x2.farms(x1p).items():
         item = next(iter(spec['items'].values()))
         L = int(sel['selection'][farm]['context_length'])
@@ -718,8 +780,17 @@ def mode_q2(args, protocol, x1p, out):
         if not (np.array_equal(ctx['issue'], train['issue']) and np.array_equal(ctx['turbines'], train['turbines'])):
             raise ValueError('A3 train context and development train pack differ: ' + farm)
         n = cfg['train_windows_smoke' if args.smoke else 'train_windows']
+        # Registered fixed budget Q2-FT20k (R1-B5): uniform random subset of the fit segment, not the full segment.
         idx = np.sort(np.random.default_rng(cfg['seed']).choice(len(ctx['issue']), size=min(n, len(ctx['issue'])),
                                                                replace=False))
+        steps = cfg['num_steps_smoke' if args.smoke else 'num_steps']
+        budgets[farm] = dict(arm=cfg['arm'], fit_windows_available=int(len(ctx['issue'])), train_windows=int(len(idx)),
+                             sampling=f"uniform without replacement, seed {cfg['seed']}", context_length=L,
+                             variates_per_window=variates, sdk_batch_size_variates=int(cfg['batch_size']),
+                             windows_per_step_approx=cfg['batch_size'] / variates,
+                             window_draws_approx=steps * cfg['batch_size'] / variates,
+                             note='SDK batch_size counts target+covariate rows, not windows (R1-S1); '
+                                  'actual trainer settings are recorded in fit_run/selection_freeze.json')
         grid = x1.load_pack(checked(Path(refs.grid(farm)['path']), refs.grid(farm)['sha256']))
         path = out / f'{farm}_train.npz'
         np.savez(path, **training_arrays(ctx, HourTable(grid), grid, idx, L, train['truth'][idx]))
@@ -733,8 +804,8 @@ def mode_q2(args, protocol, x1p, out):
                            learning_rate=cfg['learning_rate'], batch_size=cfg['batch_size'], seed=cfg['seed'],
                            modes=cfg['modes'], preflight_windows=cfg['preflight_windows'],
                            preflight_steps=cfg['preflight_steps_smoke' if args.smoke else 'preflight_steps'],
-                           num_steps=cfg['num_steps_smoke' if args.smoke else 'num_steps'],
-                           eval_every=cfg['eval_every_smoke' if args.smoke else 'eval_every'])
+                           num_steps=steps, eval_every=cfg['eval_every_smoke' if args.smoke else 'eval_every'],
+                           budget=budgets[farm])
         (out / farm).mkdir()
     reports = {}
     for farm, spec in specs.items():                    # every farm's preflight BEFORE any formal fine-tune
@@ -753,7 +824,7 @@ def mode_q2(args, protocol, x1p, out):
             store.registry[rel] = digest(out / rel)
         for rel in ('selection_freeze.json', 'v1_history.json'):
             store.registry[f'{farm}/fit_run/{rel}'] = digest(run / rel)
-    finish(out, store, dict(mode=mode))
+    finish(out, store, dict(mode=mode, arm=cfg['arm'], budgets=budgets))
 
 
 def q2_state(args):
@@ -820,31 +891,46 @@ def mode_q3(args, protocol, x1p, out):
 
 
 def scaler(args, farm):
+    """Frozen x21 normalisation (inverse transform only) and the GFS normalisation (binding check only)."""
     if farm == 'HoT':
         st = read(Path(args.logs) / 'G2/g2b_4471499_shared_r1/formal/fit_statistics.json')
-        return st['mean'], st['scale']
+        return st['mean'], st['scale'], st['nwp_mean'], st['nwp_scale']
     meta = read(ROOT / 'output/g1/preparation_78/prepared' / farm / 'prepared.json')
-    return meta['scaler']['mean'], meta['scaler']['scale']
+    return meta['scaler']['mean'], meta['scaler']['scale'], meta['nwp_mean'], meta['nwp_scale']
 
 
-def farm_tables(args, protocol, x1p):
+def hourly_gfs(record):
+    """Hash-checked hourly GFS axis of an A3 history grid (hours, historical) without loading the turbine table."""
+    with np.load(checked(Path(record['path']), record['sha256']), allow_pickle=False) as z:
+        return dict(hours=z['hours'], historical=z['historical'])
+
+
+def farm_tables(args, protocol, x1p, refs):
     """Physical features, normalised labels and times of every window of every farm (train, val, tests)."""
-    tables, v1 = {}, {}
+    tables, v1, binding = {}, {}, {}
     for farm, spec in x2.farms(x1p).items():
         item = next(iter(spec['items'].values()))
-        mean, scale = scaler(args, farm)
+        mean, scale, nwp_mean, nwp_scale = scaler(args, farm)
+        rec = refs.context(farm + '_validation')
+        with np.load(checked(Path(rec['path']), rec['sha256']), allow_pickle=False) as z:
+            if not (np.array_equal(np.asarray(z['mean'], float), np.asarray(mean, float))
+                    and np.array_equal(np.asarray(z['scale'], float), np.asarray(scale, float))):
+                raise ValueError('Q4 normalisation differs from the A3/Chronos context: ' + farm)
+        hourly = hourly_gfs(refs.grid(farm))
         train, val = x1.development(Path(args.logs), item)
         packs = dict(train=train, val=val, **{n: x1.load_pack(x1.paths(Path(args.logs), it)[0]) for n, it in spec['items'].items()})
-        rows = []
+        rows, binding[farm] = [], {}
         for name, p in packs.items():
-            rows.append(dict(X=physical_features(p, farm, mean, scale, spec['rated']), y=p['truth'] / spec['rated'],
+            gh = gfs_history(p, hourly, np.arange(len(p['issue'])), 24)
+            binding[farm][name] = gfs_binding(p['x50'], gh, nwp_mean, nwp_scale)
+            rows.append(dict(X=physical_features(p, farm, mean, scale, spec['rated'], gh), y=p['truth'] / spec['rated'],
                              issue=np.asarray(p['issue']), times=np.asarray(p['times']), source=name))
         m1, _ = x2.split_masks(val, *(protocol['splits'][farm][k] for k in ('V1', 'V2')))
         v1[farm] = dict(X=rows[1]['X'][m1], issue=np.asarray(val['issue'])[m1], turbines=np.asarray(val['turbines'])[m1],
                         truth=val['truth'][m1])
         tables[farm] = rows
         del packs, train, val
-    return tables, v1
+    return tables, v1, binding
 
 
 def select_rows(rows, lo, hi):
@@ -874,23 +960,29 @@ def mode_q4(args, protocol, x1p, out):
     refs, store, cfg = Refs(args.logs, protocol), x2.Store(out), protocol['q4']
     q1 = upstream(args, 'q1')
     sel = read(q1['root'] / 'selection.json')
-    if [cfg['zs_context'], 'single'] not in sel['configs']:
-        raise ValueError('Registered C_zs configuration was not produced by Q1')
-    tables, v1 = farm_tables(args, protocol, x1p)
+    if [int(cfg['zs_context']), 'single'] not in sel.get('q4_masked', []):
+        raise ValueError('Registered C_zs (masked upstream) configuration was not produced by Q1')
+    tables, v1, binding = farm_tables(args, protocol, x1p, refs)
     n_est = cfg['n_estimators_smoke' if args.smoke else 'n_estimators']
-    meta = {}
+    meta = dict(gfs_binding=binding, features=PHYS_NAMES, categorical=[PHYS_NAMES[i] for i in CATEGORICAL])
     for target, spec in x2.farms(x1p).items():
         D = np.datetime64(cfg['deployment'][target], 'ns')
         rec = next(c for c in sel['contexts'][target] if c['name'] == target + '_validation')
         pos, keys = positions(rec, refs.keys(target, 'V1'), args.smoke)
-        zs = load_registered(q1, f"{target}_validation_{cfg['zs_context']}_single.npy")[pos]
+        zs = load_registered(q1, f"{target}_validation_{cfg['zs_context']}_single_masked.npy")[pos]
         tpos = key_positions(v1[target]['issue'], v1[target]['turbines'], keys)
         Xv = v1[target]['X'][tpos]
         if not np.allclose(v1[target]['truth'][tpos], keys['truth']):
             raise ValueError('Q4 V1 rows differ from the X2 keys')
         earliest = np.asarray(keys['issue']).astype('datetime64[ns]').min() - (cfg['zs_context'] - 1) * HOUR
         store.put(f'{target}_C_zs.npy', zs.astype(np.float32))
-        meta[target] = dict(deployment=str(D), zs_history_lower_bound=str(earliest), arms={})
+        meta[target] = dict(deployment=str(D), zs_history_lower_bound=str(earliest), arms={},
+                            zs_input='512 h single, upstream NaN on flagged hours (no fit-segment fill)',
+                            zs_v1_mae=float(np.abs(zs[:, 1] - keys['truth']).mean()))
+        fill_rel = f"{target}_validation_{cfg['zs_context']}_single.npy"
+        if fill_rel in q1['registry']:                     # descriptive only: same arm with the frozen fill values
+            zf = load_registered(q1, fill_rel)[pos]
+            meta[target]['zs_with_fill_v1_mae_descriptive'] = float(np.abs(zf[:, 1] - keys['truth']).mean())
         for k in cfg['k_months']:
             lo = months_before(D, k)
             if k == 1 and earliest < lo:
@@ -944,8 +1036,12 @@ def mode_report(args, protocol, x1p, out):
         q4s[farm] = paired(st, load_registered(q4, f'{farm}_C_zs.npy')[:, 1], load_registered(q4, f'{farm}_L_{k1}X.npy'),
                            kv1['truth'], kv1['issue'])
     dec['Q1_descriptive'] = dict(v2_mae=q1d, selection=sel['selection'], coverage_note='see q1 coverage.json per farm')
-    dec['Q2'] = (q2_decision(q2s, z, protocol['q2']['margin']) if q2s else
-                 dict(outcome='NOT_RUN_TECHNICAL', note='Q2 run failed technically (resource/interface); not a quality result'))
+    dec['Q2'] = dict(arm=protocol['q2']['arm'], budget=protocol['q2']['budget'],
+                     **(q2_decision(q2s, z, protocol['q2']['margin']) if q2s else
+                        dict(outcome='NOT_RUN_TECHNICAL',
+                             note='Q2 run failed technically (resource/interface); not a quality result')))
+    if q2 is not None:
+        dec['Q2']['training_budget'] = q2['done'].get('budgets')
     g3 = all_positive_pooled(q3s, z, protocol['q3']['min_gain'])
     g3c = all_positive_pooled(q3c, z)
     dec['Q3'] = dict(vs_LUG=g3, vs_LUG_plus_Nv1=dict(pooled=g3c['pooled']),
@@ -953,7 +1049,8 @@ def mode_report(args, protocol, x1p, out):
                      else bool(g3['passed'] and g3c['pooled']['ci95_low'] > 0),
                      wording='better than LUG and than the tested ordinary ensemble control; no pre-training attribution')
     dec['Q4'] = dict(k=protocol['q4']['k_months'][0], **all_positive_pooled(q4s, z),
-                     wording='exploratory cold-start replay on target V1; C_zs also uses 512 h of observed history')
+                     wording='exploratory cold-start replay on target V1; C_zs also uses 512 h of observed history; '
+                             'upstream fill values removed on both arms (no target fit-segment statistic)')
     dec['probabilistic_descriptive'] = prob
     for name in ('Q2', 'Q3', 'Q4'):
         status = dec[name].get('outcome') if name == 'Q2' else dec[name].get('passed')
