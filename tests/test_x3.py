@@ -112,29 +112,129 @@ class Context(unittest.TestCase):
         np.testing.assert_array_equal(x21[:2][..., :8], direct[..., :8])     # other channels untouched
 
     def test_q1_masked_variant_only_on_validation_context(self):
-        ctx, grid, _, _ = make_ctx()
+        ctx, grid, _, hours = make_ctx()
         seen = []
 
-        def fake_predict(pipe, c, table, g, L, mode, masked=False):
-            seen.append((L, mode, masked))
+        def fake_predict(pipe, c, table, src, L, mode, masked=False):
+            seen.append((L, mode, masked, float(src['historical'][0, 0])))
             return np.zeros((len(c['issue']), 3, 4), np.float32), np.ones(len(c['issue']), np.float32)
         with tempfile.TemporaryDirectory() as tmp:
             out = Path(tmp)
             recs = []
-            for name in ('K_validation', 'K_2022'):
+            for name, value in (('K_validation', 5.0), ('K_2022', 7.0)):       # each context its own source
                 np.savez(out / f'{name}.npz', **ctx)
-                recs.append(dict(name=name, path=str(out / f'{name}.npz'), sha256=x1.digest(out / f'{name}.npz')))
+                np.savez(out / f'{name}_hist.npz', hours=hours.astype('datetime64[ns]'),
+                         historical=np.full((len(hours), 1), value))
+                recs.append(dict(name=name, path=str(out / f'{name}.npz'), sha256=x1.digest(out / f'{name}.npz'),
+                                 history=dict(path=str(out / f'{name}_hist.npz'),
+                                              sha256=x1.digest(out / f'{name}_hist.npz'))))
             np.savez(out / 'grid.npz', **grid)
             spec = dict(farm='K', contexts=recs, grid=dict(path=str(out / 'grid.npz'), sha256=x1.digest(out / 'grid.npz')),
-                        configs=[[24, 'single'], [48, 'group']], masked_configs=[[48, 'single']],
-                        masked_context='K_validation')
+                        configs=[[48, 'single'], [48, 'group']], descriptive_configs=[[24, 'single']],
+                        masked_configs=[[48, 'single']], masked_context='K_validation')
             with patch.object(x3, 'load_pipe', return_value=None), patch.object(x3, 'predict_context', fake_predict):
                 x3.worker_q1(spec, out)
             names = sorted(p.name for p in out.glob('K_*.npy'))
-            self.assertEqual(names, ['K_2022_24_single.npy', 'K_2022_48_group.npy', 'K_validation_24_single.npy',
-                                     'K_validation_48_group.npy', 'K_validation_48_single_masked.npy'])
-            self.assertEqual(sum(m for *_, m in seen), 1)
+            self.assertEqual(names, ['K_2022_24_single.npy', 'K_2022_48_group.npy', 'K_2022_48_single.npy',
+                                     'K_validation_24_single.npy', 'K_validation_48_group.npy',
+                                     'K_validation_48_single.npy', 'K_validation_48_single_masked.npy'])
+            self.assertEqual(sum(s[2] for s in seen), 1)
+            self.assertEqual({s[3] for s in seen[:4]}, {5.0})                  # validation used its own source
+            self.assertEqual({s[3] for s in seen[4:]}, {7.0})
             self.assertIn('K_validation_48_single_masked', x1.read(out / 'coverage_K.json'))
+            with self.assertRaisesRegex(ValueError, 'Duplicate'):
+                x3.q1_jobs(dict(spec, descriptive_configs=[[48, 'single']]), 'K_2022')
+
+
+class HistorySource(unittest.TestCase):
+    """X3-HS: the GFS history of a window comes from the preparation of its own frozen pack."""
+    H = np.timedelta64(1, 'h')
+
+    def sources(self):
+        hours = np.arange(np.datetime64('2023-12-30T00', 'ns'), np.datetime64('2024-01-03T00', 'ns'), self.H)
+        vals = np.linspace(3, 9, len(hours))
+        dev_h = hours[hours < np.datetime64('2024-01-01', 'ns')]
+        dev = np.where(x3.development_boundary(dev_h), np.nan, vals[:len(dev_h)])
+        merged = vals.copy()
+        merged[:len(dev_h)] = dev                                            # the X1 merge: development NaN on top
+        a3 = dict(hours=hours, historical=merged[:, None], source='a3_grid', identities={})
+        sealed = dict(hours=hours, historical=vals[:, None], source='hot_sealed_points', identities={})
+        return hours, vals, a3, sealed
+
+    def test_boundary_hours_are_the_outside_development_hours(self):
+        hours = np.arange(np.datetime64('2023-12-31T00', 'ns'), np.datetime64('2024-01-01T00', 'ns'), self.H)
+        self.assertEqual([str(h)[11:13] for h in hours[x3.development_boundary(hours)]],
+                         [f'{h:02d}' for h in range(12, 24)])
+
+    def test_source_drift_only_allows_the_registered_case(self):
+        hours, vals, a3, sealed = self.sources()
+        drift = x3.source_drift(a3, sealed)
+        self.assertEqual([str(h)[5:13] for h in drift], [f'12-31T{h:02d}' for h in range(12, 24)])
+        other = dict(sealed, historical=sealed['historical'].copy())
+        other['historical'][5, 0] += 1                                       # a normal hour that differs
+        with self.assertRaisesRegex(ValueError, 'outside the registered boundary case'):
+            x3.source_drift(a3, other)
+        swapped = dict(a3, historical=a3['historical'].copy())
+        swapped['historical'][5, 0] = np.nan                                 # A3 NaN at a non-boundary hour
+        with self.assertRaises(ValueError):
+            x3.source_drift(swapped, sealed)
+
+    def test_source_start_edge_is_the_second_registered_case(self):
+        """HS0: the sealed cache lacks the cycle before its first day, so its first hours (cycle on the previous day)
+        are NaN while the development values exist; allowed, but a NaN one hour later is not."""
+        hours, vals, a3, sealed = self.sources()
+        edge = dict(sealed, historical=sealed['historical'].copy())
+        edge['historical'][:6, 0] = np.nan                                   # 2023-12-30T00..05: cycle 2023-12-29T18
+        drift = x3.source_drift(a3, edge)
+        self.assertEqual(len(drift), 12 + 6)
+        self.assertEqual(int(x3.source_start_edge(drift, edge).sum()), 6)
+        late = dict(edge, historical=edge['historical'].copy())
+        late['historical'][6, 0] = np.nan                                    # T06: cycle 2023-12-30T00, not before day 1
+        with self.assertRaisesRegex(ValueError, 'outside the registered boundary case'):
+            x3.source_drift(a3, late)
+        np.testing.assert_array_equal(                                        # the real case seen in HS0
+            x3.source_start_edge(np.array(['2023-01-01T01', '2023-01-01T05', '2023-01-01T06'], 'datetime64[ns]'),
+                                 dict(hours=np.array(['2023-01-01T01'], 'datetime64[ns]'))), [True, True, False])
+
+    def test_drift_windows(self):
+        d = np.arange(np.datetime64('2023-12-31T12', 'ns'), np.datetime64('2024-01-01T00', 'ns'), self.H)
+        issue = np.array(['2024-01-01T00', '2024-01-01T22', '2024-01-01T23', '2024-01-07T22', '2024-01-07T23'],
+                         'datetime64[ns]')                                     # last touched: issue - (L-1) h <= T23
+        np.testing.assert_array_equal(x3.drift_windows(issue, d, 24), [True, True, False, False, False])
+        np.testing.assert_array_equal(x3.drift_windows(issue, d, 168), [True, True, True, True, False])
+        self.assertFalse(x3.drift_windows(issue, d[:0], 1024).any())
+
+    def test_bind_source_accepts_the_native_source_and_rejects_the_merge(self):
+        hours, vals, a3, sealed = self.sources()
+        m, s = 4.0, 2.0
+        issue = np.array(['2024-01-01T00', '2024-01-01T03', '2024-01-02T00'], 'datetime64[ns]')
+        t = issue[:, None] - (23 - np.arange(24)) * self.H
+        x50 = np.zeros((3, 24, 50), np.float32)
+        x50[:, :, 20] = (np.interp(t.astype(np.int64), hours.astype(np.int64), vals) - m) / s   # sealed-prep pack
+        pack = dict(x50=x50, issue=issue.astype(np.int64), turbines=np.arange(3))
+        rep = x3.bind_source(pack, sealed, a3, m, s)
+        self.assertEqual(rep['source'], 'hot_sealed_points')
+        self.assertEqual(len(rep['drift_hours']), 12)
+        self.assertEqual(rep['affected_windows']['24'], 2)
+        with self.assertRaisesRegex(ValueError, 'channel 20'):
+            x3.bind_source(pack, a3, a3, m, s)                              # the merged grid fails the binding
+
+    def test_history_sources_mapping(self):
+        hours, vals, a3, sealed = self.sources()
+
+        class FakeRefs:
+            def grid(self, farm):
+                return dict(path='g', sha256='h')
+        h = dict(hours=hours, hist=vals, identities={'points': 'x'})
+        with patch.object(x3, 'hourly_gfs', return_value=dict(hours=hours, historical=a3['historical'])), \
+                patch.object(x3.x2, 'hot_test_history', return_value=h) as hot:
+            srcs, grid = x3.history_sources(SimpleNamespace(logs=Path('logs')), FakeRefs(), 'HoT', ['HoT_train', 'HoT_validation', 'HoT_2024', 'HoT_2025'])
+            self.assertEqual([srcs[n]['source'] for n in srcs], ['a3_grid', 'a3_grid', 'hot_sealed_points', 'hot_sealed_points'])
+            self.assertIs(srcs['HoT_2024'], srcs['HoT_2025'])
+            self.assertEqual(hot.call_count, 1)
+            k, _ = x3.history_sources(SimpleNamespace(logs=Path('logs')), FakeRefs(), 'Kelmarsh', ['Kelmarsh_validation', 'Kelmarsh_2022'])
+            self.assertEqual({v['source'] for v in k.values()}, {'a3_grid'})
+            self.assertEqual(hot.call_count, 1)
 
 
 class Groups(unittest.TestCase):

@@ -87,7 +87,8 @@ def context_window(ctx, table, idx, L):
 
 
 def gfs_history(ctx, grid, idx, L):
-    """Hourly GFS history (raw m/s) at the L input hours from the grid's hourly axis; NaN where absent."""
+    """Hourly GFS history (raw m/s) at the L input hours from an hourly source (hours, historical); NaN where
+    absent.  The source must be the pack-native one (history_sources), never a merge of two preparations."""
     times = window_hours(ctx['issue'][np.asarray(idx)], L)
     hours = np.asarray(grid['hours']).astype('datetime64[ns]').astype(np.int64)
     pos = np.clip(np.searchsorted(hours, times), 0, len(hours) - 1)
@@ -112,13 +113,13 @@ def mask_flagged_upstream(x, mean, scale):
     return x
 
 
-def build_inputs(ctx, table, grid, idx, L, masked=False):
+def build_inputs(ctx, table, hist_src, idx, L, masked=False):
     """Chronos input dicts (run_x1.chronos_inputs) with an L-hour context; only issue-time information.
     masked=True: upstream fill values removed (Q4 C_zs only)."""
     x = context_window(ctx, table, idx, L)
     if masked:
         x = mask_flagged_upstream(x, ctx['mean'], ctx['scale'])
-    hist = gfs_history(ctx, grid, idx, L)
+    hist = gfs_history(ctx, hist_src, idx, L)
     part = dict(x21=x, gF=ctx['gF'][idx], gF_mask=ctx['gF_mask'][idx])
     return x1.chronos_inputs(part, ctx['mean'], ctx['scale'], hist, np.arange(len(idx))), coverage(x)
 
@@ -257,6 +258,62 @@ def gfs_binding(x50, gfs_hist, nwp_mean, nwp_scale, atol=1e-4):
     return dict(hours=int(bad.size), missing=int((~fin).sum()))
 
 
+def development_boundary(hours):
+    """Hours the development preparations left NaN on purpose (prepare_g1_batches: the available cycle's 18 h
+    container reaches the 2024-01-01 cutoff, audit flag outside_development) - 2023-12-31T12..23 on that axis."""
+    from scripts import prepare_g1_batches as prep
+    h = np.asarray(hours).astype('datetime64[ns]').astype('datetime64[h]')
+    return prep.available_cycle(h) + np.timedelta64(18, 'h') >= prep.CUTOFF
+
+
+def source_values(src, hours):
+    """Values of an hourly source (hours, historical [n, 1]) at hour labels; NaN off its axis."""
+    axis = np.asarray(src['hours']).astype('datetime64[ns]').astype(np.int64)
+    t = np.asarray(hours).astype('datetime64[ns]').astype(np.int64)
+    pos = np.clip(np.searchsorted(axis, t), 0, len(axis) - 1)
+    out = np.full(t.shape, np.nan)
+    on = axis[pos] == t
+    out[on] = np.asarray(src['historical'], float)[pos[on], 0]
+    return out
+
+
+def source_start_edge(hours, native_src):
+    """Hours whose available GFS cycle predates the first day of a source's axis (the sealed HoT cache holds 2023-2025
+    cycles only, so 2023-01-01T01..05, which need the 2022-12-31T18 cycle, are missing there; HS0, 2026-11-18)."""
+    from scripts import prepare_g1_batches as prep
+    h = np.asarray(hours).astype('datetime64[ns]').astype('datetime64[h]')
+    start = np.asarray(native_src['hours']).astype('datetime64[ns]').min().astype('datetime64[D]')
+    return prep.available_cycle(h) < start
+
+
+def source_drift(a3_src, native_src, tol=1e-6):
+    """Hours (on both axes) where the A3 hourly grid differs from a pack-native source.  Two registered kinds only
+    (X3-HS, HS0 2026-11-18), anything else raises:
+      boundary  A3 NaN, native finite, development-boundary hour (the X1 merge wrote development NaN over sealed values);
+      edge      A3 finite, native NaN, the hour's cycle predates the native source's first day (cache start edge).
+    Values never differ (tol).  Returns the sorted drift hours (datetime64[ns])."""
+    common = np.intersect1d(np.asarray(a3_src['hours']).astype('datetime64[ns]'),
+                            np.asarray(native_src['hours']).astype('datetime64[ns]'))
+    a, b = source_values(a3_src, common), source_values(native_src, common)
+    fa, fb = np.isfinite(a), np.isfinite(b)
+    drift = (fa != fb) | (fa & fb & (np.abs(np.where(fa & fb, a - b, 0)) > tol))
+    allowed = (~fa & fb & development_boundary(common)) | (fa & ~fb & source_start_edge(common, native_src))
+    if (drift & ~allowed).any():
+        raise ValueError(f'A3 grid differs from the pack-native GFS source outside the registered boundary case '
+                         f'({int((drift & ~allowed).sum())} hours)')
+    return common[drift]
+
+
+def drift_windows(issue, drift_hours, L):
+    """Windows whose L-hour input span (issue-(L-1) h .. issue) contains at least one drift hour."""
+    it = np.asarray(issue).astype('datetime64[ns]')
+    d = np.sort(np.asarray(drift_hours).astype('datetime64[ns]'))
+    if not len(d):
+        return np.zeros(len(it), bool)
+    k = np.searchsorted(d, it - (L - 1) * HOUR)
+    return (k < len(d)) & (d[np.minimum(k, len(d) - 1)] <= it)
+
+
 def physical_features(pack, farm, mean, scale, rated, gfs_hist):
     """Fixed-order physical columns from one farm's frozen normalisation (inverse transform only, nothing fitted).
     Power columns are divided by rated power; upstream features are NaN on flagged rows (no fill values); GFS
@@ -306,7 +363,7 @@ def quantile_index(pipe):
     return [next(i for i, q in enumerate(pipe.quantiles) if abs(q - v) < 1e-5) for v in (.1, .5, .9)]
 
 
-def predict_context(pipe, ctx, table, grid, L, mode, batch_size=1024, chunk=2048, masked=False):
+def predict_context(pipe, ctx, table, hist_src, L, mode, batch_size=1024, chunk=2048, masked=False):
     """[n, 3, 4] quantiles (0.1/0.5/0.9) for every window of a context, plus per-window history coverage."""
     qidx = quantile_index(pipe)
     n = len(ctx['issue'])
@@ -316,12 +373,12 @@ def predict_context(pipe, ctx, table, grid, L, mode, batch_size=1024, chunk=2048
         f = chronos_predict_fn(pipe, L, False, qidx)
         for lo in range(0, n, chunk):
             ix = np.arange(lo, min(lo + chunk, n))
-            inputs, c = build_inputs(ctx, table, grid, ix, L, masked)
+            inputs, c = build_inputs(ctx, table, hist_src, ix, L, masked)
             out[ix], cov[ix] = np.stack(f(inputs, batch_size)), c
     else:
         f = chronos_predict_fn(pipe, L, True, qidx)
         for g in issue_groups(ctx['issue']):
-            inputs, c = build_inputs(ctx, table, grid, g, L, masked)
+            inputs, c = build_inputs(ctx, table, hist_src, g, L, masked)
             out[g], cov[g] = np.stack(run_groups(f, inputs, [np.arange(len(g))])), c
     if not np.isfinite(out).all():
         raise ValueError('Non-finite Chronos prediction')
@@ -376,11 +433,15 @@ def worker_check(spec, out):
 
 
 def q1_jobs(spec, name):
-    """(L, mode, masked, file stem) for one context: every Q1 candidate; plus the registered Q4 C_zs variant with
-    upstream fill removed, on the validation context only (never a Q1 selection candidate)."""
+    """(L, mode, masked, file stem) for one context: every Q1 candidate; the descriptive A3 recheck configs
+    (X3-HS, all contexts); and the registered Q4 C_zs variant with upstream fill removed, on the validation
+    context only.  Only spec['configs'] are Q1 selection candidates."""
     jobs = [(int(L), m, False, f'{name}_{L}_{m}') for L, m in spec['configs']]
+    jobs += [(int(L), m, False, f'{name}_{L}_{m}') for L, m in spec.get('descriptive_configs', [])]
     if name == spec.get('masked_context'):
         jobs += [(int(L), m, True, f'{name}_{L}_{m}_masked') for L, m in spec['masked_configs']]
+    if len({j[3] for j in jobs}) != len(jobs):
+        raise ValueError('Duplicate Q1 job')
     return jobs
 
 
@@ -391,12 +452,9 @@ def worker_q1(spec, out):
     coverage_report = {}
     for rec in spec['contexts']:
         ctx = checked_npz(rec)
-        hist24 = gfs_history(ctx, grid, np.arange(len(ctx['issue'])), 24)
-        both = np.isfinite(hist24) & np.isfinite(ctx['historical'])
-        if not np.allclose(hist24[both], np.asarray(ctx['historical'])[both], rtol=0, atol=1e-6):
-            raise ValueError('Grid GFS history differs from the A3 context: ' + rec['name'])
+        src = checked_npz(rec['history'])      # pack-native GFS history, bound to the frozen pack by the parent
         for L, mode, masked, stem in q1_jobs(spec, rec['name']):
-            pred, cov = predict_context(pipe, ctx, table, grid, L, mode, masked=masked)
+            pred, cov = predict_context(pipe, ctx, table, src, L, mode, masked=masked)
             with (out / f'{stem}.npy').open('xb') as fh:
                 np.save(fh, pred)
             coverage_report[stem] = dict(mean=float(cov.mean()), min=float(cov.min()))
@@ -523,7 +581,7 @@ def worker_q2(spec, out):
     table, L = HourTable(grid), int(spec['context_length'])
     v1 = np.asarray(spec['v1_positions'], np.int64)
     v1_truth = np.asarray(spec['v1_truth'], float)
-    v1_inputs, _ = build_inputs(val, table, grid, v1, L)
+    v1_inputs, _ = build_inputs(val, table, checked_npz(spec['validation']['history']), v1, L)
     selected = out / 'selected'
     every, steps = int(spec['eval_every']), int(spec['num_steps'])
 
@@ -581,7 +639,7 @@ def worker_q2(spec, out):
     tuned = load_pipe(spec, model_dir=selected)
     for rec in [dict(spec['validation'], name='validation')] + spec['tests']:
         ctx = checked_npz(rec)
-        pred, _ = predict_context(tuned, ctx, table, grid, L, 'single')
+        pred, _ = predict_context(tuned, ctx, table, checked_npz(rec['history']), L, 'single')
         with (out / f"{rec['name']}_q2.npy").open('xb') as fh:
             np.save(fh, pred)
 
@@ -751,6 +809,74 @@ def finish(out, store, extra=None):
     save(out / 'completed.json', dict(status='COMPLETED', registry_sha256=digest(out / 'registry.json'), **(extra or {})))
 
 
+CONTEXT_LENGTHS_REPORTED = (24, 168, 512, 1024)
+
+
+def history_sources(args, refs, farm, names):
+    """X3-HS rule (the X2-A2 R1-B1 rule, now for every X3 stage): the GFS history of a window comes from the SAME
+    preparation as its frozen pack, never from a merge of two preparations.
+      K/P (one preparation) and the HoT development packs (train, validation): the A3 hourly grid, whose
+        development hours are exactly the development preparation (outside_development hours stay missing);
+      HoT sealed test packs: the sealed-prep point cache (run_x2.hot_test_history), which covers 2023-2025.
+    Returns ({name: source}, a3_grid_source); a source is dict(hours, historical [n, 1], source, identities)."""
+    g = refs.grid(farm)
+    grid = dict(hourly_gfs(g), source='a3_grid', identities={g['path']: g['sha256']})
+    grid['hours'] = np.asarray(grid['hours']).astype('datetime64[ns]')
+    out, sealed = {}, None
+    for name in names:
+        if farm == 'HoT' and name not in (farm + '_train', farm + '_validation'):
+            if sealed is None:
+                h = x2.hot_test_history(args.logs)
+                sealed = dict(hours=np.asarray(h['hours']).astype('datetime64[ns]'),
+                              historical=np.asarray(h['hist'], float)[:, None], source='hot_sealed_points',
+                              identities=h['identities'])
+            out[name] = sealed
+        else:
+            out[name] = grid
+    return out, grid
+
+
+def bind_source(pack, src, grid, nwp_mean, nwp_scale, ctx_record=None):
+    """Bind a pack-native source to the frozen pack (x50 channel 20, every window and hour) and, for a Chronos
+    context, the A3 context identity; report the drift against the A3 grid and the windows it touches."""
+    if ctx_record is not None:
+        with np.load(checked(Path(ctx_record['path']), ctx_record['sha256']), allow_pickle=False) as z:
+            if not (np.array_equal(z['issue'], pack['issue']) and np.array_equal(z['turbines'], pack['turbines'])):
+                raise ValueError('A3 context and frozen pack differ: ' + ctx_record['name'])
+    report = gfs_binding(pack['x50'], gfs_history(pack, src, np.arange(len(pack['issue'])), 24), nwp_mean, nwp_scale)
+    drift = np.array([], 'datetime64[ns]') if src is grid else source_drift(grid, src)
+    edge = source_start_edge(drift, src) if len(drift) else np.zeros(0, bool)
+    report.update(source=src['source'], identities=src['identities'], drift_hours=[str(x) for x in drift],
+                  drift_kinds=dict(boundary=int((~edge).sum()), edge=int(edge.sum())),
+                  affected_windows={str(L): int(drift_windows(pack['issue'], drift, L).sum())
+                                    for L in CONTEXT_LENGTHS_REPORTED})
+    return report
+
+
+def save_source(out, farm, src, cache):
+    """Hash-pinned npz copy of a source for the tsfm worker (one file per farm and source)."""
+    key = (farm, src['source'])
+    if key not in cache:
+        (out / 'history').mkdir(exist_ok=True)
+        path = out / 'history' / f"{farm}_{src['source']}.npz"
+        np.savez(path, hours=src['hours'], historical=np.asarray(src['historical'], float))
+        cache[key] = dict(path=str(path), sha256=digest(path), source=src['source'])
+    return cache[key]
+
+
+def frozen_packs(args, spec, names):
+    """Frozen packs by A3 context name: <farm>_train / <farm>_validation (development) and the test items."""
+    farm = next(iter(spec['items'].values()))['farm']
+    out = {}
+    if {farm + '_train', farm + '_validation'} & set(names):
+        train, val = x1.development(Path(args.logs), next(iter(spec['items'].values())))
+        out.update({farm + '_train': train, farm + '_validation': val})
+    for n, it in spec['items'].items():
+        if n in names:
+            out[n] = x1.load_pack(x1.paths(Path(args.logs), it)[0])
+    return {n: out[n] for n in names}
+
+
 def mode_q1check(args, protocol, x1p, out):
     refs = Refs(args.logs, protocol)
     cfg = protocol['q1']['check']
@@ -768,15 +894,26 @@ def mode_q1(args, protocol, x1p, out):
     if check['status'] == 'PASS':
         configs += [[L, 'group'] for L in protocol['q1']['context_lengths']]
     masked = [[int(protocol['q4']['zs_context']), 'single']]     # Q4 C_zs, upstream fill removed (R1-B4)
-    selection, records = {}, {}
+    descriptive = [[int(L), m] for L, m in protocol['q1']['descriptive_configs']]   # A3 recheck (X3-HS)
+    selection, records, binding, cache = {}, {}, {}, {}
     for farm, spec in x2.farms(x1p).items():
         ctxs = [refs.context(farm + '_validation')] + [refs.context(n) for n in spec['items']]
+        names = [c['name'] for c in ctxs]
+        srcs, grid_src = history_sources(args, refs, farm, names)
+        nwp_mean, nwp_scale = scaler(args, farm)[2:]
+        packs = frozen_packs(args, spec, names)
+        binding[farm] = {}
+        for c in ctxs:                                   # bind on the FULL frozen pack, also in smoke
+            binding[farm][c['name']] = bind_source(packs[c['name']], srcs[c['name']], grid_src, nwp_mean, nwp_scale, c)
+            c['history'] = save_source(out, farm, srcs[c['name']], cache)
+        del packs
         if args.smoke:
             ctxs = [shrink_context(c, out, protocol['smoke']['issues'],
                                   protocol['splits'][farm] if c['name'] == farm + '_validation' else None)
                     for c in ctxs]
         wspec = dict(worker_base(protocol, args, 'q1', out), farm=farm, contexts=ctxs, grid=refs.grid(farm),
-                     configs=configs, masked_configs=masked, masked_context=farm + '_validation')
+                     configs=configs, descriptive_configs=descriptive, masked_configs=masked,
+                     masked_context=farm + '_validation')
         call_worker(args, wspec, out, 'q1_' + farm)
         for c in ctxs:
             for *_, stem in q1_jobs(wspec, c['name']):
@@ -789,16 +926,21 @@ def mode_q1(args, protocol, x1p, out):
               for L, m in configs}
         L, m = select_config(v1)
         selection[farm] = dict(context_length=L, mode=m, v1_mae={f'{a}_{b}': v for (a, b), v in v1.items()})
+    save(out / 'history_binding.json', dict(rule='pack-native GFS history (X3-HS)', farms=binding))
+    for rec in cache.values():
+        store.registry[str(Path(rec['path']).relative_to(out))] = rec['sha256']
+    store.registry['history_binding.json'] = digest(out / 'history_binding.json')
     save(out / 'selection.json', dict(selection=selection, configs=configs, check_status=check['status'],
          rule='per farm lowest V1 MAE of the median; ties -> shorter, then single', contexts=records,
-         q4_masked=masked, q4_masked_note='validation context only, upstream NaN on flagged hours; not a Q1 candidate'))
+         descriptive_configs=descriptive, q4_masked=masked,
+         q4_masked_note='validation context only, upstream NaN on flagged hours; not a Q1 candidate'))
     finish(out, store, dict(selection_sha256=digest(out / 'selection.json')))
 
 
 COVARIATE_NAMES = ['wind', 'up_missing', 'gfs'] + [f'up_{k}' for k in range(11)]
 
 
-def training_arrays(ctx, table, grid, idx, L, truth, chunk=2000):
+def training_arrays(ctx, table, hist_src, idx, L, truth, chunk=2000):
     """Raw-unit fine-tuning arrays for windows idx: target [n, L] kW, covariates [n, 14, L], GFS future [n, 4].
     Built in chunks (long contexts of large farms)."""
     idx = np.asarray(idx)
@@ -807,7 +949,7 @@ def training_arrays(ctx, table, grid, idx, L, truth, chunk=2000):
     for lo in range(0, len(idx), chunk):
         part = idx[lo:lo + chunk]
         x = context_window(ctx, table, part, L).astype(float) * np.asarray(ctx['scale']) + np.asarray(ctx['mean'])
-        hist = gfs_history(ctx, grid, part, L)
+        hist = gfs_history(ctx, hist_src, part, L)
         target[lo:lo + len(part)] = x[:, :, -1]
         cov[lo:lo + len(part)] = np.stack([x[:, :, 0], x[:, :, 19], hist] + [x[:, :, 8 + k] for k in range(11)], axis=1)
     future = np.where(np.asarray(ctx['gF_mask'])[idx, 6:10] > 0, np.asarray(ctx['gF'])[idx, 6:10], np.nan)
@@ -844,9 +986,11 @@ def mode_q2(args, protocol, x1p, out):
                              window_draws_by_sdk_rule=steps * candidates[0]['windows_per_step'],
                              note='derived from the 2.3.2 batching rule (windows drawn uniformly WITH replacement; not '
                                   'every window is seen); trainer settings are recorded in fit_run/selection_freeze.json')
+        srcs, grid_src = history_sources(args, refs, farm, [farm + '_train'])      # X3-HS pack-native rule
+        budgets[farm]['history'] = bind_source(train, srcs[farm + '_train'], grid_src, *scaler(args, farm)[2:], rec)
         grid = x1.load_pack(checked(Path(refs.grid(farm)['path']), refs.grid(farm)['sha256']))
         path = out / f'{farm}_train.npz'
-        np.savez(path, **training_arrays(ctx, HourTable(grid), grid, idx, L, train['truth'][idx]))
+        np.savez(path, **training_arrays(ctx, HourTable(grid), srcs[farm + '_train'], idx, L, train['truth'][idx]))
         del ctx, train, grid
         val = sel['contexts'][farm][0]
         pos, keys = positions(val, refs.keys(farm, 'V1'), args.smoke)
@@ -976,13 +1120,15 @@ def farm_tables(args, protocol, x1p, refs):
             if not (np.array_equal(np.asarray(z['mean'], float), np.asarray(mean, float))
                     and np.array_equal(np.asarray(z['scale'], float), np.asarray(scale, float))):
                 raise ValueError('Q4 normalisation differs from the A3/Chronos context: ' + farm)
-        hourly = hourly_gfs(refs.grid(farm))
         train, val = x1.development(Path(args.logs), item)
         packs = dict(train=train, val=val, **{n: x1.load_pack(x1.paths(Path(args.logs), it)[0]) for n, it in spec['items'].items()})
+        ctx_name = {'train': farm + '_train', 'val': farm + '_validation'}
+        srcs, grid_src = history_sources(args, refs, farm, [ctx_name.get(n, n) for n in packs])   # X3-HS
         rows, binding[farm] = [], {}
         for name, p in packs.items():
-            gh = gfs_history(p, hourly, np.arange(len(p['issue'])), 24)
-            binding[farm][name] = gfs_binding(p['x50'], gh, nwp_mean, nwp_scale)
+            src = srcs[ctx_name.get(name, name)]
+            binding[farm][name] = bind_source(p, src, grid_src, nwp_mean, nwp_scale)
+            gh = gfs_history(p, src, np.arange(len(p['issue'])), 24)
             rows.append(dict(X=physical_features(p, farm, mean, scale, spec['rated'], gh), y=p['truth'] / spec['rated'],
                              issue=np.asarray(p['issue']), times=np.asarray(p['times']), source=name))
         m1, _ = x2.split_masks(val, *(protocol['splits'][farm][k] for k in ('V1', 'V2')))
@@ -1131,9 +1277,40 @@ def mode_report(args, protocol, x1p, out):
                                vs_LUG={a: paired(st, p, lug, y, issue) for a, p in arms.items()},
                                mae={a: float(np.abs(p - y).mean()) for a, p in arms.items()})
     save(out / 'results.json', dict(exploratory_only=True, dev_decisions_sha256=digest(out / 'dev_decisions.json'),
-                                    tests=tests))
+                                    tests=tests, a3_recheck=a3_recheck(args, refs, q1, sel, farms)))
     finish(out, x2.Store(out), dict(dev_decisions_sha256=digest(out / 'dev_decisions.json'),
                                     results_sha256=digest(out / 'results.json')))
+
+
+def a3_recheck(args, refs, q1, sel, farms):
+    """X3-HS, descriptive only: X3's 24 h / 168 h single-series zero-shot against the X1 A3 files of the same
+    configuration (A3 used the merged history).  Windows the drift does not touch should agree up to GPU numerics;
+    touched windows show the size of the correction.  Test MAEs old vs new for the paper's A3 numbers."""
+    hb = read(checked(q1['root'] / 'history_binding.json', q1['registry']['history_binding.json']))['farms']
+    out = {}
+    for farm, spec in farms.items():
+        for rec in sel['contexts'][farm]:
+            name = rec['name']
+            ctx = x1.load_pack(checked(Path(rec['path']), rec['sha256']))           # shrunk in smoke
+            full = refs.context(name)
+            with np.load(checked(Path(full['path']), full['sha256']), allow_pickle=False) as z:
+                pos = key_positions(z['issue'], z['turbines'], dict(issue=ctx['issue'], turbines=ctx['turbines']))
+            drift = np.asarray(hb[farm][name]['drift_hours'], 'datetime64[ns]')
+            kpos, keys = (None, None) if name == farm + '_validation' else positions(rec, refs.keys(farm, name), args.smoke)
+            for L, a3file in ((24, f'{name}_quantiles.npy'), (168, f'{name}_quantiles_168.npy')):
+                old = np.load(checked(refs.a3 / a3file, refs.a3_done['predictions'][a3file]))[pos][:, 1]
+                new = load_registered(q1, f'{name}_{L}_single.npy')[:, 1]
+                hit = drift_windows(ctx['issue'], drift, L)
+                d = np.abs(new - old)
+                row = dict(windows=int(len(d)), affected=int(hit.sum()),
+                           max_abs_diff_unaffected_kw=float(d[~hit].max()) if (~hit).any() else None,
+                           max_abs_diff_affected_kw=float(d[hit].max()) if hit.any() else None,
+                           mean_abs_diff_affected_kw=float(d[hit].mean()) if hit.any() else None)
+                if keys is not None:
+                    row.update(mae_a3_kw=float(np.abs(old[kpos] - keys['truth']).mean()),
+                               mae_x3_kw=float(np.abs(new[kpos] - keys['truth']).mean()))
+                out[f'{name}_{L}'] = row
+    return out
 
 
 MODES = {'q1check': mode_q1check, 'q1': mode_q1, 'q2': mode_q2, 'q3': mode_q3, 'q4': mode_q4, 'report': mode_report}
