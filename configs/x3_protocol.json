@@ -1,7 +1,7 @@
 {
   "stage": "X3",
-  "version": 2,
-  "plan": "docs/STAGE_PLAN.md (X3, R2 approved 30df3b9; code R1 310f7d0 -> R2 fixes B4/B5); decisions docs/review/DECISIONS.md stage X3",
+  "version": 3,
+  "plan": "docs/STAGE_PLAN.md (X3, R2 approved 30df3b9; code R1 310f7d0 -> R2 dee252b; v3 = X3-Q2fix after the smoke preflight OOM); decisions docs/review/DECISIONS.md stage X3",
   "references": {
     "a3": {"dir": "X1/x1_e4819b0_gpu_r1/A3", "completed_sha256": "b8c5cf17f95de1893e34231c0b4889c24b05d712a813d98a4b60e648730c6462"},
     "x2_a": {"dir": "X2/x2_91d4d20/a", "completed_sha256": "1e8ed09c41f9d664817a26b6eb52784144f75e63c134e4ecde62c73bddef28b6", "commit": "91d4d207ad7e0af36eadd01e51be201bb1fc3523"},
@@ -34,7 +34,9 @@
     "num_steps": 1000, "num_steps_smoke": 4, "eval_every": 100, "eval_every_smoke": 2,
     "preflight_windows": 2048, "preflight_steps": 20, "preflight_steps_smoke": 2,
     "selection": "V1 median MAE by custom callback (not eval_loss)",
-    "batch_note": "batch_size counts target+covariate rows (15 per window): about 17 windows per step; recorded per run",
+    "batch_note": "batch_size counts target+covariate rows; 2.3.2 adds whole windows until >= 256 rows: 18 windows (270 rows) per optimizer step, drawn with replacement",
+    "microbatch_plan": [[256, 1], [135, 2], [90, 3], [45, 6]],
+    "microbatch_rule": "X3-Q2fix (smoke OOM at 1024 h under gpu_fraction 0.7): [rows per microbatch, gradient accumulation]; every pair keeps 18 windows per optimizer step; preflight order full x plan, then lora x plan; first passing on every farm; lora requires peft importable (never the SDK's silent fallback)",
     "margin": 0.01
   },
   "q3": {"w_step": 0.05, "min_gain": 0.01, "control": "w*LUG + (1-w)*N_v1 with the identical search"},

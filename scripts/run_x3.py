@@ -419,42 +419,95 @@ def training_series(train_npz):
     return rows
 
 
-def fit_kwargs(pipe, spec, mode, steps):
+VARIATES = 1 + len(['wind', 'up_missing', 'gfs'] + [f'up_{k}' for k in range(11)])   # = 15 rows per window
+
+
+def sdk_windows(rows_per_batch, variates=VARIATES):
+    """Chronos2Dataset (2.3.2, _generate_train_batches) adds whole windows until the row count reaches batch_size."""
+    return -(-int(rows_per_batch) // int(variates))
+
+
+def q2_candidates(cfg, variates=VARIATES):
+    """Preflight order (X3-Q2fix, smoke 2026-11-18): full fine-tune with the registered batch first, then smaller
+    microbatches with gradient accumulation keeping the SAME windows per optimizer step; LoRA only afterwards."""
+    per_step = sdk_windows(cfg['batch_size'], variates)
+    out = []
+    for mode in cfg['modes']:
+        for micro, accum in cfg['microbatch_plan']:
+            if sdk_windows(micro, variates) * int(accum) != per_step:
+                raise ValueError(f'Microbatch {micro} x {accum} changes the windows per optimizer step')
+            out.append(dict(name=f'{mode}_mb{micro}x{accum}', mode=mode, microbatch=int(micro),
+                            accumulation=int(accum), windows_per_step=per_step))
+    return out
+
+
+def preflight_search(candidates, farms, probe):
+    """First candidate that passes on EVERY farm; a candidate is abandoned at its first failing farm (it can no
+    longer be chosen).  probe(candidate, farm) -> report dict with 'ok'.  Returns (chosen or None, tried)."""
+    tried = []
+    for cand in candidates:
+        reports = {}
+        for farm in farms:
+            reports[farm] = probe(cand, farm)
+            if not reports[farm].get('ok'):
+                break
+        tried.append(dict(candidate=cand, farms=reports))
+        if len(reports) == len(farms) and all(r.get('ok') for r in reports.values()):
+            return cand, tried
+    return None, tried
+
+
+def fit_kwargs(pipe, spec, cand, steps):
+    import importlib.util
     import inspect
     params = inspect.signature(pipe.fit).parameters
+    mode = cand['mode']
     wanted = dict(prediction_length=4, context_length=int(spec['context_length']),
                   min_past=int(spec['context_length']), learning_rate=float(spec['learning_rate']),
-                  num_steps=int(steps), batch_size=int(spec['batch_size']), finetune_mode=mode, seed=int(spec['seed']))
+                  num_steps=int(steps), batch_size=int(cand['microbatch']),
+                  gradient_accumulation_steps=int(cand['accumulation']), finetune_mode=mode, seed=int(spec['seed']))
     accepts_any = any(p.kind == p.VAR_KEYWORD for p in params.values())
-    missing = [k for k in ('num_steps', 'learning_rate', 'batch_size') if k not in params and not accepts_any]
+    missing = [k for k in ('num_steps', 'learning_rate', 'batch_size', 'gradient_accumulation_steps')
+               if k not in params and not accepts_any]
     if missing:
         raise ValueError('Chronos fit lacks registered arguments: ' + ', '.join(missing))
     if mode != 'full' and 'finetune_mode' not in params:
         raise ValueError('finetune_mode not supported by the locked chronos-forecasting version')
+    if mode == 'lora' and importlib.util.find_spec('peft') is None:
+        # 2.3.2 would warn and silently fall back to full fine-tuning (smoke 2026-11-18): never allow that.
+        raise ValueError('peft is not installed: LoRA unavailable')
     if mode == 'full' and 'finetune_mode' not in params:
         wanted.pop('finetune_mode')
     return wanted
 
 
+def run_fit(pipe, rows, output_dir, spec, cand, steps, callbacks=None):
+    """pipe.fit with the registered candidate; the SDK's LoRA -> full fallback warning becomes an error."""
+    import warnings
+    kwargs = fit_kwargs(pipe, spec, cand, steps)
+    with warnings.catch_warnings():
+        warnings.filterwarnings('error', message='.*peft.*required')
+        pipe.fit(rows, output_dir=str(output_dir), callbacks=callbacks, **kwargs)
+
+
 def worker_preflight(spec, out):
-    """Resource probe on the fit set: try each registered mode for a few steps; never a model-quality result."""
+    """Resource probe on the fit set for ONE candidate in a fresh process; never a model-quality result."""
     import torch
+    cand = spec['candidate']
     rows = training_series(checked_npz(spec['train']))[:int(spec['preflight_windows'])]
-    report = dict(free_gb_before=None, modes={})
+    report = dict(candidate=cand, context_length=int(spec['context_length']), free_gb_before=None)
     if torch.cuda.is_available():
         free, total = torch.cuda.mem_get_info()
-        report.update(free_gb_before=free / 2 ** 30, total_gb=total / 2 ** 30)
-    for mode in spec['modes']:
-        pipe = None
-        try:
-            pipe = load_pipe(spec)
+        report.update(free_gb_before=free / 2 ** 30, total_gb=total / 2 ** 30,
+                      limit_gb=total * float(spec['gpu_fraction']) / 2 ** 30)
+    try:
+        pipe = load_pipe(spec)
+        if torch.cuda.is_available():
             torch.cuda.reset_peak_memory_stats()
-            pipe.fit(rows, output_dir=str(out / f'pre_{mode}'), **fit_kwargs(pipe, spec, mode, spec['preflight_steps']))
-            report['modes'][mode] = dict(ok=True, peak_gb=torch.cuda.max_memory_allocated() / 2 ** 30)
-        except Exception as exc:  # resource or interface failure is recorded, not a quality result
-            report['modes'][mode] = dict(ok=False, error=f'{type(exc).__name__}: {str(exc)[:300]}')
-        del pipe
-        torch.cuda.empty_cache()
+        run_fit(pipe, rows, out / 'fit', spec, cand, spec['preflight_steps'])
+        report.update(ok=True, peak_gb=torch.cuda.max_memory_allocated() / 2 ** 30 if torch.cuda.is_available() else None)
+    except Exception as exc:  # resource or interface failure is recorded, not a quality result
+        report.update(ok=False, error=f'{type(exc).__name__}: {str(exc)[:300]}')
     save(out / 'preflight.json', report)
 
 
@@ -485,6 +538,10 @@ def worker_q2(spec, out):
                 'n_gpu', 'world_size', 'seed', 'bf16', 'fp16')}
             self.trainer = {k: (v if isinstance(v, (int, float, bool, str)) or v is None else str(v))
                             for k, v in self.trainer.items()}
+            cand = spec['candidate']
+            if (self.trainer['gradient_accumulation_steps'] != cand['accumulation']
+                    or self.trainer['per_device_train_batch_size'] != cand['microbatch']):
+                raise ValueError('Trainer batch settings differ from the frozen preflight candidate')
             return control
 
         def on_step_end(self, training_args, state, control, model=None, **kwargs):
@@ -509,12 +566,13 @@ def worker_q2(spec, out):
             return control
 
     sel = SelectByMAE()
-    pipe.fit(rows, output_dir=str(out / 'fit'), callbacks=[sel], **fit_kwargs(pipe, spec, spec['mode'], steps))
+    run_fit(pipe, rows, out / 'fit', spec, spec['candidate'], steps, callbacks=[sel])
     if len(sel.rows) != steps // every or not selected.is_dir():
         raise ValueError('Checkpoint selection did not run at every registered evaluation')
     model_hashes = {str(p.relative_to(out)): digest(p) for p in selected.rglob('*') if p.is_file()}
     save(out / 'selection_freeze.json', dict(model_sha256=model_hashes, selected=read(out / 'selection.json'),
-         mode=spec['mode'], steps=steps, selection='V1 median MAE (custom callback, not eval_loss)',
+         mode=spec['mode'], candidate=spec['candidate'], steps=steps,
+         selection='V1 median MAE (custom callback, not eval_loss)',
          train_windows=len(rows), budget=spec['budget'], trainer=sel.trainer))
     del pipe
     torch.cuda.empty_cache()
@@ -757,20 +815,15 @@ def training_arrays(ctx, table, grid, idx, L, truth, chunk=2000):
                 truth=np.asarray(truth, np.float32), covariate_names=np.array(COVARIATE_NAMES))
 
 
-def choose_q2_mode(reports, order=('full', 'lora')):
-    """One mode for all farms: the first registered mode that passed the preflight on every farm."""
-    for mode in order:
-        if all(r['modes'].get(mode, {}).get('ok') for r in reports.values()):
-            return mode
-    return None
-
-
 def mode_q2(args, protocol, x1p, out):
     refs, store, cfg = Refs(args.logs, protocol), x2.Store(out), protocol['q2']
     q1 = upstream(args, 'q1')
     sel = read(q1['root'] / 'selection.json')
     specs, budgets = {}, {}
     variates = 1 + len(COVARIATE_NAMES)                     # target + covariates = SDK batch units per window
+    if variates != VARIATES:
+        raise ValueError('Covariate layout differs from the SDK batch accounting')
+    candidates = q2_candidates(cfg)
     for farm, spec in x2.farms(x1p).items():
         item = next(iter(spec['items'].values()))
         L = int(sel['selection'][farm]['context_length'])
@@ -786,11 +839,11 @@ def mode_q2(args, protocol, x1p, out):
         steps = cfg['num_steps_smoke' if args.smoke else 'num_steps']
         budgets[farm] = dict(arm=cfg['arm'], fit_windows_available=int(len(ctx['issue'])), train_windows=int(len(idx)),
                              sampling=f"uniform without replacement, seed {cfg['seed']}", context_length=L,
-                             variates_per_window=variates, sdk_batch_size_variates=int(cfg['batch_size']),
-                             windows_per_step_approx=cfg['batch_size'] / variates,
-                             window_draws_approx=steps * cfg['batch_size'] / variates,
-                             note='SDK batch_size counts target+covariate rows, not windows (R1-S1); '
-                                  'actual trainer settings are recorded in fit_run/selection_freeze.json')
+                             variates_per_window=variates, sdk_batch_size_rows=int(cfg['batch_size']),
+                             windows_per_step_by_sdk_rule=candidates[0]['windows_per_step'],
+                             window_draws_by_sdk_rule=steps * candidates[0]['windows_per_step'],
+                             note='derived from the 2.3.2 batching rule (windows drawn uniformly WITH replacement; not '
+                                  'every window is seen); trainer settings are recorded in fit_run/selection_freeze.json')
         grid = x1.load_pack(checked(Path(refs.grid(farm)['path']), refs.grid(farm)['sha256']))
         path = out / f'{farm}_train.npz'
         np.savez(path, **training_arrays(ctx, HourTable(grid), grid, idx, L, train['truth'][idx]))
@@ -802,29 +855,36 @@ def mode_q2(args, protocol, x1p, out):
                            tests=sel['contexts'][farm][1:], grid=refs.grid(farm),
                            v1_positions=pos.tolist(), v1_truth=keys['truth'].tolist(),
                            learning_rate=cfg['learning_rate'], batch_size=cfg['batch_size'], seed=cfg['seed'],
-                           modes=cfg['modes'], preflight_windows=cfg['preflight_windows'],
+                           preflight_windows=cfg['preflight_windows'],
                            preflight_steps=cfg['preflight_steps_smoke' if args.smoke else 'preflight_steps'],
                            num_steps=steps, eval_every=cfg['eval_every_smoke' if args.smoke else 'eval_every'],
                            budget=budgets[farm])
         (out / farm).mkdir()
-    reports = {}
-    for farm, spec in specs.items():                    # every farm's preflight BEFORE any formal fine-tune
-        call_worker(args, spec, out / farm, 'preflight')
-        reports[farm] = read(out / farm / 'preflight.json')
-    mode = choose_q2_mode(reports, cfg['modes'])
-    save(out / 'preflight_decision.json', dict(mode=mode, reports=reports, rule='first mode passing on all farms'))
-    if mode is None:
-        raise ValueError('Q2 resource preflight failed for every registered mode (technical, not a quality result)')
+
+    def probe(cand, farm):                               # one fresh worker process per (candidate, farm)
+        d = out / farm / f"pre_{cand['name']}"
+        d.mkdir()
+        call_worker(args, dict(specs[farm], candidate=cand, output=str(d)), d, 'preflight')
+        return read(d / 'preflight.json')
+
+    # every farm's preflight BEFORE any formal fine-tune; one setting for all farms
+    chosen, tried = preflight_search(candidates, list(specs), probe)
+    save(out / 'preflight_decision.json', dict(chosen=chosen, tried=tried, candidates=candidates,
+         rule='first candidate (full first, then smaller microbatch with accumulation, then LoRA) passing on every farm'))
+    if chosen is None:
+        raise ValueError('Q2 resource preflight failed for every registered setting (technical, not a quality result)')
+    mode = chosen['mode']
     for farm, spec in specs.items():
         run = out / farm / 'fit_run'
         run.mkdir()
-        call_worker(args, dict(spec, task='q2', mode=mode, output=str(run)), run, 'q2')
+        call_worker(args, dict(spec, task='q2', mode=mode, candidate=chosen, output=str(run)), run, 'q2')
         for rec in [dict(name='validation')] + spec['tests']:
             rel = f"{farm}/fit_run/{rec['name']}_q2.npy"
             store.registry[rel] = digest(out / rel)
         for rel in ('selection_freeze.json', 'v1_history.json'):
             store.registry[f'{farm}/fit_run/{rel}'] = digest(run / rel)
-    finish(out, store, dict(mode=mode, arm=cfg['arm'], budgets=budgets))
+    store.registry['preflight_decision.json'] = digest(out / 'preflight_decision.json')
+    finish(out, store, dict(mode=mode, setting=chosen, arm=cfg['arm'], budgets=budgets))
 
 
 def q2_state(args):
@@ -1042,6 +1102,7 @@ def mode_report(args, protocol, x1p, out):
                              note='Q2 run failed technically (resource/interface); not a quality result')))
     if q2 is not None:
         dec['Q2']['training_budget'] = q2['done'].get('budgets')
+        dec['Q2']['setting'] = q2['done'].get('setting')
     g3 = all_positive_pooled(q3s, z, protocol['q3']['min_gain'])
     g3c = all_positive_pooled(q3c, z)
     dec['Q3'] = dict(vs_LUG=g3, vs_LUG_plus_Nv1=dict(pooled=g3c['pooled']),

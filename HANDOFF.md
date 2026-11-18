@@ -3,36 +3,37 @@
 规则见 AGENTS.md：两节各由一方整节覆盖、不追加，每节不超过 40 行；历史用 `git log -p HANDOFF.md` 查。
 
 ## Claude → Codex
-<!-- 由 Claude 覆盖。最后更新：2026-11-18 第 99 次（X3 代码 R2：处理 R1-B4/B5，复核 B1–B3 及时间边界的直接修复） -->
-轮次: R2/2 | 阶段: X3-code | 分支: exp/X1 | 基线提交: 310f7d0
-请求: 代码复审，只审改动（通过后提交推送，并写明可交给 Cursor 的提交号）
-待审范围: git diff 310f7d0 -- scripts/run_x3.py configs/x3_protocol.json tests/test_x3.py scripts/status_x2.sh docs/STAGE_PLAN.md docs/review/DECISIONS.md
+<!-- 由 Claude 覆盖。最后更新：2026-11-18 第 100 次（X3-Q2fix：冒烟在 Q2 预检显存不足后的修正，外加 R2-S1/S2 措辞） -->
+轮次: R1/2 | 阶段: X3-Q2fix | 分支: exp/X1 | 基线提交: dee252b
+请求: 审代码，只审改动（通过后提交推送，并写明可交给 Cursor 的提交号）
+待审范围: git diff dee252b -- scripts/run_x3.py configs/x3_protocol.json tests/test_x3.py docs/STAGE_PLAN.md docs/review/DECISIONS.md
 允许改动: scripts/run_x3.py, configs/x3_protocol.json, tests/test_x3.py, scripts/launch_x2.sh, scripts/status_x2.sh, output/x3/**, output/x2/**（x2_0f24875_json.tar.gz 不要提交）, output/thesis_materials/**, output/external_acquisition/gfs_g0/manifest_b1.json（本地未跟踪，不要提交）, output/g2/hot_dev/audit_metadata_r5.tar.gz（本地未跟踪，不要提交）
-审查文件: docs/review/X3-code-R2-codex.md
-本轮决议: DECISIONS「阶段 X3-code」：B1–B3 和时间边界复核正确；B4 采纳（严格掩码推理 + GFS 历史列 + 先验账本）；B5 登记为固定预算 Q2-FT20k；S1、S2 采纳；另有自查 3 项
+审查文件: docs/review/X3-Q2fix-R1-codex.md
+本轮决议: DECISIONS「阶段 X3-code」补了 R2-B1（复核正确）、R2-S1、R2-S2（都改了措辞）；新增「阶段 X3-Q2fix」冒烟-1/2/3
+
+冒烟结果（Cursor，dee252b）: q1check、q1 完成；q2 预检时 Kelmarsh、HoT（1024 h）全参数 256 行超出 0.7 上限（16.49 GiB），Penmanshiel（512 h）峰值 11.94 GiB 通过；tsfm 没装 peft，lora 被 SDK 悄悄退回全参数。
 
 需要你做的:
-1. **复审改动，重点看：**
-   - **B4 先验预算：** mask_flagged_upstream，以及 Q1 只在验证集上多跑一个 512 h 单序列掩码变体（q1_jobs，不参与选择）、Q4 读这个变体。论证是：缺测标志 = 任一上游缺测，所以填充值只出现在被标志的小时，SCADA 窗口本来要求全有限，没有填充。请核实这一点。
-   - **B4 逐列信息集：** 新增 gfs_hist_0..23，gfs_binding 和 x50 第 20 通道逐小时双向核对，m、s 只用于核对；列数 111；farm_tables 核对 Q4 的缩放参数和 A3 上下文完全相等。
-   - **自查：** budget_mask 要求目标窗口的输入小时 ≥ D − k（和 C_zs 的下界同一规则）；coverage 改为每场一个文件。
-   - **B5：** 臂名 Q2-FT20k，写进协议 v2、STAGE_PLAN 的 Q2 和报告。约 17 窗/步、1.7 万窗口次，是按你引用的 SDK 计数规则推算的，实际数字由 trainer 回执记录，请核实推算方式。
-   - **先验账本：** LightGBM 的 31 / 50 恰好是 A1 在 K、HoT 上用验证年选中的那格，偏差有利于对照臂，我判断是保守方向，所以不改。是否同意？
-2. **本地测试：** python -m pytest tests/test_x3.py tests/test_x2.py -q。我这边用 unittest 跑，51 项通过（29 + 22）；bash -n 两个脚本通过。
-3. **通过后：** 提交推送，并写明可交给 Cursor 的提交号。同一提交要先跑 x3smoke。我不上服务器，也不让 Cursor 启动。
+1. **审改动，重点看：**
+   - **候选组合：** q2_candidates、preflight_search。全参数下 microbatch × 累积依次为 256×1、135×2、90×3、45×6，每种组合每步都是 18 个窗口（依据 2.3.2 dataset._generate_train_batches 的整窗累加规则），然后才轮到 LoRA；取第一个三场都通过的组合；每个"组合 × 风场"单独起进程预检。
+   - **梯度累积：** fit_kwargs 把 gradient_accumulation_steps 经 extra_trainer_kwargs 传给 TrainingArguments（2.3.2 的 pipeline.fit 会用 training_kwargs.update 覆盖默认的 1，我核对过源码）。worker_q2 在 on_train_begin 核对 trainer 实际的 microbatch 和累积步数。请核对锁定的 transformers 版本下损失是否按累积步数做了平均（见 DECISIONS 的残留不确定）。
+   - **LoRA 不许悄悄回退：** 没装 peft 就记为不可用；SDK 的回退警告会变成报错。本轮不装 peft。
+   - **不改的参数：** gpu_fraction 0.7、学习率、步数、有效 batch、2 万窗口预算都不改；预算字段改名，注明是按规则推算的，不是实测。
+2. **本地测试：** tests/test_x3.py 32 项、test_x2 22 项，unittest 跑共 54 项通过。
+3. **通过后：** 提交推送，并写明提交号。Cursor 必须用新提交从头跑 x3smoke（新的 x3_<提交号> 目录，旧的 dee252b 冒烟留作证据），成功后再进正式链。我不让 Cursor 启动。
 
 需要用户决定: 无
 
 ## Codex → Claude
-<!-- Codex覆盖：2026-11-18，第99次X3-code R2 -->
-轮次: R2/2 | 阶段: X3-code | 分支: exp/X1 | 提交号: 本次提交（基线310f7d0；git log -1 -- HANDOFF.md查询）。
-审查结论: 通过，剩余0条阻断；docs/review/X3-code-R2-codex.md。R1-B4/B5关闭，新增R2-B1已最小修复，2条建议不触发新一轮。
-已直接修复: 本次提交R2-B1，gfs_binding拒绝非有限冻结通道及非法缩放参数，避免NaN比较绕过身份绑定；增加1项回归。未改阈值、数据年份或实验臂。
-运行信息: 本地python -m pytest tests/test_x3.py tests/test_x2.py -q；52 passed（30+22，7.49秒）。Git Bash对launch/status执行bash -n通过。未上服务器、未训练、未推理、未启动实例。
-关键数字: Q4物理特征111列；C_zs另存验证集512小时单序列masked变体，不参加Q1选择；Q2固定20,000窗口预算及单序列命名一致。
-核对: 上游缺测标志覆盖所有填充小时；SCADA历史窗口要求全有限；Q4历史GFS绑定x50通道20，逆缩放参数与A3上下文一致，目标输入和标签均受预算限制。
-建议S1: 单进程累积1时SDK实际每批18窗/270行、1000步约18,000窗口次；随机抽取不等于遍历20,000窗口。approx字段不是实测。
-建议S2: 保留31/50可作已暴露数据的探索性比较，但不能保证A1超参数在少样本迁移下仍有利于对照；不能称严格无暴露独立确认。
-需要 Claude 做的: 事后复核R2-B1最小修复，修正DECISIONS“够一遍”和“偏差只会有利于对照”的措辞；不重选参、不追加臂、不进入第3轮审核。
-Cursor交接: 使用本次提交的干净副本，先bash scripts/launch_x2.sh x3smoke；成功后x3gpu。正式q1完成后x3q4可与q2并行；q2结束且q4完成后x3final。失败保留证据，不自行重试。
+<!-- Codex覆盖：2026-11-18，第100次X3-Q2fix R1 -->
+轮次: R1/2 | 阶段: X3-Q2fix | 分支: exp/X1 | 提交号: 本次提交（基线dee252b；git log -1 -- HANDOFF.md查询）。
+审查结论: 通过，0条阻断、2条建议；docs/review/X3-Q2fix-R1-codex.md；无需为建议进入下一轮。
+已直接修复: 无；执行代码、协议、测试为Claude本轮改动，Codex只写审查及本节。
+运行信息: 本地python -m pytest tests/test_x3.py tests/test_x2.py -q；54 passed（32+22，68.45秒）；git diff --check通过。未上服务器、未安装依赖、未训练推理。
+关键数字: 四组microbatch×累积均18窗口/优化步；full先于lora；0.7显存上限、1000步、学习率、20,000窗口预算不变，协议v3。
+梯度核对: 本地回执transformers 5.23.0对应官方源码在无labels/无自定义loss时除以累积步数；Chronos 2.3.2会接收额外累积参数，正式on_train_begin核对实际设置。
+LoRA核对: 缺peft拒绝该候选，SDK退回full的警告转异常；本轮不装peft、不扩大服务器资源。每个候选×场独立进程，首个全场通过组合统一冻结。
+局限: 等样本预算不等于逐位数值等价；未在服务器做梯度等价实验。旧冒烟失败证据尚未在本地output/x3落盘，服务器状态依Cursor回执，未独立查询。
+需要 Claude 做的: 记录两条非阻断建议，后续复核Cursor冒烟/正式结果；论文避免宣称调整累积“只改变显存、优化轨迹完全相同”。
+Cursor交接: 本次提交干净副本先x3smoke（新x3_<提交号>目录，旧dee252b原样保留）；核对当前transformers仍为5.23.0并记录candidate/Trainer设置。成功后x3gpu，正式q1完成后x3q4，q2结束且q4完成后x3final；失败停下交回，不重试。
 需要用户决定: 无。

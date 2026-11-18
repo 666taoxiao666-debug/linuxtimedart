@@ -254,10 +254,57 @@ class Decisions(unittest.TestCase):
         self.assertFalse(x3.all_positive_pooled(dict(good, H=self.s(.5, .2, .8)), 2.394, .01)['passed'])
         self.assertTrue(x3.all_positive_pooled(dict(good, H=self.s(.5, .2, .8)), 2.394)['passed'])
 
-    def test_choose_q2_mode(self):
-        ok, bad = dict(ok=True), dict(ok=False)
-        self.assertEqual(x3.choose_q2_mode({'K': dict(modes=dict(full=ok, lora=ok)), 'H': dict(modes=dict(full=bad, lora=ok))}), 'lora')
-        self.assertIsNone(x3.choose_q2_mode({'K': dict(modes=dict(full=bad, lora=bad))}))
+    def test_q2_candidates_keep_windows_per_step(self):
+        """X3-Q2fix: every microbatch x accumulation pair gives the SDK's 18 windows (270 rows) per optimizer step."""
+        cfg = x3.read(x3.PROTOCOL)['q2']
+        cands = x3.q2_candidates(cfg)
+        self.assertEqual([c['name'] for c in cands[:4]], ['full_mb256x1', 'full_mb135x2', 'full_mb90x3', 'full_mb45x6'])
+        self.assertEqual([c['mode'] for c in cands], ['full'] * 4 + ['lora'] * 4)
+        self.assertEqual({x3.sdk_windows(c['microbatch']) * c['accumulation'] for c in cands}, {18})
+        self.assertEqual(x3.sdk_windows(256), 18)
+        with self.assertRaisesRegex(ValueError, 'windows per optimizer step'):
+            x3.q2_candidates(dict(cfg, microbatch_plan=[[256, 1], [64, 4]]))     # 5 x 4 = 20 windows
+
+    def test_preflight_search_one_setting_for_all_farms(self):
+        cands = [dict(name=n) for n in ('a', 'b', 'c')]
+        passes = {('a', 'P'), ('b', 'P'), ('b', 'K'), ('b', 'H'), ('c', 'P'), ('c', 'K'), ('c', 'H')}
+        calls = []
+
+        def probe(cand, farm):
+            calls.append((cand['name'], farm))
+            return dict(ok=(cand['name'], farm) in passes)
+        chosen, tried = x3.preflight_search(cands, ['P', 'K', 'H'], probe)
+        self.assertEqual(chosen['name'], 'b')
+        self.assertEqual(calls, [('a', 'P'), ('a', 'K'), ('b', 'P'), ('b', 'K'), ('b', 'H')])   # a stops at K
+        self.assertEqual(len(tried), 2)
+        none, tried = x3.preflight_search(cands, ['K'], lambda c, f: dict(ok=False))
+        self.assertIsNone(none)
+        self.assertEqual(len(tried), 3)
+
+    def test_fit_kwargs_and_no_silent_lora_fallback(self):
+        import warnings
+
+        class Pipe:
+            def fit(self, inputs, prediction_length, finetune_mode='full', context_length=None, learning_rate=1e-6,
+                    num_steps=1000, batch_size=256, output_dir=None, min_past=None, callbacks=None, **extra):
+                if finetune_mode == 'lora':      # what chronos 2.3.2 does without peft
+                    warnings.warn("`peft` is required for `finetune_mode='lora'`. Please install it with "
+                                  "`pip install peft`. Falling back to `finetune_mode='full'`.")
+                self.got = dict(batch_size=batch_size, finetune_mode=finetune_mode, **extra)
+        spec = dict(context_length=1024, learning_rate=1e-6, seed=2024)
+        full = dict(mode='full', microbatch=135, accumulation=2)
+        kw = x3.fit_kwargs(Pipe(), spec, full, 20)
+        self.assertEqual((kw['batch_size'], kw['gradient_accumulation_steps'], kw['seed']), (135, 2, 2024))
+        pipe = Pipe()
+        x3.run_fit(pipe, [], Path('unused'), spec, full, 2)
+        self.assertEqual((pipe.got['batch_size'], pipe.got['gradient_accumulation_steps']), (135, 2))
+        lora = dict(full, mode='lora')
+        with patch('importlib.util.find_spec', return_value=None):
+            with self.assertRaisesRegex(ValueError, 'peft is not installed'):
+                x3.fit_kwargs(Pipe(), spec, lora, 2)
+        with patch('importlib.util.find_spec', return_value=object()):       # peft "present" but SDK falls back
+            with self.assertRaises(UserWarning):
+                x3.run_fit(Pipe(), [], Path('unused'), spec, lora, 2)
 
     def test_pinball(self):
         y = np.zeros((4, 4))
