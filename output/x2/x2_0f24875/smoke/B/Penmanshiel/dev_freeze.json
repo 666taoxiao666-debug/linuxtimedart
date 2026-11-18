@@ -1,0 +1,111 @@
+{
+  "config": {
+    "max_epochs": 1,
+    "patience": 5,
+    "batch_size": 64,
+    "learning_rate": 0.001,
+    "weight_decay": 0.0001,
+    "mae_weight": 0.8,
+    "mse_weight": 0.2,
+    "grad_clip": 1.0,
+    "eta_min": 1e-05,
+    "blocks": 2,
+    "ff_dim": 32,
+    "dropout": 0.1,
+    "norm_eps": 0.001
+  },
+  "arms": {
+    "N_v1": {
+      "runs": {
+        "none": {
+          "2024": {
+            "v1_mae": 456.145263671875,
+            "best_epoch": 1,
+            "epochs": 1,
+            "sha256": "bc592e12a3f4887d2005e7aa9ce8e77e8e74b78f726c69793db30300b101ced9",
+            "selected_lambda": 0.0,
+            "seconds_per_epoch": 0.5432342329877429
+          }
+        }
+      },
+      "selected": "none",
+      "selection": "mean V1 MAE over seeds"
+    },
+    "TCNGRU": {
+      "runs": {
+        "none": {
+          "2024": {
+            "v1_mae": 351.77276611328125,
+            "best_epoch": 1,
+            "epochs": 1,
+            "sha256": "262d5e86b5934f0044ef131a3bedc228f044768f9e736c99425dad138fa27c57",
+            "selected_lambda": 0.0,
+            "seconds_per_epoch": 5.865335120994132
+          }
+        }
+      },
+      "selected": "none",
+      "selection": "mean V1 MAE over seeds"
+    },
+    "DATCNGRU": {
+      "runs": {
+        "0.05": {
+          "2024": {
+            "v1_mae": 336.37371826171875,
+            "best_epoch": 1,
+            "epochs": 1,
+            "sha256": "03814844dbe5011a21445108d7ef589c92edc8716339896ab3d38d6c2e2504e9",
+            "selected_lambda": 0.05,
+            "seconds_per_epoch": 5.570576008001808
+          }
+        }
+      },
+      "selected": "0.05",
+      "selection": "mean V1 MAE over seeds"
+    },
+    "CNN": {
+      "runs": {
+        "none": {
+          "2024": {
+            "v1_mae": 401.4714050292969,
+            "best_epoch": 1,
+            "epochs": 1,
+            "sha256": "da5edec2c68840f72c85c24d98f984ded0f9d0931a5ebb49fdcbdef65994350f",
+            "selected_lambda": 0.0,
+            "seconds_per_epoch": 1.3071263110032305
+          }
+        }
+      },
+      "selected": "none",
+      "selection": "mean V1 MAE over seeds"
+    },
+    "BILSTM": {
+      "runs": {
+        "none": {
+          "2024": {
+            "v1_mae": 403.5259704589844,
+            "best_epoch": 1,
+            "epochs": 1,
+            "sha256": "d71e7e69939b6b7e26fd602f2ab3532e3472028d217ee57f6de0aba0ef2310f6",
+            "selected_lambda": 0.0,
+            "seconds_per_epoch": 5.41898570797639
+          }
+        }
+      },
+      "selected": "none",
+      "selection": "mean V1 MAE over seeds"
+    }
+  },
+  "predictions": {
+    "B/Penmanshiel/N_v1/none/2024/V1.npy": "4f981dfde84281ab14e8537b68e2f36f3e80306a7d154ad4625db56509738344",
+    "B/Penmanshiel/N_v1/none/2024/V2.npy": "0dc714f96a16920356f6e6350deb91e534fe806af3af2882c8f706f2c9aed4af",
+    "B/Penmanshiel/TCNGRU/none/2024/V1.npy": "8f5098b5b711860642712c4735767cfa11bb256b0f2c6dd1446997466a934459",
+    "B/Penmanshiel/TCNGRU/none/2024/V2.npy": "626fbcfc5c08c2fbd714383c01e67085e0f4567d8bd6d834d476325d24e82cd5",
+    "B/Penmanshiel/DATCNGRU/0.05/2024/V1.npy": "af27d7da8d622d26b255b65464c1a22e9c080df268c94f19f405e894983becbc",
+    "B/Penmanshiel/DATCNGRU/0.05/2024/V2.npy": "95fc5ec3a88d1693bd4f81c60f2d751d7564dcfae9f2d8f1aab1405f8ccce996",
+    "B/Penmanshiel/CNN/none/2024/V1.npy": "56bcc53ba8c4dbe0690c5d362ee94f7e353a247bf8ff12173ed6f536477c0134",
+    "B/Penmanshiel/CNN/none/2024/V2.npy": "5821f6f382c90ee9222400f50a49773704c619a329ea4e71d20d4c8de11b2cbe",
+    "B/Penmanshiel/BILSTM/none/2024/V1.npy": "b57d70d6e52b551ccbcb6737bc94e975a6f6c53acffc5180ad65e81e1b0d51c0",
+    "B/Penmanshiel/BILSTM/none/2024/V2.npy": "6f7bdec6bcb8751ecb13827b4cc8f621acdf83643d4b919f6840b2ae18acaaef"
+  }
+}

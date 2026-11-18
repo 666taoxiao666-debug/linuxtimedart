@@ -1,0 +1,226 @@
+[X2] A Kelmarsh curves: {1: 'turbine', 2: 'turbine', 3: 'turbine', 4: 'turbine', 5: 'turbine', 6: 'turbine'}
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+[X2] A Kelmarsh L0 grid {'num_leaves': 31, 'min_child_samples': 50, 'v1_mae': 243.08198413380566, 'best_iterations': [40, 40, 40, 40]}
+[X2] A Kelmarsh L0 seed 2024 V1 MAE 243.082
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+[X2] A Kelmarsh LU grid {'num_leaves': 31, 'min_child_samples': 50, 'v1_mae': 237.72188227214536, 'best_iterations': [40, 40, 40, 40]}
+[X2] A Kelmarsh LU seed 2024 V1 MAE 237.722
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+[X2] A Kelmarsh LG grid {'num_leaves': 31, 'min_child_samples': 50, 'v1_mae': 222.31404376819012, 'best_iterations': [40, 40, 40, 40]}
+[X2] A Kelmarsh LG seed 2024 V1 MAE 222.314
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+[X2] A Kelmarsh LUG grid {'num_leaves': 31, 'min_child_samples': 50, 'v1_mae': 221.87780549359212, 'best_iterations': [40, 40, 40, 40]}
+[X2] A Kelmarsh LUG seed 2024 V1 MAE 221.878
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+[X2] A Kelmarsh LUG_PCL grid {'num_leaves': 31, 'min_child_samples': 50, 'v1_mae': 220.95878381116404, 'best_iterations': [40, 40, 40, 40]}
+[X2] A Kelmarsh LUG_PCL seed 2024 V1 MAE 220.959
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+[X2] A Kelmarsh LUG_ANI grid {'num_leaves': 31, 'min_child_samples': 50, 'v1_mae': 220.28844401462175, 'best_iterations': [40, 40, 40, 40]}
+[X2] A Kelmarsh LUG_ANI seed 2024 V1 MAE 220.288
+[X2] A Kelmarsh test Kelmarsh_2022 predicted
+[X2] A Penmanshiel curves: {1: 'turbine', 2: 'turbine', 4: 'turbine', 5: 'turbine', 6: 'turbine', 7: 'turbine', 8: 'turbine', 9: 'turbine', 10: 'turbine', 11: 'turbine', 12: 'turbine', 13: 'turbine', 14: 'turbine', 15: 'turbine'}
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+[X2] A Penmanshiel L0 grid {'num_leaves': 31, 'min_child_samples': 50, 'v1_mae': 341.17247433493554, 'best_iterations': [40, 40, 40, 40]}
+[X2] A Penmanshiel L0 seed 2024 V1 MAE 341.172
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+[X2] A Penmanshiel LU grid {'num_leaves': 31, 'min_child_samples': 50, 'v1_mae': 325.9906147957453, 'best_iterations': [40, 40, 40, 40]}
+[X2] A Penmanshiel LU seed 2024 V1 MAE 325.991
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+[X2] A Penmanshiel LG grid {'num_leaves': 31, 'min_child_samples': 50, 'v1_mae': 302.66871212756405, 'best_iterations': [40, 40, 40, 40]}
+[X2] A Penmanshiel LG seed 2024 V1 MAE 302.669
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+[X2] A Penmanshiel LUG grid {'num_leaves': 31, 'min_child_samples': 50, 'v1_mae': 300.8757910199398, 'best_iterations': [40, 40, 40, 40]}
+[X2] A Penmanshiel LUG seed 2024 V1 MAE 300.876
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+[X2] A Penmanshiel LUG_PCL grid {'num_leaves': 31, 'min_child_samples': 50, 'v1_mae': 300.9322269937066, 'best_iterations': [40, 40, 40, 40]}
+[X2] A Penmanshiel LUG_PCL seed 2024 V1 MAE 300.932
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+[X2] A Penmanshiel LUG_ANI grid {'num_leaves': 31, 'min_child_samples': 50, 'v1_mae': 299.2437228553059, 'best_iterations': [40, 40, 40, 40]}
+[X2] A Penmanshiel LUG_ANI seed 2024 V1 MAE 299.244
+[X2] A Penmanshiel test Penmanshiel_2021 predicted
+[X2] A HoT curves: {0: 'turbine', 1: 'turbine', 2: 'turbine', 3: 'turbine', 4: 'turbine', 5: 'turbine', 6: 'turbine', 7: 'turbine', 8: 'turbine', 9: 'turbine', 10: 'turbine', 11: 'turbine', 12: 'turbine', 13: 'turbine', 14: 'turbine', 15: 'turbine', 16: 'turbine', 17: 'turbine', 18: 'turbine', 19: 'turbine', 20: 'turbine'}
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+[X2] A HoT L0 grid {'num_leaves': 31, 'min_child_samples': 50, 'v1_mae': 202.12028419150582, 'best_iterations': [40, 40, 40, 40]}
+[X2] A HoT L0 seed 2024 V1 MAE 202.120
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+[X2] A HoT LU grid {'num_leaves': 31, 'min_child_samples': 50, 'v1_mae': 192.45443744434496, 'best_iterations': [40, 40, 40, 40]}
+[X2] A HoT LU seed 2024 V1 MAE 192.454
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+[X2] A HoT LG grid {'num_leaves': 31, 'min_child_samples': 50, 'v1_mae': 190.57618578318332, 'best_iterations': [40, 40, 40, 40]}
+[X2] A HoT LG seed 2024 V1 MAE 190.576
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+[X2] A HoT LUG grid {'num_leaves': 31, 'min_child_samples': 50, 'v1_mae': 189.30932776241852, 'best_iterations': [40, 40, 40, 40]}
+[X2] A HoT LUG seed 2024 V1 MAE 189.309
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+[X2] A HoT LUG_PCL grid {'num_leaves': 31, 'min_child_samples': 50, 'v1_mae': 188.2640453753245, 'best_iterations': [40, 40, 40, 40]}
+[X2] A HoT LUG_PCL seed 2024 V1 MAE 188.264
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+[X2] A HoT LUG_ANI grid {'num_leaves': 31, 'min_child_samples': 50, 'v1_mae': 184.49292742645198, 'best_iterations': [40, 40, 40, 40]}
+[X2] A HoT LUG_ANI seed 2024 V1 MAE 184.493
+[X2] A HoT test HoT_2024 predicted
+[X2] A HoT test HoT_2025 predicted
+[X2] B Kelmarsh N_v1 lam=none seed 2024 epoch 1 val 317.849 lam 0 0.6s
+[X2] B Kelmarsh N_v1 lam=none seed 2024 V1 MAE 317.849 best epoch 1 lambda 0 0.6 s/epoch
+[X2] B Kelmarsh TCNGRU lam=none seed 2024 epoch 1 val 276.147 lam 0 5.9s
+[X2] B Kelmarsh TCNGRU lam=none seed 2024 V1 MAE 276.147 best epoch 1 lambda 0 5.9 s/epoch
+[X2] B Kelmarsh DATCNGRU lam=0.05 seed 2024 epoch 1 val 268.768 lam 0.05 6.0s
+[X2] B Kelmarsh DATCNGRU lam=0.05 seed 2024 V1 MAE 268.768 best epoch 1 lambda 0.05 6.0 s/epoch
+[X2] B Kelmarsh CNN lam=none seed 2024 epoch 1 val 317.535 lam 0 1.4s
+[X2] B Kelmarsh CNN lam=none seed 2024 V1 MAE 317.535 best epoch 1 lambda 0 1.4 s/epoch
+[X2] B Kelmarsh BILSTM lam=none seed 2024 epoch 1 val 407.556 lam 0 5.1s
+[X2] B Kelmarsh BILSTM lam=none seed 2024 V1 MAE 407.556 best epoch 1 lambda 0 5.1 s/epoch
+[X2] B Kelmarsh test Kelmarsh_2022 predicted
+[X2] B Penmanshiel N_v1 lam=none seed 2024 epoch 1 val 456.145 lam 0 0.5s
+[X2] B Penmanshiel N_v1 lam=none seed 2024 V1 MAE 456.145 best epoch 1 lambda 0 0.5 s/epoch
+[X2] B Penmanshiel TCNGRU lam=none seed 2024 epoch 1 val 351.773 lam 0 5.9s
+[X2] B Penmanshiel TCNGRU lam=none seed 2024 V1 MAE 351.773 best epoch 1 lambda 0 5.9 s/epoch
+[X2] B Penmanshiel DATCNGRU lam=0.05 seed 2024 epoch 1 val 336.374 lam 0.05 5.6s
+[X2] B Penmanshiel DATCNGRU lam=0.05 seed 2024 V1 MAE 336.374 best epoch 1 lambda 0.05 5.6 s/epoch
+[X2] B Penmanshiel CNN lam=none seed 2024 epoch 1 val 401.471 lam 0 1.3s
+[X2] B Penmanshiel CNN lam=none seed 2024 V1 MAE 401.471 best epoch 1 lambda 0 1.3 s/epoch
+[X2] B Penmanshiel BILSTM lam=none seed 2024 epoch 1 val 403.526 lam 0 5.4s
+[X2] B Penmanshiel BILSTM lam=none seed 2024 V1 MAE 403.526 best epoch 1 lambda 0 5.4 s/epoch
+[X2] B Penmanshiel test Penmanshiel_2021 predicted
+[X2] B HoT N_v1 lam=none seed 2024 epoch 1 val 289.668 lam 0 0.5s
+[X2] B HoT N_v1 lam=none seed 2024 V1 MAE 289.668 best epoch 1 lambda 0 0.5 s/epoch
+[X2] B HoT TCNGRU lam=none seed 2024 epoch 1 val 226.355 lam 0 5.3s
+[X2] B HoT TCNGRU lam=none seed 2024 V1 MAE 226.355 best epoch 1 lambda 0 5.3 s/epoch
+[X2] B HoT DATCNGRU lam=0.05 seed 2024 epoch 1 val 224.744 lam 0.05 5.1s
+[X2] B HoT DATCNGRU lam=0.05 seed 2024 V1 MAE 224.744 best epoch 1 lambda 0.05 5.1 s/epoch
+[X2] B HoT CNN lam=none seed 2024 epoch 1 val 241.944 lam 0 1.2s
+[X2] B HoT CNN lam=none seed 2024 V1 MAE 241.944 best epoch 1 lambda 0 1.2 s/epoch
+[X2] B HoT BILSTM lam=none seed 2024 epoch 1 val 278.397 lam 0 5.1s
+[X2] B HoT BILSTM lam=none seed 2024 V1 MAE 278.397 best epoch 1 lambda 0 5.1 s/epoch
+[X2] B HoT test HoT_2024 predicted
+[X2] B HoT test HoT_2025 predicted
+[X2] dev decisions written: NEAR_PASS_REGISTER_BEFORE_ANY_ROUND
+[X2] test Kelmarsh_2022 done
+[X2] test Penmanshiel_2021 done
+[X2] test HoT_2024 done
+[X2] test HoT_2025 done

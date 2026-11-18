@@ -1,0 +1,96 @@
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights:  67%|██████▋   | 114/170 [00:00<00:00, 1096.10it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 1050.44it/s]
+  0%|          | 0/1000 [00:00<?, ?it/s]Traceback (most recent call last):
+  File "/home/XT/nuist/pythoncode/TimeDARTFirst_X1_e4819b0/scripts/run_x1.py", line 1214, in <module>
+    b1_worker(args)
+  File "/home/XT/nuist/pythoncode/TimeDARTFirst_X1_e4819b0/scripts/run_x1.py", line 657, in b1_worker
+    fitted = pipe.fit(chronos_training_inputs(train), prediction_length=4,
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/XT/miniconda3/envs/tsfm/lib/python3.11/site-packages/chronos/chronos2/pipeline.py", line 354, in fit
+    trainer.train()
+  File "/home/XT/miniconda3/envs/tsfm/lib/python3.11/site-packages/transformers/trainer.py", line 1576, in train
+    return inner_training_loop(
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/home/XT/miniconda3/envs/tsfm/lib/python3.11/site-packages/transformers/trainer.py", line 1660, in _inner_training_loop
+    self._run_epoch(
+  File "/home/XT/miniconda3/envs/tsfm/lib/python3.11/site-packages/transformers/trainer.py", line 1909, in _run_epoch
+    tr_loss_step = self.training_step(model, inputs, num_items_in_batch)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/XT/miniconda3/envs/tsfm/lib/python3.11/site-packages/transformers/trainer.py", line 2082, in training_step
+    loss = self.compute_loss(model, inputs, num_items_in_batch=num_items_in_batch)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/XT/miniconda3/envs/tsfm/lib/python3.11/site-packages/transformers/trainer.py", line 2164, in compute_loss
+    outputs = model(**inputs)
+              ^^^^^^^^^^^^^^^
+  File "/home/XT/miniconda3/envs/tsfm/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1739, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/XT/miniconda3/envs/tsfm/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1750, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/XT/miniconda3/envs/tsfm/lib/python3.11/site-packages/accelerate/utils/operations.py", line 943, in forward
+    return model_forward(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/XT/miniconda3/envs/tsfm/lib/python3.11/site-packages/accelerate/utils/operations.py", line 931, in __call__
+    return convert_to_fp32(self.model_forward(*args, **kwargs))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/XT/miniconda3/envs/tsfm/lib/python3.11/site-packages/torch/amp/autocast_mode.py", line 44, in decorate_autocast
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/XT/miniconda3/envs/tsfm/lib/python3.11/site-packages/chronos/chronos2/model.py", line 716, in forward
+    encoder_outputs, loc_scale, patched_future_covariates_mask, num_context_patches = self.encode(
+                                                                                      ^^^^^^^^^^^^
+  File "/home/XT/miniconda3/envs/tsfm/lib/python3.11/site-packages/chronos/chronos2/model.py", line 629, in encode
+    encoder_outputs: Chronos2EncoderOutput = self.encoder(
+                                             ^^^^^^^^^^^^^
+  File "/home/XT/miniconda3/envs/tsfm/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1739, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/XT/miniconda3/envs/tsfm/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1750, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/XT/miniconda3/envs/tsfm/lib/python3.11/site-packages/chronos/chronos2/model.py", line 173, in forward
+    layer_outputs: Chronos2EncoderBlockOutput = layer_module(
+                                                ^^^^^^^^^^^^^
+  File "/home/XT/miniconda3/envs/tsfm/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1739, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/XT/miniconda3/envs/tsfm/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1750, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/XT/miniconda3/envs/tsfm/lib/python3.11/site-packages/chronos/chronos2/model.py", line 68, in forward
+    time_self_attn_outputs: AttentionOutput = self.layer[0](
+                                              ^^^^^^^^^^^^^^
+  File "/home/XT/miniconda3/envs/tsfm/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1739, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/XT/miniconda3/envs/tsfm/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1750, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/XT/miniconda3/envs/tsfm/lib/python3.11/site-packages/chronos/chronos2/layers.py", line 354, in forward
+    attention_output: AttentionOutput = self.self_attention(
+                                        ^^^^^^^^^^^^^^^^^^^^
+  File "/home/XT/miniconda3/envs/tsfm/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1739, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/XT/miniconda3/envs/tsfm/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1750, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/XT/miniconda3/envs/tsfm/lib/python3.11/site-packages/chronos/chronos2/layers.py", line 323, in forward
+    query_states, key_states = Chronos2RotaryEmbedding.apply_rotary_pos_emb(
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/XT/miniconda3/envs/tsfm/lib/python3.11/site-packages/chronos/chronos2/layers.py", line 124, in apply_rotary_pos_emb
+    q_embed = (q * cos) + (Chronos2RotaryEmbedding.rotate_half(q) * sin)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/XT/miniconda3/envs/tsfm/lib/python3.11/site-packages/chronos/chronos2/layers.py", line 99, in rotate_half
+    return torch.cat((-x2, x1), dim=-1)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 20.00 MiB. GPU 0 has a total capacity of 23.56 GiB of which 3.44 MiB is free. Process 1307196 has 472.00 MiB memory in use. Process 1402291 has 20.60 GiB memory in use. Including non-PyTorch memory, this process has 2.44 GiB memory in use. 4.71 GiB allowed; Of the allocated memory 2.11 GiB is allocated by PyTorch, and 25.22 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+  0%|          | 0/1000 [00:02<?, ?it/s]
+Traceback (most recent call last):
+  File "/home/XT/nuist/pythoncode/TimeDARTFirst_X1_e4819b0/scripts/run_x1.py", line 1212, in <module>
+    run_b1(args)
+  File "/home/XT/nuist/pythoncode/TimeDARTFirst_X1_e4819b0/scripts/run_x1.py", line 719, in run_b1
+    subprocess.run([args.chronos_python, '-u', str(Path(__file__).resolve()), '--arm', 'B1-worker',
+  File "/home/XT/miniconda3/envs/timedart/lib/python3.10/subprocess.py", line 526, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['/home/XT/miniconda3/envs/tsfm/bin/python', '-u', '/home/XT/nuist/pythoncode/TimeDARTFirst_X1_e4819b0/scripts/run_x1.py', '--arm', 'B1-worker', '--logs', '/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs', '--output', '/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/x1_e4819b0_gpu_r1/B1/Kelmarsh', '--protocol-sha256', 'd75b1312ac6aa1f6a0d60b933340c09e4e56abacdb5a047134ddf0ec1b2c1bf3', '--chronos-receipt', '/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/cursor_env/receipt.json', '--chronos-manifest', '/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/cursor_env/chronos2_manifest.json', '--worker-input', '/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/x1_e4819b0_gpu_r1/B1/Kelmarsh_worker.json', '--worker-input-sha', '02c7a9091da61680242cd81663e0f6a2bbc100aa13a566b0f1713b8085831fab']' returned non-zero exit status 1.

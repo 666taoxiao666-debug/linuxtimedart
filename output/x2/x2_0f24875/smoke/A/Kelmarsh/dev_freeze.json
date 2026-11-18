@@ -1,0 +1,277 @@
+{
+  "curves_sha256": "d269a50b97690a76156483e358df8ff099f1ca7cab3ac4ba37ccc84c3932093b",
+  "arms": {
+    "L0": {
+      "grid": [
+        {
+          "num_leaves": 31,
+          "min_child_samples": 50,
+          "v1_mae": 243.08198413380566,
+          "best_iterations": [
+            40,
+            40,
+            40,
+            40
+          ]
+        }
+      ],
+      "selected": {
+        "num_leaves": 31,
+        "min_child_samples": 50,
+        "v1_mae": 243.08198413380566,
+        "best_iterations": [
+          40,
+          40,
+          40,
+          40
+        ]
+      },
+      "seeds": {
+        "2024": {
+          "boosters": {
+            "h1.txt": "84dd63a45678a97c3153e6e0c81ce4767e7994624a5440b0850044a5fbb471d6",
+            "h2.txt": "8123afd2d13daee27a9c9b2bf53ed78b0c2f4dda774d9a59e3d5ff13a97eef9d",
+            "h3.txt": "4101023cd31ce99515239ffac0d7b0b963039881aff479fd0484b2a778a816fa",
+            "h4.txt": "2facbb1d17c052493dfa30629c861e8c57a1b22eafac2add507da652473fd9e6"
+          },
+          "v1_mae": 243.08198413380566,
+          "best_iterations": [
+            40,
+            40,
+            40,
+            40
+          ]
+        }
+      }
+    },
+    "LU": {
+      "grid": [
+        {
+          "num_leaves": 31,
+          "min_child_samples": 50,
+          "v1_mae": 237.72188227214536,
+          "best_iterations": [
+            40,
+            40,
+            40,
+            40
+          ]
+        }
+      ],
+      "selected": {
+        "num_leaves": 31,
+        "min_child_samples": 50,
+        "v1_mae": 237.72188227214536,
+        "best_iterations": [
+          40,
+          40,
+          40,
+          40
+        ]
+      },
+      "seeds": {
+        "2024": {
+          "boosters": {
+            "h1.txt": "165549589b931aeaecb39de22c355db0bc53254842019a04e42a183579d08531",
+            "h2.txt": "aaf03abfb20d212d882b13abf8cff24136865f88589bdd0f8826dcf9a4b8a9bc",
+            "h3.txt": "089d6f88ba665133175196cdd9a87fc0bb4bbf3baf827b04228f166d947ef269",
+            "h4.txt": "362ce3a8cffd0139d3e07fc792ccf630f811c4902c1d847a307bbe489412aa74"
+          },
+          "v1_mae": 237.72188227214536,
+          "best_iterations": [
+            40,
+            40,
+            40,
+            40
+          ]
+        }
+      }
+    },
+    "LG": {
+      "grid": [
+        {
+          "num_leaves": 31,
+          "min_child_samples": 50,
+          "v1_mae": 222.31404376819012,
+          "best_iterations": [
+            40,
+            40,
+            40,
+            40
+          ]
+        }
+      ],
+      "selected": {
+        "num_leaves": 31,
+        "min_child_samples": 50,
+        "v1_mae": 222.31404376819012,
+        "best_iterations": [
+          40,
+          40,
+          40,
+          40
+        ]
+      },
+      "seeds": {
+        "2024": {
+          "boosters": {
+            "h1.txt": "71b55ef1f4c2d9845b66dc1e703e157d2e3b618ef5c3742106a0cf8948f1595e",
+            "h2.txt": "279d970133a35f0f08885801c8dd21782486722aa527ae5e2b971a85e1d0c2bf",
+            "h3.txt": "acd18a0f54337961743160bad97896c479c0a31c50388d472d7fd14099f3ebf0",
+            "h4.txt": "fe40ae6407b4e6512aa0f29c1dd1bfb362975476bdb83d7741d07083ca775702"
+          },
+          "v1_mae": 222.31404376819012,
+          "best_iterations": [
+            40,
+            40,
+            40,
+            40
+          ]
+        }
+      }
+    },
+    "LUG": {
+      "grid": [
+        {
+          "num_leaves": 31,
+          "min_child_samples": 50,
+          "v1_mae": 221.87780549359212,
+          "best_iterations": [
+            40,
+            40,
+            40,
+            40
+          ]
+        }
+      ],
+      "selected": {
+        "num_leaves": 31,
+        "min_child_samples": 50,
+        "v1_mae": 221.87780549359212,
+        "best_iterations": [
+          40,
+          40,
+          40,
+          40
+        ]
+      },
+      "seeds": {
+        "2024": {
+          "boosters": {
+            "h1.txt": "bb3fa828c35104eb9fcb664c76ef6a3eda96a7337a3ea22204252b14c3caa785",
+            "h2.txt": "87f01a98c6fe8feff488bd5a944d819d118fbe2a2de58ef8aa6058aa474cbdb1",
+            "h3.txt": "6f6effc89e25eaca2676ed8a8705ff630f446fd178961f523ce9b973184d551e",
+            "h4.txt": "c7cb9ce27fc102b1f5747c7100c3baf9c8a2364305277e18fa367e4b2a5903bd"
+          },
+          "v1_mae": 221.87780549359212,
+          "best_iterations": [
+            40,
+            40,
+            40,
+            40
+          ]
+        }
+      }
+    },
+    "LUG_PCL": {
+      "grid": [
+        {
+          "num_leaves": 31,
+          "min_child_samples": 50,
+          "v1_mae": 220.95878381116404,
+          "best_iterations": [
+            40,
+            40,
+            40,
+            40
+          ]
+        }
+      ],
+      "selected": {
+        "num_leaves": 31,
+        "min_child_samples": 50,
+        "v1_mae": 220.95878381116404,
+        "best_iterations": [
+          40,
+          40,
+          40,
+          40
+        ]
+      },
+      "seeds": {
+        "2024": {
+          "boosters": {
+            "h1.txt": "dcab48221c6db1a3d1171981ff56a23b28a2516e8d2bce27518e581095d15e69",
+            "h2.txt": "3012beca3ba2f25d3904f53e441837b2fd065f1169cd658754db719223f1d2f6",
+            "h3.txt": "30a0724860c2c4f06c45040ae79b83dfe8e5b83e44f285395cacc4a23429d675",
+            "h4.txt": "3b51c950fbe5ea0f506d8a5dd4c4cb4a912d69e88413d144432f7c5acaad5466"
+          },
+          "v1_mae": 220.95878381116404,
+          "best_iterations": [
+            40,
+            40,
+            40,
+            40
+          ]
+        }
+      }
+    },
+    "LUG_ANI": {
+      "grid": [
+        {
+          "num_leaves": 31,
+          "min_child_samples": 50,
+          "v1_mae": 220.28844401462175,
+          "best_iterations": [
+            40,
+            40,
+            40,
+            40
+          ]
+        }
+      ],
+      "selected": {
+        "num_leaves": 31,
+        "min_child_samples": 50,
+        "v1_mae": 220.28844401462175,
+        "best_iterations": [
+          40,
+          40,
+          40,
+          40
+        ]
+      },
+      "seeds": {
+        "2024": {
+          "boosters": {
+            "h1.txt": "230c0c4bd39611c49640ab047d8b1e928b3d4e1d41584c2e98416eb46b55f331",
+            "h2.txt": "c99424036212bcdc67709d8c8693e024a2a90f3b5cedcbd529a17b312f727390",
+            "h3.txt": "11a6f5fcbc11a1888dfef64c2dbea6c4a99cec1f062cc1e2bbdfea291cbd3c62",
+            "h4.txt": "d6e67c6960c2e1afead9da1257d2d7de4adb002c64b371de5096843831d5524b"
+          },
+          "v1_mae": 220.28844401462175,
+          "best_iterations": [
+            40,
+            40,
+            40,
+            40
+          ]
+        }
+      }
+    }
+  },
+  "predictions": {
+    "A/Kelmarsh/L0/2024/V1.npy": "5c2d10993726bcf8ae1f4c2d9f7cb12c3efbdd8ebb0974ea78517ab4d580f6cc",
+    "A/Kelmarsh/L0/2024/V2.npy": "1baccf1e5a2c3add5c0e67cfe64acb0306437bb851548522d1b0824631e7a884",
+    "A/Kelmarsh/LU/2024/V1.npy": "152f522d861ffd618e8c81e82d5fb228bb070b89e5148c6fe28440614729aeb7",
+    "A/Kelmarsh/LU/2024/V2.npy": "f0225527997562b1e03f66ad00f56155bb29ac5f52a1924cd0f949f90e8b977c",
+    "A/Kelmarsh/LG/2024/V1.npy": "b015070357bb19251de294e76bcd9c988a909d804e2c8761a55da4e08c63de60",
+    "A/Kelmarsh/LG/2024/V2.npy": "02bb5d15602ba7812940895e8afa438d42220a5fad70f143dd641cd4673141d7",
+    "A/Kelmarsh/LUG/2024/V1.npy": "0e4e92646d29b585bc1d8e4def6abde3e6c3f6267c9661866769df90ade5c5a5",
+    "A/Kelmarsh/LUG/2024/V2.npy": "a3282a75f47ed8b92a87d6943a7f1b21d318625697d6e50b0366ccd776983630",
+    "A/Kelmarsh/LUG_PCL/2024/V1.npy": "751dc4341d0ded0b8179dd6579f5ce4c7f4f55bdf7b4b71c6878a07396dae097",
+    "A/Kelmarsh/LUG_PCL/2024/V2.npy": "9a80f8075f27993c5a154c4d2e3dd607596523bded7924157a103a3ec58c1079",
+    "A/Kelmarsh/LUG_ANI/2024/V1.npy": "20a2c17e230a5bad2a3a5f038ecf956870a8d557ce5d39da0ad6f45d12504f82",
+    "A/Kelmarsh/LUG_ANI/2024/V2.npy": "a99520bdf46976981cc8db800d3eb862116be3718bc2b3ba7e3fa33465ca9da3"
+  }
+}

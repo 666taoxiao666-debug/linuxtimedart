@@ -1,0 +1,243 @@
+{
+  "config": {
+    "max_epochs": 40,
+    "patience": 5,
+    "batch_size": 64,
+    "learning_rate": 0.001,
+    "weight_decay": 0.0001,
+    "mae_weight": 0.8,
+    "mse_weight": 0.2,
+    "grad_clip": 1.0,
+    "eta_min": 1e-05,
+    "blocks": 2,
+    "ff_dim": 32,
+    "dropout": 0.1,
+    "norm_eps": 0.001
+  },
+  "arms": {
+    "N_v1": {
+      "runs": {
+        "none": {
+          "2024": {
+            "v1_mae": 198.6949920654297,
+            "best_epoch": 5,
+            "epochs": 10,
+            "sha256": "12b9846fe4622f2d8915a2af6b1422004a483cf16e3a80d541b5e8c3206cbd1f",
+            "selected_lambda": 0.0,
+            "seconds_per_epoch": 2.3892568763985764
+          },
+          "2025": {
+            "v1_mae": 193.90792846679688,
+            "best_epoch": 4,
+            "epochs": 9,
+            "sha256": "151c6a0cefdc8eb2251064fcdc9e1b3f398d94762f6db0a5033690b06b8af184",
+            "selected_lambda": 0.0,
+            "seconds_per_epoch": 2.381010407666003
+          },
+          "2026": {
+            "v1_mae": 196.43392944335938,
+            "best_epoch": 5,
+            "epochs": 10,
+            "sha256": "64e88207cb9737b19ab6c25da471a6c21e451e44d222f116d289a23848ccfd9d",
+            "selected_lambda": 0.0,
+            "seconds_per_epoch": 2.4067491174966564
+          }
+        }
+      },
+      "selected": "none",
+      "selection": "mean V1 MAE over seeds"
+    },
+    "TCNGRU": {
+      "runs": {
+        "none": {
+          "2024": {
+            "v1_mae": 208.03814697265625,
+            "best_epoch": 22,
+            "epochs": 27,
+            "sha256": "de977400b6b8baf0e910a802c0d40a899946798bdcf6af705c36d36b114e37f4",
+            "selected_lambda": 0.0,
+            "seconds_per_epoch": 4.994400274148642
+          },
+          "2025": {
+            "v1_mae": 202.58348083496094,
+            "best_epoch": 21,
+            "epochs": 26,
+            "sha256": "ec902c7e8881747a10242fd092d11e0eb3d913c79319269ffb804da21e6561f9",
+            "selected_lambda": 0.0,
+            "seconds_per_epoch": 5.053022201963288
+          },
+          "2026": {
+            "v1_mae": 199.16543579101562,
+            "best_epoch": 17,
+            "epochs": 22,
+            "sha256": "6ed19dd282f69faded257d0c4c70917617682f37a2a8c87816e456c47647a10a",
+            "selected_lambda": 0.0,
+            "seconds_per_epoch": 4.999415774729145
+          }
+        }
+      },
+      "selected": "none",
+      "selection": "mean V1 MAE over seeds"
+    },
+    "DATCNGRU": {
+      "runs": {
+        "0.05": {
+          "2024": {
+            "v1_mae": 203.6986083984375,
+            "best_epoch": 19,
+            "epochs": 24,
+            "sha256": "079448a4f8f217353e16e875c2aad46abacf36982ccd000f9de87b9eeffee0e2",
+            "selected_lambda": 0.006250000000000001,
+            "seconds_per_epoch": 5.3839280441679875
+          },
+          "2025": {
+            "v1_mae": 206.18162536621094,
+            "best_epoch": 19,
+            "epochs": 24,
+            "sha256": "86aca41f37ae0e5fabad25b2f4faa707fa593660500facba7a011b0759a64d22",
+            "selected_lambda": 0.006250000000000001,
+            "seconds_per_epoch": 5.405339199622783
+          },
+          "2026": {
+            "v1_mae": 201.70355224609375,
+            "best_epoch": 17,
+            "epochs": 22,
+            "sha256": "5d534ad254911efbd3dc90433d65b3f877b655c46a3707723b484b83b1009205",
+            "selected_lambda": 0.0020833333333333333,
+            "seconds_per_epoch": 5.3945220350525975
+          }
+        },
+        "0.5": {
+          "2024": {
+            "v1_mae": 206.7077178955078,
+            "best_epoch": 21,
+            "epochs": 26,
+            "sha256": "afbf878d5402975b127f379e2c275350956ac5fd55cf10d0e00f7458f21f8e6d",
+            "selected_lambda": 0.10416666666666667,
+            "seconds_per_epoch": 5.3357872044658645
+          },
+          "2025": {
+            "v1_mae": 206.58741760253906,
+            "best_epoch": 18,
+            "epochs": 23,
+            "sha256": "dd6c21f0c852ddbe68e71ef98e84f7ed9800fd89095ea06e103edb4cce67ac59",
+            "selected_lambda": 0.041666666666666664,
+            "seconds_per_epoch": 5.291784066223519
+          },
+          "2026": {
+            "v1_mae": 207.3420867919922,
+            "best_epoch": 20,
+            "epochs": 25,
+            "sha256": "93475ead46e54810066c6eb659c060cbe376f8758779edbc0e74dbb545e97ab2",
+            "selected_lambda": 0.08333333333333333,
+            "seconds_per_epoch": 5.328832129477523
+          }
+        }
+      },
+      "selected": "0.05",
+      "selection": "mean V1 MAE over seeds"
+    },
+    "CNN": {
+      "runs": {
+        "none": {
+          "2024": {
+            "v1_mae": 210.6396942138672,
+            "best_epoch": 9,
+            "epochs": 14,
+            "sha256": "54fa739b135866df318cb6e2c1377b68d6aeb13971714f1c3de3fab62829a436",
+            "selected_lambda": 0.0,
+            "seconds_per_epoch": 2.716474657562295
+          },
+          "2025": {
+            "v1_mae": 202.77932739257812,
+            "best_epoch": 2,
+            "epochs": 7,
+            "sha256": "d3855230b27414415394c30585fd6821feeeb9f095b4839228c702a814e9bc58",
+            "selected_lambda": 0.0,
+            "seconds_per_epoch": 2.715321858421833
+          },
+          "2026": {
+            "v1_mae": 204.8950653076172,
+            "best_epoch": 1,
+            "epochs": 6,
+            "sha256": "231e2ad621c61185dd15cdacff8cc7c8660cd367170426ec2bb7d94262f28c29",
+            "selected_lambda": 0.0,
+            "seconds_per_epoch": 2.714371583152873
+          }
+        }
+      },
+      "selected": "none",
+      "selection": "mean V1 MAE over seeds"
+    },
+    "BILSTM": {
+      "runs": {
+        "none": {
+          "2024": {
+            "v1_mae": 209.00115966796875,
+            "best_epoch": 5,
+            "epochs": 10,
+            "sha256": "1e62c467e9c3377ac080c0aa94c135a8f3deeb3d43e07a783f38889d3d8a9359",
+            "selected_lambda": 0.0,
+            "seconds_per_epoch": 4.920451760903234
+          },
+          "2025": {
+            "v1_mae": 204.00839233398438,
+            "best_epoch": 4,
+            "epochs": 9,
+            "sha256": "766af38a286d771656876374acee4c77d70bae779a5a333d1682cd635c88e25a",
+            "selected_lambda": 0.0,
+            "seconds_per_epoch": 5.396891534224981
+          },
+          "2026": {
+            "v1_mae": 203.14561462402344,
+            "best_epoch": 4,
+            "epochs": 9,
+            "sha256": "05c58322035badb4a2ca7764dfde22667d25efdb4e7831eb492f42260c59d600",
+            "selected_lambda": 0.0,
+            "seconds_per_epoch": 5.509184615330822
+          }
+        }
+      },
+      "selected": "none",
+      "selection": "mean V1 MAE over seeds"
+    }
+  },
+  "predictions": {
+    "B/Penmanshiel/N_v1/none/2024/V1.npy": "8f4aca55e7380c800154030cf95896f97ceab19f58f0fe9f1e3a5eea7e4e29c6",
+    "B/Penmanshiel/N_v1/none/2024/V2.npy": "cbc3cac6159ef5a340988fac312c3487329eb94415e8385d6c65f9a59afddfd0",
+    "B/Penmanshiel/N_v1/none/2025/V1.npy": "d3f0f3d2038bf32b7039e8e5709b29368f22361d7953f80672558c44667d57db",
+    "B/Penmanshiel/N_v1/none/2025/V2.npy": "b3cb8eafc443955991da5863a140362521c4f62e3043b27ddf8fa92831588e55",
+    "B/Penmanshiel/N_v1/none/2026/V1.npy": "992ecb60e1e2b89706dbb9e2c98050da86a2cf0413ef49c1b411429b5cb46109",
+    "B/Penmanshiel/N_v1/none/2026/V2.npy": "4c7171d3660c1fa80c0af59c00a34a4d0235464bb685a51c9d1eb6b9e3c0c419",
+    "B/Penmanshiel/TCNGRU/none/2024/V1.npy": "9e71a13eece92854d9397dd07fe57952efbd11cc89e69800d14968482c4ca847",
+    "B/Penmanshiel/TCNGRU/none/2024/V2.npy": "66b2cee97036a838b434859caec75289a55302280d138edb30e79f4fdca2c13f",
+    "B/Penmanshiel/TCNGRU/none/2025/V1.npy": "83da794eab676278fabcda38a88eaaf72c20eb88e4afb54fc2d0c2c84adea49b",
+    "B/Penmanshiel/TCNGRU/none/2025/V2.npy": "42f4e4be10225c3701970e242e9f6780d4177f51f53e788f554ae02d311b13e4",
+    "B/Penmanshiel/TCNGRU/none/2026/V1.npy": "c9566699f7516d0bed87b9beaff5334ec108f75ccf80b9bed52e4d972ce6bfd2",
+    "B/Penmanshiel/TCNGRU/none/2026/V2.npy": "1d3790d6ad6f972cf64aad0201da3284bacacaeb61ee583063670080d6c91e2e",
+    "B/Penmanshiel/DATCNGRU/0.05/2024/V1.npy": "faae7c258b60f8e1862e9adeb50c2f6fb022c68a9dc54a78108f41774a23b8c3",
+    "B/Penmanshiel/DATCNGRU/0.05/2024/V2.npy": "46c45f6bc9883e92f407a958516510621103ba580b26fa80b346a4347c2a0baf",
+    "B/Penmanshiel/DATCNGRU/0.05/2025/V1.npy": "3e30aab4d7d24665f36f87622a3f66122e27762180a05fd045d2b5855ec7b7e2",
+    "B/Penmanshiel/DATCNGRU/0.05/2025/V2.npy": "25a3242b9569251f8204b16e41a4a3f678ead94a0f477f78b25ac75a2216d9bc",
+    "B/Penmanshiel/DATCNGRU/0.05/2026/V1.npy": "1a25b7b8d9b76bf11559f8c641b14abbfdab6011d2cb3b00c2bcba89a5e4265c",
+    "B/Penmanshiel/DATCNGRU/0.05/2026/V2.npy": "05346ce831203d95432e78090673d7ad5a845eaae5d671dbfa2728724694ed12",
+    "B/Penmanshiel/DATCNGRU/0.5/2024/V1.npy": "65b2a62d9d0ace4c9ca409ba2743cc87d66d9f6d3e05786af02227cd46f1d214",
+    "B/Penmanshiel/DATCNGRU/0.5/2024/V2.npy": "ac3e134f1b4e26e349493da45b565ef7c579e141bb4c847f53e09c5540cfe04a",
+    "B/Penmanshiel/DATCNGRU/0.5/2025/V1.npy": "6478111634976a061d05dcbd94950ded8c634894757c5157c4f43dec44393744",
+    "B/Penmanshiel/DATCNGRU/0.5/2025/V2.npy": "9bdc892b87f231cb9e9d523ab73cf76ba4fff09e4fa76f1053ddf421f996f610",
+    "B/Penmanshiel/DATCNGRU/0.5/2026/V1.npy": "6f310e7023ee2004f6e09d1d8cb3d7c7cf21b83a89b14588346ea4eb821286d3",
+    "B/Penmanshiel/DATCNGRU/0.5/2026/V2.npy": "f1807e3e65f6d25828496635f68f244535c75df3ce80533d9acdef0bfec4d76a",
+    "B/Penmanshiel/CNN/none/2024/V1.npy": "4b34308ba13cbe996b2f8a3556a62dced267bd4336feaa230b1d4218bf9a1516",
+    "B/Penmanshiel/CNN/none/2024/V2.npy": "8af7a0d94e809f2f9857ed64774e834d24702e24aa5705475c8f00c431bb3d3d",
+    "B/Penmanshiel/CNN/none/2025/V1.npy": "05da6cc43d7f828f7bd097ea38a924fcbc9ec023b44ca019b036a282a63cffc1",
+    "B/Penmanshiel/CNN/none/2025/V2.npy": "5a95f5dbb76e7b6c8ee33e2093dd968bffb2e7e0c3839c908e432de5ac202102",
+    "B/Penmanshiel/CNN/none/2026/V1.npy": "0ab58231f6a133fc363946f4c6f2ac430afbc08e82025e8e64a17ce03bd82b6d",
+    "B/Penmanshiel/CNN/none/2026/V2.npy": "ae7cd07f2b89f24ab5c6d34a2da17309ebd0035c28e21e8921a8b190aa020adb",
+    "B/Penmanshiel/BILSTM/none/2024/V1.npy": "ae73e918c768a39bd738e2a17d608f965e5a4f2f292ff45d759d5d167a5dc2a3",
+    "B/Penmanshiel/BILSTM/none/2024/V2.npy": "d4e80f144405fc503ecfe39aaf2148a17324528868d5fb238ef404c3efbb0e5f",
+    "B/Penmanshiel/BILSTM/none/2025/V1.npy": "e505dcee1e95925e47f26ab6d10bd92c6e5224d3c224b4b82f98ee095b29629c",
+    "B/Penmanshiel/BILSTM/none/2025/V2.npy": "1e68dec942256f90d582f0a721aaa965d4a1f3314c322c050eb5e42ec48e3791",
+    "B/Penmanshiel/BILSTM/none/2026/V1.npy": "56d2f37e559c2e4cd25780cd9e98e9a336c411893d6b1ff7cb92c0ca623ff54b",
+    "B/Penmanshiel/BILSTM/none/2026/V2.npy": "118b23b1942e13d453221f5e546c4aa8dde83a342485fae1a151231d2f8bf6aa"
+  }
+}

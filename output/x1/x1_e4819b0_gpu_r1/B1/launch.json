@@ -1,0 +1,7 @@
+{
+  "mode": "B1",
+  "source_sha256": "c1fb8bd8ce63b76f0694d7caaa29cc76b57fcd1b33b642cc1d7aeb3a910b6c46",
+  "protocol_sha256": "d75b1312ac6aa1f6a0d60b933340c09e4e56abacdb5a047134ddf0ec1b2c1bf3",
+  "fits": 3,
+  "checkpoint_selection": "validation_mae"
+}

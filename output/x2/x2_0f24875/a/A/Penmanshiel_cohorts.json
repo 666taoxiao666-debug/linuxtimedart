@@ -1,0 +1,25 @@
+{
+  "counts": {
+    "V1": 19413,
+    "V2": 16176,
+    "crossing_dropped": 14
+  },
+  "train": 64771,
+  "keys": {
+    "V1": {
+      "issue": "c37bbde3aec2de949d3b4a02bbc7a97d74077bb0e2f89f1002e1f5bfaec8f739",
+      "turbines": "dc224f87eb3dc2de2ebb4a3f52cea570125e50979cb6d73a7006a26fecb41619",
+      "truth": "e02de90c967167ff4f685842033d690bd701ad7d5c41bb6ded886b63b3c375e0"
+    },
+    "V2": {
+      "issue": "4c235a58761df138e051c10a3f0f853c1d4faa3f138ed94e00b2de698d40d993",
+      "turbines": "56304f1aacef759b99ceee899e9a1d5ff998fb6e2fbacc8fc927b14e9a1634ca",
+      "truth": "30ca0c85b4efa19ae4c03f7d233ce228f8f76426d629bb84190eac5a2fc1704a"
+    },
+    "Penmanshiel_2021": {
+      "issue": "dbd20449c5fb771ea62695da8f7011b13d64444dadf1bdc472885049c1b46017",
+      "turbines": "0d79e54b5dd06cd03303b12403820c976355f44c6862f2aa5a703dcd0a74aa0a",
+      "truth": "b8bd30264f0e2ed3b31ee2253712956bfb6806d0fd8cafe15d823fd1964107ff"
+    }
+  }
+}

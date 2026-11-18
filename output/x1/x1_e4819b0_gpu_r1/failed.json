@@ -1,0 +1,6 @@
+{
+  "phase": "B1",
+  "type": "CalledProcessError",
+  "message": "Command '['/home/XT/miniconda3/envs/timedart/bin/python', '-u', '/home/XT/nuist/pythoncode/TimeDARTFirst_X1_e4819b0/scripts/run_x1.py', '--arm', 'B1', '--logs', '/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs', '--output', '/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/x1_e4819b0_gpu_r1/B1', '--protocol-sha256', 'd75b1312ac6aa1f6a0d60b933340c09e4e56abacdb5a047134ddf0ec1b2c1bf3', '--chronos-receipt', '/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/cursor_env/receipt.json', '--chronos-manifest', '/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/cursor_env/chronos2_manifest.json', '--a1-results', '/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/x1_6e17435_r4/A1', '--a3-results', '/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/x1_e4819b0_gpu_r1/A3']' returned non-zero exit status 1.",
+  "retry": false
+}
