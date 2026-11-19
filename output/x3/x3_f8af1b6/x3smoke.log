@@ -1,0 +1,209 @@
+[X3] start q1check
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 1935.54it/s]
+[X3] start q1
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 1934.30it/s]
+[X3] Q1 Kelmarsh_validation_168_single coverage 0.7056
+[X3] Q1 Kelmarsh_validation_512_single coverage 0.5838
+[X3] Q1 Kelmarsh_validation_1024_single coverage 0.7908
+[X3] Q1 Kelmarsh_validation_168_group coverage 0.7056
+[X3] Q1 Kelmarsh_validation_512_group coverage 0.5838
+[X3] Q1 Kelmarsh_validation_1024_group coverage 0.7908
+[X3] Q1 Kelmarsh_validation_24_single coverage 1.0
+[X3] Q1 Kelmarsh_validation_512_single_masked coverage 0.5838
+[X3] Q1 Kelmarsh_2022_168_single coverage 1.0
+[X3] Q1 Kelmarsh_2022_512_single coverage 1.0
+[X3] Q1 Kelmarsh_2022_1024_single coverage 0.9985
+[X3] Q1 Kelmarsh_2022_168_group coverage 1.0
+[X3] Q1 Kelmarsh_2022_512_group coverage 1.0
+[X3] Q1 Kelmarsh_2022_1024_group coverage 0.9985
+[X3] Q1 Kelmarsh_2022_24_single coverage 1.0
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 1941.13it/s]
+[X3] Q1 Penmanshiel_validation_168_single coverage 0.9926
+[X3] Q1 Penmanshiel_validation_512_single coverage 0.978
+[X3] Q1 Penmanshiel_validation_1024_single coverage 0.9496
+[X3] Q1 Penmanshiel_validation_168_group coverage 0.9926
+[X3] Q1 Penmanshiel_validation_512_group coverage 0.978
+[X3] Q1 Penmanshiel_validation_1024_group coverage 0.9496
+[X3] Q1 Penmanshiel_validation_24_single coverage 1.0
+[X3] Q1 Penmanshiel_validation_512_single_masked coverage 0.978
+[X3] Q1 Penmanshiel_2021_168_single coverage 0.9637
+[X3] Q1 Penmanshiel_2021_512_single coverage 0.9819
+[X3] Q1 Penmanshiel_2021_1024_single coverage 0.9259
+[X3] Q1 Penmanshiel_2021_168_group coverage 0.9637
+[X3] Q1 Penmanshiel_2021_512_group coverage 0.9819
+[X3] Q1 Penmanshiel_2021_1024_group coverage 0.9259
+[X3] Q1 Penmanshiel_2021_24_single coverage 1.0
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 1939.39it/s]
+[X3] Q1 HoT_validation_168_single coverage 0.9429
+[X3] Q1 HoT_validation_512_single coverage 0.9778
+[X3] Q1 HoT_validation_1024_single coverage 0.978
+[X3] Q1 HoT_validation_168_group coverage 0.9429
+[X3] Q1 HoT_validation_512_group coverage 0.9778
+[X3] Q1 HoT_validation_1024_group coverage 0.978
+[X3] Q1 HoT_validation_24_single coverage 1.0
+[X3] Q1 HoT_validation_512_single_masked coverage 0.9778
+[X3] Q1 HoT_2024_168_single coverage 1.0
+[X3] Q1 HoT_2024_512_single coverage 0.9991
+[X3] Q1 HoT_2024_1024_single coverage 0.9775
+[X3] Q1 HoT_2024_168_group coverage 1.0
+[X3] Q1 HoT_2024_512_group coverage 0.9991
+[X3] Q1 HoT_2024_1024_group coverage 0.9775
+[X3] Q1 HoT_2024_24_single coverage 1.0
+[X3] Q1 HoT_2025_168_single coverage 0.9987
+[X3] Q1 HoT_2025_512_single coverage 0.9987
+[X3] Q1 HoT_2025_1024_single coverage 0.9968
+[X3] Q1 HoT_2025_168_group coverage 0.9987
+[X3] Q1 HoT_2025_512_group coverage 0.9987
+[X3] Q1 HoT_2025_1024_group coverage 0.9968
+[X3] Q1 HoT_2025_24_single coverage 1.0
+[X3] start q2
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 1940.29it/s]
+  0%|          | 0/2 [00:00<?, ?it/s]  0%|          | 0/2 [00:00<?, ?it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 1943.73it/s]
+  0%|          | 0/2 [00:00<?, ?it/s] 50%|█████     | 1/2 [00:00<00:00,  1.38it/s]100%|██████████| 2/2 [00:01<00:00,  1.68it/s]                                             {'train_runtime': '1.238', 'train_samples_per_second': '436.1', 'train_steps_per_second': '1.615', 'train_loss': '0.0619', 'epoch': '1'}
+100%|██████████| 2/2 [00:01<00:00,  1.68it/s]100%|██████████| 2/2 [00:01<00:00,  1.62it/s]
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  3.76it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  3.76it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 1974.13it/s]
+  0%|          | 0/2 [00:00<?, ?it/s] 50%|█████     | 1/2 [00:00<00:00,  2.01it/s]100%|██████████| 2/2 [00:00<00:00,  2.71it/s]                                             {'train_runtime': '0.7868', 'train_samples_per_second': '686.4', 'train_steps_per_second': '2.542', 'train_loss': '0.06327', 'epoch': '1'}
+100%|██████████| 2/2 [00:00<00:00,  2.71it/s]100%|██████████| 2/2 [00:00<00:00,  2.54it/s]
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  3.82it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  3.82it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 1967.18it/s]
+  0%|          | 0/2 [00:00<?, ?it/s] 50%|█████     | 1/2 [00:00<00:00,  1.38it/s]100%|██████████| 2/2 [00:01<00:00,  1.68it/s]                                             {'train_runtime': '1.24', 'train_samples_per_second': '435.5', 'train_steps_per_second': '1.613', 'train_loss': '0.0529', 'epoch': '1'}
+100%|██████████| 2/2 [00:01<00:00,  1.68it/s]100%|██████████| 2/2 [00:01<00:00,  1.61it/s]
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  3.60it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  3.60it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 1926.47it/s]
+  0%|          | 0/4 [00:00<?, ?it/s] 25%|██▌       | 1/4 [00:00<00:02,  1.31it/s]
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s][A
+Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  3.82it/s][AWriting model shards: 100%|██████████| 1/1 [00:00<00:00,  3.81it/s]
+ 50%|█████     | 2/4 [00:03<00:04,  2.18s/it] 75%|███████▌  | 3/4 [00:04<00:01,  1.41s/it]100%|██████████| 4/4 [00:07<00:00,  2.00s/it]                                             {'train_runtime': '7.329', 'train_samples_per_second': '147.4', 'train_steps_per_second': '0.546', 'train_loss': '0.06238', 'epoch': '1'}
+100%|██████████| 4/4 [00:07<00:00,  2.00s/it]100%|██████████| 4/4 [00:07<00:00,  1.83s/it]
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  3.92it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  3.92it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 1873.36it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 1970.54it/s]
+  0%|          | 0/4 [00:00<?, ?it/s] 25%|██▌       | 1/4 [00:00<00:01,  1.88it/s]
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s][A
+Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  3.88it/s][AWriting model shards: 100%|██████████| 1/1 [00:00<00:00,  3.87it/s]
+ 50%|█████     | 2/4 [00:04<00:04,  2.35s/it] 75%|███████▌  | 3/4 [00:04<00:01,  1.41s/it]100%|██████████| 4/4 [00:07<00:00,  2.18s/it]                                             {'train_runtime': '7.804', 'train_samples_per_second': '138.4', 'train_steps_per_second': '0.513', 'train_loss': '0.06167', 'epoch': '1'}
+100%|██████████| 4/4 [00:07<00:00,  2.18s/it]100%|██████████| 4/4 [00:07<00:00,  1.95s/it]
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  3.58it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  3.58it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 1908.49it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 1997.01it/s]
+  0%|          | 0/4 [00:00<?, ?it/s] 25%|██▌       | 1/4 [00:00<00:02,  1.30it/s]
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s][A
+Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  3.83it/s][AWriting model shards: 100%|██████████| 1/1 [00:00<00:00,  3.83it/s]
+ 50%|█████     | 2/4 [00:04<00:05,  2.53s/it] 75%|███████▌  | 3/4 [00:05<00:01,  1.60s/it]100%|██████████| 4/4 [00:08<00:00,  2.35s/it]                                             {'train_runtime': '8.535', 'train_samples_per_second': '126.5', 'train_steps_per_second': '0.469', 'train_loss': '0.06099', 'epoch': '1'}
+100%|██████████| 4/4 [00:08<00:00,  2.35s/it]100%|██████████| 4/4 [00:08<00:00,  2.13s/it]
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  3.78it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  3.78it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 1953.05it/s]
+[X3] start q3
+[X3] start q4
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+[X3] Q4 Kelmarsh L_1 {'fit_windows': 1038, 'es_windows': 270, 'es_cut': '2020-12-26T06:00:00.000000000', 'target_windows': 1038, 'best_iterations': [20, 20, 20, 20]}
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+[X3] Q4 Kelmarsh L_1X {'fit_windows': 393980, 'es_windows': 270, 'es_cut': '2020-12-26T06:00:00.000000000', 'target_windows': 1038, 'best_iterations': [20, 20, 20, 20]}
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+[X3] Q4 Kelmarsh L_3 {'fit_windows': 3220, 'es_windows': 822, 'es_cut': '2020-12-12T06:00:00.000000000', 'target_windows': 3220, 'best_iterations': [20, 20, 20, 20]}
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+[X3] Q4 Kelmarsh L_3X {'fit_windows': 392320, 'es_windows': 822, 'es_cut': '2020-12-12T06:00:00.000000000', 'target_windows': 3220, 'best_iterations': [20, 20, 20, 20]}
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+[X3] Q4 Penmanshiel L_1 {'fit_windows': 2443, 'es_windows': 686, 'es_cut': '2019-12-25T18:00:00.000000000', 'target_windows': 2443, 'best_iterations': [20, 20, 20, 20]}
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+[X3] Q4 Penmanshiel L_1X {'fit_windows': 294071, 'es_windows': 686, 'es_cut': '2019-12-25T18:00:00.000000000', 'target_windows': 2443, 'best_iterations': [20, 20, 20, 20]}
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+[X3] Q4 Penmanshiel L_3 {'fit_windows': 7685, 'es_windows': 2002, 'es_cut': '2019-12-13T12:00:00.000000000', 'target_windows': 7685, 'best_iterations': [20, 20, 20, 20]}
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+[X3] Q4 Penmanshiel L_3X {'fit_windows': 296667, 'es_windows': 2002, 'es_cut': '2019-12-13T12:00:00.000000000', 'target_windows': 7685, 'best_iterations': [20, 20, 20, 20]}
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+[X3] Q4 HoT L_1 {'fit_windows': 3547, 'es_windows': 902, 'es_cut': '2023-06-23T23:00:00.000000000', 'target_windows': 3547, 'best_iterations': [20, 20, 20, 20]}
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+[X3] Q4 HoT L_1X {'fit_windows': 249721, 'es_windows': 902, 'es_cut': '2023-06-23T23:00:00.000000000', 'target_windows': 3547, 'best_iterations': [20, 20, 20, 20]}
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+[X3] Q4 HoT L_3 {'fit_windows': 9402, 'es_windows': 2901, 'es_cut': '2023-06-12T00:00:00.000000000', 'target_windows': 9402, 'best_iterations': [20, 20, 20, 20]}
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+[X3] Q4 HoT L_3X {'fit_windows': 255576, 'es_windows': 2901, 'es_cut': '2023-06-12T00:00:00.000000000', 'target_windows': 9402, 'best_iterations': [20, 20, 20, 20]}
+[X3] start report
+[X3] chain done

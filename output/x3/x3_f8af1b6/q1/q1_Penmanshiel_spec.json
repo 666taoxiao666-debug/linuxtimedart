@@ -1,0 +1,73 @@
+{
+  "task": "q1",
+  "output": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X3/x3_f8af1b6/q1",
+  "receipt": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/cursor_env/receipt.json",
+  "manifest": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/cursor_env/chronos2_manifest.json",
+  "gpu_fraction": 0.7,
+  "farm": "Penmanshiel",
+  "contexts": [
+    {
+      "name": "Penmanshiel_validation",
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/x1_e4819b0_gpu_r1/A3/Penmanshiel_validation_context.npz",
+      "sha256": "b1f4be6ae4229b85d0d3aafbe7e8f5bcf9b07a286651420589ae457a141cea93",
+      "history": {
+        "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X3/x3_f8af1b6/q1/history/Penmanshiel_a3_grid.npz",
+        "sha256": "00a23ac77d053c1d94740e54d0000b05c82310ba9ec643194096e32f9e5954d3",
+        "source": "a3_grid"
+      }
+    },
+    {
+      "name": "Penmanshiel_2021",
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/x1_e4819b0_gpu_r1/A3/Penmanshiel_2021_context.npz",
+      "sha256": "71f54218ec3ba1917c2136d8414791215e54daaee1d4f74a3a1924e61402e294",
+      "history": {
+        "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X3/x3_f8af1b6/q1/history/Penmanshiel_a3_grid.npz",
+        "sha256": "00a23ac77d053c1d94740e54d0000b05c82310ba9ec643194096e32f9e5954d3",
+        "source": "a3_grid"
+      }
+    }
+  ],
+  "grid": {
+    "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/x1_e4819b0_gpu_r1/A3/Penmanshiel_history.npz",
+    "sha256": "f8626eae6f64cdc8a5b386714b683feaeca0ada6afa210e13f6ff6291c4066c2"
+  },
+  "configs": [
+    [
+      168,
+      "single"
+    ],
+    [
+      512,
+      "single"
+    ],
+    [
+      1024,
+      "single"
+    ],
+    [
+      168,
+      "group"
+    ],
+    [
+      512,
+      "group"
+    ],
+    [
+      1024,
+      "group"
+    ]
+  ],
+  "descriptive_configs": [
+    [
+      24,
+      "single"
+    ]
+  ],
+  "masked_configs": [
+    [
+      512,
+      "single"
+    ]
+  ],
+  "masked_context": "Penmanshiel_validation"
+}

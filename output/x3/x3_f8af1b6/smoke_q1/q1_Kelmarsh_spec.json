@@ -1,0 +1,73 @@
+{
+  "task": "q1",
+  "output": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X3/x3_f8af1b6/smoke_q1",
+  "receipt": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/cursor_env/receipt.json",
+  "manifest": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/cursor_env/chronos2_manifest.json",
+  "gpu_fraction": 0.7,
+  "farm": "Kelmarsh",
+  "contexts": [
+    {
+      "name": "Kelmarsh_validation",
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X3/x3_f8af1b6/smoke_q1/smoke_Kelmarsh_validation_context.npz",
+      "sha256": "ba7ce5b225ae62c1b0e39a5349c271458d7277138b6e5c3e09898acccde2c44d",
+      "history": {
+        "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X3/x3_f8af1b6/smoke_q1/history/Kelmarsh_a3_grid.npz",
+        "sha256": "9fb6b37c8f6e1aeaa512e948a770d8a35ea10d2ebf3b6b852dccc4cc8165a78e",
+        "source": "a3_grid"
+      }
+    },
+    {
+      "name": "Kelmarsh_2022",
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X3/x3_f8af1b6/smoke_q1/smoke_Kelmarsh_2022_context.npz",
+      "sha256": "f11fbe73342e45a5783ed1bebcbb2ab2331bc2ffc3db5af91776d0d87c1604d0",
+      "history": {
+        "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X3/x3_f8af1b6/smoke_q1/history/Kelmarsh_a3_grid.npz",
+        "sha256": "9fb6b37c8f6e1aeaa512e948a770d8a35ea10d2ebf3b6b852dccc4cc8165a78e",
+        "source": "a3_grid"
+      }
+    }
+  ],
+  "grid": {
+    "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/x1_e4819b0_gpu_r1/A3/Kelmarsh_history.npz",
+    "sha256": "cd54e76ebad2dc58a24811c1fce46827e2b0503d7367554e323892981907c8df"
+  },
+  "configs": [
+    [
+      168,
+      "single"
+    ],
+    [
+      512,
+      "single"
+    ],
+    [
+      1024,
+      "single"
+    ],
+    [
+      168,
+      "group"
+    ],
+    [
+      512,
+      "group"
+    ],
+    [
+      1024,
+      "group"
+    ]
+  ],
+  "descriptive_configs": [
+    [
+      24,
+      "single"
+    ]
+  ],
+  "masked_configs": [
+    [
+      512,
+      "single"
+    ]
+  ],
+  "masked_context": "Kelmarsh_validation"
+}

@@ -1,0 +1,110 @@
+[X3] start q4
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+[X3] Q4 Kelmarsh L_1 {'fit_windows': 1038, 'es_windows': 270, 'es_cut': '2020-12-26T06:00:00.000000000', 'target_windows': 1038, 'best_iterations': [2295, 366, 116, 480]}
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+[X3] Q4 Kelmarsh L_1X {'fit_windows': 393980, 'es_windows': 270, 'es_cut': '2020-12-26T06:00:00.000000000', 'target_windows': 1038, 'best_iterations': [319, 546, 208, 303]}
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+[X3] Q4 Kelmarsh L_3 {'fit_windows': 3220, 'es_windows': 822, 'es_cut': '2020-12-12T06:00:00.000000000', 'target_windows': 3220, 'best_iterations': [395, 106, 521, 308]}
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+[X3] Q4 Kelmarsh L_3X {'fit_windows': 392320, 'es_windows': 822, 'es_cut': '2020-12-12T06:00:00.000000000', 'target_windows': 3220, 'best_iterations': [213, 808, 717, 645]}
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+[X3] Q4 Penmanshiel L_1 {'fit_windows': 2443, 'es_windows': 686, 'es_cut': '2019-12-25T18:00:00.000000000', 'target_windows': 2443, 'best_iterations': [166, 867, 175, 924]}
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+[X3] Q4 Penmanshiel L_1X {'fit_windows': 294071, 'es_windows': 686, 'es_cut': '2019-12-25T18:00:00.000000000', 'target_windows': 2443, 'best_iterations': [163, 156, 171, 163]}
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+[X3] Q4 Penmanshiel L_3 {'fit_windows': 7685, 'es_windows': 2002, 'es_cut': '2019-12-13T12:00:00.000000000', 'target_windows': 7685, 'best_iterations': [195, 151, 80, 120]}
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+[X3] Q4 Penmanshiel L_3X {'fit_windows': 296667, 'es_windows': 2002, 'es_cut': '2019-12-13T12:00:00.000000000', 'target_windows': 7685, 'best_iterations': [592, 374, 522, 758]}
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+[X3] Q4 HoT L_1 {'fit_windows': 3547, 'es_windows': 902, 'es_cut': '2023-06-23T23:00:00.000000000', 'target_windows': 3547, 'best_iterations': [70, 41, 60, 38]}
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+[X3] Q4 HoT L_1X {'fit_windows': 249721, 'es_windows': 902, 'es_cut': '2023-06-23T23:00:00.000000000', 'target_windows': 3547, 'best_iterations': [495, 879, 730, 371]}
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+[X3] Q4 HoT L_3 {'fit_windows': 9402, 'es_windows': 2901, 'es_cut': '2023-06-12T00:00:00.000000000', 'target_windows': 9402, 'best_iterations': [216, 191, 43, 34]}
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+[X3] Q4 HoT L_3X {'fit_windows': 255576, 'es_windows': 2901, 'es_cut': '2023-06-12T00:00:00.000000000', 'target_windows': 9402, 'best_iterations': [255, 693, 836, 462]}
+[X3] chain done

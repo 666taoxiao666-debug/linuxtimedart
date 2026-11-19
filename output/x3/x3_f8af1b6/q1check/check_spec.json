@@ -1,0 +1,19 @@
+{
+  "task": "check",
+  "output": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X3/x3_f8af1b6/q1check",
+  "receipt": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/cursor_env/receipt.json",
+  "manifest": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/cursor_env/chronos2_manifest.json",
+  "gpu_fraction": 0.7,
+  "context": {
+    "name": "Kelmarsh_validation",
+    "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/x1_e4819b0_gpu_r1/A3/Kelmarsh_validation_context.npz",
+    "sha256": "75775af848c04f9c7d78cbfdf73cb3c9a1801b8d36d6e2ee8539616dec2ac5b2"
+  },
+  "grid": {
+    "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/x1_e4819b0_gpu_r1/A3/Kelmarsh_history.npz",
+    "sha256": "cd54e76ebad2dc58a24811c1fce46827e2b0503d7367554e323892981907c8df"
+  },
+  "context_length": 168,
+  "groups": 60,
+  "permutation_tolerance_kw": 1.0
+}

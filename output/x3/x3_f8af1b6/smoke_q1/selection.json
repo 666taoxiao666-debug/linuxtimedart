@@ -1,0 +1,159 @@
+{
+  "selection": {
+    "Kelmarsh": {
+      "context_length": 1024,
+      "mode": "single",
+      "v1_mae": {
+        "168_single": 134.65274047851562,
+        "512_single": 129.7582244873047,
+        "1024_single": 129.02587890625,
+        "168_group": 134.92245483398438,
+        "512_group": 130.25662231445312,
+        "1024_group": 129.24188232421875
+      }
+    },
+    "Penmanshiel": {
+      "context_length": 512,
+      "mode": "group",
+      "v1_mae": {
+        "168_single": 371.4671630859375,
+        "512_single": 348.86334228515625,
+        "1024_single": 356.128173828125,
+        "168_group": 370.7392883300781,
+        "512_group": 348.0987854003906,
+        "1024_group": 353.33929443359375
+      }
+    },
+    "HoT": {
+      "context_length": 1024,
+      "mode": "group",
+      "v1_mae": {
+        "168_single": 348.7527770996094,
+        "512_single": 297.67913818359375,
+        "1024_single": 256.02264404296875,
+        "168_group": 345.50506591796875,
+        "512_group": 289.9304504394531,
+        "1024_group": 251.8064422607422
+      }
+    }
+  },
+  "configs": [
+    [
+      168,
+      "single"
+    ],
+    [
+      512,
+      "single"
+    ],
+    [
+      1024,
+      "single"
+    ],
+    [
+      168,
+      "group"
+    ],
+    [
+      512,
+      "group"
+    ],
+    [
+      1024,
+      "group"
+    ]
+  ],
+  "check_status": "PASS",
+  "rule": "per farm lowest V1 MAE of the median; ties -> shorter, then single",
+  "contexts": {
+    "Kelmarsh": [
+      {
+        "name": "Kelmarsh_validation",
+        "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X3/x3_f8af1b6/smoke_q1/smoke_Kelmarsh_validation_context.npz",
+        "sha256": "ba7ce5b225ae62c1b0e39a5349c271458d7277138b6e5c3e09898acccde2c44d",
+        "history": {
+          "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X3/x3_f8af1b6/smoke_q1/history/Kelmarsh_a3_grid.npz",
+          "sha256": "9fb6b37c8f6e1aeaa512e948a770d8a35ea10d2ebf3b6b852dccc4cc8165a78e",
+          "source": "a3_grid"
+        }
+      },
+      {
+        "name": "Kelmarsh_2022",
+        "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X3/x3_f8af1b6/smoke_q1/smoke_Kelmarsh_2022_context.npz",
+        "sha256": "f11fbe73342e45a5783ed1bebcbb2ab2331bc2ffc3db5af91776d0d87c1604d0",
+        "history": {
+          "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X3/x3_f8af1b6/smoke_q1/history/Kelmarsh_a3_grid.npz",
+          "sha256": "9fb6b37c8f6e1aeaa512e948a770d8a35ea10d2ebf3b6b852dccc4cc8165a78e",
+          "source": "a3_grid"
+        }
+      }
+    ],
+    "Penmanshiel": [
+      {
+        "name": "Penmanshiel_validation",
+        "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X3/x3_f8af1b6/smoke_q1/smoke_Penmanshiel_validation_context.npz",
+        "sha256": "2fe11723180a22f38d5cfc72a8e1a678ff50fedfeba4148132fa1c1d8be4a7bd",
+        "history": {
+          "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X3/x3_f8af1b6/smoke_q1/history/Penmanshiel_a3_grid.npz",
+          "sha256": "00a23ac77d053c1d94740e54d0000b05c82310ba9ec643194096e32f9e5954d3",
+          "source": "a3_grid"
+        }
+      },
+      {
+        "name": "Penmanshiel_2021",
+        "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X3/x3_f8af1b6/smoke_q1/smoke_Penmanshiel_2021_context.npz",
+        "sha256": "5155cae744aba2f24c132ddf9acb84485b0c4cf4cecafa7cdff49c29ff4a68ec",
+        "history": {
+          "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X3/x3_f8af1b6/smoke_q1/history/Penmanshiel_a3_grid.npz",
+          "sha256": "00a23ac77d053c1d94740e54d0000b05c82310ba9ec643194096e32f9e5954d3",
+          "source": "a3_grid"
+        }
+      }
+    ],
+    "HoT": [
+      {
+        "name": "HoT_validation",
+        "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X3/x3_f8af1b6/smoke_q1/smoke_HoT_validation_context.npz",
+        "sha256": "de3eb7a89728993428269fcff7d7d5bf3add110e1b84428f98634c6717318d70",
+        "history": {
+          "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X3/x3_f8af1b6/smoke_q1/history/HoT_a3_grid.npz",
+          "sha256": "948f8521e95754fe23019dca3c2634278420c35a2618028eb116305e82b2c46c",
+          "source": "a3_grid"
+        }
+      },
+      {
+        "name": "HoT_2024",
+        "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X3/x3_f8af1b6/smoke_q1/smoke_HoT_2024_context.npz",
+        "sha256": "9a9537fd280782a1fb512b34e61fad0072aaecf39cacd08071c6ea472a2ae2c5",
+        "history": {
+          "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X3/x3_f8af1b6/smoke_q1/history/HoT_hot_sealed_points.npz",
+          "sha256": "2f8369d82b849a5da844638567d27f2fa839064972111f946543e8373761949c",
+          "source": "hot_sealed_points"
+        }
+      },
+      {
+        "name": "HoT_2025",
+        "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X3/x3_f8af1b6/smoke_q1/smoke_HoT_2025_context.npz",
+        "sha256": "017659d04130fc73a85a93756ec90594e7b5a25c10ca9abea9db30b2faaf83c2",
+        "history": {
+          "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X3/x3_f8af1b6/smoke_q1/history/HoT_hot_sealed_points.npz",
+          "sha256": "2f8369d82b849a5da844638567d27f2fa839064972111f946543e8373761949c",
+          "source": "hot_sealed_points"
+        }
+      }
+    ]
+  },
+  "descriptive_configs": [
+    [
+      24,
+      "single"
+    ]
+  ],
+  "q4_masked": [
+    [
+      512,
+      "single"
+    ]
+  ],
+  "q4_masked_note": "validation context only, upstream NaN on flagged hours; not a Q1 candidate"
+}

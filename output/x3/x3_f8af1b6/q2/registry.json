@@ -1,0 +1,16 @@
+{
+  "Kelmarsh/fit_run/validation_q2.npy": "7daa112ed25ecf3dd9d09f4651bcd4d894da51c2a25f535f09400ed02b036146",
+  "Kelmarsh/fit_run/Kelmarsh_2022_q2.npy": "95c66dffd09c266b420cc2f8001411e650f377f9b1c1017786d486360d6fc2ad",
+  "Kelmarsh/fit_run/selection_freeze.json": "685adcec409c7a3ac5c653375af360246a9415e5573284203f643ed4789861a2",
+  "Kelmarsh/fit_run/v1_history.json": "30a25e7c61fd806a8e86f3cdf4fa03ef2334aecbace64adc12c992123fe9a233",
+  "Penmanshiel/fit_run/validation_q2.npy": "7dada062b26431af99ed889d76caa7898150dc68719fbff026617263fe78f2ed",
+  "Penmanshiel/fit_run/Penmanshiel_2021_q2.npy": "bfcaa12f537337d285a03e20c290d17ae8e3c9b04911cd0823895f9a636b135c",
+  "Penmanshiel/fit_run/selection_freeze.json": "38458c4490d4c3b0e1fef3481e470825cd7edae3e5362c2394005d624f409320",
+  "Penmanshiel/fit_run/v1_history.json": "597d5d92b1ed2f3d5d4a274c69812b487d859557e4642002420e81a458de6b0f",
+  "HoT/fit_run/validation_q2.npy": "0ccfda826c41ca9ffd68322a3e3f9ed72c68ae787c44f90ac8d9fa1c9b8e642b",
+  "HoT/fit_run/HoT_2024_q2.npy": "82510b76675a173f31e30ce02da3affd3f623b7f511aea0e1450201a3f12169f",
+  "HoT/fit_run/HoT_2025_q2.npy": "09e0b1b69f92d76d736eacd7c789da2bb4dc9bcd347e6eac8b82981b2846dd3b",
+  "HoT/fit_run/selection_freeze.json": "6f4171d2e01ca23bc88259072da3b76c29c64b3506986e91f1e386e57a38e9aa",
+  "HoT/fit_run/v1_history.json": "3db935801a8f21e39c5033679e5f44c4ba11439406bfcc4e635e1705defa2a10",
+  "preflight_decision.json": "c191c2e41b69e770163bcf0967811950ca8a26ac5fe87eede230cc5e795851ec"
+}

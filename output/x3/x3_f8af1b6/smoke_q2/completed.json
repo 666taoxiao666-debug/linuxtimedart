@@ -1,0 +1,108 @@
+{
+  "status": "COMPLETED",
+  "registry_sha256": "ebe73a7e9caed71fe63b233302753ec6770831f7b8f209d0bbc36c14ed8a03b7",
+  "mode": "full",
+  "setting": {
+    "name": "full_mb135x2",
+    "mode": "full",
+    "microbatch": 135,
+    "accumulation": 2,
+    "windows_per_step": 18
+  },
+  "arm": "Q2-FT20k",
+  "budgets": {
+    "Kelmarsh": {
+      "arm": "Q2-FT20k",
+      "fit_windows_available": 75024,
+      "train_windows": 512,
+      "sampling": "uniform without replacement, seed 2024",
+      "context_length": 1024,
+      "variates_per_window": 15,
+      "sdk_batch_size_rows": 256,
+      "windows_per_step_by_sdk_rule": 18,
+      "window_draws_by_sdk_rule": 72,
+      "note": "derived from the 2.3.2 batching rule (windows drawn uniformly WITH replacement; not every window is seen); trainer settings are recorded in fit_run/selection_freeze.json",
+      "history": {
+        "hours": 1800576,
+        "missing": 1152,
+        "source": "a3_grid",
+        "identities": {
+          "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/x1_e4819b0_gpu_r1/A3/Kelmarsh_history.npz": "cd54e76ebad2dc58a24811c1fce46827e2b0503d7367554e323892981907c8df"
+        },
+        "drift_hours": [],
+        "drift_kinds": {
+          "boundary": 0,
+          "edge": 0
+        },
+        "affected_windows": {
+          "24": 0,
+          "168": 0,
+          "512": 0,
+          "1024": 0
+        }
+      }
+    },
+    "Penmanshiel": {
+      "arm": "Q2-FT20k",
+      "fit_windows_available": 64771,
+      "train_windows": 512,
+      "sampling": "uniform without replacement, seed 2024",
+      "context_length": 512,
+      "variates_per_window": 15,
+      "sdk_batch_size_rows": 256,
+      "windows_per_step_by_sdk_rule": 18,
+      "window_draws_by_sdk_rule": 72,
+      "note": "derived from the 2.3.2 batching rule (windows drawn uniformly WITH replacement; not every window is seen); trainer settings are recorded in fit_run/selection_freeze.json",
+      "history": {
+        "hours": 1554504,
+        "missing": 624,
+        "source": "a3_grid",
+        "identities": {
+          "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/x1_e4819b0_gpu_r1/A3/Penmanshiel_history.npz": "f8626eae6f64cdc8a5b386714b683feaeca0ada6afa210e13f6ff6291c4066c2"
+        },
+        "drift_hours": [],
+        "drift_kinds": {
+          "boundary": 0,
+          "edge": 0
+        },
+        "affected_windows": {
+          "24": 0,
+          "168": 0,
+          "512": 0,
+          "1024": 0
+        }
+      }
+    },
+    "HoT": {
+      "arm": "Q2-FT20k",
+      "fit_windows_available": 420475,
+      "train_windows": 512,
+      "sampling": "uniform without replacement, seed 2024",
+      "context_length": 1024,
+      "variates_per_window": 15,
+      "sdk_batch_size_rows": 256,
+      "windows_per_step_by_sdk_rule": 18,
+      "window_draws_by_sdk_rule": 72,
+      "note": "derived from the 2.3.2 batching rule (windows drawn uniformly WITH replacement; not every window is seen); trainer settings are recorded in fit_run/selection_freeze.json",
+      "history": {
+        "hours": 10091400,
+        "missing": 15961,
+        "source": "a3_grid",
+        "identities": {
+          "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/x1_e4819b0_gpu_r1/A3/HoT_history.npz": "2c1539d0357abb3ccc37267ea6da9024fa604215a615c0c063270d0686337f68"
+        },
+        "drift_hours": [],
+        "drift_kinds": {
+          "boundary": 0,
+          "edge": 0
+        },
+        "affected_windows": {
+          "24": 0,
+          "168": 0,
+          "512": 0,
+          "1024": 0
+        }
+      }
+    }
+  }
+}

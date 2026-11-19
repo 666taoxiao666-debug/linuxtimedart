@@ -1,0 +1,83 @@
+{
+  "task": "q1",
+  "output": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X3/x3_f8af1b6/smoke_q1",
+  "receipt": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/cursor_env/receipt.json",
+  "manifest": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/cursor_env/chronos2_manifest.json",
+  "gpu_fraction": 0.7,
+  "farm": "HoT",
+  "contexts": [
+    {
+      "name": "HoT_validation",
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X3/x3_f8af1b6/smoke_q1/smoke_HoT_validation_context.npz",
+      "sha256": "de3eb7a89728993428269fcff7d7d5bf3add110e1b84428f98634c6717318d70",
+      "history": {
+        "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X3/x3_f8af1b6/smoke_q1/history/HoT_a3_grid.npz",
+        "sha256": "948f8521e95754fe23019dca3c2634278420c35a2618028eb116305e82b2c46c",
+        "source": "a3_grid"
+      }
+    },
+    {
+      "name": "HoT_2024",
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X3/x3_f8af1b6/smoke_q1/smoke_HoT_2024_context.npz",
+      "sha256": "9a9537fd280782a1fb512b34e61fad0072aaecf39cacd08071c6ea472a2ae2c5",
+      "history": {
+        "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X3/x3_f8af1b6/smoke_q1/history/HoT_hot_sealed_points.npz",
+        "sha256": "2f8369d82b849a5da844638567d27f2fa839064972111f946543e8373761949c",
+        "source": "hot_sealed_points"
+      }
+    },
+    {
+      "name": "HoT_2025",
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X3/x3_f8af1b6/smoke_q1/smoke_HoT_2025_context.npz",
+      "sha256": "017659d04130fc73a85a93756ec90594e7b5a25c10ca9abea9db30b2faaf83c2",
+      "history": {
+        "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X3/x3_f8af1b6/smoke_q1/history/HoT_hot_sealed_points.npz",
+        "sha256": "2f8369d82b849a5da844638567d27f2fa839064972111f946543e8373761949c",
+        "source": "hot_sealed_points"
+      }
+    }
+  ],
+  "grid": {
+    "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/x1_e4819b0_gpu_r1/A3/HoT_history.npz",
+    "sha256": "2c1539d0357abb3ccc37267ea6da9024fa604215a615c0c063270d0686337f68"
+  },
+  "configs": [
+    [
+      168,
+      "single"
+    ],
+    [
+      512,
+      "single"
+    ],
+    [
+      1024,
+      "single"
+    ],
+    [
+      168,
+      "group"
+    ],
+    [
+      512,
+      "group"
+    ],
+    [
+      1024,
+      "group"
+    ]
+  ],
+  "descriptive_configs": [
+    [
+      24,
+      "single"
+    ]
+  ],
+  "masked_configs": [
+    [
+      512,
+      "single"
+    ]
+  ],
+  "masked_context": "HoT_validation"
+}

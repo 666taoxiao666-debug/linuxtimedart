@@ -1,0 +1,63 @@
+{
+  "model_sha256": {
+    "selected/config.json": "5ebdd54c86881d3796d054b729d5dca6548bb4cb736b47bd13538feb3d102f14",
+    "selected/model.safetensors": "60b1424e441774aa8a5e1498db5849989b5a79376ddc24826293932a1b7329bb"
+  },
+  "selected": {
+    "step": 2,
+    "v1_mae": 256.7956685218295
+  },
+  "mode": "full",
+  "candidate": {
+    "name": "full_mb135x2",
+    "mode": "full",
+    "microbatch": 135,
+    "accumulation": 2,
+    "windows_per_step": 18
+  },
+  "steps": 4,
+  "selection": "V1 median MAE (custom callback, not eval_loss)",
+  "train_windows": 512,
+  "budget": {
+    "arm": "Q2-FT20k",
+    "fit_windows_available": 420475,
+    "train_windows": 512,
+    "sampling": "uniform without replacement, seed 2024",
+    "context_length": 1024,
+    "variates_per_window": 15,
+    "sdk_batch_size_rows": 256,
+    "windows_per_step_by_sdk_rule": 18,
+    "window_draws_by_sdk_rule": 72,
+    "note": "derived from the 2.3.2 batching rule (windows drawn uniformly WITH replacement; not every window is seen); trainer settings are recorded in fit_run/selection_freeze.json",
+    "history": {
+      "hours": 10091400,
+      "missing": 15961,
+      "source": "a3_grid",
+      "identities": {
+        "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/x1_e4819b0_gpu_r1/A3/HoT_history.npz": "2c1539d0357abb3ccc37267ea6da9024fa604215a615c0c063270d0686337f68"
+      },
+      "drift_hours": [],
+      "drift_kinds": {
+        "boundary": 0,
+        "edge": 0
+      },
+      "affected_windows": {
+        "24": 0,
+        "168": 0,
+        "512": 0,
+        "1024": 0
+      }
+    }
+  },
+  "trainer": {
+    "per_device_train_batch_size": 135,
+    "gradient_accumulation_steps": 2,
+    "max_steps": 4,
+    "learning_rate": 1e-06,
+    "n_gpu": 1,
+    "world_size": 1,
+    "seed": 2024,
+    "bf16": true,
+    "fp16": false
+  }
+}

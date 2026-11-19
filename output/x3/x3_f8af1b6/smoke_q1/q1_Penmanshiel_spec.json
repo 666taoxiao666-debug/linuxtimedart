@@ -1,0 +1,73 @@
+{
+  "task": "q1",
+  "output": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X3/x3_f8af1b6/smoke_q1",
+  "receipt": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/cursor_env/receipt.json",
+  "manifest": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/cursor_env/chronos2_manifest.json",
+  "gpu_fraction": 0.7,
+  "farm": "Penmanshiel",
+  "contexts": [
+    {
+      "name": "Penmanshiel_validation",
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X3/x3_f8af1b6/smoke_q1/smoke_Penmanshiel_validation_context.npz",
+      "sha256": "2fe11723180a22f38d5cfc72a8e1a678ff50fedfeba4148132fa1c1d8be4a7bd",
+      "history": {
+        "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X3/x3_f8af1b6/smoke_q1/history/Penmanshiel_a3_grid.npz",
+        "sha256": "00a23ac77d053c1d94740e54d0000b05c82310ba9ec643194096e32f9e5954d3",
+        "source": "a3_grid"
+      }
+    },
+    {
+      "name": "Penmanshiel_2021",
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X3/x3_f8af1b6/smoke_q1/smoke_Penmanshiel_2021_context.npz",
+      "sha256": "5155cae744aba2f24c132ddf9acb84485b0c4cf4cecafa7cdff49c29ff4a68ec",
+      "history": {
+        "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X3/x3_f8af1b6/smoke_q1/history/Penmanshiel_a3_grid.npz",
+        "sha256": "00a23ac77d053c1d94740e54d0000b05c82310ba9ec643194096e32f9e5954d3",
+        "source": "a3_grid"
+      }
+    }
+  ],
+  "grid": {
+    "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/x1_e4819b0_gpu_r1/A3/Penmanshiel_history.npz",
+    "sha256": "f8626eae6f64cdc8a5b386714b683feaeca0ada6afa210e13f6ff6291c4066c2"
+  },
+  "configs": [
+    [
+      168,
+      "single"
+    ],
+    [
+      512,
+      "single"
+    ],
+    [
+      1024,
+      "single"
+    ],
+    [
+      168,
+      "group"
+    ],
+    [
+      512,
+      "group"
+    ],
+    [
+      1024,
+      "group"
+    ]
+  ],
+  "descriptive_configs": [
+    [
+      24,
+      "single"
+    ]
+  ],
+  "masked_configs": [
+    [
+      512,
+      "single"
+    ]
+  ],
+  "masked_context": "Penmanshiel_validation"
+}

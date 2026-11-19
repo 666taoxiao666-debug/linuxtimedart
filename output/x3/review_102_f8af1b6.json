@@ -1,0 +1,47 @@
+{
+  "stage": "X3-result",
+  "reviewer": "Codex",
+  "date": "2026-11-20",
+  "run_commit": "f8af1b69d9ee57d0036b4d93c3d5979c8d175226",
+  "verdict": "PASS_WITH_DOCUMENTATION_CORRECTIONS",
+  "formal_stages_verified": ["q1check", "q1", "q2", "q3", "q4", "report"],
+  "present_registry_artifacts_hash_verified": 105,
+  "not_retrieved_not_byte_verified": [
+    "q1/history/Kelmarsh_a3_grid.npz",
+    "q1/history/Penmanshiel_a3_grid.npz",
+    "q1/history/HoT_a3_grid.npz",
+    "q1/history/HoT_hot_sealed_points.npz"
+  ],
+  "reference_x2_receipts_and_used_array_hashes_verified": true,
+  "x2_a_b_keys_equal": true,
+  "v1_ensemble_selection_recomputed": true,
+  "v2_ensemble_arrays_recomputed_equal": true,
+  "pooled_recomputed": {
+    "Q2": [-0.025569084698414086, -0.043674872266901935, -0.007463297129926237],
+    "Q3_vs_LUG": [0.0032546274024964836, 0.0016967800990138559, 0.004812474705979111],
+    "Q3_vs_control": [0.008996000355528758, 0.0034132843944160137, 0.014578716316641503],
+    "Q4": [-0.07679351254549044, -0.0981625203215074, -0.055424504769473484]
+  },
+  "pooled_fields": ["relative_gain", "bonferroni_ci_low", "bonferroni_ci_high"],
+  "maximum_absolute_difference_from_report": 1.3877787807814457e-17,
+  "decisions": {"Q2": "NEGATIVE", "Q3_passed": false, "Q4_passed": false},
+  "a3_recheck": {
+    "contexts": 7,
+    "context_length_pairs": 14,
+    "unaffected_max_absolute_difference_kw": 0.0,
+    "HoT_2024_24h_mae_delta_kw": -0.002960205078125,
+    "HoT_2024_168h_mae_delta_kw": 0.01373291015625
+  },
+  "documentation_corrections": [
+    "K/P V1 MAE rises slightly from step 900 to 1000; only HoT continues decreasing. Three-farm non-convergence is not established.",
+    "A3 comparison covers seven validation/test contexts, not ten; fourteen context-length pairs.",
+    "Maximum quantile crossing rate is approximately 0.03031 percent, not at most 0.03 percent.",
+    "Cold-start MAEs are numerically close to the three-month baseline; no equivalence or data-efficiency equivalence test was conducted."
+  ],
+  "verification_method": "Local saved arrays only. Reused registered paired bootstrap, independently recomputed inverse-variance pooling. Windows-only import stub for fcntl; no lock or runtime functions invoked. No experiment code edited.",
+  "server_access": false,
+  "training_or_inference": false,
+  "original_result_files_modified": false,
+  "new_experiment_authorized": false,
+  "next": "Claude reviews corrected wording; user decides any separately registered further experiment."
+}

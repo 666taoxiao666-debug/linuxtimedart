@@ -1,0 +1,62 @@
+{
+  "Penmanshiel_validation_168_single": {
+    "mean": 0.99262535572052,
+    "min": 0.9107142686843872
+  },
+  "Penmanshiel_validation_512_single": {
+    "mean": 0.9779625535011292,
+    "min": 0.8671875
+  },
+  "Penmanshiel_validation_1024_single": {
+    "mean": 0.9495788216590881,
+    "min": 0.861328125
+  },
+  "Penmanshiel_validation_168_group": {
+    "mean": 0.99262535572052,
+    "min": 0.9107142686843872
+  },
+  "Penmanshiel_validation_512_group": {
+    "mean": 0.9779625535011292,
+    "min": 0.8671875
+  },
+  "Penmanshiel_validation_1024_group": {
+    "mean": 0.9495788216590881,
+    "min": 0.861328125
+  },
+  "Penmanshiel_validation_24_single": {
+    "mean": 1.0,
+    "min": 1.0
+  },
+  "Penmanshiel_validation_512_single_masked": {
+    "mean": 0.9779625535011292,
+    "min": 0.8671875
+  },
+  "Penmanshiel_2021_168_single": {
+    "mean": 0.9637346863746643,
+    "min": 0.9107142686843872
+  },
+  "Penmanshiel_2021_512_single": {
+    "mean": 0.9819326996803284,
+    "min": 0.89453125
+  },
+  "Penmanshiel_2021_1024_single": {
+    "mean": 0.9259496331214905,
+    "min": 0.89453125
+  },
+  "Penmanshiel_2021_168_group": {
+    "mean": 0.9637346863746643,
+    "min": 0.9107142686843872
+  },
+  "Penmanshiel_2021_512_group": {
+    "mean": 0.9819326996803284,
+    "min": 0.89453125
+  },
+  "Penmanshiel_2021_1024_group": {
+    "mean": 0.9259496331214905,
+    "min": 0.89453125
+  },
+  "Penmanshiel_2021_24_single": {
+    "mean": 1.0,
+    "min": 1.0
+  }
+}
