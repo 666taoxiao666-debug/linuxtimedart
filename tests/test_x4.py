@@ -3,7 +3,7 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
-from types import SimpleNamespace
+from types import ModuleType, SimpleNamespace
 from unittest.mock import patch
 
 import numpy as np
@@ -370,6 +370,163 @@ class Identity(unittest.TestCase):
             x1.save(root / 'q2' / 'launch.json', dict(commit='other', smoke=False, mode='q2'))
             with self.assertRaisesRegex(ValueError, 'identity differs'):
                 x4.X3Run(logs, proto)
+
+
+class ReportGate(unittest.TestCase):
+    """Smoke 2026-11-20 (x4_efbd0af): the report gate raised without saying where; identical candidate/reference
+    predictions (ensemble weight w = 1 = no ensemble, allowed by the registered tie rule) are a defined outcome."""
+    st = dict(block_length=8, replicates=200, seed=2024)
+
+    def setUp(self):
+        if sys.platform == 'win32':
+            # Only the unused Linux lock module is stubbed; bootstrap/statistics remain real.
+            stub = ModuleType('fcntl')
+            stub.LOCK_EX, stub.LOCK_NB, stub.LOCK_UN = 2, 4, 8
+            def unavailable(*args, **kwargs):
+                raise AssertionError('Linux file locking must not be exercised by these statistics tests')
+            stub.flock = unavailable
+            guard = patch.dict(sys.modules, {'fcntl': stub})
+            guard.start()
+            self.addCleanup(guard.stop)
+
+    def data(self, n_issue=40, seed=0):
+        rng = np.random.default_rng(seed)
+        issue = hourly_issues('2021-07-01T00', n_issue, units=(0, 1, 2)).astype(np.int64)
+        truth = rng.uniform(0, 2000, (len(issue), 4))
+        ref = truth + rng.normal(0, 150, truth.shape)
+        return truth, ref, issue, rng
+
+    def test_compare_identical_is_not_bootstrapped(self):
+        truth, ref, issue, rng = self.data()
+        stats, d = x4.compare(self.st, ref.copy(), ref, truth, issue)
+        self.assertIsNone(stats)
+        self.assertTrue(d['identical'])
+        self.assertEqual(d['gain'], 0.0)
+        self.assertEqual((d['windows'], d['issue_clusters'], d['max_abs_prediction_diff']), (120, 40, 0.0))
+        better = truth + rng.normal(0, 100, truth.shape)
+        stats, d = x4.compare(self.st, better, ref, truth, issue)
+        self.assertFalse(d['identical'])
+        self.assertGreater(d['ci_width'], 0)
+
+    def comparisons(self, w_hot=0.95, cw_hot=0.65):
+        truth, ref, issue, rng = self.data()
+        cmp = dict(stats={q: {} for q in ('A', 'B1', 'B2_vs_LUG', 'B2_vs_control')},
+                   diag={q: {} for q in ('A', 'B1', 'B2_vs_LUG', 'B2_vs_control')}, weights={})
+        for f in x4.FARMS:
+            ftb = truth + rng.normal(0, 140, truth.shape)
+            w = w_hot if f == 'HoT' else .6
+            cw = cw_hot if f == 'HoT' else .6
+            ctrl = cw * ref + (1 - cw) * (truth + rng.normal(0, 160, truth.shape))
+            ens = w * ref + (1 - w) * ftb
+            for q, (c, r) in dict(A=(ftb, ref), B1=(ftb, ref), B2_vs_LUG=(ens, ref), B2_vs_control=(ens, ctrl)).items():
+                cmp['stats'][q][f], cmp['diag'][q][f] = x4.compare(self.st, c, r, truth, issue)
+            cmp['weights'][f] = dict(w=w, control_w=cw)
+        return cmp
+
+    def test_w_equal_one_is_not_passed_not_technical(self):
+        cmp = self.comparisons(w_hot=1.0)
+        self.assertTrue(cmp['diag']['B2_vs_LUG']['HoT']['identical'])
+        dec = x4.decide(cmp, 2.394, dict(margin=.01, min_gain=.01))
+        self.assertIs(dec['B2']['passed'], False)
+        self.assertEqual(dec['B2']['vs_LUG']['pooled']['status'], 'UNDEFINED_IDENTICAL')
+        self.assertEqual(dec['B2']['vs_LUG']['pooled']['farms'], ['HoT'])
+        self.assertEqual(dec['B2']['vs_LUG']['farm_relative']['HoT'], 0.0)
+        self.assertEqual(x4.technical_failures(dict(dec, A=dec['A'], B1=dec['B1']), cmp['diag']), [])
+        both = self.comparisons(w_hot=1.0, cw_hot=1.0)                       # ensemble == control == LUG
+        self.assertTrue(both['diag']['B2_vs_control']['HoT']['identical'])
+        self.assertIs(x4.decide(both, 2.394, dict(margin=.01, min_gain=.01))['B2']['passed'], False)
+
+    def test_regular_case_unchanged(self):
+        cmp = self.comparisons()
+        dec = x4.decide(cmp, 2.394, dict(margin=.01, min_gain=.01))
+        ref = x3.all_positive_pooled(cmp['stats']['B2_vs_LUG'], 2.394, .01)
+        self.assertEqual(dec['B2']['vs_LUG'], ref)
+        self.assertIn(dec['B2']['passed'], (True, False))
+        self.assertEqual(dec['A'], x3.all_positive_pooled(cmp['stats']['A'], 2.394))
+
+    def test_degenerate_without_identity_is_located(self):
+        cmp = self.comparisons()
+        s = dict(cmp['stats']['A']['Kelmarsh'])
+        s['ci95_high'] = s['ci95_low']                                       # zero width, predictions not identical
+        cmp['stats']['A']['Kelmarsh'] = s
+        dec = x4.decide(cmp, 2.394, dict(margin=.01, min_gain=.01))
+        self.assertIsNone(dec['A']['passed'])
+        bad = x4.technical_failures(dec, cmp['diag'])
+        self.assertEqual([(b['question'], b['farm']) for b in bad], [('A', 'Kelmarsh')])
+        self.assertFalse(bad[0]['diagnosis']['identical'])
+
+    def test_identity_does_not_hide_another_farms_invalid_statistics(self):
+        for q in ('A', 'B2_vs_LUG', 'B2_vs_control'):
+            for fault in ('ci95_high', 'reference_mean_loss'):
+                with self.subTest(question=q, fault=fault):
+                    cmp = self.comparisons()
+                    cmp['diag'][q]['HoT']['identical'] = True
+                    cmp['stats'][q]['HoT'] = None
+                    s = cmp['stats'][q]['Kelmarsh']
+                    s[fault] = s['ci95_low'] if fault == 'ci95_high' else 0.0
+                    dec = x4.decide(cmp, 2.394, dict(margin=.01, min_gain=.01))
+                    bad = x4.technical_failures(dec, cmp['diag'])
+                    self.assertEqual([(b['question'], b['farm']) for b in bad], [(q, 'Kelmarsh')])
+
+    def test_identical_predictions_do_not_bypass_finite_input_checks(self):
+        truth, ref, issue, _ = self.data()
+        for name in ('predictions', 'truth'):
+            for value in (np.inf, np.nan):
+                with self.subTest(name=name, value=value):
+                    y, p = truth.copy(), ref.copy()
+                    (p if name == 'predictions' else y)[0, 0] = value
+                    with self.assertRaisesRegex(ValueError, 'Finite'):
+                        x4.compare(self.st, p, p.copy(), y, issue)
+
+    def test_identical_predictions_do_not_bypass_alignment_checks(self):
+        truth, ref, issue, _ = self.data()
+        cases = ((ref[:0], ref[:0], truth[:0], issue[:0]),
+                 (ref, ref, truth[:1], issue), (ref, ref, truth, issue[:-1]),
+                 (ref, ref, truth, np.repeat(issue[0], len(issue))))
+        for args in cases:
+            with self.subTest(shapes=[v.shape for v in args]):
+                with self.assertRaises(ValueError):
+                    x4.compare(self.st, *args)
+
+    def test_nonidentical_predictions_with_equal_losses_are_technical(self):
+        issue = hourly_issues('2021-07-01T00', 40).astype(np.int64)
+        truth = np.full((len(issue), 4), 100.0)
+        stats, diag = x4.compare(self.st, truth + 1, truth - 1, truth, issue)
+        self.assertFalse(diag['identical'])
+        self.assertEqual(diag['ci_width'], 0.0)
+        result = x4.positive_or_identical({'Kelmarsh': stats}, {'Kelmarsh': diag}, 2.394)
+        self.assertIsNone(result['passed'])
+        self.assertEqual(result['pooled']['status'], 'TECHNICAL_FAILURE')
+
+    def test_identical_b1_failure_has_a_location(self):
+        cmp = self.comparisons()
+        cmp['diag']['B1']['Kelmarsh']['identical'] = True
+        cmp['stats']['B1']['Kelmarsh'] = None
+        dec = x4.decide(cmp, 2.394, dict(margin=.01, min_gain=.01))
+        bad = x4.technical_failures(dec, cmp['diag'])
+        self.assertEqual([(b['question'], b['farm']) for b in bad], [('B1', 'Kelmarsh')])
+        self.assertIn('noninferiority', bad[0]['reason'])
+        self.assertTrue(bad[0]['diagnosis']['identical'])
+
+    def test_report_persists_diagnosis_before_statistical_failure(self):
+        cmp = self.comparisons(w_hot=1.0)
+        s = cmp['stats']['B2_vs_LUG']['Kelmarsh']
+        s['ci95_high'] = s['ci95_low']
+        cmp['desc_a'] = {}
+        proto = dict(family_z=2.394, statistics_smoke=self.st, b=dict(margin=.01, min_gain=.01))
+        upstream = dict(done=dict(meta_sha256='meta', outcome='STOP_P1', d0_sha256='d0'))
+        with tempfile.TemporaryDirectory() as tmp:
+            out = Path(tmp)
+            args = SimpleNamespace(logs=out, smoke=True)
+            with patch.object(x3, 'Refs'), patch.object(x4, 'X3Run'), \
+                    patch.object(x4, 'upstream', return_value=upstream), \
+                    patch.object(x4.x2, 'farms', return_value={}), \
+                    patch.object(x4, 'report_comparisons', return_value=cmp):
+                with self.assertRaisesRegex(ValueError, 'B2_vs_LUG.*Kelmarsh'):
+                    x4.mode_report(args, proto, {}, out)
+            self.assertTrue((out / 'report_diagnostics.json').is_file())
+            self.assertFalse((out / 'dev_decisions.json').exists())
+            self.assertFalse((out / 'results.json').exists())
 
 
 if __name__ == '__main__':

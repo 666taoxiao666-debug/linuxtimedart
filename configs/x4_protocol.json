@@ -1,7 +1,7 @@
 {
   "stage": "X4",
-  "version": 1,
-  "plan": "docs/STAGE_PLAN.md (X4, approved after R2 + user ruling, eab3276); decisions docs/review/DECISIONS.md stage X4",
+  "version": 2,
+  "plan": "docs/STAGE_PLAN.md (X4, approved after R2 + user ruling, eab3276); decisions docs/review/DECISIONS.md stage X4; v2 = X4-smokefix: report diagnostics and the identical-prediction rule (smoke x4_efbd0af)",
   "references": {
     "a3": {
       "dir": "X1/x1_e4819b0_gpu_r1/A3",
@@ -227,5 +227,6 @@
   "smoke": {
     "issues": 40
   },
-  "no_2026_data": true
+  "no_2026_data": true,
+  "identical_rule": "a development comparison whose candidate equals its reference (e.g. an ensemble with V1 weight w = 1, the registered tie rule's 'no ensemble') has a gain of exactly 0: requirements 'gain > 0' / '>= 1%' fail for that farm, the question is NOT passed and its pooled interval is reported as UNDEFINED_IDENTICAL; any other degenerate interval remains a technical failure, located in report_diagnostics.json"
 }

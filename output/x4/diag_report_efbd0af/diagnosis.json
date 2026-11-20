@@ -1,0 +1,299 @@
+{
+  "read_only": true,
+  "base": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X4/x4_efbd0af",
+  "statistics": {
+    "block_length": 8,
+    "replicates": 200,
+    "seed": 2024
+  },
+  "A": {
+    "Kelmarsh": {
+      "windows": 225,
+      "issue_clusters": 40,
+      "nonfinite_candidate": 0,
+      "nonfinite_reference": 0,
+      "identical": false,
+      "max_abs_prediction_diff": 487.08917236328125,
+      "gain": -4.517442410472366,
+      "ci95_low": -18.11379425355583,
+      "ci95_high": 8.256847780994846,
+      "ci_width": 26.370642034550677,
+      "reference_mean_loss": 124.97977978155016
+    },
+    "Penmanshiel": {
+      "windows": 560,
+      "issue_clusters": 40,
+      "nonfinite_candidate": 0,
+      "nonfinite_reference": 0,
+      "identical": false,
+      "max_abs_prediction_diff": 790.529296875,
+      "gain": -39.72444637151701,
+      "ci95_low": -61.37758473515776,
+      "ci95_high": -16.38458967004502,
+      "ci_width": 44.99299506511274,
+      "reference_mean_loss": 306.7424903139372
+    },
+    "HoT": {
+      "windows": 280,
+      "issue_clusters": 40,
+      "nonfinite_candidate": 0,
+      "nonfinite_reference": 0,
+      "identical": false,
+      "max_abs_prediction_diff": 980.8519897460938,
+      "gain": 108.60377299838832,
+      "ci95_low": -55.52722408212189,
+      "ci95_high": 255.21501169815664,
+      "ci_width": 310.7422357802785,
+      "reference_mean_loss": 409.9693884708919
+    }
+  },
+  "B1": {
+    "Kelmarsh": {
+      "windows": 240,
+      "issue_clusters": 40,
+      "nonfinite_candidate": 0,
+      "nonfinite_reference": 0,
+      "identical": false,
+      "max_abs_prediction_diff": 358.6626193751363,
+      "gain": 3.81916914354009,
+      "ci95_low": -12.838050521406307,
+      "ci95_high": 18.853730417652475,
+      "ci_width": 31.69178093905878,
+      "reference_mean_loss": 131.80401544337246
+    },
+    "Penmanshiel": {
+      "windows": 457,
+      "issue_clusters": 40,
+      "nonfinite_candidate": 0,
+      "nonfinite_reference": 0,
+      "identical": false,
+      "max_abs_prediction_diff": 656.5632836451542,
+      "gain": -2.69331050636405,
+      "ci95_low": -8.898884299422479,
+      "ci95_high": 6.9441066433034875,
+      "ci_width": 15.842990942725965,
+      "reference_mean_loss": 113.95590241202598
+    },
+    "HoT": {
+      "windows": 278,
+      "issue_clusters": 40,
+      "nonfinite_candidate": 0,
+      "nonfinite_reference": 0,
+      "identical": false,
+      "max_abs_prediction_diff": 590.53072061104,
+      "gain": -30.482809891631437,
+      "ci95_low": -49.186032739775165,
+      "ci95_high": -2.4366919331357715,
+      "ci_width": 46.749340806639395,
+      "reference_mean_loss": 232.18076978590503
+    }
+  },
+  "B2_vs_LUG": {
+    "Kelmarsh": {
+      "windows": 240,
+      "issue_clusters": 40,
+      "nonfinite_candidate": 0,
+      "nonfinite_reference": 0,
+      "identical": true,
+      "max_abs_prediction_diff": 0.0,
+      "gain": 0.0,
+      "ci95_low": 0.0,
+      "ci95_high": 0.0,
+      "ci_width": 0.0,
+      "reference_mean_loss": 131.80401544337246
+    },
+    "Penmanshiel": {
+      "windows": 457,
+      "issue_clusters": 40,
+      "nonfinite_candidate": 0,
+      "nonfinite_reference": 0,
+      "identical": false,
+      "max_abs_prediction_diff": 164.14082091128853,
+      "gain": 2.395691278342686,
+      "ci95_low": 0.4722962912497184,
+      "ci95_high": 5.225296761423913,
+      "ci_width": 4.753000470174195,
+      "reference_mean_loss": 113.95590241202598
+    },
+    "HoT": {
+      "windows": 278,
+      "issue_clusters": 40,
+      "nonfinite_candidate": 0,
+      "nonfinite_reference": 0,
+      "identical": false,
+      "max_abs_prediction_diff": 88.57962029868725,
+      "gain": -2.203519103574521,
+      "ci95_low": -4.8558639524558815,
+      "ci95_high": 2.0470287887056497,
+      "ci_width": 6.902892741161532,
+      "reference_mean_loss": 232.18076978590503
+    }
+  },
+  "B2_vs_control": {
+    "Kelmarsh": {
+      "windows": 240,
+      "issue_clusters": 40,
+      "nonfinite_candidate": 0,
+      "nonfinite_reference": 0,
+      "identical": false,
+      "max_abs_prediction_diff": 93.80279177717341,
+      "gain": -2.984060325398707,
+      "ci95_low": -5.474845565573101,
+      "ci95_high": 0.950961823361781,
+      "ci_width": 6.425807388934882,
+      "reference_mean_loss": 128.81995511797376
+    },
+    "Penmanshiel": {
+      "windows": 457,
+      "issue_clusters": 40,
+      "nonfinite_candidate": 0,
+      "nonfinite_reference": 0,
+      "identical": false,
+      "max_abs_prediction_diff": 164.14082091128853,
+      "gain": 2.395691278342686,
+      "ci95_low": 0.4722962912497184,
+      "ci95_high": 5.225296761423913,
+      "ci_width": 4.753000470174195,
+      "reference_mean_loss": 113.95590241202598
+    },
+    "HoT": {
+      "windows": 278,
+      "issue_clusters": 40,
+      "nonfinite_candidate": 0,
+      "nonfinite_reference": 0,
+      "identical": false,
+      "max_abs_prediction_diff": 88.57962029868725,
+      "gain": -2.203519103574521,
+      "ci95_low": -4.8558639524558815,
+      "ci95_high": 2.0470287887056497,
+      "ci_width": 6.902892741161532,
+      "reference_mean_loss": 232.18076978590503
+    }
+  },
+  "weights": {
+    "Kelmarsh": {
+      "w": 1.0,
+      "w_v1_mae": 120.03118279921114,
+      "control_w": 0.65,
+      "control_v1_mae": 119.30150076192872,
+      "ftb_source": {
+        "name": "X3_Q2_FT20k",
+        "learning_rate": 1e-06,
+        "v1_mae": 130.56845092773438
+      }
+    },
+    "Penmanshiel": {
+      "w": 0.75,
+      "w_v1_mae": 320.37858435867236,
+      "control_w": 1.0,
+      "control_v1_mae": 323.1120877994198,
+      "ftb_source": {
+        "name": "X3_Q2_FT20k",
+        "learning_rate": 1e-06,
+        "v1_mae": 341.5207824707031
+      }
+    },
+    "HoT": {
+      "w": 0.85,
+      "w_v1_mae": 238.10770017196265,
+      "control_w": 1.0,
+      "control_v1_mae": 238.75407542971692,
+      "ftb_source": {
+        "name": "lr0",
+        "learning_rate": 3e-06,
+        "step": 2,
+        "v1_mae": 255.13677978515625
+      }
+    }
+  },
+  "pooled": {
+    "A": {
+      "status": "OK",
+      "farms": {
+        "Kelmarsh": {
+          "relative_gain": -0.03614538622462225,
+          "relative_se": 0.053827332938527477
+        },
+        "Penmanshiel": {
+          "relative_gain": -0.12950421811748616,
+          "relative_se": 0.03741906040808138
+        },
+        "HoT": {
+          "relative_gain": 0.2649070297747347,
+          "relative_se": 0.19336183967453535
+        }
+      },
+      "pooled_relative_gain": -0.0901232654862092,
+      "pooled_se": 0.03034379535020117,
+      "z": 2.3939797998185104,
+      "ci95_low": -0.16276569860441764,
+      "ci95_high": -0.017480832368000757
+    },
+    "B1": {
+      "status": "OK",
+      "farms": {
+        "Kelmarsh": {
+          "relative_gain": 0.028976121332061667,
+          "relative_se": 0.06133945560999634
+        },
+        "Penmanshiel": {
+          "relative_gain": -0.023634673144230397,
+          "relative_se": 0.03546682096240918
+        },
+        "HoT": {
+          "relative_gain": -0.13128912407233287,
+          "relative_se": 0.05136545719074506
+        }
+      },
+      "pooled_relative_gain": -0.04226256460726008,
+      "pooled_se": 0.02635438671681978,
+      "z": 2.3939797998185104,
+      "ci95_low": -0.10535443404393191,
+      "ci95_high": 0.020829304829411754
+    },
+    "B2_vs_LUG": {
+      "status": "TECHNICAL_FAILURE",
+      "reason": "zero or nonfinite CI width / reference loss",
+      "farm": "Kelmarsh"
+    },
+    "B2_vs_control": {
+      "status": "OK",
+      "farms": {
+        "Kelmarsh": {
+          "relative_gain": -0.02316458131557253,
+          "relative_se": 0.012725254400368166
+        },
+        "Penmanshiel": {
+          "relative_gain": 0.02102296789929035,
+          "relative_se": 0.010640277288507359
+        },
+        "HoT": {
+          "relative_gain": -0.009490532336534142,
+          "relative_se": 0.007584497138793473
+        }
+      },
+      "pooled_relative_gain": -0.0037769663111544426,
+      "pooled_se": 0.00555624081013221,
+      "z": 2.3939797998185104,
+      "ci95_low": -0.01707849457353819,
+      "ci95_high": 0.009524561951229304
+    }
+  },
+  "degenerate": [
+    {
+      "question": "B2_vs_LUG",
+      "farm": "Kelmarsh",
+      "windows": 240,
+      "issue_clusters": 40,
+      "nonfinite_candidate": 0,
+      "nonfinite_reference": 0,
+      "identical": true,
+      "max_abs_prediction_diff": 0.0,
+      "gain": 0.0,
+      "ci95_low": 0.0,
+      "ci95_high": 0.0,
+      "ci_width": 0.0,
+      "reference_mean_loss": 131.80401544337246
+    }
+  ]
+}

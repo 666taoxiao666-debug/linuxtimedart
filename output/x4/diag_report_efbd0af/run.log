@@ -1,0 +1,1 @@
+[X4-diag] degenerate: [{"question": "B2_vs_LUG", "farm": "Kelmarsh", "windows": 240, "issue_clusters": 40, "nonfinite_candidate": 0, "nonfinite_reference": 0, "identical": true, "max_abs_prediction_diff": 0.0, "gain": 0.0, "ci95_low": 0.0, "ci95_high": 0.0, "ci_width": 0.0, "reference_mean_loss": 131.80401544337246}]

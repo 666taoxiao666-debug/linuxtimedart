@@ -887,31 +887,84 @@ def aligned(arr, full_keys, keys):
     return x3.restrict(np.asarray(arr), full_keys, keys)
 
 
-def mode_report(args, protocol, x1p, out):
-    refs, x3r = x3.Refs(args.logs, protocol), X3Run(args.logs, protocol)
-    z, st = float(protocol['family_z']), protocol['statistics_smoke' if args.smoke else 'statistics']
-    a, b, d0 = upstream(args, 'a'), upstream(args, 'b'), upstream(args, 'd0')
+def compare(st, cand, ref, truth, issue):
+    """Paired statistics plus a diagnosis of the comparison (smoke 2026-11-20: the report gate gave no location).
+    Identical candidate and reference (e.g. an ensemble whose V1 weight is w = 1, i.e. no ensemble, allowed by the
+    registered tie rule) have a gain of exactly 0 by construction; no bootstrap is run for them."""
+    cand, ref, truth = (np.asarray(v, float) for v in (cand, ref, truth))
+    if cand.shape != ref.shape or cand.shape != truth.shape or cand.ndim != 2 or not cand.size:
+        raise ValueError('Aligned nonempty [window, lead] predictions and truth required')
+    issue = np.asarray(issue).astype('datetime64[ns]')
+    if issue.shape != (len(truth),) or np.isnat(issue).any() or len(np.unique(issue)) < 2:
+        raise ValueError('Aligned valid issue times and at least two issue-time clusters required')
+    finite = np.isfinite(cand).all() and np.isfinite(ref).all()
+    if not finite or not np.isfinite(truth).all():
+        raise ValueError('Finite candidate/reference predictions and truth required before identical handling')
+    diag = dict(windows=int(len(truth)), issue_clusters=int(len(np.unique(np.asarray(issue)))),
+                nonfinite_candidate=int((~np.isfinite(cand)).sum()), nonfinite_reference=int((~np.isfinite(ref)).sum()),
+                identical=bool(np.array_equal(cand, ref)),
+                max_abs_prediction_diff=float(np.abs(cand - ref).max()) if finite and cand.size else None)
+    if diag['identical']:
+        diag.update(gain=0.0, ci_width=0.0, reference_mean_loss=float(np.abs(ref - truth).mean()),
+                    loss_difference_std=0.0)
+        return None, diag
+    stats = x3.paired(st, cand, ref, truth, issue)
+    loss_diff = np.abs(ref - truth).mean(1) - np.abs(cand - truth).mean(1)
+    diag.update(gain=stats['gain'], ci_width=stats['ci95_high'] - stats['ci95_low'],
+                reference_mean_loss=stats['reference_mean_loss'], loss_difference_std=float(loss_diff.std()))
+    return stats, diag
+
+
+def positive_or_identical(stats, diags, z, per_farm_min=0.0):
+    """all_positive_pooled, except that a farm whose candidate equals the reference has a gain of exactly 0: the
+    requirement 'gain > 0' (or >= per_farm_min > 0) fails for that farm, so the question is NOT passed; the pooled
+    interval is undefined and reported as such (not a technical failure)."""
+    same = sorted(f for f, d in diags.items() if d['identical'])
+    if not same:
+        return x3.all_positive_pooled(stats, z, per_farm_min)
+    other = {f: s for f, s in stats.items() if f not in same}
+    if other:
+        pooled = x2.pooled_effect(other, z)
+        if pooled['status'] != 'OK':
+            return dict(passed=None, pooled=pooled)
+    rel = {f: 0.0 if f in same else stats[f]['gain'] / stats[f]['reference_mean_loss'] for f in diags}
+    return dict(passed=False, farm_relative=rel,
+                pooled=dict(status='UNDEFINED_IDENTICAL', farms=same,
+                            reason='candidate equals reference for these farms (gain exactly 0, e.g. V1 weight w = 1)'))
+
+
+def technical_failures(dec, diags):
+    """Every comparison whose interval is degenerate WITHOUT identical predictions, with its location."""
+    bad = []
+    for q, pooled in (('A', dec['A'].get('pooled')), ('B1', dec['B1'].get('pooled')),
+                      ('B2_vs_LUG', dec['B2']['vs_LUG'].get('pooled')),
+                      ('B2_vs_control', dec['B2']['vs_LUG_plus_Nv1'].get('pooled'))):
+        if pooled is not None and pooled.get('status') not in ('OK', 'UNDEFINED_IDENTICAL'):
+            bad.append(dict(question=q, farm=pooled.get('farm'), reason=pooled.get('reason'),
+                            diagnosis=diags[q].get(pooled.get('farm'))))
+    if dec['B1'].get('outcome') == 'TECHNICAL_FAILURE' and not any(b['question'] == 'B1' for b in bad):
+        bad.append(dict(question='B1', reason='identical FT-B and LUG predictions', diagnosis=diags['B1']))
+    return bad
+
+
+def report_comparisons(args, protocol, x1p, refs, x3r, a, b):
+    """All development comparisons of the report: arrays aligned to the predicted keys, statistics and diagnoses."""
+    st = protocol['statistics_smoke' if args.smoke else 'statistics']
     farms = x2.farms(x1p)
-    dec = dict(family=['A', 'B1', 'B2'], z=z, note='development-stage evidence; V1/V2/tests were used in X3 (R1-S3)')
-    sa, desc_a = {}, {}
+    out = dict(stats={q: {} for q in ('A', 'B1', 'B2_vs_LUG', 'B2_vs_control')},
+               diag={q: {} for q in ('A', 'B1', 'B2_vs_LUG', 'B2_vs_control')}, desc_a={}, weights={})
     for T in FARMS:
-        keys = {k: v for k, v in x1.load_pack(checked(a['root'] / f'{T}/v1_keys.npz',
-                                                         a['registry'][f'{T}/v1_keys.npz'])).items()}
+        keys = dict(x1.load_pack(checked(a['root'] / f'{T}/v1_keys.npz', a['registry'][f'{T}/v1_keys.npz'])))
         full = refs.keys(T, 'V1')
         y, issue = keys['truth'], keys['issue']
         arms = {n: x3.load_registered(a, f'{T}/pred/{n}_V1.npy')[:, 1] for n in ('C_T0', 'C_T1', 'C_T3', 'C_D1')}
         arms['C_zs'] = aligned(x3r.array('q4', f'{T}_C_zs.npy'), full, keys)[:, 1]
         for n in ('L_1', 'L_1X', 'L_3', 'L_3X'):
             arms[n] = aligned(x3r.array('q4', f'{T}_{n}.npy'), full, keys)
-        sa[T] = x3.paired(st, arms['C_T1'], arms['L_1X'], y, issue)
-        desc_a[T] = dict(mae={n: float(np.abs(p - y).mean()) for n, p in arms.items()},
-                         C_T1_vs_C_D1=x3.paired(st, arms['C_T1'], arms['C_D1'], y, issue),
-                         C_T1_vs_C_zs=x3.paired(st, arms['C_T1'], arms['C_zs'], y, issue),
-                         C_D1_vs_C_zs=x3.paired(st, arms['C_D1'], arms['C_zs'], y, issue))
-    dec['A'] = dict(**x3.all_positive_pooled(sa, z), comparison='C_T1 vs L_1X on target V1 (k = 1)',
-                    wording='the tested two-stage adaptation pipeline; no causal attribution to source transfer (R1-S4)',
-                    descriptive=desc_a, a_meta_sha256=a['done']['meta_sha256'])
-    s1, s3, s3c, prob = {}, {}, {}, {}
+        out['stats']['A'][T], out['diag']['A'][T] = compare(st, arms['C_T1'], arms['L_1X'], y, issue)
+        out['desc_a'][T] = dict(mae={n: float(np.abs(p - y).mean()) for n, p in arms.items()},
+                                **{f'{c}_vs_{r}': compare(st, arms[c], arms[r], y, issue)[0]
+                                   for c, r in (('C_T1', 'C_D1'), ('C_T1', 'C_zs'), ('C_D1', 'C_zs'))})
     for f in FARMS:
         keys = {s: refs.keys(f, s) for s in ('V1', 'V2')}
         sub = {s: dict(x1.load_pack(checked(b['root'] / f'{f}/{s}_keys.npz', b['registry'][f'{f}/{s}_keys.npz'])))
@@ -920,22 +973,59 @@ def mode_report(args, protocol, x1p, out):
         lug = {s: aligned(refs.lug(f, s), keys[s], sub[s]) for s in ('V1', 'V2')}
         nv1 = {s: aligned(refs.nv1(f, s), keys[s], sub[s]) for s in ('V1', 'V2')}
         y1, y2, i2 = sub['V1']['truth'], sub['V2']['truth'], sub['V2']['issue']
-        s1[f] = x3.paired(st, ftb['V2'][:, 1], lug['V2'], y2, i2)
+        out['stats']['B1'][f], out['diag']['B1'][f] = compare(st, ftb['V2'][:, 1], lug['V2'], y2, i2)
         w = x3.ensemble_search(lug['V1'], ftb['V1'][:, 1], y1, protocol['b']['w_step'])[0]
         cw = x3.ensemble_search(lug['V1'], nv1['V1'], y1, protocol['b']['w_step'])[0]
         ens = w * lug['V2'] + (1 - w) * ftb['V2'][:, 1]
         ctrl = cw * lug['V2'] + (1 - cw) * nv1['V2']
-        s3[f], s3c[f] = x3.paired(st, ens, lug['V2'], y2, i2), x3.paired(st, ens, ctrl, y2, i2)
-        prob[f] = dict(w=w, control_w=cw, pinball=x3.pinball(ftb['V2'], y2, rated=farms[f]['rated']))
-    dec['B1'] = x3.q2_decision(s1, z, protocol['b']['margin'])
-    g3, g3c = x3.all_positive_pooled(s3, z, protocol['b']['min_gain']), x3.all_positive_pooled(s3c, z)
-    dec['B2'] = dict(vs_LUG=g3, vs_LUG_plus_Nv1=dict(pooled=g3c['pooled']),
-                     passed=None if g3['passed'] is None or g3c['pooled']['status'] != 'OK'
-                     else bool(g3['passed'] and g3c['pooled']['ci95_low'] > 0), weights=prob,
-                     b_meta_sha256=b['done']['meta_sha256'])
+        out['stats']['B2_vs_LUG'][f], out['diag']['B2_vs_LUG'][f] = compare(st, ens, lug['V2'], y2, i2)
+        out['stats']['B2_vs_control'][f], out['diag']['B2_vs_control'][f] = compare(st, ens, ctrl, y2, i2)
+        out['weights'][f] = dict(w=w, control_w=cw, pinball=x3.pinball(ftb['V2'], y2, rated=farms[f]['rated']))
+    return out
+
+
+def decide(cmp, z, cfg_b):
+    """A / B1 / B2 from the comparisons (registered rules; identical predictions handled by positive_or_identical)."""
+    s, d = cmp['stats'], cmp['diag']
+    dec = {}
+    dec['A'] = positive_or_identical(s['A'], d['A'], z)
+    identical_b1 = sorted(f for f, v in d['B1'].items() if v['identical'])
+    if identical_b1:
+        dec['B1'] = dict(outcome='TECHNICAL_FAILURE', pooled=dict(
+            status='IDENTICAL', farm=identical_b1[0], farms=identical_b1,
+            reason='identical FT-B and LUG predictions; noninferiority interval undefined'))
+    else:
+        dec['B1'] = x3.q2_decision(s['B1'], z, cfg_b['margin'])
+    g3 = positive_or_identical(s['B2_vs_LUG'], d['B2_vs_LUG'], z, cfg_b['min_gain'])
+    g3c = positive_or_identical(s['B2_vs_control'], d['B2_vs_control'], z)
+    if g3['pooled']['status'] == 'UNDEFINED_IDENTICAL' or g3c['pooled']['status'] == 'UNDEFINED_IDENTICAL':
+        passed = False if (g3['passed'] is False or g3c['passed'] is False) else None
+    else:
+        passed = (None if g3['passed'] is None or g3c['pooled']['status'] != 'OK'
+                  else bool(g3['passed'] and g3c['pooled']['ci95_low'] > 0))
+    dec['B2'] = dict(vs_LUG=g3, vs_LUG_plus_Nv1=dict(pooled=g3c['pooled']), passed=passed, weights=cmp['weights'])
+    return dec
+
+
+def mode_report(args, protocol, x1p, out):
+    refs, x3r = x3.Refs(args.logs, protocol), X3Run(args.logs, protocol)
+    z, st = float(protocol['family_z']), protocol['statistics_smoke' if args.smoke else 'statistics']
+    a, b, d0 = upstream(args, 'a'), upstream(args, 'b'), upstream(args, 'd0')
+    farms = x2.farms(x1p)
+    cmp = report_comparisons(args, protocol, x1p, refs, x3r, a, b)
+    save(out / 'report_diagnostics.json', cmp['diag'])            # written first: locates any degenerate statistic
+    dec = dict(family=['A', 'B1', 'B2'], z=z, note='development-stage evidence; V1/V2/tests were used in X3 (R1-S3)',
+               **decide(cmp, z, protocol['b']))
+    dec['A'].update(comparison='C_T1 vs L_1X on target V1 (k = 1)', descriptive=cmp['desc_a'],
+                    wording='the tested two-stage adaptation pipeline; no causal attribution to source transfer (R1-S4)',
+                    a_meta_sha256=a['done']['meta_sha256'])
+    dec['B2']['b_meta_sha256'] = b['done']['meta_sha256']
     dec['D0'] = dict(outcome=d0['done']['outcome'], d0_sha256=d0['done']['d0_sha256'])
-    if dec['B1'].get('outcome') == 'TECHNICAL_FAILURE' or dec['A']['passed'] is None or dec['B2']['passed'] is None:
-        raise ValueError('Technical statistical failure (degenerate CI); no outcome written')
+    dec['diagnostics_sha256'] = digest(out / 'report_diagnostics.json')
+    bad = technical_failures(dec, cmp['diag'])
+    if bad or dec['A']['passed'] is None or dec['B2']['passed'] is None:
+        raise ValueError('Technical statistical failure (degenerate CI); no outcome written: '
+                         + json.dumps(bad or dict(A=dec['A']['passed'], B2=dec['B2']['passed']), default=str)[:1500])
     save(out / 'dev_decisions.json', dec)                     # BEFORE any test statistic
     tests = {}
     for f in FARMS:
