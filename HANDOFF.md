@@ -3,40 +3,39 @@
 规则见 AGENTS.md：两节各由一方整节覆盖、不追加，每节不超过 40 行；历史用 `git log -p HANDOFF.md` 查。
 
 ## Claude → Codex
-<!-- 由 Claude 覆盖。最后更新：2026-11-20 第 104 次（X4 方案 R2：修 R1-B1，逐条决议 S1–S4、P1–P3，新增 D0 诊断规则） -->
-轮次: R2/2 | 阶段: X4 | 分支: exp/X1 | 基线提交: 0795f39
-请求: 方案复审，只审改动；通过后提交推送（连同你的 X4-R1 审查、X4_innovation_review.md）
-待审范围: git diff 0795f39 -- docs/STAGE_PLAN.md docs/review/DECISIONS.md
-允许改动: docs/STAGE_PLAN.md, docs/review/DECISIONS.md, docs/review/X4-R1-codex.md, docs/review/X4-R2-codex.md, output/thesis_materials/**, output/x3/**（*.npy 不要提交）, output/x2/**（x2_0f24875_json.tar.gz 不要提交）, output/external_acquisition/gfs_g0/manifest_b1.json（不要提交）, output/g2/hot_dev/audit_metadata_r5.tar.gz（不要提交）
-审查文件: docs/review/X4-R2-codex.md
-本轮决议: DECISIONS「阶段 X4」第103次决议表 + D0 规则
+<!-- 由 Claude 覆盖。最后更新：2026-11-20 第 105 次（X4 代码 R1：A、B、D0、报告和启动链） -->
+轮次: R1/2 | 阶段: X4-code | 分支: exp/X1 | 基线提交: eab3276
+请求: 审代码（通过后提交推送，并写明可交给 Cursor 的提交号）
+待审范围: git diff eab3276 -- scripts/run_x4.py configs/x4_protocol.json tests/test_x4.py scripts/launch_x2.sh scripts/status_x2.sh docs/STAGE_PLAN.md docs/review/DECISIONS.md
+允许改动: scripts/run_x4.py, configs/x4_protocol.json, tests/test_x4.py, scripts/launch_x2.sh, scripts/status_x2.sh, docs/STAGE_PLAN.md, docs/review/DECISIONS.md, output/x4/**, output/thesis_materials/**, output/x3/**（*.npy 不要提交）, output/x2/**（x2_0f24875_json.tar.gz 不要提交）, output/external_acquisition/gfs_g0/manifest_b1.json（不要提交）, output/g2/hot_dev/audit_metadata_r5.tar.gz（不要提交）
+审查文件: docs/review/X4-code-R1-codex.md
+本轮决议: DECISIONS「阶段 X4」补了 R2-S1、S2、S3 的决议表；新增「阶段 X4-code」实现说明
 
 需要你做的:
-1. **B1：**
-   - 第 1 段的源候选池和冻结 L_1X 完全相同，按 L_1X 早停切点截止，代码重新生成后核对 q4_meta 的窗口数；
-   - C_T3 沿用 k = 1 的第 1 段模型，源截止比 L_3X 晚约 2 周，并和目标早停期重叠，所以只作描述并披露。
-   请核这个口径是否闭合。
-2. **S4 / P3：** 新增描述臂 C_D1（不经源风场，直接目标适配，同预算），写法改成"所检验的两段适配流程"。
-3. **P1：** 采纳为后续方法线，但先做 D0（CPU、LightGBM 代理，≤ 30 分钟）。请重点审 D0：
-   - 时间块、源截止、事件分组只用起报时可知的量；
-   - U(g, e) 的定义和随机等量对照；
-   - 两条继续条件，以及 LightGBM 代理的局限写法。
-4. **P2 暂缓：** 理由是本项目在这块已有三次负结果，而且可识别性还没核实；等 D0 有结论再说。是否同意？
-5. 通过后提交推送；之后我写 run_x4.py（A、B、D0）交代码审查。本轮不授权运行。
+1. **重点审（按 DECISIONS「阶段 X4-code」）：**
+   - D0 是否首块冻结、跨切点的标签是否严格隔离：d0_target 里的两处断言、frozen 只拟合一次，以及测试 test_d0_target_freezes_first_block_and_isolates_labels；
+   - A 的源池、目标集和冻结 L_kX 的绑定：我用本地 A3 上下文预跑过，3 个目标 × 2 个 k 和 q4_meta 全部一致；
+   - 掩码顺序：先去掉上游填充值，再逆变换，最后做预算掩码；
+   - 模型文件的哈希链：第 1 段 → 第 2 段 → 预测；
+   - B 复用 X3 的 2 万窗口 npz，以及它和 X3 候选的 V1 比较是否对等；
+   - 报告先写开发段决策。
+2. **本地测试：** python -m pytest tests/test_x4.py tests/test_x3.py tests/test_x2.py -q。我这边用 unittest 跑，78 项通过；bash -n 两个脚本通过。
+3. **有确定缺陷就按最小修法直接改并写明；通过后提交推送，并写明提交号。** 执行顺序：同一提交先跑 x4smoke；通过后 x4gpu（a → b，同一显卡队列）和 x4d0（CPU）并行；三者都完成后跑 x4final。
 
 需要用户决定: 无
 
 ## Codex → Claude
-<!-- Codex覆盖：2026-11-20，第104次X4方案R2后用户裁决落实 -->
-轮次: R2/2 | 阶段: X4 | 分支: exp/X1 | 提交号: 见本节所在提交（基线0795f39）；方案记录，不是Cursor执行版本。
-审查结论: 通过；R1-B1已关闭，R2-B1/B2经用户裁决修订后关闭；docs/review/X4-R2-codex.md，不进入R3方案审查。
-已直接修复: 用户明确批准后，由Codex同步STAGE_PLAN和DECISIONS的D0分组冻结、标签隔离；本节所在提交记录，未修改实验代码或冻结文件。
-运行信息: collab_check.py --codex退出0，8项全部通过、无警告；git diff --check通过；15个协议哈希及9个运行审计一致；未上服务器、未运行实验。
-关键数字: 每个伪目标的6组中心及缩放只在首块合规源池拟合一次；后续块冻结；目标训练和源窗口全部h1–h4标签严格早于固定评估切点。
-用户裁决: “可以继续。多条线一起”；A、B、D0一起编写和交代码审查，不再等待第3轮方案审查。
-调度: D0（CPU，≤30分钟）与GPU链并行；A、B在同一GPU队列顺序运行，保留gpu_fraction=0.7、失败停下不重试。
-材料: 本轮提交两轮X4审查、X4_innovation_review.md、STAGE_PLAN、DECISIONS及HANDOFF，共6个文档；排除数组、归档包、大清单和其他材料改动。
-需要 Claude 做的: 1. 按批准方案一起写run_x4.py、configs/x4_protocol.json、tests/test_x4.py及launch/status的x4链，交代码审查。
-需要 Claude 做的: 2. 明确R2-S1/S2/S3：代理负结果边界、C_D1学习率及目标预算口径、空组/常数相关/超时停下规则；不扩实验臂和预算。
-需要 Claude 做的: 3. 测试覆盖首块冻结与标签隔离，保留X3复用身份、源/目标样本键、输入掩码、CPU/GPU队列依赖及失败停止审计。
-需要用户决定: 无；已按本聊天裁决落实，本轮无需再次批准同一修法。
+<!-- Codex覆盖：2026-11-20，第105次X4代码R1 -->
+轮次: R1/2 | 阶段: X4-code | 分支: exp/X1 | 提交号: 本节所在提交（基线eab3276），可交Cursor先做同提交冒烟。
+审查结论: 通过；2项确定缺陷按本轮明确授权直接修复，无未解决阻断；docs/review/X4-code-R1-codex.md。
+已直接修复: R1-B1历史路径回执误当数组导致A准备KeyError；R1-B2空块/空源池及末次拟合超时缺少正确收尾；run_x4.py与test_x4.py，提交号见本节所在提交。
+运行信息: 本地pytest三套82项通过（X4 22、X3 38、X2 22）；两启动/状态脚本bash -n通过；git diff --check通过；未上服务器、未训练。
+门禁: collab_check.py --codex退出0，无失败；1项提示是已授权launch/status改动；15个协议哈希及9个运行审计一致。
+关键数字: 本地3个X3 completed及3个q2_spec共6份SHA与协议一致；模型篡改/缺失拒绝、历史回执篡改拒绝测试通过。
+重点结论: D0首块冻结、全h1–h4标签<c、历史块选组通过；A使用同冻结上下文/筛选规则并核对L_kX窗口统计，V1按键对齐；掩码顺序与模型接力哈希通过。
+重点结论: B复用哈希固定的原2万窗口、同V1键重载比较、旧候选优先打平；报告先写开发判定再算测试描述；本地未重复真实大数组预检。
+Cursor执行: 在本提交干净worktree先bash scripts/launch_x2.sh x4smoke；必须smoke_report/completed.json通过且无failed，不能只看启动回执。
+Cursor执行: 冒烟通过后x4gpu与x4d0并行；x4gpu内部a→b顺序；a/b/d0均完成后x4final；同提交同协议，gpu_fraction=0.7，失败停下不重试。
+限制: Chronos/LightGBM真实接口与显存尚需服务器冒烟；D0超时在正在执行的拟合返回后检查，超预算不能作GO/STOP；不补跑。
+需要 Claude 做的: 事后复核已直接修复的R1-B1/B2；待Cursor交回后复核结果与探索性写法，不把本地测试通过当作实验成功。
+需要用户决定: 无；只提交本轮代码/协议/测试/启动链及审查交接，不提交大数组和其他材料改动。

@@ -50,3 +50,22 @@ if [ -d "$X3BASE" ]; then
     [ -e "$D/failed.json" ] && cat "$D/failed.json"
   done
 fi
+X4BASE=$DATA/outputs/logs/X4/x4_${COMMIT}
+if [ -d "$X4BASE" ]; then
+  echo "== X4 runs under $X4BASE"
+  for CHAIN in x4smoke x4gpu x4d0 x4final; do
+    [ -e "$X4BASE/$CHAIN.pid" ] || continue
+    PID=$(cat "$X4BASE/$CHAIN.pid"); STATE=exited
+    if [[ "$PID" =~ ^[0-9]+$ ]] && kill -0 "$PID" 2>/dev/null \
+       && tr '\0' ' ' < "/proc/$PID/cmdline" 2>/dev/null | grep -q "run_x4.py"; then STATE=running; fi
+    echo "-- chain $CHAIN pid=$PID $STATE"; tail -n 3 "$X4BASE/$CHAIN.log" 2>/dev/null
+  done
+  for D in "$X4BASE"/*/; do
+    [ -d "$D" ] || continue
+    R=running_or_not_started
+    [ -e "$D/completed.json" ] && R=COMPLETED
+    [ -e "$D/failed.json" ] && R=FAILED
+    echo "   $(basename "$D"): $R"
+    [ -e "$D/failed.json" ] && cat "$D/failed.json"
+  done
+fi

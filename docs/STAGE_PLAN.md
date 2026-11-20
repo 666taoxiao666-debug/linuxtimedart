@@ -99,7 +99,7 @@ X4（2026-11-20，R2后用户裁决通过）：时序基础模型的两段迁移
 - `scripts/run_x4.py`（新文件）：
   - 需要新文件的理由：X3 的门禁要求正式链和冒烟出自同一提交，所以 X4 把 X3 正式运行当成按哈希固定的参照，单独成链。
   - 尽量复用 run_x3 的函数，只新增迁移训练窗口、预算掩码、两段微调、早停集选点，以及 D0 的 CPU 模式。
-- `configs/x4_protocol.json`、`tests/test_x4.py`；在 `scripts/launch_x2.sh`、`scripts/status_x2.sh` 里加 x4 的链。
+- `configs/x4_protocol.json`、`tests/test_x4.py`（Codex补回归后22项，本地全部通过）；在 `scripts/launch_x2.sh`、`scripts/status_x2.sh` 里加 x4 的链。实现说明见 DECISIONS「阶段 X4-code」。
 
 ## 本阶段不做什么
 
