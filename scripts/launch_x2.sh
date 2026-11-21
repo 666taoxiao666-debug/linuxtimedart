@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # X2 launcher for Cursor (Claude 2026-11-16).  Run INSIDE a clean worktree of the reviewed commit.
-# Usage: bash scripts/launch_x2.sh <smoke|a|b|report|a2|report2|x3smoke|x3gpu|x3q4|x3final|x4smoke|x4gpu|x4d0|x4final>
+# Usage: bash scripts/launch_x2.sh <smoke|a|b|report|a2|report2|x3smoke|x3gpu|x3q4|x3final|x4smoke|x4gpu|x4d0|x4final|x5smoke|x5run>
 #   a2/report2: second A-line round (CPU) against the round-1 run X2_ROUND1 (default x2_91d4d20/a).
 #   smoke : CPU, tiny real slices, A -> B -> report; must pass before a/b.
 #   a     : part A, LightGBM on CPU (X2_THREADS, default 8).
@@ -12,7 +12,7 @@ DATA=${X2_DATA_ROOT:-/home/XT/nuist/pythoncode/TimeDARTFirst}
 LOGS=$DATA/outputs/logs
 PY=${X2_PYTHON:-/home/XT/miniconda3/envs/timedart/bin/python}
 HERE=$(cd "$(dirname "$0")/.." && pwd)
-MODE=${1:?usage: launch_x2.sh <smoke|a|b|report|a2|report2|x3smoke|x3gpu|x3q4|x3final|x4smoke|x4gpu|x4d0|x4final>}
+MODE=${1:?usage: launch_x2.sh <smoke|a|b|report|a2|report2|x3smoke|x3gpu|x3q4|x3final|x4smoke|x4gpu|x4d0|x4final|x5smoke|x5run>}
 if [ -n "$(git -C "$HERE" status --porcelain --untracked-files=no)" ]; then
   echo "worktree not clean: $HERE"; exit 1
 fi
@@ -63,6 +63,23 @@ case "$MODE" in
     echo $! > "$X4BASE/$MODE.pid"
     echo "started X4 chain $MODE pid=$(cat "$X4BASE/$MODE.pid") commit=$COMMIT protocol=$X4SHA"
     echo "base=$X4BASE log=$X4BASE/$MODE.log status: bash scripts/status_x2.sh"
+    exit 0 ;;
+  x5smoke|x5run)
+    # X5 (Claude 2026-11-21): NWP-latency value of upstream observations, LightGBM on CPU (run_x5.py).
+    #   x5smoke : tiny slices, delays 6 and 12 (must pass before x5run)      x5run : formal, all delays
+    X5SHA=$(sha256sum "$HERE/configs/x5_protocol.json" | cut -d' ' -f1)
+    X5BASE=$LOGS/X5/x5_${COMMIT}
+    mkdir -p "$X5BASE"
+    case "$MODE" in
+      x5smoke) X5ARGS=(--mode smoke --output "$X5BASE/smoke" --threads 2) ;;
+      x5run)   X5ARGS=(--mode run --output "$X5BASE/run" --threads "${X2_THREADS:-8}" --smoke-result "$X5BASE/smoke") ;;
+    esac
+    if ! mkdir "$X5BASE/.$MODE.launch"; then echo "launch already claimed: $MODE (do not retry)"; exit 1; fi
+    cd "$HERE"
+    nohup "$PY" scripts/run_x5.py --logs "$LOGS" --protocol-sha256 "$X5SHA" "${X5ARGS[@]}" > "$X5BASE/$MODE.log" 2>&1 &
+    echo $! > "$X5BASE/$MODE.pid"
+    echo "started X5 $MODE pid=$(cat "$X5BASE/$MODE.pid") commit=$COMMIT protocol=$X5SHA"
+    echo "base=$X5BASE log=$X5BASE/$MODE.log status: bash scripts/status_x2.sh"
     exit 0 ;;
 esac
 PSHA=$(sha256sum "$HERE/configs/x2_protocol.json" | cut -d' ' -f1)

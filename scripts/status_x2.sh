@@ -69,3 +69,24 @@ if [ -d "$X4BASE" ]; then
     [ -e "$D/failed.json" ] && cat "$D/failed.json"
   done
 fi
+X5BASE=$DATA/outputs/logs/X5/x5_${COMMIT}
+if [ -d "$X5BASE" ]; then
+  echo "== X5 runs under $X5BASE"
+  for MODE in x5smoke x5run; do
+    [ -e "$X5BASE/$MODE.pid" ] || continue
+    PID=$(cat "$X5BASE/$MODE.pid"); STATE=exited
+    if [[ "$PID" =~ ^[0-9]+$ ]] && kill -0 "$PID" 2>/dev/null \
+       && tr '\0' ' ' < "/proc/$PID/cmdline" 2>/dev/null | grep -q "run_x5.py"; then STATE=running; fi
+    echo "-- $MODE pid=$PID $STATE"; tail -n 3 "$X5BASE/$MODE.log" 2>/dev/null
+  done
+  for D in "$X5BASE"/*/; do
+    [ -d "$D" ] || continue
+    R=running_or_not_started
+    [ -e "$D/completed.json" ] && R=COMPLETED
+    [ -e "$D/smoke_passed.json" ] && R=SMOKE_PASSED
+    [ -e "$D/failed.json" ] && R=FAILED
+    echo "   $(basename "$D"): $R"
+    [ -e "$D/heartbeat.json" ] && cat "$D/heartbeat.json"
+    [ -e "$D/failed.json" ] && cat "$D/failed.json"
+  done
+fi

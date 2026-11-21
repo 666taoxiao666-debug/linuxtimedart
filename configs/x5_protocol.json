@@ -1,0 +1,36 @@
+{
+  "stage": "X5",
+  "version": 1,
+  "author": "Claude 2026-11-21; GPT reviews, Cursor runs (user split 2026-11-16)",
+  "plan": "docs/STAGE_PLAN.md (X5); decisions in docs/review/DECISIONS.md (stage X5)",
+  "question": "value of upstream observations on top of GFS as the GFS feed gets older (NWP latency), LightGBM only",
+  "delays_hours": [6, 9, 12, 15, 18],
+  "nominal_delay_hours": 6,
+  "cycle_rule": "cycle(t0, d) = floor((t0 - d) / 6 h) * 6 h; age = t0 - cycle in [d, d + 5]; leads outside [3, 18] h masked (no f000, no lead > 18)",
+  "nominal_binding": "for d = 6 the rebuilt last-step GFS columns 20..48 must equal the frozen x50 of EVERY train/V1/V2/test window (atol 1e-5) before any fit",
+  "caches": {
+    "Kelmarsh": {"dev": "G1/g1c_27312d7_r2/prepared/Kelmarsh/points_{0,1}.npz", "test": "same", "stats": "that prepared.json (nwp_mean, nwp_scale)", "cutoff": "2024-01-01"},
+    "Penmanshiel": {"dev": "G1/g1c_27312d7_r2/prepared/Penmanshiel/points_{0,1}.npz", "test": "same", "stats": "that prepared.json", "cutoff": "2024-01-01"},
+    "HoT": {"dev": "G2/hot_dev_f58f2ce_r5/prepared/points_{0,1}.npz (cutoff 2024-01-01)", "test": "G2/g2b84_bc7730e_r1/sealed_prep/points.npz (already opened in G2c/X1/X3; cutoff 2026-01-01)", "stats": "G2/g2b_4471499_shared_r1/formal/fit_statistics.json"}
+  },
+  "cohorts": "exactly the X2 part-A windows (run_x2.load_farm with configs/x2_protocol.json splits); formal runs check issue/turbine/truth hashes against output/x2/x2_0f24875/a/A/<farm>_cohorts.json",
+  "arms": {
+    "matched": "per delay d: LG_d and LUG_d fitted on GFS columns rebuilt at delay d (train, V1, V2, tests all at d); LU fitted once (delay-independent, = GFS outage endpoint)",
+    "mismatch": "LG_d6 / LUG_d6 boosters applied to inputs rebuilt at every other d (unexpected latency, prediction only)",
+    "mix": "LG_mix / LUG_mix fitted once with every train and V1 window at a delay drawn uniformly from delays_hours (numpy default_rng(2024), train and V1 drawn separately), evaluated at every d"
+  },
+  "lightgbm": "configs/x1_protocol.json lightgbm grid (2x2), objective l1, early stopping on V1; seed 2024 only (all arms); run_x2.run_a_farm reused unchanged",
+  "statistics": {"block_length": 8, "replicates": 2000, "seed": 2024, "loss": "absolute error, window-uniform (mean over h1..h4)"},
+  "readouts": {
+    "primary_split": "V2 (development); test years exploratory (opened before)",
+    "U_matched": "MAE(LG_d) - MAE(LUG_d)",
+    "G_matched": "MAE(LU) - MAE(LUG_d)",
+    "U_rise": "U_matched(18) - U_matched(6), paired on the same windows",
+    "descriptive_support": "H_latency (upstream value rises with GFS latency) is called supported on V2 if U_rise > 0 with CI lower bound > 0 in at least 2 of 3 farms; otherwise reported as not supported. Descriptive, no method claim.",
+    "also": "Spearman of U_matched over delays per farm; mismatch and mix MAE per delay; MAE(LUG_mix@d) - MAE(LUG_d)"
+  },
+  "budget": {
+    "formal": {"grid_cells": 4, "seeds": 1},
+    "smoke": {"grid_cells": 1, "seeds": 1, "n_estimators": 40, "early_stopping_rounds": 10, "train_rows": 4000, "eval_rows": 600, "delays_hours": [6, 12]}
+  }
+}
