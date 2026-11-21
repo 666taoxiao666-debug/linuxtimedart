@@ -1,0 +1,67 @@
+{
+  "task": "predict",
+  "output": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X4/x4_1c0a125/smoke_a/Kelmarsh/pred",
+  "receipt": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/cursor_env/receipt.json",
+  "manifest": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/cursor_env/chronos2_manifest.json",
+  "gpu_fraction": 0.7,
+  "context_length": 512,
+  "masked": true,
+  "models": [
+    {
+      "name": "C_T0",
+      "init": {
+        "root": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X4/x4_1c0a125/smoke_a/Kelmarsh/stage1_lr0",
+        "model_sha256": {
+          "selected/config.json": "5ebdd54c86881d3796d054b729d5dca6548bb4cb736b47bd13538feb3d102f14",
+          "selected/model.safetensors": "473fa712a05e1aea33bf5f1bb5b3244415cf1d8365262ec96455bdbefe16017d"
+        }
+      }
+    },
+    {
+      "name": "C_T1",
+      "init": {
+        "root": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X4/x4_1c0a125/smoke_a/Kelmarsh/stage2_k1",
+        "model_sha256": {
+          "selected/config.json": "5ebdd54c86881d3796d054b729d5dca6548bb4cb736b47bd13538feb3d102f14",
+          "selected/model.safetensors": "fb4c68d4d9ab5f4e2f41f2626148ad11343713344a729ff780483bd63baa1535"
+        }
+      }
+    },
+    {
+      "name": "C_T3",
+      "init": {
+        "root": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X4/x4_1c0a125/smoke_a/Kelmarsh/stage2_k3",
+        "model_sha256": {
+          "selected/config.json": "5ebdd54c86881d3796d054b729d5dca6548bb4cb736b47bd13538feb3d102f14",
+          "selected/model.safetensors": "b8ffa72b97100b6539647c36d39d18d39fd1c32fd3466ecff40ebde1ce1deb99"
+        }
+      }
+    },
+    {
+      "name": "C_D1",
+      "init": {
+        "root": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X4/x4_1c0a125/smoke_a/Kelmarsh/direct_k1",
+        "model_sha256": {
+          "selected/config.json": "5ebdd54c86881d3796d054b729d5dca6548bb4cb736b47bd13538feb3d102f14",
+          "selected/model.safetensors": "7feb2eec31d4022b93fc8ec3d77146540b5af2389ea7a395d194c712b0c2bf93"
+        }
+      }
+    }
+  ],
+  "contexts": [
+    {
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X4/x4_1c0a125/smoke_a/Kelmarsh/v1_context.npz",
+      "sha256": "2d334b28cb337cc347095f42422c54a1644c90bca651d3ecc2c8ef379a4ee078",
+      "name": "V1",
+      "history": {
+        "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X4/x4_1c0a125/smoke_a/history/Kelmarsh_a3_grid.npz",
+        "sha256": "9fb6b37c8f6e1aeaa512e948a770d8a35ea10d2ebf3b6b852dccc4cc8165a78e",
+        "source": "a3_grid"
+      },
+      "grid": {
+        "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/x1_e4819b0_gpu_r1/A3/Kelmarsh_history.npz",
+        "sha256": "cd54e76ebad2dc58a24811c1fce46827e2b0503d7367554e323892981907c8df"
+      }
+    }
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "task": "fit",
+  "output": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X4/x4_1c0a125/smoke_b/Penmanshiel/lr0",
+  "receipt": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/cursor_env/receipt.json",
+  "manifest": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/cursor_env/chronos2_manifest.json",
+  "gpu_fraction": 0.7,
+  "seed": 2024,
+  "train": {
+    "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X4/x4_1c0a125/smoke_b/Penmanshiel/train_smoke.npz",
+    "sha256": "bfd0d09ab0d6d4cd8a730a6c2b66f16bbfdb5316ce6f200078f40acbb3571b69"
+  },
+  "init": null,
+  "learning_rate": 3e-06,
+  "num_steps": 4,
+  "eval": {
+    "kind": "context",
+    "context": {
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X4/x4_1c0a125/smoke_b/Penmanshiel/V1_context.npz",
+      "sha256": "d5cbaa6a3131c14b5294a94ff9e5333873f14b3df4ecb0afe27956d3e8716058",
+      "name": "V1",
+      "history": {
+        "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X4/x4_1c0a125/smoke_b/history/Penmanshiel_a3_grid.npz",
+        "sha256": "00a23ac77d053c1d94740e54d0000b05c82310ba9ec643194096e32f9e5954d3",
+        "source": "a3_grid"
+      },
+      "grid": {
+        "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/x1_e4819b0_gpu_r1/A3/Penmanshiel_history.npz",
+        "sha256": "f8626eae6f64cdc8a5b386714b683feaeca0ada6afa210e13f6ff6291c4066c2"
+      }
+    },
+    "grid": {
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/x1_e4819b0_gpu_r1/A3/Penmanshiel_history.npz",
+      "sha256": "f8626eae6f64cdc8a5b386714b683feaeca0ada6afa210e13f6ff6291c4066c2"
+    },
+    "keys": {
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X4/x4_1c0a125/smoke_b/Penmanshiel/V1_keys.npz",
+      "sha256": "ef0257c3a6e88857cdf184dd1ccee2a67864ab159bfc3469479f3fd6b6620fae"
+    },
+    "masked": false
+  },
+  "eval_every": 2,
+  "eval_step0": false,
+  "candidate": {
+    "name": "full_mb135x2",
+    "mode": "full",
+    "microbatch": 135,
+    "accumulation": 2,
+    "windows_per_step": 18
+  },
+  "context_length": 1024,
+  "budget": {
+    "train_windows": 512
+  }
+}

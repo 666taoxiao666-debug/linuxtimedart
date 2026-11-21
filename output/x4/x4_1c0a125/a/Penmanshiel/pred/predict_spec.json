@@ -1,0 +1,67 @@
+{
+  "task": "predict",
+  "output": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X4/x4_1c0a125/a/Penmanshiel/pred",
+  "receipt": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/cursor_env/receipt.json",
+  "manifest": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/cursor_env/chronos2_manifest.json",
+  "gpu_fraction": 0.7,
+  "context_length": 512,
+  "masked": true,
+  "models": [
+    {
+      "name": "C_T0",
+      "init": {
+        "root": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X4/x4_1c0a125/a/Penmanshiel/stage1_lr1",
+        "model_sha256": {
+          "selected/config.json": "5ebdd54c86881d3796d054b729d5dca6548bb4cb736b47bd13538feb3d102f14",
+          "selected/model.safetensors": "9a40ce6568a88e1033361f2be8cce9b7122516cbb6540b8b804ddb43baa76a46"
+        }
+      }
+    },
+    {
+      "name": "C_T1",
+      "init": {
+        "root": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X4/x4_1c0a125/a/Penmanshiel/stage2_k1",
+        "model_sha256": {
+          "selected/config.json": "53ea035a6d1295b77d68173b526550d54e9d3c3a17b096a35876f1c615582b7b",
+          "selected/model.safetensors": "9a40ce6568a88e1033361f2be8cce9b7122516cbb6540b8b804ddb43baa76a46"
+        }
+      }
+    },
+    {
+      "name": "C_T3",
+      "init": {
+        "root": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X4/x4_1c0a125/a/Penmanshiel/stage2_k3",
+        "model_sha256": {
+          "selected/config.json": "53ea035a6d1295b77d68173b526550d54e9d3c3a17b096a35876f1c615582b7b",
+          "selected/model.safetensors": "9a40ce6568a88e1033361f2be8cce9b7122516cbb6540b8b804ddb43baa76a46"
+        }
+      }
+    },
+    {
+      "name": "C_D1",
+      "init": {
+        "root": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X4/x4_1c0a125/a/Penmanshiel/direct_k1",
+        "model_sha256": {
+          "selected/config.json": "5ebdd54c86881d3796d054b729d5dca6548bb4cb736b47bd13538feb3d102f14",
+          "selected/model.safetensors": "c9c25449006293be017e0df8a623def85e54f6f7a1bc375bdbd087d15f6c7315"
+        }
+      }
+    }
+  ],
+  "contexts": [
+    {
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X4/x4_1c0a125/a/Penmanshiel/v1_context.npz",
+      "sha256": "7497aef0e973db6f932685b4f87daa002801b4bd8ba61f48adf0bea97751fb98",
+      "name": "V1",
+      "history": {
+        "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X4/x4_1c0a125/a/history/Penmanshiel_a3_grid.npz",
+        "sha256": "00a23ac77d053c1d94740e54d0000b05c82310ba9ec643194096e32f9e5954d3",
+        "source": "a3_grid"
+      },
+      "grid": {
+        "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/x1_e4819b0_gpu_r1/A3/Penmanshiel_history.npz",
+        "sha256": "f8626eae6f64cdc8a5b386714b683feaeca0ada6afa210e13f6ff6291c4066c2"
+      }
+    }
+  ]
+}

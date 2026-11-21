@@ -1,0 +1,65 @@
+{
+  "task": "predict",
+  "output": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X4/x4_1c0a125/b/HoT/pred_ftb",
+  "receipt": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/cursor_env/receipt.json",
+  "manifest": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/cursor_env/chronos2_manifest.json",
+  "gpu_fraction": 0.7,
+  "context_length": 1024,
+  "masked": false,
+  "models": [
+    {
+      "name": "FTB",
+      "init": {
+        "root": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X4/x4_1c0a125/b/HoT/lr0",
+        "model_sha256": {
+          "selected/config.json": "5ebdd54c86881d3796d054b729d5dca6548bb4cb736b47bd13538feb3d102f14",
+          "selected/model.safetensors": "bfbe3bb42b82219b02dd7ba19e656e149ed6f8145c8b879e73281856aeb2451e"
+        }
+      }
+    }
+  ],
+  "contexts": [
+    {
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X4/x4_1c0a125/b/HoT/V2_context.npz",
+      "sha256": "bb026fcb1976df9e0f91a484a780045c068d5ffb6898727ebdffac9b1e114c50",
+      "name": "V2",
+      "history": {
+        "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X4/x4_1c0a125/b/history/HoT_a3_grid.npz",
+        "sha256": "948f8521e95754fe23019dca3c2634278420c35a2618028eb116305e82b2c46c",
+        "source": "a3_grid"
+      },
+      "grid": {
+        "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/x1_e4819b0_gpu_r1/A3/HoT_history.npz",
+        "sha256": "2c1539d0357abb3ccc37267ea6da9024fa604215a615c0c063270d0686337f68"
+      }
+    },
+    {
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X4/x4_1c0a125/b/HoT/HoT_2024_context.npz",
+      "sha256": "396cd58dbce9e1d8203d13f189ac225f4838d0e2a2481aafb06ad8de0071ee7d",
+      "name": "HoT_2024",
+      "history": {
+        "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X4/x4_1c0a125/b/history/HoT_hot_sealed_points.npz",
+        "sha256": "2f8369d82b849a5da844638567d27f2fa839064972111f946543e8373761949c",
+        "source": "hot_sealed_points"
+      },
+      "grid": {
+        "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/x1_e4819b0_gpu_r1/A3/HoT_history.npz",
+        "sha256": "2c1539d0357abb3ccc37267ea6da9024fa604215a615c0c063270d0686337f68"
+      }
+    },
+    {
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X4/x4_1c0a125/b/HoT/HoT_2025_context.npz",
+      "sha256": "44d5a5d91b0d5dad0a3e7c461edfa071295d7ae9e877b1f9a547dde23c62648d",
+      "name": "HoT_2025",
+      "history": {
+        "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X4/x4_1c0a125/b/history/HoT_hot_sealed_points.npz",
+        "sha256": "2f8369d82b849a5da844638567d27f2fa839064972111f946543e8373761949c",
+        "source": "hot_sealed_points"
+      },
+      "grid": {
+        "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/x1_e4819b0_gpu_r1/A3/HoT_history.npz",
+        "sha256": "2c1539d0357abb3ccc37267ea6da9024fa604215a615c0c063270d0686337f68"
+      }
+    }
+  ]
+}

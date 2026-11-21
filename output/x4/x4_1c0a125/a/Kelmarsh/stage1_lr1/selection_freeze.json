@@ -1,0 +1,80 @@
+{
+  "model_sha256": {
+    "selected/config.json": "5ebdd54c86881d3796d054b729d5dca6548bb4cb736b47bd13538feb3d102f14",
+    "selected/model.safetensors": "1151cffaaffd75b3722aa522838784096ca50faf6a449cf86769990a90d8bdff"
+  },
+  "selected": {
+    "step": 1200,
+    "mae": 122.25234231039606
+  },
+  "history": [
+    {
+      "step": 200,
+      "mae": 128.86834579260537
+    },
+    {
+      "step": 400,
+      "mae": 130.13197843715272
+    },
+    {
+      "step": 600,
+      "mae": 133.27246848738028
+    },
+    {
+      "step": 800,
+      "mae": 123.78483188655918
+    },
+    {
+      "step": 1000,
+      "mae": 127.13694436214864
+    },
+    {
+      "step": 1200,
+      "mae": 122.25234231039606
+    },
+    {
+      "step": 1400,
+      "mae": 125.48670764384723
+    },
+    {
+      "step": 1600,
+      "mae": 123.26711286434697
+    },
+    {
+      "step": 1800,
+      "mae": 125.43585760854185
+    },
+    {
+      "step": 2000,
+      "mae": 123.7497959472101
+    }
+  ],
+  "candidate": {
+    "name": "full_mb256x1",
+    "mode": "full",
+    "microbatch": 256,
+    "accumulation": 1,
+    "windows_per_step": 18
+  },
+  "learning_rate": 1e-05,
+  "steps": 2000,
+  "eval_every": 200,
+  "eval_step0": false,
+  "init": null,
+  "trainer": {
+    "per_device_train_batch_size": 256,
+    "gradient_accumulation_steps": 1,
+    "max_steps": 2000,
+    "learning_rate": 1e-05,
+    "n_gpu": 1,
+    "world_size": 1,
+    "seed": 2024,
+    "bf16": true,
+    "fp16": false
+  },
+  "train_windows": 40000,
+  "budget": {
+    "train_windows": 40000
+  },
+  "selection": "median MAE on the registered selection set"
+}

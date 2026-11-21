@@ -1,0 +1,42 @@
+{
+  "commit": "1c0a1256e962d9b8da46abcf0f48696b4e0bd917",
+  "worktree": "/home/XT/nuist/pythoncode/TimeDARTFirst_X4_1c0a125",
+  "remote_base": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X4/x4_1c0a125",
+  "checked_at": "2026-11-21T00:51:17+08:00",
+  "worktree_clean": true,
+  "stages": {
+    "smoke_a": "COMPLETED",
+    "smoke_b": "COMPLETED",
+    "smoke_d0": "COMPLETED",
+    "smoke_report": "COMPLETED"
+  },
+  "failed_json_files": [],
+  "x4smoke_pid": 2854604,
+  "x4smoke_process_exited": true,
+  "x4smoke_log_last_line": "[X4] chain done",
+  "receipt_and_metadata_hashes_verified": true,
+  "identical": [{"question": "B2_vs_LUG", "farm": "Kelmarsh", "windows": 240, "issue_clusters": 40, "gain": 0.0, "ci_width": 0.0}],
+  "smoke_only_not_scientific_conclusions": {
+    "A_passed": false,
+    "B1_outcome": "NEGATIVE",
+    "B2_passed": false,
+    "B2_vs_LUG_pooled_status": "UNDEFINED_IDENTICAL",
+    "D0_outcome": "STOP_P1"
+  },
+  "smoke_b_actual_trainer_all_six_fits": {
+    "per_device_train_batch_size": 135,
+    "gradient_accumulation_steps": 2,
+    "world_size": 1,
+    "transformers_version_in_all_saved_configs": "5.23.0",
+    "transformers_version_in_tsfm_environment": "5.23.0"
+  },
+  "formal_launches": {
+    "x4gpu_pid": 2864517,
+    "x4gpu_order": ["a", "b"],
+    "x4d0_pid": 2864559,
+    "protocol_sha256": "9d70be88573bff2f2ebb1654b1d0a825dad148ff64a5146ad454f9e6551206ea"
+  },
+  "old_efbd0af_evidence_hashes_unchanged": true,
+  "status_script_exit_code": 1,
+  "status_script_exit_note": "The script ends with a false optional failed.json test; acceptance uses actual receipts, process state, final log line and hashes."
+}

@@ -1,0 +1,54 @@
+{
+  "task": "fit",
+  "output": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X4/x4_1c0a125/b/Kelmarsh/lr0",
+  "receipt": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/cursor_env/receipt.json",
+  "manifest": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/cursor_env/chronos2_manifest.json",
+  "gpu_fraction": 0.7,
+  "seed": 2024,
+  "train": {
+    "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X3/x3_f8af1b6/q2/Kelmarsh_train.npz",
+    "sha256": "c0add88678d1e16b4e67cdc4231b25f056adee58b1f37c924d8367dca6d23e32"
+  },
+  "init": null,
+  "learning_rate": 3e-06,
+  "num_steps": 2000,
+  "eval": {
+    "kind": "context",
+    "context": {
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X4/x4_1c0a125/b/Kelmarsh/V1_context.npz",
+      "sha256": "e41c840ac9122224671fea3f7366a7b8bb2d2d779d7959fbf300afd4b3ab4cbb",
+      "name": "V1",
+      "history": {
+        "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X4/x4_1c0a125/b/history/Kelmarsh_a3_grid.npz",
+        "sha256": "9fb6b37c8f6e1aeaa512e948a770d8a35ea10d2ebf3b6b852dccc4cc8165a78e",
+        "source": "a3_grid"
+      },
+      "grid": {
+        "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/x1_e4819b0_gpu_r1/A3/Kelmarsh_history.npz",
+        "sha256": "cd54e76ebad2dc58a24811c1fce46827e2b0503d7367554e323892981907c8df"
+      }
+    },
+    "grid": {
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/x1_e4819b0_gpu_r1/A3/Kelmarsh_history.npz",
+      "sha256": "cd54e76ebad2dc58a24811c1fce46827e2b0503d7367554e323892981907c8df"
+    },
+    "keys": {
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X4/x4_1c0a125/b/Kelmarsh/V1_keys.npz",
+      "sha256": "ee655f153ad29a3925fee76986abfb0ef3ad3019c3ef9b6dfbd8a40e09b69763"
+    },
+    "masked": false
+  },
+  "eval_every": 200,
+  "eval_step0": false,
+  "candidate": {
+    "name": "full_mb135x2",
+    "mode": "full",
+    "microbatch": 135,
+    "accumulation": 2,
+    "windows_per_step": 18
+  },
+  "context_length": 1024,
+  "budget": {
+    "train_windows": 20000
+  }
+}

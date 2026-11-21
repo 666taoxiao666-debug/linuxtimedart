@@ -1,0 +1,23 @@
+{
+  "task": "preflight",
+  "output": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X4/x4_1c0a125/b/Penmanshiel/pre_full_mb135x2",
+  "receipt": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/cursor_env/receipt.json",
+  "manifest": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/cursor_env/chronos2_manifest.json",
+  "gpu_fraction": 0.7,
+  "candidate": {
+    "name": "full_mb135x2",
+    "mode": "full",
+    "microbatch": 135,
+    "accumulation": 2,
+    "windows_per_step": 18
+  },
+  "train": {
+    "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X3/x3_f8af1b6/q2/Penmanshiel_train.npz",
+    "sha256": "7821cc05421f77f7e181a31f1fde9b1e02184bcbb653d4ea3e7883680cfcfbd9"
+  },
+  "preflight_windows": 2048,
+  "preflight_steps": 20,
+  "context_length": 1024,
+  "learning_rate": 3e-06,
+  "seed": 2024
+}

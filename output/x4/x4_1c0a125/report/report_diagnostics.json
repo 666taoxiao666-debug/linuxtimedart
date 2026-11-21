@@ -1,0 +1,154 @@
+{
+  "A": {
+    "Kelmarsh": {
+      "windows": 7431,
+      "issue_clusters": 1257,
+      "nonfinite_candidate": 0,
+      "nonfinite_reference": 0,
+      "identical": false,
+      "max_abs_prediction_diff": 1016.500732421875,
+      "gain": -3.529769230798328,
+      "ci_width": 6.876672385139994,
+      "reference_mean_loss": 139.2475102798986,
+      "loss_difference_std": 68.87084756916597
+    },
+    "Penmanshiel": {
+      "windows": 19413,
+      "issue_clusters": 1400,
+      "nonfinite_candidate": 0,
+      "nonfinite_reference": 0,
+      "identical": false,
+      "max_abs_prediction_diff": 1754.3044128417969,
+      "gain": -5.063248075402081,
+      "ci_width": 11.256919738990113,
+      "reference_mean_loss": 194.0103095206638,
+      "loss_difference_std": 117.72462057359522
+    },
+    "HoT": {
+      "windows": 14932,
+      "issue_clusters": 2175,
+      "nonfinite_candidate": 0,
+      "nonfinite_reference": 0,
+      "identical": false,
+      "max_abs_prediction_diff": 1149.3853149414062,
+      "gain": -4.447845688779697,
+      "ci_width": 9.931407090100851,
+      "reference_mean_loss": 178.57316776075285,
+      "loss_difference_std": 93.09212396789634
+    }
+  },
+  "B1": {
+    "Kelmarsh": {
+      "windows": 8249,
+      "issue_clusters": 1405,
+      "nonfinite_candidate": 0,
+      "nonfinite_reference": 0,
+      "identical": false,
+      "max_abs_prediction_diff": 1213.6463456772938,
+      "gain": 0.29358018283605736,
+      "ci_width": 5.759448036067855,
+      "reference_mean_loss": 131.55295823751248,
+      "loss_difference_std": 62.51596909062445
+    },
+    "Penmanshiel": {
+      "windows": 16176,
+      "issue_clusters": 1256,
+      "nonfinite_candidate": 0,
+      "nonfinite_reference": 0,
+      "identical": false,
+      "max_abs_prediction_diff": 1365.7009113348543,
+      "gain": -5.1276912842607905,
+      "ci_width": 12.537034797306674,
+      "reference_mean_loss": 175.6184583406134,
+      "loss_difference_std": 92.20495890517792
+    },
+    "HoT": {
+      "windows": 15103,
+      "issue_clusters": 2196,
+      "nonfinite_candidate": 0,
+      "nonfinite_reference": 0,
+      "identical": false,
+      "max_abs_prediction_diff": 1698.4987438946714,
+      "gain": -7.340570612804666,
+      "ci_width": 7.366339483242584,
+      "reference_mean_loss": 185.74177505786773,
+      "loss_difference_std": 89.31572362444132
+    }
+  },
+  "B2_vs_LUG": {
+    "Kelmarsh": {
+      "windows": 8249,
+      "issue_clusters": 1405,
+      "nonfinite_candidate": 0,
+      "nonfinite_reference": 0,
+      "identical": false,
+      "max_abs_prediction_diff": 546.1408433477509,
+      "gain": 4.782177253065804,
+      "ci_width": 2.8910166177537606,
+      "reference_mean_loss": 131.55295823751248,
+      "loss_difference_std": 29.87577075832121
+    },
+    "Penmanshiel": {
+      "windows": 16176,
+      "issue_clusters": 1256,
+      "nonfinite_candidate": 0,
+      "nonfinite_reference": 0,
+      "identical": false,
+      "max_abs_prediction_diff": 546.2803889480042,
+      "gain": 3.1639189014929974,
+      "ci_width": 5.01926284225684,
+      "reference_mean_loss": 175.6184583406134,
+      "loss_difference_std": 38.37725157705182
+    },
+    "HoT": {
+      "windows": 15103,
+      "issue_clusters": 2196,
+      "nonfinite_candidate": 0,
+      "nonfinite_reference": 0,
+      "identical": false,
+      "max_abs_prediction_diff": 169.84987438946712,
+      "gain": 0.9961622154842832,
+      "ci_width": 0.8342062593314096,
+      "reference_mean_loss": 185.74177505786773,
+      "loss_difference_std": 9.687320641011098
+    }
+  },
+  "B2_vs_control": {
+    "Kelmarsh": {
+      "windows": 8249,
+      "issue_clusters": 1405,
+      "nonfinite_candidate": 0,
+      "nonfinite_reference": 0,
+      "identical": false,
+      "max_abs_prediction_diff": 531.7928924560547,
+      "gain": 2.3341650580878937,
+      "ci_width": 2.544826781927418,
+      "reference_mean_loss": 129.1049460425346,
+      "loss_difference_std": 29.478062295648613
+    },
+    "Penmanshiel": {
+      "windows": 16176,
+      "issue_clusters": 1256,
+      "nonfinite_candidate": 0,
+      "nonfinite_reference": 0,
+      "identical": false,
+      "max_abs_prediction_diff": 519.837937135307,
+      "gain": 1.9632772485804022,
+      "ci_width": 4.953056457039843,
+      "reference_mean_loss": 174.41781668770076,
+      "loss_difference_std": 37.53763498905635
+    },
+    "HoT": {
+      "windows": 15103,
+      "issue_clusters": 2196,
+      "nonfinite_candidate": 0,
+      "nonfinite_reference": 0,
+      "identical": false,
+      "max_abs_prediction_diff": 381.3389772933906,
+      "gain": 2.1130973248420966,
+      "ci_width": 2.3158874808348977,
+      "reference_mean_loss": 186.85871016722555,
+      "loss_difference_std": 24.12929016335658
+    }
+  }
+}

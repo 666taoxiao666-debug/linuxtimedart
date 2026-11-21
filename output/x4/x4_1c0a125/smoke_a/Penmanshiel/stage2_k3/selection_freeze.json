@@ -1,0 +1,58 @@
+{
+  "model_sha256": {
+    "selected/config.json": "5ebdd54c86881d3796d054b729d5dca6548bb4cb736b47bd13538feb3d102f14",
+    "selected/model.safetensors": "d41ce1cb1fc2c4a3bbc1d678d3ea0c6fc1c6c29257bfb82e50b2a15d376cb199"
+  },
+  "selected": {
+    "step": 4,
+    "mae": 229.34267421734154
+  },
+  "history": [
+    {
+      "step": 0,
+      "mae": 230.3965040854005
+    },
+    {
+      "step": 2,
+      "mae": 229.50380318233493
+    },
+    {
+      "step": 4,
+      "mae": 229.34267421734154
+    }
+  ],
+  "candidate": {
+    "name": "full_mb256x1",
+    "mode": "full",
+    "microbatch": 256,
+    "accumulation": 1,
+    "windows_per_step": 18
+  },
+  "learning_rate": 1e-06,
+  "steps": 4,
+  "eval_every": 2,
+  "eval_step0": true,
+  "init": {
+    "root": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X4/x4_1c0a125/smoke_a/Penmanshiel/stage1_lr0",
+    "model_sha256": {
+      "selected/config.json": "5ebdd54c86881d3796d054b729d5dca6548bb4cb736b47bd13538feb3d102f14",
+      "selected/model.safetensors": "942e42e24b97b5997beba47a0c1ea774b0e61b444a3b3772760d0d4b25d81c9d"
+    }
+  },
+  "trainer": {
+    "per_device_train_batch_size": 256,
+    "gradient_accumulation_steps": 1,
+    "max_steps": 4,
+    "learning_rate": 1e-06,
+    "n_gpu": 1,
+    "world_size": 1,
+    "seed": 2024,
+    "bf16": true,
+    "fp16": false
+  },
+  "train_windows": 7685,
+  "budget": {
+    "train_windows": 7685
+  },
+  "selection": "median MAE on the registered selection set"
+}
