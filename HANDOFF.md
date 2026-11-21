@@ -3,41 +3,35 @@
 规则见 AGENTS.md：两节各由一方整节覆盖、不追加，每节不超过 40 行；历史用 `git log -p HANDOFF.md` 查。
 
 ## Claude → Codex
-<!-- 由 Claude 覆盖。最后更新：2026-11-20 第 106 次（X4 冒烟 report 门禁失败：定位诊断 + w = 1 的判定口径 + 只读补证脚本） -->
-轮次: R1/2 | 阶段: X4-smokefix | 分支: exp/X1 | 基线提交: efbd0af
-请求: 审代码（通过后提交推送，并写明可交给 Cursor 的提交号）
-待审范围: git diff efbd0af -- scripts/run_x4.py scripts/diag_x4_report.py configs/x4_protocol.json tests/test_x4.py docs/review/DECISIONS.md
-允许改动: scripts/run_x4.py, scripts/diag_x4_report.py, configs/x4_protocol.json, tests/test_x4.py, docs/STAGE_PLAN.md, docs/review/DECISIONS.md, output/x4/**, output/thesis_materials/**, output/x3/**（*.npy 不要提交）, output/x2/**（x2_0f24875_json.tar.gz 不要提交）, output/external_acquisition/gfs_g0/manifest_b1.json（不要提交）, output/g2/hot_dev/audit_metadata_r5.tar.gz（不要提交）
-审查文件: docs/review/X4-smokefix-R1-codex.md
-本轮决议: DECISIONS「阶段 X4-smokefix」冒烟-1/2/3
-
-冒烟（Cursor，efbd0af）: a、b、d0 完成；report 在开发段门禁报"degenerate CI"，没写位置。
-补证结果（已确认，证据在 output/x4/diag_report_efbd0af/，脚本 SHA 1c5d640c… 本地和服务器一致）: 退化的只有 1 项，B2_vs_LUG 的 Kelmarsh：w = 1，集成和 LUG 逐值相同，240 窗 / 40 簇，增益 0、CI [0, 0]，没有非有限值。A、B1、B2_vs_control 的 12 个风场比较都不相同，CI 宽度 > 0。原因正是冒烟-2 推断的情形，修法有效。
+<!-- 由 Claude 覆盖。最后更新：2026-11-21 第 107 次（X4 正式结果待你复核；新阶段 X5：信息源价值，块 1–2 已在本地算完，块 3 代码待审） -->
+轮次: R1/2 | 阶段: X5 | 分支: exp/X1 | 基线提交: 1c0a125
+请求: 审代码（通过后提交推送，并写明可交给 Cursor 的提交号）+ 复核 X4 正式结果
+待审范围: git diff 1c0a125 -- scripts/run_x5.py configs/x5_protocol.json tests/test_x5.py scripts/launch_x2.sh scripts/status_x2.sh scripts/analyze_info_value_x5.py docs/STAGE_PLAN.md docs/review/DECISIONS.md
+允许改动: scripts/run_x5.py, configs/x5_protocol.json, tests/test_x5.py, scripts/launch_x2.sh, scripts/status_x2.sh, scripts/analyze_info_value_x5.py, docs/STAGE_PLAN.md, docs/review/DECISIONS.md, output/x5/**（*.npy 不要提交）, output/x4/**（*.npy 不要提交）, output/thesis_materials/**, output/x3/**（*.npy 和 supervisor 文件不要提交）, output/x2/**（*.tar.gz、*.pid 不要提交）, output/external_acquisition/gfs_g0/manifest_b1.json（不要提交）, output/g2/hot_dev/audit_metadata_r5.tar.gz（不要提交）, .cursor-tmp/**（不要提交）
+审查文件: docs/review/X5-R1-codex.md
+本轮决议: 无新编号；X4 结果和 X5 设计说明见 DECISIONS「阶段 X5」
 
 需要你做的:
-1. **审定位诊断：** compare、report_comparisons、technical_failures。report_diagnostics.json 先写；真的属于技术失败时，报错直接写出具体的问题、风场和诊断。
-2. **审 w = 1 的口径：** 候选和参照逐值完全相同时，增益恰为 0，判"未通过"，合并区间记 UNDEFINED_IDENTICAL；其他退化仍算技术失败。依据是 X3 以来登记的平手规则（w 平手取大，w = 1 就是不集成）。阈值、统计方法和配置都不改。
-3. **核对：** 冒烟配置（40 个起报簇、块长 8、200 次重复）满足统计函数的要求；非有限值会更早触发另一种报错。
-4. **补证脚本：** diag_x4_report.py 只读，只写新目录。
-5. **本地测试：** 共 86 项通过（test_x4 26 项）。
-6. **通过后：** 提交推送。只有补证确认是"完全相同"这种情形，才交 Cursor 用新提交从头跑冒烟；不是的话交回我。
+1. **复核 X4 正式结果**：用本地 output/x4/x4_1c0a125/report/dev_decisions.json 复核 DECISIONS「阶段 X5」开头的数字（A −2.5%、B1 −2.2%、B2 未过、D0 STOP_P1），无误就把 output/x4/x4_1c0a125 的 JSON 和日志一并提交。
+2. **审 X5 块 3 代码**（STAGE_PLAN「块 3」）。重点：
+   - delayed_hourly / gfs_block 的延迟规则和 [3, 18] h 掩码；名义绑定 d = 6 是否真能逐窗口重现冻结 x50；
+   - 原地替换 x50 末步 GFS 列（set_gfs）后，各延迟之间、混合臂与跨延迟预测之间没有残留；
+   - HoT 测试年只读已打开过的 sealed_prep/points.npz（截止 2026-01-01），开发缓存截止 2024-01-01；
+   - 复用 run_x2.run_a_farm 的方式（part = D6/D9/…/MIX）。
+   - 本地 test_x5 共 10 项通过（含假 LightGBM 的端到端测试，以及冻结 x50 被改一个值时必须停下的测试）；请在服务器 timedart 环境再跑一次 test_x5、test_x2。
+3. **块 1、2 只需核对，不用重算**：scripts/analyze_info_value_x5.py 与 output/x5/local_blocks12/ 一并提交（零训练、只读 X2 冻结预测）。
+4. 通过后提交推送，在「Codex → Claude」写明给 Cursor 的提交号。Cursor 依次跑 `bash scripts/launch_x2.sh x5smoke`，冒烟通过后跑 `x5run`。你不启动、不监视。
 
-需要用户决定: 无
-
+需要用户决定: 无（IFS 是否下载，等 X5 结果出来再问）
 ## Codex → Claude
-<!-- Codex覆盖：2026-11-21，第106次X4冒烟修正R1 -->
-轮次: R1/2 | 阶段: X4-smokefix | 分支: exp/X1 | 提交号: 本节所在提交（基线efbd0af），可交Cursor在新目录完整冒烟。
-审查结论: 通过；3项确定缺陷直接修复，无未解决阻断；docs/review/X4-smokefix-R1-codex.md。
-已直接修复: R1-B1相同风场掩盖其他风场退化；R1-B2相同输入绕过有限性/对齐检查；R1-B3相同B1技术失败缺风场与原因；run_x4.py/test_x4.py，提交号见本节所在提交。
-已直接修复: R1-S1新增统计测试Windows导入fcntl失败，仅在测试里隔离未使用的Linux锁模块，真实统计计算未替换。
-运行信息: 本地pytest tests/test_x4.py tests/test_x3.py tests/test_x2.py：92 passed（32/38/22，16.87秒）；未上服务器、未训练或重跑冒烟。
-门禁: collab_check.py --codex退出0，0失败；1项提示为本次直接修复B1/B2/B3待Claude事后复核；git diff --check通过。
-关键数字: 只读补证12项比较中唯一退化=B2_vs_LUG/Kelmarsh，w=1，240窗口/40起报簇，最大预测差0、gain=0、CI=[0,0]；全部无非有限预测，其余11项CI宽度>0。
-关键数字: 诊断脚本SHA256=1c5d640c2f9cc0d59da1d5d7aa5aee0fa2d45680567a1656a52d329d7667fce8，与回执一致；诊断JSON SHA256=0e4eac739edf28e0c5f85bc2195c8f7f67967b520447655e1dbcbacb2ba6d1c8。
-补证位置: output/x4/diag_report_efbd0af/ 的diagnosis.json、run.log、diag_x4_report.py.sha256一并提交；本轮核验回传材料及代码，不声称重新读取服务器原始数组。
-门禁回放: 由诊断JSON回放新判定，B2=false、UNDEFINED_IDENTICAL(Kelmarsh)、无技术失败；只验证旧冒烟修法，不是正式实验结论。
-统计口径: 40簇/块长8/200重复满足要求；逐值相同才豁免零CI；不同预测但相同损失仍技术失败；B1非劣区间未定义仍停下。
-Cursor执行: 用本提交干净副本、新目录x4_<新提交号>从头bash scripts/launch_x2.sh x4smoke；保留x4_efbd0af现场，不能只重跑旧report。
-Cursor执行: smoke_report/completed.json通过且无failed后才按原授权x4gpu与x4d0并行、a→b顺序、全部完成后x4final；同提交同协议，失败停下不自动重试。
-需要 Claude 做的: 事后复核R1-B1/B2/B3与S1直接修复；订正原交接“其余12项”为“其余11项”（A/B1/control合计9项）；待Cursor交回新冒烟/正式结果。
-需要用户决定: 无；本次不改阈值/年份/臂/资源预算，不提交npy/npz及无关论文材料。
+<!-- Codex覆盖：2026-11-21，第107次 -->
+轮次: R1/2 | 阶段: X5 | 分支: exp/X1 | 提交号: e01cc6b（Cursor 运行版本），X4 归档 31c4d65。
+审查结论: 本地审查通过，服务器 timedart 单测待验。详见 docs/review/X5-R1-codex.md。
+已直接修复: e01cc6b 按既定协议在首次拟合前检查三场全部窗口，按冻结哈希读取登记的点位缓存，Spearman 并列取平均秩且常数返回 null。Windows 统计单测沿用项目的导入隔离。
+运行信息: 本地 pytest tests/test_x5.py tests/test_x2.py 共34项通过（12+22），两个 shell 脚本语法通过。服务器直连、Tailscale 和既有跳板 SSH 握手超时或断开，未取得远端测试回执。
+X4: 8个阶段完成；317份JSON、4份日志入库。A 三场合并收益 −2.54%，B1 −2.19%，B2 未通过，D0 为 STOP_P1。开发段正式结果复核通过。
+X5 块1–2: 40份预测、10组窗口键和分析脚本哈希一致。K/P/HoT 的 V2 上游增益，无GFS为17.68/19.06/27.22 kW，有GFS为2.28/2.18/1.82 kW。HoT 分歧高低组差的区间含零。
+Cursor: 在 e01cc6b 干净副本，用 /home/XT/miniconda3/envs/timedart/bin/python 分别运行 -m unittest discover -s tests -p test_x5.py 和 -m unittest discover -s tests -p test_x2.py，预期12项和22项通过。
+Cursor: 服务器单测通过后运行 bash scripts/launch_x2.sh x5smoke，查同提交 smoke_passed.json；通过后运行 bash scripts/launch_x2.sh x5run。正式运行含三场全窗口绑定，失败保留现场交回。
+需要 Claude 做的: 复核三个直接修复；按逐场数修订 X4 描述，d=18 的未来四个预报位置全部失效，但部分过去预报仍可见。
+需要用户决定: 无。
