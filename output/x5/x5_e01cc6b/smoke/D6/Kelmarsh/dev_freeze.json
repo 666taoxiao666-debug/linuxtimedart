@@ -1,0 +1,142 @@
+{
+  "curves_sha256": "150659e9f7150f09e565c5ef61cb1821f9c9faca57979e3e42efd643669d65e6",
+  "arms": {
+    "LG_d6": {
+      "grid": [
+        {
+          "num_leaves": 31,
+          "min_child_samples": 50,
+          "v1_mae": 222.31404376819012,
+          "best_iterations": [
+            40,
+            40,
+            40,
+            40
+          ]
+        }
+      ],
+      "selected": {
+        "num_leaves": 31,
+        "min_child_samples": 50,
+        "v1_mae": 222.31404376819012,
+        "best_iterations": [
+          40,
+          40,
+          40,
+          40
+        ]
+      },
+      "seeds": {
+        "2024": {
+          "boosters": {
+            "h1.txt": "71b55ef1f4c2d9845b66dc1e703e157d2e3b618ef5c3742106a0cf8948f1595e",
+            "h2.txt": "279d970133a35f0f08885801c8dd21782486722aa527ae5e2b971a85e1d0c2bf",
+            "h3.txt": "acd18a0f54337961743160bad97896c479c0a31c50388d472d7fd14099f3ebf0",
+            "h4.txt": "fe40ae6407b4e6512aa0f29c1dd1bfb362975476bdb83d7741d07083ca775702"
+          },
+          "v1_mae": 222.31404376819012,
+          "best_iterations": [
+            40,
+            40,
+            40,
+            40
+          ]
+        }
+      }
+    },
+    "LUG_d6": {
+      "grid": [
+        {
+          "num_leaves": 31,
+          "min_child_samples": 50,
+          "v1_mae": 221.87780549359212,
+          "best_iterations": [
+            40,
+            40,
+            40,
+            40
+          ]
+        }
+      ],
+      "selected": {
+        "num_leaves": 31,
+        "min_child_samples": 50,
+        "v1_mae": 221.87780549359212,
+        "best_iterations": [
+          40,
+          40,
+          40,
+          40
+        ]
+      },
+      "seeds": {
+        "2024": {
+          "boosters": {
+            "h1.txt": "bb3fa828c35104eb9fcb664c76ef6a3eda96a7337a3ea22204252b14c3caa785",
+            "h2.txt": "87f01a98c6fe8feff488bd5a944d819d118fbe2a2de58ef8aa6058aa474cbdb1",
+            "h3.txt": "6f6effc89e25eaca2676ed8a8705ff630f446fd178961f523ce9b973184d551e",
+            "h4.txt": "c7cb9ce27fc102b1f5747c7100c3baf9c8a2364305277e18fa367e4b2a5903bd"
+          },
+          "v1_mae": 221.87780549359212,
+          "best_iterations": [
+            40,
+            40,
+            40,
+            40
+          ]
+        }
+      }
+    },
+    "LU": {
+      "grid": [
+        {
+          "num_leaves": 31,
+          "min_child_samples": 50,
+          "v1_mae": 237.72188227214536,
+          "best_iterations": [
+            40,
+            40,
+            40,
+            40
+          ]
+        }
+      ],
+      "selected": {
+        "num_leaves": 31,
+        "min_child_samples": 50,
+        "v1_mae": 237.72188227214536,
+        "best_iterations": [
+          40,
+          40,
+          40,
+          40
+        ]
+      },
+      "seeds": {
+        "2024": {
+          "boosters": {
+            "h1.txt": "165549589b931aeaecb39de22c355db0bc53254842019a04e42a183579d08531",
+            "h2.txt": "aaf03abfb20d212d882b13abf8cff24136865f88589bdd0f8826dcf9a4b8a9bc",
+            "h3.txt": "089d6f88ba665133175196cdd9a87fc0bb4bbf3baf827b04228f166d947ef269",
+            "h4.txt": "362ce3a8cffd0139d3e07fc792ccf630f811c4902c1d847a307bbe489412aa74"
+          },
+          "v1_mae": 237.72188227214536,
+          "best_iterations": [
+            40,
+            40,
+            40,
+            40
+          ]
+        }
+      }
+    }
+  },
+  "predictions": {
+    "D6/Kelmarsh/LG_d6/2024/V1.npy": "b015070357bb19251de294e76bcd9c988a909d804e2c8761a55da4e08c63de60",
+    "D6/Kelmarsh/LG_d6/2024/V2.npy": "02bb5d15602ba7812940895e8afa438d42220a5fad70f143dd641cd4673141d7",
+    "D6/Kelmarsh/LUG_d6/2024/V1.npy": "0e4e92646d29b585bc1d8e4def6abde3e6c3f6267c9661866769df90ade5c5a5",
+    "D6/Kelmarsh/LUG_d6/2024/V2.npy": "a3282a75f47ed8b92a87d6943a7f1b21d318625697d6e50b0366ccd776983630",
+    "D6/Kelmarsh/LU/2024/V1.npy": "152f522d861ffd618e8c81e82d5fb228bb070b89e5148c6fe28440614729aeb7",
+    "D6/Kelmarsh/LU/2024/V2.npy": "f0225527997562b1e03f66ad00f56155bb29ac5f52a1924cd0f949f90e8b977c"
+  }
+}

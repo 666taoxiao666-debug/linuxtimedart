@@ -1,0 +1,163 @@
+{
+  "curves_sha256": "150659e9f7150f09e565c5ef61cb1821f9c9faca57979e3e42efd643669d65e6",
+  "arms": {
+    "LG_d18": {
+      "grid": [
+        {
+          "num_leaves": 31,
+          "min_child_samples": 50,
+          "v1_mae": 196.17175528405053,
+          "best_iterations": [
+            2251,
+            682,
+            332,
+            379
+          ]
+        },
+        {
+          "num_leaves": 31,
+          "min_child_samples": 200,
+          "v1_mae": 196.07989025660822,
+          "best_iterations": [
+            1104,
+            1238,
+            520,
+            664
+          ]
+        },
+        {
+          "num_leaves": 127,
+          "min_child_samples": 50,
+          "v1_mae": 195.4860057307989,
+          "best_iterations": [
+            794,
+            224,
+            219,
+            229
+          ]
+        },
+        {
+          "num_leaves": 127,
+          "min_child_samples": 200,
+          "v1_mae": 195.1793392188535,
+          "best_iterations": [
+            706,
+            293,
+            162,
+            226
+          ]
+        }
+      ],
+      "selected": {
+        "num_leaves": 127,
+        "min_child_samples": 200,
+        "v1_mae": 195.1793392188535,
+        "best_iterations": [
+          706,
+          293,
+          162,
+          226
+        ]
+      },
+      "seeds": {
+        "2024": {
+          "boosters": {
+            "h1.txt": "557d4ed0acf719a4ca7ea2bebf532f73a483cd03f26cb0a4b6bfae6ce88d2a2a",
+            "h2.txt": "c3aa721af1c334dcfcef970b33bfa45d64ede6e60be1d3735ffdfbb7dbdc13f1",
+            "h3.txt": "959e6cf40f3af09dfb1cf11c625c267ef65c1454c7c87c78a660310844da42ff",
+            "h4.txt": "663eb80b2e41b82e491e317f6800a1d3392d1acb092313e25c5e115b5d4fd318"
+          },
+          "v1_mae": 195.1793392188535,
+          "best_iterations": [
+            706,
+            293,
+            162,
+            226
+          ]
+        }
+      }
+    },
+    "LUG_d18": {
+      "grid": [
+        {
+          "num_leaves": 31,
+          "min_child_samples": 50,
+          "v1_mae": 180.51078089376495,
+          "best_iterations": [
+            1196,
+            1465,
+            715,
+            1274
+          ]
+        },
+        {
+          "num_leaves": 31,
+          "min_child_samples": 200,
+          "v1_mae": 180.70858384722086,
+          "best_iterations": [
+            864,
+            1454,
+            1323,
+            616
+          ]
+        },
+        {
+          "num_leaves": 127,
+          "min_child_samples": 50,
+          "v1_mae": 179.79014988007714,
+          "best_iterations": [
+            442,
+            285,
+            381,
+            412
+          ]
+        },
+        {
+          "num_leaves": 127,
+          "min_child_samples": 200,
+          "v1_mae": 179.96711430345755,
+          "best_iterations": [
+            306,
+            529,
+            401,
+            321
+          ]
+        }
+      ],
+      "selected": {
+        "num_leaves": 127,
+        "min_child_samples": 50,
+        "v1_mae": 179.79014988007714,
+        "best_iterations": [
+          442,
+          285,
+          381,
+          412
+        ]
+      },
+      "seeds": {
+        "2024": {
+          "boosters": {
+            "h1.txt": "f25a8982d78279c91fb275d5bbcee10800090141b397d768f255c295e1348953",
+            "h2.txt": "a7be6c5f58126a69b2fae56434e21eaf9a36b29eb508071ec9a2b691ed72e33b",
+            "h3.txt": "b307c1c0f64208d83d1c26b9dd39eab6b41e48ac20e33e5acdc2f192a8cab413",
+            "h4.txt": "47ad31b47b51132d8b46ee9520db4eba39929b6d95b03e7531adb28453351012"
+          },
+          "v1_mae": 179.79014988007714,
+          "best_iterations": [
+            442,
+            285,
+            381,
+            412
+          ]
+        }
+      }
+    }
+  },
+  "predictions": {
+    "D18/HoT/LG_d18/2024/V1.npy": "3d7d7a6eaa7c0abae63b47b880a63f05c7bb4209cf14ca4bc2fbe8a97f45464f",
+    "D18/HoT/LG_d18/2024/V2.npy": "c437083cb8fea672c806b207407e43be568e5de2838c6ae3e531e45c43b7c362",
+    "D18/HoT/LUG_d18/2024/V1.npy": "7e4bb9ea96fc3b2a0d16e3209ab72b1a1b709096052507d2a612236aa4c43903",
+    "D18/HoT/LUG_d18/2024/V2.npy": "a998fc59ab3a745fd196ff14bd740d379f06277832dbcef808354ea75b1e8bf8"
+  }
+}

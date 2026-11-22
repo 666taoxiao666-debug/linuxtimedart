@@ -1,0 +1,241 @@
+{
+  "curves_sha256": "150659e9f7150f09e565c5ef61cb1821f9c9faca57979e3e42efd643669d65e6",
+  "arms": {
+    "LG_d6": {
+      "grid": [
+        {
+          "num_leaves": 31,
+          "min_child_samples": 50,
+          "v1_mae": 191.92090461788382,
+          "best_iterations": [
+            288,
+            126,
+            248,
+            146
+          ]
+        },
+        {
+          "num_leaves": 31,
+          "min_child_samples": 200,
+          "v1_mae": 191.54315268488463,
+          "best_iterations": [
+            141,
+            120,
+            282,
+            284
+          ]
+        },
+        {
+          "num_leaves": 127,
+          "min_child_samples": 50,
+          "v1_mae": 193.94986050735065,
+          "best_iterations": [
+            127,
+            120,
+            114,
+            255
+          ]
+        },
+        {
+          "num_leaves": 127,
+          "min_child_samples": 200,
+          "v1_mae": 192.9092375775011,
+          "best_iterations": [
+            134,
+            138,
+            132,
+            197
+          ]
+        }
+      ],
+      "selected": {
+        "num_leaves": 31,
+        "min_child_samples": 200,
+        "v1_mae": 191.54315268488463,
+        "best_iterations": [
+          141,
+          120,
+          282,
+          284
+        ]
+      },
+      "seeds": {
+        "2024": {
+          "boosters": {
+            "h1.txt": "90604dc65c1f528668e8040e5d8b5aaefc06308f21623fe6584c9a426c4722b2",
+            "h2.txt": "defdbd8104c578824c7cb29c31f5ed706921035432b8885dda5b0449c5531eb9",
+            "h3.txt": "4a585978b8b0ad69ea070c41de2d6f3805992abc239941aea81748fdaf629774",
+            "h4.txt": "452a39e9be5d0509d4281c449d8e3ec4e17165701e1afbc1c152be5628b1b7b6"
+          },
+          "v1_mae": 191.54315268488463,
+          "best_iterations": [
+            141,
+            120,
+            282,
+            284
+          ]
+        }
+      }
+    },
+    "LUG_d6": {
+      "grid": [
+        {
+          "num_leaves": 31,
+          "min_child_samples": 50,
+          "v1_mae": 188.8639022357039,
+          "best_iterations": [
+            201,
+            307,
+            315,
+            271
+          ]
+        },
+        {
+          "num_leaves": 31,
+          "min_child_samples": 200,
+          "v1_mae": 188.6482353674052,
+          "best_iterations": [
+            280,
+            217,
+            575,
+            206
+          ]
+        },
+        {
+          "num_leaves": 127,
+          "min_child_samples": 50,
+          "v1_mae": 189.8272434998138,
+          "best_iterations": [
+            141,
+            239,
+            270,
+            236
+          ]
+        },
+        {
+          "num_leaves": 127,
+          "min_child_samples": 200,
+          "v1_mae": 189.4600694989701,
+          "best_iterations": [
+            144,
+            120,
+            163,
+            238
+          ]
+        }
+      ],
+      "selected": {
+        "num_leaves": 31,
+        "min_child_samples": 200,
+        "v1_mae": 188.6482353674052,
+        "best_iterations": [
+          280,
+          217,
+          575,
+          206
+        ]
+      },
+      "seeds": {
+        "2024": {
+          "boosters": {
+            "h1.txt": "25f626b1762fb56ce4094bf118a1966bf8d8bb795998bd8e5dd00088bd679b35",
+            "h2.txt": "2dc94137c78869211415d216ac21108c8e7c7dbee78e074460697672eaf84d99",
+            "h3.txt": "66667ceb1f09fb874a07d365f64f6126fdad1398f9c3e10eebe502591058abf8",
+            "h4.txt": "23083234f889d9fc4e4d2494182d5866b2a2376adaf81d0fbfda5eb85a0e6c19"
+          },
+          "v1_mae": 188.6482353674052,
+          "best_iterations": [
+            280,
+            217,
+            575,
+            206
+          ]
+        }
+      }
+    },
+    "LU": {
+      "grid": [
+        {
+          "num_leaves": 31,
+          "min_child_samples": 50,
+          "v1_mae": 213.0073916261277,
+          "best_iterations": [
+            180,
+            265,
+            305,
+            350
+          ]
+        },
+        {
+          "num_leaves": 31,
+          "min_child_samples": 200,
+          "v1_mae": 212.4003447560066,
+          "best_iterations": [
+            205,
+            282,
+            218,
+            206
+          ]
+        },
+        {
+          "num_leaves": 127,
+          "min_child_samples": 50,
+          "v1_mae": 215.31793642315156,
+          "best_iterations": [
+            168,
+            178,
+            210,
+            139
+          ]
+        },
+        {
+          "num_leaves": 127,
+          "min_child_samples": 200,
+          "v1_mae": 213.64504155266968,
+          "best_iterations": [
+            144,
+            157,
+            149,
+            154
+          ]
+        }
+      ],
+      "selected": {
+        "num_leaves": 31,
+        "min_child_samples": 200,
+        "v1_mae": 212.4003447560066,
+        "best_iterations": [
+          205,
+          282,
+          218,
+          206
+        ]
+      },
+      "seeds": {
+        "2024": {
+          "boosters": {
+            "h1.txt": "f454e44410526c5e6200d4cf432ed21404e675ccc2b64f2ab8acdebdc055d530",
+            "h2.txt": "15cee3abbca95dcb7acb4d2a00767cb547ab1d5c5b8dba1edcb2035f4e0eee15",
+            "h3.txt": "1b5db546c8ed4731c22d73be68eacb535cafdb33bfeec7f731076b5526a99b5f",
+            "h4.txt": "e55cf6e6387c3f1c873f0d06fca1f691d1e6d87d6634b9048aed8b5917463949"
+          },
+          "v1_mae": 212.4003447560066,
+          "best_iterations": [
+            205,
+            282,
+            218,
+            206
+          ]
+        }
+      }
+    }
+  },
+  "predictions": {
+    "D6/Penmanshiel/LG_d6/2024/V1.npy": "510d764f0d9de31da31c7a54f338b4c61a37282f45c68d73f1debd08473e70b0",
+    "D6/Penmanshiel/LG_d6/2024/V2.npy": "8f2b9a03a1762c9dc20b1dc24d35bb2c65ea6477abe30d7ccedef8e3aac6b992",
+    "D6/Penmanshiel/LUG_d6/2024/V1.npy": "a69850dea5d39c416b00cf53ec87aea7e8ff93aa72189afc64d01c39542a8b04",
+    "D6/Penmanshiel/LUG_d6/2024/V2.npy": "7c2312657499cedfcffea3a4202d116df1d24ab41e18f334fce922d7a7be2ae7",
+    "D6/Penmanshiel/LU/2024/V1.npy": "0155fe41d8b204c8dbcb493519703dd4e3544951fdf4a4e4d2e1142c2c5b061a",
+    "D6/Penmanshiel/LU/2024/V2.npy": "51cba4943a6af45d9aafdd4f2cc4e6396f7946c953e371985ca09cfab319b8fa"
+  }
+}
