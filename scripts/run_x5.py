@@ -10,7 +10,8 @@ SAME prepare_g1_batches.interpolate_leads / nwp_input code; leads outside [3, 18
 rebuilt columns must reproduce the frozen x50 of every window before anything is fitted (nominal binding).
 
 Modes: smoke (tiny slices, 2 delays, minimal budget, never reported) and run (formal; needs a passed smoke of the
-same commit).  Every run writes into a FRESH --output directory and leaves failed.json on any error (no retries).
+same commit).  X5b (2026-11-23, configs/x5b_protocol.json): msmoke / mrun, the matched-coverage check of a fresh
+(6 h) against an old (15 h) cycle, see the X5b section below; mrun needs a passed msmoke of the same commit.  Every run writes into a FRESH --output directory and leaves failed.json on any error (no retries).
 Windows, labels and splits are exactly X2 part A's; nothing is repaired; the test years are exploratory.
 """
 from __future__ import annotations
@@ -159,15 +160,16 @@ def git_identity():
     return x2.git_identity()
 
 
-def start_run(args, mode):
-    checked(PROTOCOL, args.protocol_sha256)
+def start_run(args, mode, protocol_path=PROTOCOL):
+    checked(protocol_path, args.protocol_sha256)
     commit, dirty = git_identity()
     if not args.allow_dirty and (commit is None or dirty):
         raise ValueError('Run from a clean worktree of the reviewed commit')
-    if mode == 'RUN':
+    if mode in ('RUN', 'MRUN'):
         smoke = read(Path(args.smoke_result) / 'smoke_passed.json') if args.smoke_result else {}
-        if smoke.get('status') != 'PASS' or smoke.get('commit') != commit:
-            raise ValueError('Formal run needs --smoke-result of a passed smoke run of this commit')
+        kind = 'match' if mode == 'MRUN' else None          # X5 smoke receipts carry no kind
+        if smoke.get('status') != 'PASS' or smoke.get('commit') != commit or smoke.get('kind') != kind:
+            raise ValueError('Formal run needs --smoke-result of a passed smoke run of the same kind and commit')
     out = Path(args.output)
     out.mkdir(parents=True, exist_ok=False)
     (out / '.gitignore').write_text('*.npy\n*.npz\nmodels/\n', encoding='utf-8')
@@ -313,16 +315,254 @@ def summary_md(res):
     return '\n'.join(lines) + '\n'
 
 
+# ----------------------------------------------------------------------------- X5b: matched coverage, 6 h vs 15 h
+# Claude 2026-11-23 (GPT chose option B; post-hoc development check, 15 h picked after seeing X5).
+# States per window (same issue, same turbine, same targets), built only from blocks X5 already rebuilds:
+#   A  = fresh cycle (d = 6) as is            C  = old cycle (d = 15) as is
+#   D  = A restricted to the positions that are STRUCTURALLY available for C (lead = age + offset in [3, 18] h)
+#   Cc = C restricted to the positions that are structurally available for A
+# D and Cc therefore share one structural coverage; each keeps its own age, cycle-missing flag and natural gaps.
+# R1 review (2026-11-23): natural gaps may still differ between D and Cc -> every split is audited window by window,
+# the cycle contrast is also given on agreeing windows only and the labels use that contrast (R1-B1); the labels are
+# neutral descriptions and "within bound" needs the WHOLE CI inside +-0.5 x |truncation point estimate| (R1-B2);
+# validity bits outside the registered structure stop the run (R1-S1).  R2-B1: the agreeing-window contrast and its
+# label are NOT_ESTIMABLE below classification.min_issue_clusters (40 = 5 block lengths) issue-time clusters.
+PROTOCOL_B = ROOT / 'configs/x5b_protocol.json'
+OFFSETS = np.arange(-5, 8)                     # current-cycle offsets t0-5 .. t0+7 (nwp_input)
+TARGETS = slice(6, 10)                         # offsets +1 .. +4 inside OFFSETS
+B_HIST, B_FC, B_MASK, B_AGE, B_MISS = 0, slice(1, 14), slice(14, 27), 27, 28
+STATES = ('A', 'C', 'Cc', 'D')
+
+
+def structural_masks(block):
+    """Availability implied by the issue age alone, ignoring missing files: [n, 13] for the current-cycle offsets
+    (lead = age + offset) and [n] for the history value (lead = age); both require 3 <= lead <= 18 h."""
+    age = np.asarray(block[:, B_AGE], dtype=np.float64)
+    if not np.array_equal(age, np.round(age)):
+        raise ValueError('Age column is not in whole hours')
+    lead = age[:, None] + OFFSETS[None, :]
+    return (lead >= 3) & (lead <= 18), (age >= 3) & (age <= 18)
+
+
+def match_coverage(own, other):
+    """`own` restricted to the positions structurally available for `other` in the SAME window.  Forecast values
+    and validity bits are zeroed together; the history value is zeroed where `other` has no admissible history lead;
+    age and the cycle-missing flag stay `own`'s, and own natural gaps (missing files) stay as they are."""
+    own, other = np.asarray(own), np.asarray(other)
+    if own.shape != other.shape or own.ndim != 2 or own.shape[1] != 29:
+        raise ValueError('Blocks must be aligned [n, 29]')
+    fc, hist = structural_masks(other)
+    out = own.copy()
+    out[:, B_FC] = np.where(fc, own[:, B_FC], 0)
+    out[:, B_MASK] = np.where(fc, own[:, B_MASK], 0)
+    out[:, B_HIST] = np.where(hist, own[:, B_HIST], 0)
+    return out
+
+
+def matched_states(fresh_block, old_block):
+    return {'A': fresh_block, 'C': old_block, 'Cc': match_coverage(old_block, fresh_block),
+            'D': match_coverage(fresh_block, old_block)}
+
+
+def natural_gap_agreement(states):
+    """[n] bool: D and Cc have the SAME actual availability inside their common structure (every current-cycle
+    validity bit and the cycle-missing flag agree).  Outside the common structure both are 0 by construction, so a
+    disagreement can only come from a natural gap (missing file / cycle) on one side.  The history value has no
+    validity bit; its natural gaps follow the cycle-missing flag, which is compared."""
+    vd, vc = states['D'][:, B_MASK] > 0, states['Cc'][:, B_MASK] > 0
+    return (vd == vc).all(1) & (states['D'][:, B_MISS] == states['Cc'][:, B_MISS])
+
+
+def coverage_audit(states):
+    """Per state: share of (window, target hour +1..+4) with a valid forecast, share of windows with no valid target,
+    mean age; natural gaps (structurally admissible but invalid) for A and C; how often Cc / D differ from C / A;
+    window-level D-vs-Cc disagreement of the actual availability inside the common structure (X5b R1-B1)."""
+    out = {}
+    for name, b in states.items():
+        valid = b[:, B_MASK] > 0
+        row = dict(target_valid=float(valid[:, TARGETS].mean()), windows_no_target=float((~valid[:, TARGETS]).all(1).mean()),
+                   age_mean=float(b[:, B_AGE].mean()), cycle_missing=float(b[:, B_MISS].mean()))
+        if name in ('A', 'C'):
+            fc, _ = structural_masks(b)
+            row['natural_gap_targets'] = float((fc & ~valid)[:, TARGETS].mean())
+        out[name] = row
+    common = structural_masks(states['A'])[0] & structural_masks(states['C'])[0]
+    valid = {n: states[n][:, B_MASK] > 0 for n in STATES}
+    out['Cc_windows_differ_from_C'] = float((states['Cc'] != states['C']).any(1).mean())
+    out['D_windows_differ_from_A'] = float((states['D'] != states['A']).any(1).mean())
+    out['masks_within_own_structure'] = bool(all((valid[n] <= structural_masks(states[n])[0]).all() for n in STATES))
+    out['matched_within_common_structure'] = bool((valid['D'] <= common).all() and (valid['Cc'] <= common).all())
+    agree = natural_gap_agreement(states)
+    out['natural_gap'] = dict(
+        windows=int(len(agree)), windows_disagree=int((~agree).sum()),
+        windows_mask_disagree=int((valid['D'] != valid['Cc']).any(1).sum()),
+        windows_target_mask_disagree=int((valid['D'][:, TARGETS] != valid['Cc'][:, TARGETS]).any(1).sum()),
+        windows_cycle_status_disagree=int((states['D'][:, B_MISS] != states['Cc'][:, B_MISS]).sum()),
+        cycle_missing_D_only=int(((states['D'][:, B_MISS] == 1) & (states['Cc'][:, B_MISS] == 0)).sum()),
+        cycle_missing_Cc_only=int(((states['D'][:, B_MISS] == 0) & (states['Cc'][:, B_MISS] == 1)).sum()))
+    return out
+
+
+def check_structure(audit, farm, split):
+    """X5b R1-S1: a validity bit outside its own or the common structure is an input error, not a finding."""
+    if not (audit['masks_within_own_structure'] and audit['matched_within_common_structure']):
+        raise ValueError(f'{farm} {split}: validity bits outside the registered structure')
+
+
+def run_farm_match(lgb, args, out, store, farm, spec, x1p, x2p, protocol, bud):
+    fresh, old = protocol['fresh_delay_hours'], protocol['old_delay_hours']
+    packs, tests, blocks = prepare_farm(args, out, farm, spec, x2p, protocol, bud, [fresh, old], 'audit')
+    states = {s: matched_states(blocks[s][fresh], blocks[s][old]) for s in packs}
+    audits = {s: coverage_audit(v) for s, v in states.items()}
+    save(out / 'X5' / f'{farm}_coverage.json', audits)
+    for s, a in audits.items():
+        check_structure(a, farm, s)
+    for s in ['V2'] + list(tests):
+        store.put(f'X5/{farm}/agree/{s}.npy', natural_gap_agreement(states[s]))
+    curves = {}
+    for name in STATES:
+        set_gfs(packs, {s: states[s][name] for s in packs})
+        x2.run_a_farm(lgb, farm, spec['rated'], packs['train'], packs['V1'], packs['V2'], {k: packs[k] for k in tests},
+                      x2p, x1p, store, bud, args.threads, out, curves, {}, part=f'S_{name}',
+                      arms={f'LG_{name}': arm('LG'), f'LUG_{name}': arm('LUG')})
+        beat(out, f'{farm}: state {name} fitted')
+    return {s: dict(truth=packs[s]['truth'], issue=packs[s]['issue']) for s in ['V2'] + list(tests)}
+
+
+def bounded_contrast(e, a, b, start, rows, kw, min_clusters):
+    """U(b) - U(a) on the windows selected by the bool mask `rows`.  With fewer than `min_clusters` issue-time clusters
+    the moving-block bootstrap has too few candidate blocks (X5b R2-B1: 8 clusters, block 8 -> one block, zero-width CI)
+    and the DM test needs >= 3 values, so only the window count, cluster count and the point estimate are reported."""
+    from utils.kelmarsh_backbone_information import paired_loss_statistics
+    rows = np.asarray(rows, dtype=bool)
+    cand, ref = rise_losses(e[a]['LG'][rows], e[a]['LUG'][rows], e[b]['LG'][rows], e[b]['LUG'][rows])
+    clusters = int(len(np.unique(start[rows])))
+    if clusters >= min_clusters:
+        return paired_loss_statistics(cand, ref, start[rows], **kw)
+    gain = float((ref.mean(1) - cand.mean(1)).mean()) if len(cand) else None
+    return dict(status='NOT_ESTIMABLE', gain=gain, ci95_low=None, ci95_high=None, windows=int(len(cand)),
+                issue_time_clusters=clusters, min_issue_clusters=int(min_clusters))
+
+
+def classify_match(truncation, cycle, ratio):
+    """Pre-registered descriptive labels for one farm on V2 (X5b R1-B2: the WHOLE interval must lie in the bound).
+    bound = ratio x |U(D) - U(A)| point estimate.  cycle labels: CI_ABOVE_0 / CI_BELOW_0 / CI_WITHIN_BOUND (the whole
+    95% CI inside [-bound, +bound]) / CI_WIDE.  `cycle` is the contrast on windows where D and Cc agree (R1-B1)."""
+    bound = ratio * abs(truncation['gain'])
+    if cycle is None or cycle.get('status') == 'NOT_ESTIMABLE':
+        label = 'NOT_ESTIMABLE'
+    elif cycle['ci95_low'] > 0:
+        label = 'CI_ABOVE_0'
+    elif cycle['ci95_high'] < 0:
+        label = 'CI_BELOW_0'
+    elif -bound <= cycle['ci95_low'] and cycle['ci95_high'] <= bound:
+        label = 'CI_WITHIN_BOUND'
+    else:
+        label = 'CI_WIDE'
+    return dict(truncation_ci_above_0=bool(truncation['gain'] > 0 and truncation['ci95_low'] > 0), cycle=label,
+                bound_kw=float(bound), bound_relative_to=f'{ratio} x |U(D) - U(A)| point estimate')
+
+
+def report_match(out, keys, protocol, farms_order):
+    from utils.kelmarsh_backbone_information import paired_loss_statistics
+    st = protocol['statistics']
+    kw = dict(block_length=st['block_length'], replicates=st['replicates'], seed=st['seed'])
+    res = {'states': list(STATES), 'farms': {}}
+    for farm in farms_order:
+        res['farms'][farm] = {}
+        for split, k in keys[farm].items():
+            truth, start = k['truth'].astype(np.float64), k['issue'].astype('datetime64[ns]')
+            e = {n: {a: np.abs(truth - np.load(out / f'S_{n}/{farm}/{a}_{n}/{SEED}/{split}.npy').astype(np.float64))
+                     for a in ('LG', 'LUG')} for n in STATES}
+            agree = np.load(out / f'X5/{farm}/agree/{split}.npy')
+            if agree.shape != (len(truth),) or agree.dtype != bool:
+                raise ValueError('Agreement mask does not align with the cohort')
+
+            def delta(a, b, rows=slice(None)):   # U(b) - U(a) on the same windows
+                cand, ref = rise_losses(e[a]['LG'][rows], e[a]['LUG'][rows], e[b]['LG'][rows], e[b]['LUG'][rows])
+                return paired_loss_statistics(cand, ref, start[rows], **kw)
+            deltas = dict(truncation_fresh=delta('A', 'D'), cycle_common=delta('D', 'Cc'),
+                          old_side_restriction=delta('Cc', 'C'), total=delta('A', 'C'))
+            parts = sum(deltas[n]['gain'] for n in ('truncation_fresh', 'cycle_common', 'old_side_restriction'))
+            if not np.isclose(parts, deltas['total']['gain'], rtol=0, atol=1e-6):
+                raise ValueError('Decomposition U(C) - U(A) does not add up')
+            gaps = bool((~agree).any())
+            # X5b R2-B1 (user ruling on Claude's proposal): the label contrast needs >= min_issue_clusters clusters
+            clean = bounded_contrast(e, 'D', 'Cc', start, agree, kw, protocol['classification']['min_issue_clusters'])
+            row = dict(role='primary' if split == 'V2' else 'exploratory',
+                       mae={n: {a: float(e[n][a].mean()) for a in ('LG', 'LUG')} for n in STATES},
+                       U={n: paired_loss_statistics(e[n]['LUG'], e[n]['LG'], start, **kw) for n in STATES},
+                       U_by_h={n: (e[n]['LG'] - e[n]['LUG']).mean(0).tolist() for n in STATES}, deltas=deltas,
+                       natural_gap=dict(windows_disagree=int((~agree).sum()), share_agree=float(agree.mean()),
+                                        cycle_common_includes_natural_gaps=gaps),
+                       cycle_common_agreeing_windows=clean)
+            if split == 'V2':
+                row['reading'] = dict(classify_match(deltas['truncation_fresh'], clean,
+                                                     protocol['classification']['near_zero_ratio']),
+                                      natural_gap_difference=gaps)
+            res['farms'][farm][split] = row
+    readings = [res['farms'][f]['V2']['reading'] for f in farms_order]
+    need = protocol['classification']['min_farms']
+    if sum(r['truncation_ci_above_0'] and r['cycle'] == 'CI_WITHIN_BOUND' for r in readings) >= need:
+        outcome = 'TRUNCATION_CI_ABOVE_0_AND_CYCLE_CI_WITHIN_BOUND'
+    elif sum(r['cycle'] == 'CI_ABOVE_0' for r in readings) >= need:
+        outcome = 'CYCLE_CI_ABOVE_0'
+    else:
+        outcome = 'NO_COMMON_PATTERN'
+    res['outcome'] = dict(outcome=outcome, min_farms=need, descriptive=True, post_hoc=True,
+                          farms_with_natural_gap_difference_on_V2=[f for f, r in zip(farms_order, readings)
+                                                                   if r['natural_gap_difference']])
+    return res
+
+
+def summary_match_md(res):
+    lines = ['# X5b: matched coverage, fresh (6 h) vs old (15 h) GFS cycle (LightGBM, seed 2024)', '',
+             f"Label on V2: {res['outcome']['outcome']} (post-hoc development check; descriptive labels, not causal "
+             "claims; test years exploratory). Farms whose V2 cycle contrast includes natural-gap differences: "
+             f"{res['outcome']['farms_with_natural_gap_difference_on_V2'] or 'none'}.",
+             'U = MAE(LG) - MAE(LUG) in kW. A fresh as is, C old as is, D fresh with C\'s coverage, '
+             'Cc old with A\'s coverage. U(C) - U(A) = [U(D) - U(A)] + [U(Cc) - U(D)] + [U(C) - U(Cc)].',
+             'cycle (all) includes any natural-gap difference between D and Cc; cycle (agreeing) uses only windows '
+             'where D and Cc have identical actual availability; labels use the agreeing contrast and a bound of '
+             'ratio x |truncation point estimate|.', '',
+             '| farm | split | U A / C / Cc / D | truncation U(D)-U(A) [CI] | cycle all [CI] | cycle agreeing [CI] | '
+             'agree share | old-side | total | label |', '|---|---|---|---|---|---|---|---|---|---|']
+
+    def ci(x):
+        if x is None:
+            return 'n/a'
+        if x.get('status') == 'NOT_ESTIMABLE':
+            point = 'n/a' if x['gain'] is None else f"{x['gain']:.2f}"
+            return f"{point} [not estimable: {x['issue_time_clusters']} clusters]"
+        return f"{x['gain']:.2f} [{x['ci95_low']:.2f}, {x['ci95_high']:.2f}]"
+    for farm, splits in res['farms'].items():
+        for split, r in splits.items():
+            d = r['deltas']
+            us = ' / '.join('%.2f' % r['U'][n]['gain'] for n in STATES)
+            reading = r.get('reading')
+            tag = '' if reading is None else (f"{reading['cycle']} (bound {reading['bound_kw']:.2f})"
+                                              + ('; truncation CI > 0' if reading['truncation_ci_above_0'] else ''))
+            lines.append(f"| {farm} | {split} | {us} | {ci(d['truncation_fresh'])} | {ci(d['cycle_common'])} | "
+                         f"{ci(r['cycle_common_agreeing_windows'])} | {r['natural_gap']['share_agree']:.4f} | "
+                         f"{d['old_side_restriction']['gain']:.2f} | {d['total']['gain']:.2f} | {tag} |")
+    return '\n'.join(lines) + '\n'
+
+
 def run(args, mode):
     import lightgbm as lgb
     if lgb.__version__ != '4.5.0':
         raise ValueError('LightGBM fits require the timedart environment with lightgbm 4.5.0')
-    out = start_run(args, mode)
+    match = mode in ('MSMOKE', 'MRUN')
+    out = start_run(args, mode, PROTOCOL_B if match else PROTOCOL)
     try:
-        protocol, x1p, x2p = read(PROTOCOL), read(ROOT / 'configs/x1_protocol.json'), read(ROOT / 'configs/x2_protocol.json')
-        smoke = mode == 'SMOKE'
+        protocol = read(PROTOCOL_B if match else PROTOCOL)
+        x1p, x2p = read(ROOT / 'configs/x1_protocol.json'), read(ROOT / 'configs/x2_protocol.json')
+        smoke = mode in ('SMOKE', 'MSMOKE')
         bud = dict(protocol['budget']['smoke' if smoke else 'formal'], smoke=smoke)
-        delays = sorted(bud.get('delays_hours', protocol['delays_hours']))
+        if match:
+            delays = sorted({protocol['fresh_delay_hours'], protocol['old_delay_hours']})
+        else:
+            delays = sorted(bud.get('delays_hours', protocol['delays_hours']))
         if protocol['nominal_delay_hours'] not in delays:
             raise ValueError('Nominal delay must be evaluated')
         store = x2.Store(out)
@@ -333,17 +573,23 @@ def run(args, mode):
         for farm, spec in farms.items():
             prepare_farm(args, out, farm, spec, x2p, protocol, bud, [protocol['nominal_delay_hours']], 'preflight')
         for farm, spec in farms.items():
-            keys[farm] = run_farm(lgb, args, out, store, farm, spec, x1p, x2p, protocol, bud, delays)
+            if match:
+                keys[farm] = run_farm_match(lgb, args, out, store, farm, spec, x1p, x2p, protocol, bud)
+            else:
+                keys[farm] = run_farm(lgb, args, out, store, farm, spec, x1p, x2p, protocol, bud, delays)
             order.append(farm)
         save(out / 'X5' / 'registry.json', store.registry)
-        res = report(out, keys, delays, protocol, order)
+        res = report_match(out, keys, protocol, order) if match else report(out, keys, delays, protocol, order)
         res.update(commit=git_identity()[0], protocol_sha256=args.protocol_sha256, smoke=smoke)
         save(out / 'X5' / 'results.json', res)
-        (out / 'X5' / 'SUMMARY.md').write_text(summary_md(res), encoding='utf-8')
+        (out / 'X5' / 'SUMMARY.md').write_text(summary_match_md(res) if match else summary_md(res), encoding='utf-8')
         save(out / 'completed.json', dict(status='COMPLETED', results_sha256=digest(out / 'X5' / 'results.json'),
                                           registry_sha256=digest(out / 'X5' / 'registry.json')))
         if smoke:
-            save(out / 'smoke_passed.json', dict(status='PASS', interpret_results=False, commit=git_identity()[0]))
+            passed = dict(status='PASS', interpret_results=False, commit=git_identity()[0])
+            if match:
+                passed['kind'] = 'match'
+            save(out / 'smoke_passed.json', passed)
         beat(out, 'completed')
     except Exception as exc:
         x2.fail(out, exc)
@@ -353,7 +599,7 @@ def run(args, mode):
 
 def main(argv=None):
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument('--mode', choices=['smoke', 'run'], required=True)
+    p.add_argument('--mode', choices=['smoke', 'run', 'msmoke', 'mrun'], required=True)
     p.add_argument('--logs', type=Path, required=True, help='<data root>/outputs/logs')
     p.add_argument('--output', type=Path, required=True)
     p.add_argument('--protocol-sha256', required=True)
@@ -361,7 +607,7 @@ def main(argv=None):
     p.add_argument('--smoke-result', type=Path)
     p.add_argument('--allow-dirty', action='store_true')
     args = p.parse_args(argv)
-    run(args, 'SMOKE' if args.mode == 'smoke' else 'RUN')
+    run(args, args.mode.upper())
 
 
 if __name__ == '__main__':

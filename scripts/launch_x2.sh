@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # X2 launcher for Cursor (Claude 2026-11-16).  Run INSIDE a clean worktree of the reviewed commit.
-# Usage: bash scripts/launch_x2.sh <smoke|a|b|report|a2|report2|x3smoke|x3gpu|x3q4|x3final|x4smoke|x4gpu|x4d0|x4final|x5smoke|x5run>
+# Usage: bash scripts/launch_x2.sh <smoke|a|b|report|a2|report2|x3smoke|x3gpu|x3q4|x3final|x4smoke|x4gpu|x4d0|x4final|x5smoke|x5run|x5bsmoke|x5brun>
 #   a2/report2: second A-line round (CPU) against the round-1 run X2_ROUND1 (default x2_91d4d20/a).
 #   smoke : CPU, tiny real slices, A -> B -> report; must pass before a/b.
 #   a     : part A, LightGBM on CPU (X2_THREADS, default 8).
@@ -12,7 +12,7 @@ DATA=${X2_DATA_ROOT:-/home/XT/nuist/pythoncode/TimeDARTFirst}
 LOGS=$DATA/outputs/logs
 PY=${X2_PYTHON:-/home/XT/miniconda3/envs/timedart/bin/python}
 HERE=$(cd "$(dirname "$0")/.." && pwd)
-MODE=${1:?usage: launch_x2.sh <smoke|a|b|report|a2|report2|x3smoke|x3gpu|x3q4|x3final|x4smoke|x4gpu|x4d0|x4final|x5smoke|x5run>}
+MODE=${1:?usage: launch_x2.sh <smoke|a|b|report|a2|report2|x3smoke|x3gpu|x3q4|x3final|x4smoke|x4gpu|x4d0|x4final|x5smoke|x5run|x5bsmoke|x5brun>}
 if [ -n "$(git -C "$HERE" status --porcelain --untracked-files=no)" ]; then
   echo "worktree not clean: $HERE"; exit 1
 fi
@@ -79,6 +79,23 @@ case "$MODE" in
     nohup "$PY" scripts/run_x5.py --logs "$LOGS" --protocol-sha256 "$X5SHA" "${X5ARGS[@]}" > "$X5BASE/$MODE.log" 2>&1 &
     echo $! > "$X5BASE/$MODE.pid"
     echo "started X5 $MODE pid=$(cat "$X5BASE/$MODE.pid") commit=$COMMIT protocol=$X5SHA"
+    echo "base=$X5BASE log=$X5BASE/$MODE.log status: bash scripts/status_x2.sh"
+    exit 0 ;;
+  x5bsmoke|x5brun)
+    # X5b (Claude 2026-11-23): matched coverage, fresh 6 h vs old 15 h GFS cycle (run_x5.py msmoke / mrun, CPU).
+    #   x5bsmoke : tiny slices (must pass before x5brun)      x5brun : formal, 8 LightGBM arms per farm
+    X5SHA=$(sha256sum "$HERE/configs/x5b_protocol.json" | cut -d' ' -f1)
+    X5BASE=$LOGS/X5/x5_${COMMIT}
+    mkdir -p "$X5BASE"
+    case "$MODE" in
+      x5bsmoke) X5ARGS=(--mode msmoke --output "$X5BASE/msmoke" --threads 2) ;;
+      x5brun)   X5ARGS=(--mode mrun --output "$X5BASE/mrun" --threads "${X2_THREADS:-8}" --smoke-result "$X5BASE/msmoke") ;;
+    esac
+    if ! mkdir "$X5BASE/.$MODE.launch"; then echo "launch already claimed: $MODE (do not retry)"; exit 1; fi
+    cd "$HERE"
+    nohup "$PY" scripts/run_x5.py --logs "$LOGS" --protocol-sha256 "$X5SHA" "${X5ARGS[@]}" > "$X5BASE/$MODE.log" 2>&1 &
+    echo $! > "$X5BASE/$MODE.pid"
+    echo "started X5b $MODE pid=$(cat "$X5BASE/$MODE.pid") commit=$COMMIT protocol=$X5SHA"
     echo "base=$X5BASE log=$X5BASE/$MODE.log status: bash scripts/status_x2.sh"
     exit 0 ;;
 esac

@@ -257,5 +257,230 @@ class EndToEnd(unittest.TestCase):
                                 protocol, bud, [6, 12])
 
 
+class MatchedCoverage(unittest.TestCase):
+    """X5b (2026-11-23): fresh (6 h) vs old (15 h) cycle at matched structural coverage."""
+
+    def _blocks(self, drop=()):
+        cache = synthetic_cache(start='2021-02-27T00', days=8, drop=drop)
+        iss = issues(start='2021-03-02T00', hours=72, stride=1)
+        fresh, _ = x5.gfs_block(iss, cache, 6, MEAN, SCALE, '2024-01-01', 4)
+        old, _ = x5.gfs_block(iss, cache, 15, MEAN, SCALE, '2024-01-01', 4)
+        return iss, fresh, old
+
+    def test_structural_masks_bound_actual_masks(self):
+        _, fresh, old = self._blocks()
+        for b in (fresh, old):
+            fc, hist = x5.structural_masks(b)
+            valid = b[:, x5.B_MASK] > 0
+            np.testing.assert_array_equal(valid, fc)                       # complete cache: equal
+            self.assertTrue((b[:, x5.B_HIST][~hist] == 0).all())
+        _, fresh, old = self._blocks(drop={'2021030300'})
+        fc, _ = x5.structural_masks(old)
+        self.assertTrue(((old[:, x5.B_MASK] > 0) <= fc).all())             # missing file: strictly inside
+
+    def test_gpt_example_and_common_structure(self):
+        """GPT 11-23: at fresh age 6, t0-5 needs f001 (absent) while the old cycle (age >= 15) has it; Cc must drop it,
+        D must not gain it; D also loses the targets the old cycle cannot reach."""
+        _, fresh, old = self._blocks()
+        st = x5.matched_states(fresh, old)
+        a6 = fresh[:, x5.B_AGE] == 6
+        self.assertTrue(a6.any())
+        self.assertTrue((old[a6, x5.B_MASK][:, 0] > 0).all())              # old has t0-5
+        self.assertTrue((st['Cc'][a6, x5.B_MASK][:, 0] == 0).all())
+        self.assertTrue((st['Cc'][a6, x5.B_FC][:, 0] == 0).all())          # value zeroed with the bit
+        self.assertTrue((st['D'][a6, x5.B_MASK][:, 0] == 0).all())
+        np.testing.assert_array_equal(st['D'][:, x5.B_MASK] > 0, st['Cc'][:, x5.B_MASK] > 0)   # one coverage
+        np.testing.assert_array_equal(st['D'][:, x5.B_AGE], fresh[:, x5.B_AGE])                # own ages
+        np.testing.assert_array_equal(st['Cc'][:, x5.B_AGE], old[:, x5.B_AGE])
+        targets = st['D'][:, x5.B_MASK][:, x5.TARGETS] > 0
+        lead_old = old[:, x5.B_AGE][:, None] + np.arange(1, 5)[None, :]
+        np.testing.assert_array_equal(targets, lead_old <= 18)
+        hist_old_ok = old[:, x5.B_AGE] <= 18
+        self.assertTrue((st['D'][~hist_old_ok, x5.B_HIST] == 0).all())
+        np.testing.assert_array_equal(st['D'][hist_old_ok, x5.B_HIST], fresh[hist_old_ok, x5.B_HIST])
+        audit = x5.coverage_audit(st)
+        self.assertTrue(audit['masks_within_own_structure'] and audit['matched_within_common_structure'])
+        self.assertGreater(audit['A']['target_valid'], audit['D']['target_valid'])
+        self.assertAlmostEqual(audit['D']['target_valid'], audit['Cc']['target_valid'])
+
+    def test_natural_gaps_are_not_copied(self):
+        """A missing OLD file must not mask the fresh cycle (only structure is matched)."""
+        _, fresh, old = self._blocks(drop={'2021030218'})
+        st = x5.matched_states(fresh, old)
+        gap = old[:, x5.B_MISS] == 1
+        self.assertTrue(gap.any())
+        fc_old, _ = x5.structural_masks(old)
+        np.testing.assert_array_equal(st['D'][gap, x5.B_MASK] > 0, (fresh[gap, x5.B_MASK] > 0) & fc_old[gap])
+        self.assertTrue((st['D'][gap, x5.B_MASK] > 0).any())
+        self.assertTrue((st['Cc'][gap, x5.B_MASK] == 0).all())
+        np.testing.assert_array_equal(st['Cc'][:, x5.B_MISS], old[:, x5.B_MISS])
+
+    def test_classification(self):
+        g = lambda gain, lo, hi: dict(gain=gain, ci95_low=lo, ci95_high=hi)  # noqa: E731
+        c = x5.classify_match(g(8, 5, 11), g(.5, -1, 2), .5)
+        self.assertEqual((c['truncation_ci_above_0'], c['cycle'], c['bound_kw']), (True, 'CI_WITHIN_BOUND', 4.0))
+        # X5b R1-B2 counterexample: half-width 3.95 <= 4 but the CI reaches 7.8 kW -> must NOT be "within bound"
+        self.assertEqual(x5.classify_match(g(8, 5, 11), g(3.8, -.1, 7.8), .5)['cycle'], 'CI_WIDE')
+        self.assertEqual(x5.classify_match(g(2, 1, 3), g(.5, -2, 3), .5)['cycle'], 'CI_WIDE')
+        self.assertEqual(x5.classify_match(g(2, 1, 3), g(3, 1, 5), .5)['cycle'], 'CI_ABOVE_0')
+        self.assertEqual(x5.classify_match(g(2, 1, 3), g(-3, -5, -1), .5)['cycle'], 'CI_BELOW_0')
+        self.assertEqual(x5.classify_match(g(2, 1, 3), None, .5)['cycle'], 'NOT_ESTIMABLE')
+        self.assertEqual(x5.classify_match(g(2, 1, 3), dict(status='NOT_ESTIMABLE', gain=2.25, ci95_low=None,
+                                                            ci95_high=None), .5)['cycle'], 'NOT_ESTIMABLE')
+        self.assertFalse(x5.classify_match(g(2, -1, 3), g(0, -.5, .5), .5)['truncation_ci_above_0'])
+
+    def test_bounded_contrast_minimum_clusters(self):
+        """X5b R2-B1: below 40 issue clusters only n and the point estimate; GPT's 8-cluster case (gains -1.25..+5.75,
+        block 8 -> one candidate block -> zero-width [+2.25, +2.25]) must not yield an interval or a label."""
+        n = 60
+        start = (np.datetime64('2021-07-01T00', 'h') + np.arange(n) * np.timedelta64(3, 'h')).astype('datetime64[ns]')
+        rng = np.random.default_rng(7)
+        e = {s: {a: rng.uniform(0, 300, (n, 4)) for a in ('LG', 'LUG')} for s in ('D', 'Cc')}
+        kw = dict(block_length=8, replicates=200, seed=2024)
+        protocol = x1.read(x5.PROTOCOL_B)
+        self.assertEqual(protocol['classification']['min_issue_clusters'], 40)
+        for k in (0, 1, 2, 8, 39, 40):
+            rows = np.arange(n) < k
+            with statistics_imports():
+                out = x5.bounded_contrast(e, 'D', 'Cc', start, rows, kw, 40)
+            if k < 40:
+                self.assertEqual((out['status'], out['ci95_low'], out['ci95_high']), ('NOT_ESTIMABLE', None, None))
+                self.assertEqual((out['windows'], out['issue_time_clusters']), (k, k))
+                if k == 0:
+                    self.assertIsNone(out['gain'])
+                else:
+                    cand, ref = x5.rise_losses(*(e[s][a][rows] for s, a in (('D', 'LG'), ('D', 'LUG'), ('Cc', 'LG'),
+                                                                              ('Cc', 'LUG'))))
+                    self.assertAlmostEqual(out['gain'], (ref.mean(1) - cand.mean(1)).mean(), places=9)
+            else:
+                self.assertNotIn('status', out)
+                self.assertLess(out['ci95_low'], out['ci95_high'])
+        # GPT's counterexample: 8 clusters, gains -1.25 .. +5.75 (mean +2.25)
+        gains = np.arange(8) - 1.25
+        e8 = {'D': {'LG': np.zeros((8, 4)), 'LUG': np.zeros((8, 4))},
+              'Cc': {'LG': np.repeat(gains[:, None], 4, 1), 'LUG': np.zeros((8, 4))}}
+        with statistics_imports():
+            out = x5.bounded_contrast(e8, 'D', 'Cc', start[:8], np.ones(8, bool), kw, 40)
+        self.assertEqual(out['status'], 'NOT_ESTIMABLE')
+        self.assertAlmostEqual(out['gain'], 2.25)
+
+    def test_natural_gap_audit_counts_window_disagreement(self):
+        """X5b R1-B1: GPT's synthetic case (one dropped cycle) -> 36 of 216 windows disagree, 18 in the targets,
+        while both structural checks still pass; the agreement mask flags exactly those windows."""
+        _, fresh, old = self._blocks(drop={'2021030218'})
+        st = x5.matched_states(fresh, old)
+        audit = x5.coverage_audit(st)
+        gap = audit['natural_gap']
+        self.assertEqual((gap['windows'], gap['windows_disagree'], gap['windows_target_mask_disagree']), (216, 36, 18))
+        self.assertTrue(audit['masks_within_own_structure'] and audit['matched_within_common_structure'])
+        agree = x5.natural_gap_agreement(st)
+        self.assertEqual(int((~agree).sum()), 36)
+        np.testing.assert_array_equal(st['D'][agree][:, x5.B_MASK] > 0, st['Cc'][agree][:, x5.B_MASK] > 0)
+        _, fresh, old = self._blocks()
+        self.assertTrue(x5.natural_gap_agreement(x5.matched_states(fresh, old)).all())   # complete cache: no gaps
+
+    def test_structure_violation_is_an_input_error(self):
+        """X5b R1-S1: a validity bit outside the registered structure stops the run."""
+        _, fresh, old = self._blocks()
+        st = x5.matched_states(fresh, old)
+        st['D'] = st['D'].copy()
+        st['D'][st['D'][:, x5.B_AGE] == 6, x5.B_MASK.start] = 1.0         # t0-5 at age 6 (needs f001)
+        with self.assertRaisesRegex(ValueError, 'outside the registered structure'):
+            x5.check_structure(x5.coverage_audit(st), 'F', 'train')
+
+    def test_match_end_to_end_and_decomposition(self):
+        res = self._match_end_to_end()
+        self.assertFalse(res['farms']['F']['V2']['natural_gap']['cycle_common_includes_natural_gaps'])
+        self.assertEqual(res['farms']['F']['V2']['cycle_common_agreeing_windows'],
+                         res['farms']['F']['V2']['deltas']['cycle_common'])
+
+    def test_match_end_to_end_with_natural_gap(self):
+        """A missing old-side cycle inside V2: the all-window cycle contrast is flagged, and the label uses the
+        contrast on agreeing windows only (X5b R1-B1)."""
+        res = self._match_end_to_end(gap_rows=slice(10, 22))
+        row = res['farms']['F']['V2']
+        self.assertTrue(row['natural_gap']['cycle_common_includes_natural_gaps'])
+        self.assertLess(row['natural_gap']['share_agree'], 1.0)
+        self.assertTrue(row['reading']['natural_gap_difference'])
+        self.assertEqual(res['outcome']['farms_with_natural_gap_difference_on_V2'], ['F'])
+        self.assertIsNotNone(row['cycle_common_agreeing_windows'])
+        self.assertNotEqual(row['cycle_common_agreeing_windows']['windows'], row['deltas']['cycle_common']['windows'])
+
+    def test_match_end_to_end_two_agreeing_clusters(self):
+        """GPT's R2 repro: only 2 agreeing windows in V2 used to crash the report; now NOT_ESTIMABLE, no crash."""
+        res = self._match_end_to_end(gap_rows=slice(2, None))
+        row = res['farms']['F']['V2']
+        self.assertEqual(row['cycle_common_agreeing_windows']['status'], 'NOT_ESTIMABLE')
+        self.assertEqual(row['cycle_common_agreeing_windows']['issue_time_clusters'], 2)
+        self.assertEqual(row['reading']['cycle'], 'NOT_ESTIMABLE')
+        self.assertIn('not estimable', x5.summary_match_md(res))
+
+    def _match_end_to_end(self, gap_rows=None):
+        import tempfile
+        from unittest import mock
+        cache = synthetic_cache(start='2021-02-25T00', days=40)
+        nominal = cache
+        real_prepare = x5.prepare_farm
+
+        def prepare_with_old_gap(*a, **k):
+            """Simulate a missing OLD-cycle file for some V2 windows (natural gap on one side only)."""
+            packs_, tests_, blocks_ = real_prepare(*a, **k)
+            if gap_rows is not None:
+                b = blocks_['V2'][15]
+                b[gap_rows, x5.B_FC] = 0
+                b[gap_rows, x5.B_MASK] = 0
+                b[gap_rows, x5.B_HIST] = 0
+                b[gap_rows, x5.B_MISS] = 1
+            return packs_, tests_, blocks_
+        packs = EndToEnd()._packs
+        train, v1, v2 = packs(nominal, 120, '2021-03-01T00'), packs(nominal, 60, '2021-03-20T00'), \
+            packs(nominal, 60, '2021-03-28T00')
+        test = packs(nominal, 60, '2021-03-10T00')
+        protocol = x1.read(x5.PROTOCOL_B)
+        bud = dict(protocol['budget']['smoke'], smoke=True)
+        x1p = {'lightgbm': dict(num_leaves=[31], min_child_samples=[50], learning_rate=.05, n_estimators=10,
+                                early_stopping_rounds=2, feature_fraction=.8, bagging_fraction=.8, seed=2024)}
+        args = mock.Mock(logs='/nonexistent', threads=1)
+        with tempfile.TemporaryDirectory() as tmp, \
+                mock.patch.object(x2, 'load_farm', return_value=(train, v1, v2, {'F_2021': test}, {})), \
+                mock.patch.object(x5, 'farm_caches', return_value=(cache, cache, MEAN, SCALE, '2024-01-01',
+                                                                    '2024-01-01', {})), \
+                mock.patch.object(x5, 'prepare_farm', side_effect=prepare_with_old_gap):
+            out = Path(tmp)
+            (out / 'X5').mkdir()
+            keys = x5.run_farm_match(_FakeLGB, args, out, x2.Store(out), 'F', {'rated': 2050.0}, x1p, {}, protocol, bud)
+            for n in x5.STATES:
+                self.assertTrue((out / f'S_{n}/F/LUG_{n}/2024/V2.npy').exists())
+            with statistics_imports():
+                res = x5.report_match(out, {'F': keys}, protocol, ['F'])
+            row = res['farms']['F']['V2']
+            d = row['deltas']
+            self.assertAlmostEqual(d['total']['gain'], d['truncation_fresh']['gain'] + d['cycle_common']['gain']
+                                   + d['old_side_restriction']['gain'], places=6)
+            self.assertAlmostEqual(d['truncation_fresh']['gain'], row['U']['D']['gain'] - row['U']['A']['gain'], places=6)
+            self.assertIn(res['outcome']['outcome'], ('TRUNCATION_CI_ABOVE_0_AND_CYCLE_CI_WITHIN_BOUND', 'CYCLE_CI_ABOVE_0',
+                                                      'NO_COMMON_PATTERN'))
+            self.assertIn('| F | V2 |', x5.summary_match_md(res))
+            cov = x1.read(out / 'X5' / 'F_coverage.json')
+            self.assertTrue(cov['train']['matched_within_common_structure'])
+            self.assertIn('windows_disagree', cov['V2']['natural_gap'])
+        return res
+
+    def test_formal_match_needs_match_smoke(self):
+        import tempfile
+        from types import SimpleNamespace
+        with tempfile.TemporaryDirectory() as tmp:
+            smoke = Path(tmp) / 'smoke'
+            smoke.mkdir()
+            x1.save(smoke / 'smoke_passed.json', dict(status='PASS', commit='abc'))            # X5 smoke, no kind
+            args = SimpleNamespace(protocol_sha256=x1.digest(x5.PROTOCOL_B), allow_dirty=False, smoke_result=smoke,
+                                   output=Path(tmp) / 'run')
+            with patch.object(x5, 'git_identity', return_value=('abc', '')):
+                with self.assertRaisesRegex(ValueError, 'same kind'):
+                    x5.start_run(args, 'MRUN', x5.PROTOCOL_B)
+                x1.save(smoke / 'smoke_passed.json', dict(status='PASS', commit='abc', kind='match'))
+                self.assertTrue(x5.start_run(args, 'MRUN', x5.PROTOCOL_B).exists())
+
+
 if __name__ == '__main__':
     unittest.main()

@@ -1762,3 +1762,60 @@ X5 块 3 正式运行 e01cc6b（2026-11-21，约 1 h 36 min，CPU），已拷回
 - **混合延迟模型。** 各延迟共用模型参数，输入中保留所选预报的实际起报年龄。在 V2 与探索性测试合计 35 项比较中，混合模型相对同延迟匹配模型的 MAE 差约为 −0.9 至 +3.1 kW，多数差值的绝对值小于 1.5 kW。
 
 **论文写法。** 在三个风场的 V2 开发段，使用相同延迟训练和评估的 LightGBM 时，按起报后 6 h 可用来选取 GFS 预报，加入上游观测使未来 1–4 h 的平均绝对误差降低 1.82–2.28 kW。在模拟延迟 15 h 和 18 h 的两档，这一降幅分别为 6.75–13.46 kW 和 15.50–24.38 kW。四个已暴露风场年的探索性结果也显示，18 h 时的增益高于 6 h。描述性结论限于本实验的 GFS 时效覆盖、离散延迟设定和模型。
+
+## 阶段 X5b
+
+Codex 首审 docs/review/X5b-R1-codex.md 的决议（Claude，2026-11-23）：
+
+| 编号 | 类型 | 一句话摘要 | 决议 | 理由（一句） | 落实 |
+|---|---|---|---|---|---|
+| R1-B1 | 阻断 | 只对齐结构覆盖，D 与 Cc 仍可能因一侧缺文件而实际可用性不同，差额会被误读为预报变旧 | 采纳 | 反例复现：一个周期缺失时 216 个窗口中 36 个不一致、18 个落在目标时次，结构检查仍为真 | Claude 实施：scripts/run_x5.py（natural_gap_agreement；coverage_audit 的 natural_gap 计数；report_match 的 cycle_common_agreeing_windows）；tests/test_x5.py |
+| R1-B2 | 阻断 | 只看半宽，区间 [−0.1, 7.8] 也会被判"接近零"，进而输出"覆盖主导" | 采纳 | 改为整段 95% CI 落在 ±0.5 × \|截短效应点估计\| 内，并改用描述判据的中性标签 | Claude 实施：classify_match、report_match 的结局标签；configs/x5b_protocol.json v2；测试含该反例 |
+| R1-S1 | 建议 | 结构检查的两个布尔值不应只写进 JSON | 采纳 | 有效位超出自身或共同结构是输入错误，运行直接停；两侧自然缺档不同仍允许 | Claude 实施：check_structure；测试 test_structure_violation_is_an_input_error |
+| R2-B1 | 阻断 | 一致窗口只剩 2 个起报簇时报告中断；3–8 簇时块长 8 只有一个候选块，给出零宽区间并参与标签 | 采纳（门槛 40 簇，待用户确认） | 已过两轮，交用户裁决。Claude 建议比 GPT 的 9 簇更严：9 簇也只有 2 个候选块，区间照样不可信；40 簇 = 5 个块长，有 33 个候选块。门槛只会把更多情形判成 NOT_ESTIMABLE，不会多出正结论；实测数据的一致窗口预计是数千簇，基本不受影响 | Claude 实施：scripts/run_x5.py 的 bounded_contrast、classify_match、summary；configs/x5b_protocol.json v3（classification.min_issue_clusters = 40）；tests/test_x5.py 新增 2 项（0、1、2、8、39、40 簇，含 GPT 的 8 簇反例；只剩 2 个一致窗口时端到端不报错） |
+
+**取代下文原登记中的"描述性读法"**（原 NEAR_ZERO / COVERAGE_DOMINANT 规则作废，代码已删）：
+- **自然缺档审计（R1-B1）：** 每场、每段（train、V1、V2、各测试年）都在共同结构内逐窗比较 D 与 Cc，写进 X5/<场>_coverage.json 的 natural_gap 一项。比较内容：
+  - 13 格有效位、目标 4 格有效位、整周期缺失标志；
+  - 只有一侧缺周期的窗口数。
+  - 两侧的自然缺档都保留，不互相复制。训练段的缺档（GPT 核到原 X5 训练段各场分别有 8、2、102 个起报未过整周期检查）属于各自状态的定义，只登记，不处理。
+- **归因口径（R1-B1）：** 评估段同时报两个周期对比，标签只用第二个；每场记 natural_gap_difference，V2 有差异的风场列在结局里。
+  - 全部窗口的 U(Cc) − U(D)：如果该段有自然缺档差异，就写作"周期与自然缺档的联合差异"。
+  - 只在 D、Cc 实际可用性完全一致的窗口上的 U(Cc) − U(D)：用同一批已训练模型，可写作"共同结构、实际可用性一致时，换用旧周期后上游增益的变化"。
+  - 两者都不写成"预报老化导致"。一致窗口少于 2 个起报簇时记 NOT_ESTIMABLE。
+- **判读标签（R1-B2）：** bound = 0.5 × |U(D) − U(A)| 的点估计，并注明它相对的是截短效应的点估计，不是区间。
+  - 截短一项，每场单独判 CI 下界是否 > 0。
+  - 周期一项（一致窗口）分四档：CI_ABOVE_0、CI_BELOW_0、CI_WITHIN_BOUND（整段 95% CI 落在 [−bound, +bound] 内）、CI_WIDE。
+  - 结局：≥ 2 场同时满足"截短 CI > 0"和 CI_WITHIN_BOUND，记 TRUNCATION_CI_ABOVE_0_AND_CYCLE_CI_WITHIN_BOUND；否则 ≥ 2 场 CI_ABOVE_0，记 CYCLE_CI_ABOVE_0；其余记 NO_COMMON_PATTERN。
+  - 这些标签只描述判据，不写"覆盖主导"。论文措辞示例："把新周期截短到旧周期的结构覆盖后，上游增益上升 x kW；在共同覆盖、可用性一致的窗口上换用旧周期，变化的 95% 区间落在截短效应点估计的 ±50% 内。"
+- **代码与测试：** test_x5 共 21 项通过，连同 test_x2 共 43 项。新增或改写的测试：
+  - 标签规则，含 R1-B2 的反例 [−0.1, 7.8] → CI_WIDE；
+  - 自然缺档计数复现 GPT 的 216 / 36 / 18；
+  - 结构违规时停止运行；
+  - 一侧缺周期的端到端测试：联合对比被标记，标签改用一致窗口。
+  - 协议升为 configs/x5b_protocol.json v2（尚未运行，不涉及冻结）。
+- **R2-B1 补充规则（2026-11-23，待用户确认）：** 一致窗口覆盖的起报簇不足 40 个（5 个块长）时，周期对比只报窗口数、簇数和点估计（没有窗口时点估计为空），区间和周期标签都记 NOT_ESTIMABLE；40 簇及以上沿用原统计。全部窗口的各项对比不受影响（V2 实测是数千簇）。协议升为 v3。本地 test_x5 共 23 项通过，连同 test_x2 共 45 项。由用户 2026-11-23 转来 GPT 的选择：选 B，只补 6 h 对 15 h 的匹配遮挡；12 h 保留已有结果；C（补下载长时效 GFS）暂缓；第 109 次期刊模型对照照常推进。X5b 是与它并行的 CPU 小线，代码由 Claude 写。
+
+登记（事后设计的开发期机制检验；15 h 是看过 X5 结果后选的；协议 configs/x5b_protocol.json）：
+- **四种状态**，同一窗口、同一机组、同一目标；只改树模型读到的末步 GFS 列：
+  - A = 新周期（d = 6）原样，即冻结 x50；C = 旧周期（d = 15）原样，即 X5 的 D15 输入。
+  - D = A 中只保留 C 在结构上可用的位置；Cc = C 中只保留 A 在结构上可用的位置。
+  - "结构可用"只看时效：13 格当前周期偏移 t0−5…t0+7 的时效 age + 偏移在 [3, 18] h 内，历史值的时效 = age。
+  - 被遮的位置，数值和有效位一起置 0。各自保留自己的 age、整周期缺失标志和自然缺档；旧周期缺文件不会复制到新周期（GPT 第二点）。
+  - 这样 D 和 Cc 的结构覆盖相同。GPT 举的例子：新周期 age 6 时 t0−5 要 f001，没有；旧周期有。Cc 把它去掉，D 也不会多出来。单测覆盖了这种情形。
+- **臂**：每种状态各训 LG、LUG；x1 的 2×2 网格，V1 早停与选格，seed 2024；每场 8 次拟合。e01cc6b 的预测一律不复用，A、C 在同一次运行里重训。
+- **读数**（V2 为主，测试年只作探索）：
+  - U(s) = MAE(LG_s) − MAE(LUG_s)；
+  - 截短效应 U(D) − U(A)；共同覆盖下的周期效应 U(Cc) − U(D)；旧侧限制 U(C) − U(Cc)；
+  - 总量 U(C) − U(A) 等于三者之和，代码里逐项核对。
+  - 统计：同窗配对，按起报成簇，块长 8，2000 次，seed 2024。
+- **描述性读法**（事先写进协议）：每场在 V2 上判断两件事。
+  - 截短为正：U(D) − U(A) > 0 且 CI 下界 > 0。
+  - 周期效应：CI 下界 > 0 记 POSITIVE；CI 上界 < 0 记 NEGATIVE；CI 含 0 且半宽 ≤ 0.5 × |截短效应| 记 NEAR_ZERO；其余 UNCERTAIN。
+  - ≥ 2 场同时"截短为正且 NEAR_ZERO" → COVERAGE_DOMINANT；否则 ≥ 2 场 POSITIVE → CYCLE_ALSO_CONTRIBUTES；其余 MIXED_OR_UNCERTAIN。区间宽时如实写"周期作用不确定"。
+- **代码**（Claude 2026-11-23）：
+  - scripts/run_x5.py 新增 msmoke / mrun 两个模式：structural_masks、match_coverage、matched_states、coverage_audit、run_farm_match、classify_match、report_match、summary_match_md。原有 smoke / run 的行为不变；正式 mrun 只认带 kind = match 的冒烟回执。
+  - configs/x5b_protocol.json（新文件，不改 X5 已冻结的协议）；scripts/launch_x2.sh 新增 x5bsmoke、x5brun；scripts/status_x2.sh 同步。
+  - 本地 test_x5 共 18 项通过，其中新增 7 项；连同 test_x2 共 40 项通过。
+- **预算**：CPU 约 1 小时（X5 的 13 个臂 × 3 场用了 96 分钟）。
+- **不做**：C、12 h 遮挡、新数据、神经网络；不改 X5 结果和冻结预测。

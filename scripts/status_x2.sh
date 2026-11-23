@@ -72,7 +72,7 @@ fi
 X5BASE=$DATA/outputs/logs/X5/x5_${COMMIT}
 if [ -d "$X5BASE" ]; then
   echo "== X5 runs under $X5BASE"
-  for MODE in x5smoke x5run; do
+  for MODE in x5smoke x5run x5bsmoke x5brun; do
     [ -e "$X5BASE/$MODE.pid" ] || continue
     PID=$(cat "$X5BASE/$MODE.pid"); STATE=exited
     if [[ "$PID" =~ ^[0-9]+$ ]] && kill -0 "$PID" 2>/dev/null \
