@@ -1,0 +1,34 @@
+{
+  "mode": "krr",
+  "smoke": true,
+  "commit": "1fe7ab6ff37a1e21cbd8d1895d3fc09140f4686f",
+  "script_sha256": "2b410df38639de9c98649f4dd00fc76c61f19be8fa3d038af23a9fbb2a746edd",
+  "protocol_sha256": "6d6cb5a3feabf138453c5f05a34606d864f18c38c9d66b950c103ad4e39211b5",
+  "vendor": {
+    "models/vendor_cabin/base.py": "10c1228e2409da5662620785b622e26329463830",
+    "models/vendor_cabin/components.py": "c117c1d62343b5f04367150c67e473dc93f9f7a2",
+    "models/vendor_cabin/cabin.py": "1fec69c02f59a1776ac97404c00200d42c337a33",
+    "models/vendor_cabin/LICENSE": "8dc5c21eabbf9a497ca334a1f5eda04e74b31b0e",
+    "models/vendor_cabin/__init__.py": "9b54f98683d462e8c023fc7df87c0ea2b6fec8c6",
+    "models/vendor_tsg/clean_finite_adaptability_functions.py": "8b62b85bc5d8fda3db5412c6cdab4a568b2f8686",
+    "models/vendor_tsg/clean_torch_custom_layers.py": "a07282aa1fe0fdd38a88a8aeecff2701d5cef139",
+    "models/vendor_tsg/LICENSE": "1b02c7d18218b36026100bbc5c2c05e77190fa3f",
+    "models/vendor_tsg/__init__.py": "8cf2571e12611d283da88e6a2deb58680a571005"
+  },
+  "python": "/home/XT/miniconda3/envs/timedart/bin/python",
+  "pid": 3603833,
+  "started_utc": "2026-11-24T07:35:12.246996+00:00",
+  "args": {
+    "mode": "krr",
+    "logs": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs",
+    "base": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/WJB/wjb_1fe7ab6",
+    "protocol_sha256": "6d6cb5a3feabf138453c5f05a34606d864f18c38c9d66b950c103ad4e39211b5",
+    "smoke": "True",
+    "threads": "12",
+    "workers": "12",
+    "worker_threads": "1",
+    "device": "auto",
+    "gpu_fraction": "0.7",
+    "allow_dirty": "False"
+  }
+}

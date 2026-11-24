@@ -27,13 +27,14 @@ B4 测试: 你的反例（8.4 h 的批次）全程不停；96 × 1.5 h 在 1.5 h
 需要用户决定: 无
 
 ## Codex → Claude
-<!-- 第 112 次交接，2026-11-24 -->
-轮次: R2/2 | 阶段: wind-journal-baselines-code | 分支: exp/X1 | 提交号: 本条交接随审定代码同一提交；在该提交执行 git rev-parse HEAD 可取完整号。
-审查结论: 通过，0 项阻断。Claude 已复核 B1–B3。B4 的实现符合登记的三场合计 15 h 估算规则。见 docs/review/wind-journal-baselines-code-R2-codex.md。
-已直接修复: R1 的开发缓存边界、两模型实际输入一致性和 Cabin 单窗口验收纳入本次提交。R2 的 B4 由 Claude 实施。
-运行信息: 本地 timedart 的 python -B -m unittest tests.test_wjb tests.test_x5 tests.test_x2 全部 81 项通过，零跳过，19.798 s；含真实 torch 的两项 Cabin 测试。
-关键数字: 原反例 8.4 h 及两种顺序的 12 h 均跑完；18 h 的先快后慢样例在 5.5 h 触发；恰好 15 h 继续。跨场或时距的同候选耗时差异仍可能导致提前停止。回执解释为按登记估计超时。
-交反重力: 在服务器干净 worktree 核对本次完整提交和本轮三个 Git blob，timedart 跑上述三组单测，通过后仅启动一次 bash scripts/launch_x2.sh wjbsmoke，按空闲资源设置线程与进程数。
-回执位置: 数据根的 outputs/logs/WJB/wjb_<提交短号>/wjbsmoke.log、wjbsmoke.pid、smoke_report/completed.json；失败取相应 smoke_<mode>/failed.json 和日志尾，原目录保留，停止交回。
-需要 Claude 做的: 待反重力交回服务器单测和冒烟报告，按完成标记核对；R2-S1 的说明可用于解释正式 TSG 的技术停止。
+<!-- 第 112 次交接：服务器冒烟结果复核，2026-11-24 -->
+轮次: R2/2 结果 | 阶段: wind-journal-baselines-code | 分支: exp/X1 | 提交号: 1fe7ab6ff37a1e21cbd8d1895d3fc09140f4686f（服务器审定运行版本）。
+审查结论: 三场期刊对照的 wjbsmoke 已验收。KRR、LightGBM-hist、TSG、Cabin、report 五步的完成回执、脚本、协议、作者 blob 和 registry 均与审定版本及登记摘要一致，日志以 [WJB] chain done 结束。
+已直接修复: 本轮仅归档冒烟回执；B1–B4 修复及审查见运行提交与 docs/review/wind-journal-baselines-code-R2-codex.md。
+运行信息: 反重力报告服务器 timedart 的三组单测 81/81 通过、零跳过、7.592 s。运行 worktree 为 /home/XT/nuist/pythoncode/TimeDARTFirst_WJB_1fe7ab6。冒烟外层 PID 3603829 来自反重力回执，报告 PID 3604192 已核对 launch.json。
+运行信息: 归档 output/wjb/wjb_1fe7ab6/ 下的 26 份 JSON、SUMMARY.md 和 wjbsmoke.log。逐步核对完成状态、所有 registry 文件及四份 v1_freeze 的 SHA256；逐预测数组留在服务器。
+关键数字: Cabin 与 LightGBM-hist 的 18 组实际输入摘要全部相等。6 个 Cabin 候选最大单窗差为 8.94e-8（容差 1e-5），打开 sample softmax 的反向对照为 0.0052000。TSG 的三场两臂列映射和四种受控路由均通过。
+关键数字: smoke_report/completed.json 的 SHA256 为 f43525b4d248549de72a781c436266b142962e5b328c33a7e20c981c682de129，results.json 为 7943bf2698ca24600e52496ceaab49796d0a04b5fba7899417297e7c6a216de2。
+交反重力: 正式链沿用原 worktree 和运行提交 1fe7ab6。核对既有锁和进程，按当前空闲资源并行运行 bash scripts/launch_x2.sh wjbcpu 和 wjbgpu，各一次。两条结束后按协议起 wjbfinal；仅登记的 TSG TechnicalLimit 带 technical_limit.json 可继续汇总，其他失败停下交回。
+需要 Claude 做的: 正式结果交回后再复核论文比较。服务器冒烟完成；截至交接仅有冒烟回执，正式启动待反重力确认。Codex 的反重力 CLI 缺少会话地址，桌面工具未获反重力访问权限。
 需要用户决定: 无。

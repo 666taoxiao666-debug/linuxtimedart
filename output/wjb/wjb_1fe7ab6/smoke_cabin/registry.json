@@ -1,0 +1,20 @@
+{
+  "keys/Kelmarsh_V1.npz": "a46b57eb542a84f46ff65d7155ce25b81b6a1501bf2f25c2d86af74711a96615",
+  "keys/Kelmarsh_V2.npz": "8dcdc995ee90cd74ec2d104f164ab8d358db31718593e4a07abae767076f9347",
+  "Kelmarsh/L0/cand0/V1.npy": "f70aa806cd829835112ba2df8b0037d919b9840b7e658136f5ae375a86f56c69",
+  "Kelmarsh/LU/cand0/V1.npy": "b31b3e7c64481d9580f8f8322685e155cd68fb5b43c930933d705c11a4faa3f7",
+  "keys/Penmanshiel_V1.npz": "643e9a7d50efc14c6efd8ac98139d83ee2bf605ea6eb3d796c3fc43f0a1196b5",
+  "keys/Penmanshiel_V2.npz": "20ce4d4e77680c748c9f73c52f9db8c03d8c6f02592d0c303a2e2ad57e5e04f4",
+  "Penmanshiel/L0/cand0/V1.npy": "3c4a7170e448e3ffd5ec8f3f4601fbc7180b11047c0fd90892304ea84d5ccad7",
+  "Penmanshiel/LU/cand0/V1.npy": "648a331da5ca84bc0f5305f953d85a4f5d6eb5ea7b241da2ce73bcbbf79b9ba4",
+  "keys/HoT_V1.npz": "dfc1e572b889a145667a770a1068782b01a998b6414886145927431e4c70cbd4",
+  "keys/HoT_V2.npz": "29cc14f6ee6b0dc775414abdc748562cde67b0b3e632e97d4dab842cc38ac0e2",
+  "HoT/L0/cand0/V1.npy": "0aa7d65b5bda513af55d585d539bca1253fbdc236c8cadc6f3c0a8e46a2d532b",
+  "HoT/LU/cand0/V1.npy": "ee2161e9f82675ff53443ca3294933477232ef37c405eae6c1509e5b11cd0ea6",
+  "Kelmarsh/L0/V2.npy": "bb3b94c23d47d1f743d474c63c46e39107d3296007453847097cc67106439b7d",
+  "Kelmarsh/LU/V2.npy": "9a1f277701314d8ee5a30c28dfba00168a444499072961a4ee82991ba75e7656",
+  "Penmanshiel/L0/V2.npy": "2eb4c861bb4458d86382bf97e6573943febed8b0cd260b3370f5904303f5be16",
+  "Penmanshiel/LU/V2.npy": "02bc2d1f0637e49e3e2e9bc7eb22a82a49764650aa371592a1164c5cf62cde1c",
+  "HoT/L0/V2.npy": "552836603beb400237a8dc192205bbc669f16872883ad71e73af37b3b2aae18d",
+  "HoT/LU/V2.npy": "773066d9e82607cc6b4a25a021773ce360d6be5c9e577aef173c780cfc66a4f3"
+}

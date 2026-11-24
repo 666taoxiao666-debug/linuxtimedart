@@ -1,0 +1,392 @@
+{
+  "line": "lgbh",
+  "guard": {
+    "run_x1.paths": "refused",
+    "run_x2.load_farm": "refused",
+    "run_x5.farm_caches": "refused",
+    "load_pack(sealed_prep)": "refused"
+  },
+  "farms": {
+    "Kelmarsh": {
+      "full": {
+        "train": 75024,
+        "V1": 7431,
+        "V2": 8249,
+        "keys": {
+          "V1": {
+            "issue": "7810d46cd81d30cb9c9666da0f70433a235c6f46b2af1d8f927dff47af9dff8c",
+            "turbines": "aea065485b99528ad273ada03c574f05c8e86dc2bb29faa252c07c5f01314823",
+            "truth": "80146c1901d66056db94585024cdde5ef8a3ac7a378505dac99750b8d8659189"
+          },
+          "V2": {
+            "issue": "2094b2ebd4ca402c48593cfca39752955bc033345ec36c07e847283ed89073a9",
+            "turbines": "23c911e507fa9eb897e73a795ff52e4a9431d833d8f6371093ae7e7e354a13e0",
+            "truth": "b123f412699802b42f1252a7e70a351b16093195f7d31b70505f337acad2f10f"
+          }
+        },
+        "train_last_label": "2020-12-31T21:00:00.000000000",
+        "V1_start": "2021-01-01",
+        "units": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ]
+      },
+      "infos": {
+        "L0": {
+          "columns": 218,
+          "candidates": [
+            {
+              "num_leaves": 31,
+              "min_child_samples": 50,
+              "v1_mae": 243.43140130494135,
+              "best_iterations": [
+                40,
+                40,
+                40,
+                40
+              ],
+              "seconds": 0.3542124730302021
+            }
+          ],
+          "selected": 0,
+          "boosters": {
+            "h1.txt": "3761945c8fb64b58ffc131f6da8cc6870f2f85edc1187a4ab745eb509564499c",
+            "h2.txt": "1a9e1e53a550d50e7080b7fd6ef9c5fd3a797fcbdccdfa52fbe87738171744a8",
+            "h3.txt": "3d1e660297ca3425789463ad9cb310be87d5d9215f28e2192c9c3645a226cbd8",
+            "h4.txt": "f17522de4aa49954397bbe036c181f510ff3cb16d96f063b470c648d5f0b21ff"
+          },
+          "input_digests": {
+            "train": {
+              "x": "72e5d7e94742393f5be0a711408fada062b3d201f179e0e19131518a171efbd8",
+              "e": "ce492bb0e20de00344ac5f0c86d385b63f4614895689bb41a40f01d3d4614e3d",
+              "windows": 3000,
+              "channels": 10
+            },
+            "V1": {
+              "x": "971833b4f894995d42cec0daf0659286deefc7d69dc9cd0b2f6772c2c37eee75",
+              "e": "0694a99271e1162e50c4a5462399aa8bec6658bbf168b037ce5ab348f60123e7",
+              "windows": 500,
+              "channels": 10
+            },
+            "V2": {
+              "x": "016eb6683525384cd63cc01ef49313dc212f19a6e9365a90b0f7c585eadf8cbe",
+              "e": "d6d76cbb060265134f27277eeb1517486711c53e36529b70bd876cc5c24896ba",
+              "windows": 500,
+              "channels": 10
+            }
+          }
+        },
+        "LU": {
+          "columns": 506,
+          "candidates": [
+            {
+              "num_leaves": 31,
+              "min_child_samples": 50,
+              "v1_mae": 242.81533407303488,
+              "best_iterations": [
+                40,
+                40,
+                40,
+                40
+              ],
+              "seconds": 0.7300121349981055
+            }
+          ],
+          "selected": 0,
+          "boosters": {
+            "h1.txt": "6e64aa6f4ebc0567242a57416d3d750ba90a43472e00711d35f12d526bc52d16",
+            "h2.txt": "287a48d3ec723a185b1c0da9f5991cf2c6337fb1df2bce7c794e493a74157b57",
+            "h3.txt": "2e099317ac6b7f9cc716f622e83c261952dd58978984a653e0680e4c5941133f",
+            "h4.txt": "0815778a2fdc9416aab787d143233a590f42e1849e184203ea06a77e94cc3363"
+          },
+          "input_digests": {
+            "train": {
+              "x": "72e5d7e94742393f5be0a711408fada062b3d201f179e0e19131518a171efbd8",
+              "e": "2fc2b5b1f3e37cab48632c12b15c4686dbb1a84603c26d7b78cb3ac3c748de57",
+              "windows": 3000,
+              "channels": 22
+            },
+            "V1": {
+              "x": "971833b4f894995d42cec0daf0659286deefc7d69dc9cd0b2f6772c2c37eee75",
+              "e": "a0180a2776f626d7ac17d723c5d24d62993c082755ca14328173ea2c722126dc",
+              "windows": 500,
+              "channels": 22
+            },
+            "V2": {
+              "x": "016eb6683525384cd63cc01ef49313dc212f19a6e9365a90b0f7c585eadf8cbe",
+              "e": "ce8680df2b2ab608db88e46d69bfd8bdfa460eddc624c9964c3089afdddc7de7",
+              "windows": 500,
+              "channels": 22
+            }
+          }
+        }
+      }
+    },
+    "Penmanshiel": {
+      "full": {
+        "train": 64771,
+        "V1": 19413,
+        "V2": 16176,
+        "keys": {
+          "V1": {
+            "issue": "c37bbde3aec2de949d3b4a02bbc7a97d74077bb0e2f89f1002e1f5bfaec8f739",
+            "turbines": "dc224f87eb3dc2de2ebb4a3f52cea570125e50979cb6d73a7006a26fecb41619",
+            "truth": "e02de90c967167ff4f685842033d690bd701ad7d5c41bb6ded886b63b3c375e0"
+          },
+          "V2": {
+            "issue": "4c235a58761df138e051c10a3f0f853c1d4faa3f138ed94e00b2de698d40d993",
+            "turbines": "56304f1aacef759b99ceee899e9a1d5ff998fb6e2fbacc8fc927b14e9a1634ca",
+            "truth": "30ca0c85b4efa19ae4c03f7d233ce228f8f76426d629bb84190eac5a2fc1704a"
+          }
+        },
+        "train_last_label": "2019-12-31T21:00:00.000000000",
+        "V1_start": "2020-01-01",
+        "units": [
+          1,
+          2,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15
+        ]
+      },
+      "infos": {
+        "L0": {
+          "columns": 218,
+          "candidates": [
+            {
+              "num_leaves": 31,
+              "min_child_samples": 50,
+              "v1_mae": 337.31572903190823,
+              "best_iterations": [
+                40,
+                40,
+                40,
+                40
+              ],
+              "seconds": 0.32984933292027563
+            }
+          ],
+          "selected": 0,
+          "boosters": {
+            "h1.txt": "d84285f343e1f37d94143ca181b8a06a2f6641b9d661b62f558927718afac2ac",
+            "h2.txt": "1908c83c39f960cfd88660b88e70d40c2beae8f53a65fcec81a560b615406e7f",
+            "h3.txt": "586249085ba454e524c8b476e8826fc5e8af017a1f44b18ce1773c0f04cf1cea",
+            "h4.txt": "e8535941f24d7f06fffaa264af959bd52d3d5eae66826792b06d5425bbb6268a"
+          },
+          "input_digests": {
+            "train": {
+              "x": "2c5ade496d0fc262d1b6c349bed85929689daa1718d667ca7fb5cea424f23882",
+              "e": "8de22d3a03eee0fa34278053727119182abfa4ae0257d126d0c6ea1c53021a03",
+              "windows": 3000,
+              "channels": 10
+            },
+            "V1": {
+              "x": "8f321c717b6718ac50745b8a29e7e36961a801194aa8e509f8f4bd34609e730b",
+              "e": "fd61d65d22757fea44046aae7e0adf98bd5445e3be4f90a20a03fadbd50ab4be",
+              "windows": 500,
+              "channels": 10
+            },
+            "V2": {
+              "x": "324079706c7696f34c47f598c5bb990eb3abec4ebd92a8f8316d30ed45e290b2",
+              "e": "a57d705cc2f7b759c4dce875c7ad92cb737037a9264f8d25719bebd13aad31d1",
+              "windows": 500,
+              "channels": 10
+            }
+          }
+        },
+        "LU": {
+          "columns": 506,
+          "candidates": [
+            {
+              "num_leaves": 31,
+              "min_child_samples": 50,
+              "v1_mae": 329.089513448204,
+              "best_iterations": [
+                40,
+                40,
+                40,
+                40
+              ],
+              "seconds": 0.7239951280644163
+            }
+          ],
+          "selected": 0,
+          "boosters": {
+            "h1.txt": "6ed0946e8355a32ea4f9e857be4c14e7c6af66ed254aca765ad312d67f739df0",
+            "h2.txt": "7110d47afbab963680b6a8b10a021de39e7bd417f777c26e53bff65497f57900",
+            "h3.txt": "41b63d12acbc5cf3a6f5f47af1f3db5cfbe7e18dabd646fd97809729b8be49d5",
+            "h4.txt": "4bd91c885f9ca662384d655b7e6ddb460020925fa00acf8d72f57f565b750609"
+          },
+          "input_digests": {
+            "train": {
+              "x": "2c5ade496d0fc262d1b6c349bed85929689daa1718d667ca7fb5cea424f23882",
+              "e": "c3d61260577ded31025d8d4f011a394f86100273ef7034bceab401705d88a3b2",
+              "windows": 3000,
+              "channels": 22
+            },
+            "V1": {
+              "x": "8f321c717b6718ac50745b8a29e7e36961a801194aa8e509f8f4bd34609e730b",
+              "e": "94f8391d6f320621da75f239afa6ae7a2d7b4ebd38800c802006d787acc4e893",
+              "windows": 500,
+              "channels": 22
+            },
+            "V2": {
+              "x": "324079706c7696f34c47f598c5bb990eb3abec4ebd92a8f8316d30ed45e290b2",
+              "e": "8c72efbb691cc9457d4f185bf1495fff442c8eb1cd44ce67faedf5457c3e09c3",
+              "windows": 500,
+              "channels": 22
+            }
+          }
+        }
+      }
+    },
+    "HoT": {
+      "full": {
+        "train": 420475,
+        "V1": 14932,
+        "V2": 15103,
+        "keys": {
+          "V1": {
+            "issue": "e7834f4ff0d2b131889cbf087b7f80cda015e6cb77546620f09dd396b09ddf7c",
+            "turbines": "28f82c1bb092c68f6f55abf3783bcc92fc3eec486c742159e1ee5e4d192cd165",
+            "truth": "3b153e420644e1e411d9ca4e2dcbaa7a11dee7ec04594b5e44e70b8cbbed3001"
+          },
+          "V2": {
+            "issue": "33bea1175a8cffe82ff05c5887c3d3768e81be7c7a06030987a47d13c804d04e",
+            "turbines": "296e38519c54cae3bcf74f0114cc6d810e544c2d928608f3153207901fcfebe6",
+            "truth": "999c45e30334ce4764417018432246a5dee518a199bff63374062f3431f34db5"
+          }
+        },
+        "train_last_label": "2023-06-30T23:00:00.000000000",
+        "V1_start": "2023-07-01",
+        "units": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20
+        ]
+      },
+      "infos": {
+        "L0": {
+          "columns": 218,
+          "candidates": [
+            {
+              "num_leaves": 31,
+              "min_child_samples": 50,
+              "v1_mae": 197.5053289737034,
+              "best_iterations": [
+                40,
+                40,
+                40,
+                40
+              ],
+              "seconds": 0.33033701800741255
+            }
+          ],
+          "selected": 0,
+          "boosters": {
+            "h1.txt": "498167f807338a67f024bc6eb7c53e34dd3e5ef78036b37263d7e0ac6904d111",
+            "h2.txt": "210ea7edd1b57515a3421fdb8656bc8c38fb5fe4dce1fc7f79fc45adfc75e4e2",
+            "h3.txt": "51bc6f4965684b5223e6002877fb138731713668d085eceb82f8bdc97811cd89",
+            "h4.txt": "e8640109204ad95c2265cbdf56214216c3d9f2a89c0181fe52b44587c478be84"
+          },
+          "input_digests": {
+            "train": {
+              "x": "20a7dfd9e2278f1d76fddcb02fd095687552036982167af00039426dafa3d1b4",
+              "e": "860a24c87dc10bc8b244d74a3b41af77be70a28fdfff12c0af1bba427073a110",
+              "windows": 3000,
+              "channels": 10
+            },
+            "V1": {
+              "x": "0119ec0fe4dbce57f0d22e92d8ebdaab6f03b9f75d3a00c2db81426464c913c6",
+              "e": "1e2f457ccbb478191bd4b61f49d734d19c2e7817e6fc821bf75230a395bf19f2",
+              "windows": 500,
+              "channels": 10
+            },
+            "V2": {
+              "x": "15ef6178d6ba2167418b230807d3ad1091bef6d50e36282cc892d9c3ccc63325",
+              "e": "3456372044cc012f44cc21fed448d36b1a304d85151e271db7c46c6bdc66f60e",
+              "windows": 500,
+              "channels": 10
+            }
+          }
+        },
+        "LU": {
+          "columns": 506,
+          "candidates": [
+            {
+              "num_leaves": 31,
+              "min_child_samples": 50,
+              "v1_mae": 188.9565265550885,
+              "best_iterations": [
+                40,
+                40,
+                40,
+                40
+              ],
+              "seconds": 0.7381404229672626
+            }
+          ],
+          "selected": 0,
+          "boosters": {
+            "h1.txt": "288decf121a8de7a86c1347677a6da8c4892f1d524ede13b05609e3ae1809b38",
+            "h2.txt": "520c67302565141a1517f4c1c891de3ed3f3a7e2647dc82d8850463926183e6c",
+            "h3.txt": "ce516a18ae9cbcdcd9820b887296b5b1d47025aacac29ee519cee4ed679a387c",
+            "h4.txt": "0e0133267c2e882f2337f296ac3f7b5ce86069dc595f35f484b6798fab6842f2"
+          },
+          "input_digests": {
+            "train": {
+              "x": "20a7dfd9e2278f1d76fddcb02fd095687552036982167af00039426dafa3d1b4",
+              "e": "49ed3feb1e5641a4f784358dd5ed3b95ba9e404e2625c90c6bbb817e72979f0a",
+              "windows": 3000,
+              "channels": 22
+            },
+            "V1": {
+              "x": "0119ec0fe4dbce57f0d22e92d8ebdaab6f03b9f75d3a00c2db81426464c913c6",
+              "e": "58261866565e71c52be8954e515d7794bee7f54c181edd43d026a8ce3381607e",
+              "windows": 500,
+              "channels": 22
+            },
+            "V2": {
+              "x": "15ef6178d6ba2167418b230807d3ad1091bef6d50e36282cc892d9c3ccc63325",
+              "e": "ae8fbe42c6860b452553a7f38214a1e0a79d87d93c878b1d687ab7d1b747c172",
+              "windows": 500,
+              "channels": 22
+            }
+          }
+        }
+      }
+    }
+  },
+  "written_utc": "2026-11-24T07:35:45.373008+00:00"
+}
