@@ -1,0 +1,18 @@
+{
+  "mode": "MRUN",
+  "commit": "b7018c04aa5881e64c95c076c873dab1b6340c3e",
+  "script_sha256": "291ac912cdf139263863015f8d2c6edac646605626e9ee1ef657c814575c6e02",
+  "protocol_sha256": "b80daa74dc46a6a31f46c20bead2d4d230d9f39c76b9ee068fba2f496338493c",
+  "python": "/home/XT/miniconda3/envs/timedart/bin/python",
+  "pid": 3575092,
+  "started_utc": "2026-11-24T02:12:48.018575+00:00",
+  "args": {
+    "mode": "mrun",
+    "logs": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs",
+    "output": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X5/x5_b7018c0/mrun",
+    "protocol_sha256": "b80daa74dc46a6a31f46c20bead2d4d230d9f39c76b9ee068fba2f496338493c",
+    "threads": "8",
+    "smoke_result": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X5/x5_b7018c0/msmoke",
+    "allow_dirty": "False"
+  }
+}

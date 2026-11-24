@@ -1,0 +1,166 @@
+{
+  "train": {
+    "A": {
+      "target_valid": 0.999360204734485,
+      "windows_no_target": 0.0006397952655150352,
+      "age_mean": 7.499800205230713,
+      "cycle_missing": 0.0006397952674888074,
+      "natural_gap_targets": 0.0006397952655150352
+    },
+    "C": {
+      "target_valid": 0.3747100927703135,
+      "windows_no_target": 0.5003865429729153,
+      "age_mean": 16.500200271606445,
+      "cycle_missing": 0.0006397952674888074,
+      "natural_gap_targets": 0.0002399232245681382
+    },
+    "Cc": {
+      "target_valid": 0.3747100927703135,
+      "windows_no_target": 0.5003865429729153,
+      "age_mean": 16.500200271606445,
+      "cycle_missing": 0.0006397952674888074
+    },
+    "D": {
+      "target_valid": 0.3747100927703135,
+      "windows_no_target": 0.5003865429729153,
+      "age_mean": 7.499800205230713,
+      "cycle_missing": 0.0006397952674888074
+    },
+    "Cc_windows_differ_from_C": 0.4997467477074003,
+    "D_windows_differ_from_A": 0.999360204734485,
+    "masks_within_own_structure": true,
+    "matched_within_common_structure": true,
+    "natural_gap": {
+      "windows": 75024,
+      "windows_disagree": 96,
+      "windows_mask_disagree": 96,
+      "windows_target_mask_disagree": 48,
+      "windows_cycle_status_disagree": 96,
+      "cycle_missing_D_only": 48,
+      "cycle_missing_Cc_only": 48
+    }
+  },
+  "V1": {
+    "A": {
+      "target_valid": 0.9903108599111828,
+      "windows_no_target": 0.009689140088817117,
+      "age_mean": 7.497375965118408,
+      "cycle_missing": 0.009689140133559704,
+      "natural_gap_targets": 0.009689140088817117
+    },
+    "C": {
+      "target_valid": 0.37071053693984657,
+      "windows_no_target": 0.5057192840802045,
+      "age_mean": 16.50262451171875,
+      "cycle_missing": 0.009689140133559704,
+      "natural_gap_targets": 0.0036334275333064193
+    },
+    "Cc": {
+      "target_valid": 0.37071053693984657,
+      "windows_no_target": 0.5057192840802045,
+      "age_mean": 16.50262451171875,
+      "cycle_missing": 0.009689140133559704
+    },
+    "D": {
+      "target_valid": 0.37071053693984657,
+      "windows_no_target": 0.5057192840802045,
+      "age_mean": 7.497375965118408,
+      "cycle_missing": 0.009689140133559704
+    },
+    "Cc_windows_differ_from_C": 0.49603014399138745,
+    "D_windows_differ_from_A": 0.9903108599111828,
+    "masks_within_own_structure": true,
+    "matched_within_common_structure": true,
+    "natural_gap": {
+      "windows": 7431,
+      "windows_disagree": 120,
+      "windows_mask_disagree": 120,
+      "windows_target_mask_disagree": 48,
+      "windows_cycle_status_disagree": 120,
+      "cycle_missing_D_only": 60,
+      "cycle_missing_Cc_only": 60
+    }
+  },
+  "V2": {
+    "A": {
+      "target_valid": 1.0,
+      "windows_no_target": 0.0,
+      "age_mean": 7.499454498291016,
+      "cycle_missing": 0.0,
+      "natural_gap_targets": 0.0
+    },
+    "C": {
+      "target_valid": 0.374863619832707,
+      "windows_no_target": 0.5001818402230573,
+      "age_mean": 16.500545501708984,
+      "cycle_missing": 0.0,
+      "natural_gap_targets": 0.0
+    },
+    "Cc": {
+      "target_valid": 0.374863619832707,
+      "windows_no_target": 0.5001818402230573,
+      "age_mean": 16.500545501708984,
+      "cycle_missing": 0.0
+    },
+    "D": {
+      "target_valid": 0.374863619832707,
+      "windows_no_target": 0.5001818402230573,
+      "age_mean": 7.499454498291016,
+      "cycle_missing": 0.0
+    },
+    "Cc_windows_differ_from_C": 0.5001818402230573,
+    "D_windows_differ_from_A": 1.0,
+    "masks_within_own_structure": true,
+    "matched_within_common_structure": true,
+    "natural_gap": {
+      "windows": 8249,
+      "windows_disagree": 0,
+      "windows_mask_disagree": 0,
+      "windows_target_mask_disagree": 0,
+      "windows_cycle_status_disagree": 0,
+      "cycle_missing_D_only": 0,
+      "cycle_missing_Cc_only": 0
+    }
+  },
+  "Kelmarsh_2022": {
+    "A": {
+      "target_valid": 0.9985839872558853,
+      "windows_no_target": 0.001416012744114697,
+      "age_mean": 7.4986724853515625,
+      "cycle_missing": 0.001416012761183083,
+      "natural_gap_targets": 0.001416012744114697
+    },
+    "C": {
+      "target_valid": 0.3741371172340551,
+      "windows_no_target": 0.5011505103545932,
+      "age_mean": 16.501327514648438,
+      "cycle_missing": 0.001416012761183083,
+      "natural_gap_targets": 0.0005310047790430114
+    },
+    "Cc": {
+      "target_valid": 0.3741371172340551,
+      "windows_no_target": 0.5011505103545932,
+      "age_mean": 16.501327514648438,
+      "cycle_missing": 0.001416012761183083
+    },
+    "D": {
+      "target_valid": 0.3741371172340551,
+      "windows_no_target": 0.5011505103545932,
+      "age_mean": 7.4986724853515625,
+      "cycle_missing": 0.001416012761183083
+    },
+    "Cc_windows_differ_from_C": 0.4997344976104785,
+    "D_windows_differ_from_A": 0.9985839872558853,
+    "masks_within_own_structure": true,
+    "matched_within_common_structure": true,
+    "natural_gap": {
+      "windows": 16949,
+      "windows_disagree": 36,
+      "windows_mask_disagree": 36,
+      "windows_target_mask_disagree": 24,
+      "windows_cycle_status_disagree": 36,
+      "cycle_missing_D_only": 18,
+      "cycle_missing_Cc_only": 18
+    }
+  }
+}

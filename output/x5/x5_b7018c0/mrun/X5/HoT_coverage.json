@@ -1,0 +1,207 @@
+{
+  "train": {
+    "A": {
+      "target_valid": 0.9984113205303525,
+      "windows_no_target": 0.0015886794696474225,
+      "age_mean": 8.49771785736084,
+      "cycle_missing": 0.0015886795008555055,
+      "natural_gap_targets": 0.0015886794696474225
+    },
+    "C": {
+      "target_valid": 0.2500439978595636,
+      "windows_no_target": 0.5006124026398716,
+      "age_mean": 17.496654510498047,
+      "cycle_missing": 0.0015767881413921714,
+      "natural_gap_targets": 0.0003924133420536298
+    },
+    "Cc": {
+      "target_valid": 0.2500439978595636,
+      "windows_no_target": 0.5006124026398716,
+      "age_mean": 17.496654510498047,
+      "cycle_missing": 0.0015767881413921714
+    },
+    "D": {
+      "target_valid": 0.25004221416255423,
+      "windows_no_target": 0.5006171591652298,
+      "age_mean": 8.49771785736084,
+      "cycle_missing": 0.0015886795008555055
+    },
+    "Cc_windows_differ_from_C": 0.33403174980676614,
+    "D_windows_differ_from_A": 0.9984113205303525,
+    "masks_within_own_structure": true,
+    "matched_within_common_structure": true,
+    "natural_gap": {
+      "windows": 420475,
+      "windows_disagree": 1223,
+      "windows_mask_disagree": 1223,
+      "windows_target_mask_disagree": 584,
+      "windows_cycle_status_disagree": 1223,
+      "cycle_missing_D_only": 614,
+      "cycle_missing_Cc_only": 609
+    }
+  },
+  "V1": {
+    "A": {
+      "target_valid": 1.0,
+      "windows_no_target": 0.0,
+      "age_mean": 8.495512962341309,
+      "cycle_missing": 0.0,
+      "natural_gap_targets": 0.0
+    },
+    "C": {
+      "target_valid": 0.2500167425663006,
+      "windows_no_target": 0.5006697026520225,
+      "age_mean": 17.499530792236328,
+      "cycle_missing": 0.0,
+      "natural_gap_targets": 0.0
+    },
+    "Cc": {
+      "target_valid": 0.2500167425663006,
+      "windows_no_target": 0.5006697026520225,
+      "age_mean": 17.499530792236328,
+      "cycle_missing": 0.0
+    },
+    "D": {
+      "target_valid": 0.2500167425663006,
+      "windows_no_target": 0.5006697026520225,
+      "age_mean": 8.495512962341309,
+      "cycle_missing": 0.0
+    },
+    "Cc_windows_differ_from_C": 0.3347173854808465,
+    "D_windows_differ_from_A": 1.0,
+    "masks_within_own_structure": true,
+    "matched_within_common_structure": true,
+    "natural_gap": {
+      "windows": 14932,
+      "windows_disagree": 0,
+      "windows_mask_disagree": 0,
+      "windows_target_mask_disagree": 0,
+      "windows_cycle_status_disagree": 0,
+      "cycle_missing_D_only": 0,
+      "cycle_missing_Cc_only": 0
+    }
+  },
+  "V2": {
+    "A": {
+      "target_valid": 1.0,
+      "windows_no_target": 0.0,
+      "age_mean": 8.50897216796875,
+      "cycle_missing": 0.0,
+      "natural_gap_targets": 0.0
+    },
+    "C": {
+      "target_valid": 0.24885784281268622,
+      "windows_no_target": 0.5000331060054294,
+      "age_mean": 17.509170532226562,
+      "cycle_missing": 0.0,
+      "natural_gap_targets": 0.0
+    },
+    "Cc": {
+      "target_valid": 0.24885784281268622,
+      "windows_no_target": 0.5000331060054294,
+      "age_mean": 17.509170532226562,
+      "cycle_missing": 0.0
+    },
+    "D": {
+      "target_valid": 0.24885784281268622,
+      "windows_no_target": 0.5000331060054294,
+      "age_mean": 8.50897216796875,
+      "cycle_missing": 0.0
+    },
+    "Cc_windows_differ_from_C": 0.3315897503807191,
+    "D_windows_differ_from_A": 1.0,
+    "masks_within_own_structure": true,
+    "matched_within_common_structure": true,
+    "natural_gap": {
+      "windows": 15103,
+      "windows_disagree": 0,
+      "windows_mask_disagree": 0,
+      "windows_target_mask_disagree": 0,
+      "windows_cycle_status_disagree": 0,
+      "cycle_missing_D_only": 0,
+      "cycle_missing_Cc_only": 0
+    }
+  },
+  "HoT_2024": {
+    "A": {
+      "target_valid": 1.0,
+      "windows_no_target": 0.0,
+      "age_mean": 8.501652717590332,
+      "cycle_missing": 0.0,
+      "natural_gap_targets": 0.0
+    },
+    "C": {
+      "target_valid": 0.2497818316075654,
+      "windows_no_target": 0.500058737644117,
+      "age_mean": 17.502004623413086,
+      "cycle_missing": 0.0,
+      "natural_gap_targets": 0.0
+    },
+    "Cc": {
+      "target_valid": 0.2497818316075654,
+      "windows_no_target": 0.500058737644117,
+      "age_mean": 17.502004623413086,
+      "cycle_missing": 0.0
+    },
+    "D": {
+      "target_valid": 0.2497818316075654,
+      "windows_no_target": 0.500058737644117,
+      "age_mean": 8.501652717590332,
+      "cycle_missing": 0.0
+    },
+    "Cc_windows_differ_from_C": 0.3326732340946851,
+    "D_windows_differ_from_A": 1.0,
+    "masks_within_own_structure": true,
+    "matched_within_common_structure": true,
+    "natural_gap": {
+      "windows": 59587,
+      "windows_disagree": 0,
+      "windows_mask_disagree": 0,
+      "windows_target_mask_disagree": 0,
+      "windows_cycle_status_disagree": 0,
+      "cycle_missing_D_only": 0,
+      "cycle_missing_Cc_only": 0
+    }
+  },
+  "HoT_2025": {
+    "A": {
+      "target_valid": 1.0,
+      "windows_no_target": 0.0,
+      "age_mean": 8.502083778381348,
+      "cycle_missing": 0.0,
+      "natural_gap_targets": 0.0
+    },
+    "C": {
+      "target_valid": 0.24992964806444237,
+      "windows_no_target": 0.49979773818527184,
+      "age_mean": 17.500869750976562,
+      "cycle_missing": 0.0,
+      "natural_gap_targets": 0.0
+    },
+    "Cc": {
+      "target_valid": 0.24992964806444237,
+      "windows_no_target": 0.49979773818527184,
+      "age_mean": 17.500869750976562,
+      "cycle_missing": 0.0
+    },
+    "D": {
+      "target_valid": 0.24992964806444237,
+      "windows_no_target": 0.49979773818527184,
+      "age_mean": 8.502083778381348,
+      "cycle_missing": 0.0
+    },
+    "Cc_windows_differ_from_C": 0.33100585679863515,
+    "D_windows_differ_from_A": 1.0,
+    "masks_within_own_structure": true,
+    "matched_within_common_structure": true,
+    "natural_gap": {
+      "windows": 56857,
+      "windows_disagree": 0,
+      "windows_mask_disagree": 0,
+      "windows_target_mask_disagree": 0,
+      "windows_cycle_status_disagree": 0,
+      "cycle_missing_D_only": 0,
+      "cycle_missing_Cc_only": 0
+    }
+  }
+}

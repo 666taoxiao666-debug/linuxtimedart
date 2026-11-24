@@ -1,0 +1,97 @@
+{
+  "curves_sha256": "150659e9f7150f09e565c5ef61cb1821f9c9faca57979e3e42efd643669d65e6",
+  "arms": {
+    "LG_Cc": {
+      "grid": [
+        {
+          "num_leaves": 31,
+          "min_child_samples": 50,
+          "v1_mae": 334.51119196305194,
+          "best_iterations": [
+            40,
+            40,
+            40,
+            40
+          ]
+        }
+      ],
+      "selected": {
+        "num_leaves": 31,
+        "min_child_samples": 50,
+        "v1_mae": 334.51119196305194,
+        "best_iterations": [
+          40,
+          40,
+          40,
+          40
+        ]
+      },
+      "seeds": {
+        "2024": {
+          "boosters": {
+            "h1.txt": "808f1a21f7081beed9db151b1ef029315cd17d505170c2df721bd60efd61e420",
+            "h2.txt": "c8d414f02933214c3fadbddd8d118d7066847fa740c4ab9c21aba9da2ba2eac9",
+            "h3.txt": "fb556623b8a32039d1f16af60625104358c0286aa0cdf42f16676a8390f418d8",
+            "h4.txt": "c5d1078d786042bac4c62068c3d6f9e7aacee446695274f7f1a9639f5b702c5f"
+          },
+          "v1_mae": 334.51119196305194,
+          "best_iterations": [
+            40,
+            40,
+            40,
+            40
+          ]
+        }
+      }
+    },
+    "LUG_Cc": {
+      "grid": [
+        {
+          "num_leaves": 31,
+          "min_child_samples": 50,
+          "v1_mae": 326.4621697510747,
+          "best_iterations": [
+            40,
+            40,
+            40,
+            40
+          ]
+        }
+      ],
+      "selected": {
+        "num_leaves": 31,
+        "min_child_samples": 50,
+        "v1_mae": 326.4621697510747,
+        "best_iterations": [
+          40,
+          40,
+          40,
+          40
+        ]
+      },
+      "seeds": {
+        "2024": {
+          "boosters": {
+            "h1.txt": "89aa6b5a963cd6723023a99dd80e9aa87f663fab1baf04f497bcd8e6db80849e",
+            "h2.txt": "f7d3f7fa5e0efbbe951f37387b02837e7ec18d7f971eb8b66abb79e13bfba486",
+            "h3.txt": "3414826ebf523b89a39328062d96de666727e5891c491b25d7283cd30da27ac5",
+            "h4.txt": "aae79aab0bbeddc968ca3b3b99ac30601fbaa1b8278a7e782306bd320d03970e"
+          },
+          "v1_mae": 326.4621697510747,
+          "best_iterations": [
+            40,
+            40,
+            40,
+            40
+          ]
+        }
+      }
+    }
+  },
+  "predictions": {
+    "S_Cc/Penmanshiel/LG_Cc/2024/V1.npy": "9e734b6a60e167ce37a1e4903141597df64a5dc512dab5d91a47e9901640f777",
+    "S_Cc/Penmanshiel/LG_Cc/2024/V2.npy": "cbc3b1b03dbc9d34e0712bd19e383cfcd17fb6066b3720bc8375d9261d1fab6f",
+    "S_Cc/Penmanshiel/LUG_Cc/2024/V1.npy": "5b3ff61c0a99a4e128f3d60769f81fb89a059710894dcf3391f32290a258f80f",
+    "S_Cc/Penmanshiel/LUG_Cc/2024/V2.npy": "c560708f7e5dfa5c78449af9e0e1b3b6fee38edecad673ee6cbafae9f39c0f0d"
+  }
+}
