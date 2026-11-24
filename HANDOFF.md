@@ -5,32 +5,35 @@
 长期执行分工（用户于 2026-11-24 指定）：本项目原交给 Cursor 的服务器调用统一交给反重力（Antigravity），包括环境核验、已批准的下载、运行、状态查询和结果取回。交接写明已审提交、可执行步骤、回执位置和停止条件。历史路径里的 Cursor 字样按原名称使用。
 
 ## Claude → Codex
-<!-- 由 Claude 覆盖。最后更新：2026-11-24 第 110 次（X5b 正式结果复核 + wind-journal-baselines 方案 R2 修改，两件一起交） -->
-轮次: R1/2 | 阶段: X5b-result | 分支: exp/X1 | 基线提交: b7018c0
-请求: 复核 X5b 结果和写法；通过后只提交 output/x5/x5_b7018c0/ 下的 .json、.md、.log（不提交 .pid）和 DECISIONS，并推送
-待审范围: git diff b7018c0 -- docs/review/DECISIONS.md docs/STAGE_PLAN.md
-允许改动: docs/review/DECISIONS.md, output/x5/**（*.npy、*.npz、*.pid 不要提交）, output/thesis_materials/**, docs/STAGE_PLAN.md, docs/review/wind-journal-baselines-R1-codex.md, docs/review/wind-journal-baselines-R2-codex.md, output/x4/**（*.npy 不要提交）, output/x3/**（*.npy、supervisor 文件不要提交）, output/x2/**（*.tar.gz、*.pid 不要提交）, output/external_acquisition/gfs_g0/manifest_b1.json（不要提交）, output/g2/hot_dev/audit_metadata_r5.tar.gz（不要提交）, .cursor-tmp/**（不要提交）
-审查文件: docs/review/X5b-result-R1-codex.md
-本轮决议: DECISIONS「阶段 X5b-result」；「阶段 wind-journal-baselines」末尾的第109次决议表（R2-B1–B3、S1–S3 全部采纳）
+<!-- 由 Claude 覆盖。最后更新：2026-11-24 第 112 次（wind-journal-baselines 代码 R2：复核 B1–B3，实施 B4） -->
+轮次: R2/2 | 阶段: wind-journal-baselines-code | 分支: exp/X1 | 基线提交: db32df0（本轮和 R1 的改动都在工作区，未提交）
+请求: 审代码后运行（R2 只审 B4 的改动；通过后提交，交反重力先跑冒烟）
+待审范围: git diff db32df0 -- docs/STAGE_PLAN.md docs/review/DECISIONS.md；新文件只看 B4 部分：scripts/run_wjb.py 的 mark_started、remaining_lower_bound、check_time_limit、run_pool、tsg_fit_job（started.json、wall_seconds）、mode_tsg（kind = 候选名）；configs/wjb_protocol.json 的 tsg.time_limit_scope、time_limit_rule；tests/test_wjb.py 的 TSGTimeLimit
+允许改动: scripts/run_wjb.py, configs/wjb_protocol.json, tests/test_wjb.py, models/vendor_cabin/**, models/vendor_tsg/**, scripts/launch_x2.sh, scripts/status_x2.sh, docs/STAGE_PLAN.md, docs/review/DECISIONS.md, docs/review/wind-journal-baselines-code-R1-codex.md, docs/review/wind-journal-baselines-code-R2-codex.md, output/wjb/**（*.npy、*.npz、*.pkl、*.pt、*.pid 不要提交）, output/x5/**（*.npy、*.npz、*.pid 不要提交）, output/thesis_materials/**, output/x4/**（*.npy 不要提交）, output/x3/**（*.npy、supervisor 文件不要提交）, output/x2/**（*.tar.gz、*.pid 不要提交）, output/external_acquisition/gfs_g0/manifest_b1.json（不要提交）, output/g2/hot_dev/audit_metadata_r5.tar.gz（不要提交）, .cursor-tmp/**（不要提交）
+审查文件: docs/review/wind-journal-baselines-code-R2-codex.md
+本轮决议: 采纳 4（R1-B1–B3 复核通过、R1-B4 由 Claude 实施）/ 反驳 0 / 暂缓 0 / 转实验 0，见 DECISIONS「阶段 wind-journal-baselines-code」末尾的表
 
-结论: 结局 TRUNCATION_CI_ABOVE_0_AND_CYCLE_CI_WITHIN_BOUND（K、HoT 满足，P 的周期区间偏宽）。截短 3.75 / 5.76 / 12.80 kW，CI > 0；可用性一致窗口上的周期项 0.40 / 1.45 / −0.36 kW，CI 含 0。
+B4 口径: 三场合计 15 h（本组上限 5 h × 3；三场任务相同，等价于每场 5 h），见 STAGE_PLAN 第 98–101 行。
+B4 规则: 每完成一棵树，判"已用时间 + 剩余用时下限 > 15 h"。
+- 剩余下限 = max(剩余工作量 / 进程数, 最长的剩余树)。
+- 每棵未完成的树按同一候选已完成树的平均用时计，扣掉它已跑的时间；还没有完成树的候选计 0。
+- 判定用的是下限，只有乐观估计也超时才停。
+B4 测试: 你的反例（8.4 h 的批次）全程不停；96 × 1.5 h 在 1.5 h 时停；先快后慢的 18 h 批次在第一棵慢树完成后停；两种派发顺序的 12 h 批次都不停；run_pool 用线程池原样接线测试。
+本地: test_wjb、test_x5、test_x2 共 81 项，79 项通过，2 项因无 torch 跳过；工作区 blob：run_wjb.py f4abab06、test_wjb.py 1d5383e5、wjb_protocol.json f5ff45b5。
 需要你做的:
-1. **复核：** 身份和哈希。我只核对了汇总，因为预测数组没有拷回；如果你能读服务器上的 registry 和数组，请复算截短项、周期项的区间。
-2. **审写法：** 是否超出证据；"在 15 h 这一点上可以部分分开变旧和覆盖"这句理解是否成立。
-3. U(A)、U(C) 和 X5 的 U(6)、U(15) 逐位相同，请确认这是预期的（同一套输入重建和 seed）。
-4. **wind-journal-baselines 方案复审（只看改动，STAGE_PLAN 第二、三组和配置表）：** Cabin 关掉样本轴 softmax 并加跨窗独立验收；TSG 的缺测统一表示（缩放后按原始有效位置零、列映射、有效位只经掩码进入）和受控树验收。通过后连同你的 R1、R2 审查和操作稿提交推送。
-5. 本轮不授权运行。
-
+1. 审 B4 的实现和测试，并在 timedart 环境重跑 tests.test_wjb、tests.test_x5、tests.test_x2（含 torch 的 2 项）。
+2. 通过后提交推送（R1 的 B1–B3 修复和本轮 B4 一起），交反重力：核对审定提交，在服务器跑同样三组单测，再 `bash scripts/launch_x2.sh wjbsmoke`。
+3. smoke_report 为 COMPLETED 后，同时起 wjbcpu 和 wjbgpu，两条都结束后起 wjbfinal。任何 FAILED 就停下交回；TSG 写出 technical_limit.json 属于登记过的停止，照常起 wjbfinal。环境变量 X2_THREADS、WJB_WORKERS、WJB_WORKER_THREADS 按服务器空闲核数设置。
 需要用户决定: 无
 
 ## Codex → Claude
-<!-- 第 110 次交接，2026-11-24 -->
-轮次: R1/2（结果）、R2/2（方案） | 阶段: X5b-result、wind-journal-baselines | 分支: exp/X1 | 提交号: aea2647（结果），方案与本交接同一提交。
-审查结论: X5b 结果与限定写法通过，见 docs/review/X5b-result-R1-codex.md（本地复核明细）及 aea2647 提交正文。三场期刊对照方案通过，见 docs/review/wind-journal-baselines-R2-codex.md 第 110 次复审。
-已直接修复: 用户明确授权校正 STAGE_PLAN 第 84 行。按构造的入模列顺序，LG 遮 10–22，LUG 遮 21–33；两臂均读取原始有效位 34–46。
-运行信息: 仅用已保存的文件和数组复核。正式运行 b7018c0 的完成回执、脚本、协议、results 和 registry 的 SHA256 均核对。X5b 归档 101 个 JSON、2 份 Markdown、2 份日志。
-关键数字: A、C 的 40 份预测登记与旧 X5 实物哈希相同；三场 V2 的 U(A)、U(C) 和总差共九组点估计与区间独立复算，最大绝对差小于 2×10⁻¹⁵ kW。
-关键数字: 三场 V2 的截短项为 3.75/5.76/12.80 kW，周期项为 +0.40/+1.45/−0.36 kW。三个周期区间都含零，Kelmarsh、HoT 满足预设相对界，Penmanshiel 区间偏宽。新状态 D、Cc 的区间已核验汇总，数组级独立复算待反重力提供对应预测。
-审定写法: 可描述 6 h 对 15 h、f003–f018 和本次模型配置下的截短与换周期两种条件比较。h3、h4 的差额更大；遮挡同时作用于多个输入格。V2 属事后设计的开发期分析，已暴露测试年仅作探索。
-需要 Claude 做的: 按已审方案编写核岭回归、Cabin、TSG 的开发段实验代码，并交代码审查。Cabin 验跨窗独立；TSG 逐臂验 13 个列映射与受控树路由。
-需要用户决定: 无。本轮授权为结果与方案复核。
+<!-- 第 112 次交接，2026-11-24 -->
+轮次: R2/2 | 阶段: wind-journal-baselines-code | 分支: exp/X1 | 提交号: 本条交接随审定代码同一提交；在该提交执行 git rev-parse HEAD 可取完整号。
+审查结论: 通过，0 项阻断。Claude 已复核 B1–B3。B4 的实现符合登记的三场合计 15 h 估算规则。见 docs/review/wind-journal-baselines-code-R2-codex.md。
+已直接修复: R1 的开发缓存边界、两模型实际输入一致性和 Cabin 单窗口验收纳入本次提交。R2 的 B4 由 Claude 实施。
+运行信息: 本地 timedart 的 python -B -m unittest tests.test_wjb tests.test_x5 tests.test_x2 全部 81 项通过，零跳过，19.798 s；含真实 torch 的两项 Cabin 测试。
+关键数字: 原反例 8.4 h 及两种顺序的 12 h 均跑完；18 h 的先快后慢样例在 5.5 h 触发；恰好 15 h 继续。跨场或时距的同候选耗时差异仍可能导致提前停止。回执解释为按登记估计超时。
+交反重力: 在服务器干净 worktree 核对本次完整提交和本轮三个 Git blob，timedart 跑上述三组单测，通过后仅启动一次 bash scripts/launch_x2.sh wjbsmoke，按空闲资源设置线程与进程数。
+回执位置: 数据根的 outputs/logs/WJB/wjb_<提交短号>/wjbsmoke.log、wjbsmoke.pid、smoke_report/completed.json；失败取相应 smoke_<mode>/failed.json 和日志尾，原目录保留，停止交回。
+需要 Claude 做的: 待反重力交回服务器单测和冒烟报告，按完成标记核对；R2-S1 的说明可用于解释正式 TSG 的技术停止。
+需要用户决定: 无。

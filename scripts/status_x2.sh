@@ -90,3 +90,24 @@ if [ -d "$X5BASE" ]; then
     [ -e "$D/failed.json" ] && cat "$D/failed.json"
   done
 fi
+WBASE=$DATA/outputs/logs/WJB/wjb_${COMMIT}
+if [ -d "$WBASE" ]; then
+  echo "== wind-journal-baselines runs under $WBASE"
+  for CHAIN in wjbsmoke wjbcpu wjbgpu wjbfinal; do
+    [ -e "$WBASE/$CHAIN.pid" ] || continue
+    PID=$(cat "$WBASE/$CHAIN.pid"); STATE=exited
+    if [[ "$PID" =~ ^[0-9]+$ ]] && kill -0 "$PID" 2>/dev/null \
+       && tr '\0' ' ' < "/proc/$PID/cmdline" 2>/dev/null | grep -q "run_wjb.py"; then STATE=running; fi
+    echo "-- chain $CHAIN pid=$PID $STATE"; tail -n 3 "$WBASE/$CHAIN.log" 2>/dev/null
+  done
+  for D in "$WBASE"/*/; do
+    [ -d "$D" ] || continue
+    R=running_or_not_started
+    [ -e "$D/completed.json" ] && R=COMPLETED
+    [ -e "$D/technical_limit.json" ] && R=TECHNICAL_LIMIT
+    [ -e "$D/failed.json" ] && [ ! -e "$D/technical_limit.json" ] && R=FAILED
+    echo "   $(basename "$D"): $R"
+    [ -e "$D/heartbeat.json" ] && cat "$D/heartbeat.json"
+    [ -e "$D/failed.json" ] && cat "$D/failed.json"
+  done
+fi

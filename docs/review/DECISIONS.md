@@ -1885,3 +1885,76 @@ X5b 正式运行 b7018c0（mrun，2026-11-24 10:12–11:12 北京时间，CPU 8 
 - 不写"覆盖主导"或"预报老化导致"。结论只适用于 6 h 对 15 h、本实验的 f003–f018 范围和 LightGBM seed 2024。12 h 沿用 X5 的结果，不另做遮挡；长时效 GFS（f021–f030）仍按用户 11-23 的决定不下载。
 
 **我的理解（供论文讨论段用，不是检验结论）：** 在 15 h 这一档，X5 里上游增益的上升主要和"未来时效的预报没有了"同时出现；同样覆盖下，周期变旧本身没有测出可分辨的额外效应。这和 X5 的局限说明（"变旧和覆盖分不开"）衔接：在 15 h 这一点上，现在可以部分分开了。
+
+## 阶段 wind-journal-baselines-code
+
+Claude 2026-11-24 第 111 次：按第 110 次审定方案（db32df0，第 84 行已由 Codex 校正）写完代码。没有待决编号；下面是实现说明，其中标 ★ 的四处是对 STAGE_PLAN 字面的解释或偏离，请重点审。
+
+**文件：** scripts/run_wjb.py（新）、configs/wjb_protocol.json、tests/test_wjb.py；models/vendor_cabin/、models/vendor_tsg/；scripts/launch_x2.sh 的 wjbsmoke、wjbcpu、wjbgpu、wjbfinal 四条链；scripts/status_x2.sh 的 WJB 一节。
+
+**作者代码（R2-S1）：**
+- Cabin 三个文件和 LICENSE 按 392f103 逐字节拷贝。TSG 的 clean_finite_adaptability_functions.py 和 LICENSE 按 409f20f 逐字节拷贝。git blob SHA 写进协议；每次启动都核对（vendor_fingerprint，CRLF 先归一）。
+- ★1 clean_torch_custom_layers.py 是整文件拷贝，只把两行没用到的导入（`import cvxpy as cp`、`from cvxpylayers.torch import CvxpyLayer`）换成注释；STAGE_PLAN 原写"只摘取 greedy 路径的张量代码"。整文件加两行改动，可以和上游逐行对照：测试把这两行还原后，得到上游 blob 84086a27。没用到的 MLP、l1 攻击仍在文件里，但不调用。
+- 作者代码调用 torch.math.sqrt。若当前 torch 没有 torch.math，载入时挂上标准库 math，不改作者代码。
+
+**只读开发段（R2-S3）：**
+- dev_only() 在打开任何文件之前，先把 run_x1.paths、run_x2.load_farm、run_x5.farm_caches 换成报错函数；run_x1.load_pack 拒绝路径里含 sealed_prep 或 test.npz 的文件。每条线把四个反向对照写进 v1_freeze.json 的 guard 一项。
+- 数据入口是 run_x1.development 加 split_masks。在冒烟切片之前，先用全量 V1、V2 键和 train 行数核对 X2 part A 的 cohorts；另用"去掉第一个窗口的 V1"做反向对照，必须报错。所有窗口的标签时刻都要早于本场 V2 的终点。
+- GFS 点位缓存沿用 X5 的开发缓存。K、P 的缓存文件里也有测试年的周期，使用前先丢掉 V2 终点及以后的周期；d = 6 逐窗绑定冻结 x50，可以证明丢掉这些周期对开发窗口没有影响。
+
+**三条线的共同规则：** 拟合段训练，V1 按四个时距平均 MAE 选格，平分取靠前的候选。每条线先把三场的选点写进 v1_freeze.json，再算 V2；V2 输入只放在内存里，TSG 的放在数据 npz 里。记录内容：候选的 V1 分数、用时、早停轮数，以及树数或分区数。
+
+**第一组 KRR：**
+- 中心是 default_rng(2024) 抽的 300 个拟合窗口，同一场的四个条件、所有候选都用这一组。
+- 两个 σ 共用一次分块距离计算，所以登记的用时是四个候选合计。
+- 核值分位数在 2 万个拟合窗口的种子样本上算；饱和只作标记。
+
+**第二组 Cabin 和 LightGBM-hist：**
+- 两条线都调用同一个 cabin_raw。每块数据都检查"展平、还原"往返一致和列数（218、506），并登记 x、e 的 SHA256。report 要求两条线三段数据的 SHA 全部相同。
+- Cabin 跨窗独立（R2-B1）：
+  - 做法：在每个训练好的候选的 CPU 副本上，取最早的 8 个 V1 窗口，比较单独预测和夹在 64 个更晚起报的窗口中间预测，差值要 ≤ 1e-5。
+  - 反向对照：打开作者的 sample softmax，同样的检查必须超过 1e-5，否则停。
+  - 其他设置：批次按 default_rng(2024 + epoch) 打乱，按 V1 MSE 早停，按 V1 MAE 选候选。
+- ★2 LightGBM-hist 不设类别列：机组按"序号 / 机组数"进入，和 Cabin 相同。X2 的 fit_horizons 把机组号当类别，所以这里另写了 fit_plain；其余参数同 X2。
+
+**第三组 TSG：**
+- 列映射（逐臂）：tsg_layout 按 tree_matrix 的列来源去掉 34–46，断言值通道 21 + k 落在 LG 10 + k、LUG 21 + k；再逐窗核对这些列就是 x50 的 21–33 列，有效位读自 34–46，取值只能是 0 或 1。
+- 缩放：MinMax 只用拟合窗口，值列只用有效格。缩放后按原始有效位把缺测格置 0；掩码 a 只在 13 个值列上可能为 1，且 a = 1 − 有效位。
+- 混合延迟：在全量 train、V1 上复建 X5 的延迟分配。本地测试已用 cohorts 的行数复现三场 X5 mix 计数。分配向量的 SHA 和 5 万个样本键的 SHA 都登记。
+- ★3 受控树路由（R2-B3）：作者的 apply、predict 有一条先停规则：窗口掩码等于某个节点的模式时，就停在该节点。所以全部有效的窗口停在根节点，不会走左支。
+  - 实际断言的四种情形：全有效 → 根（名义模型）；f 有效但其他列缺测 → 左支（鲁棒模型）；只有 f 缺测 → 右支（名义模型）；f 和其他列都缺测 → 右支（鲁棒模型）。
+  - 用 V2 在 6 h、18 h 下各 2000 个真实掩码，再加 4 个人造掩码，保证每种情形都出现。
+  - 测试用桩 torch 执行作者的 apply、predict 原码。把左右支对调后，检查必须报错。
+- 6 h 和 18 h 的有效位、掩码必须不同。自然模型在两种输入下的预测差只写进 natural_difference.json。
+- ★4 max_gap：作者脚本传的是 `max_gap=-1e5`，但 fit() 没有这个参数，它落进 **kwargs 后没有被使用。实际生效的是默认值 0.001，这里显式传入。
+- 运行方式：
+  - 96 棵树放进 spawn 进程池并行，默认每个进程 1 个线程。
+  - 作者的 fit 输出写进各树的 author_stdout.txt；模型按 pickle 保存，登记哈希。
+  - 正式运行时，按已完成的树推算总用时，超过 15 h（方案上限 5 h 的 3 倍）就写 technical_limit.json 并停止。report 只容许 TSG 这样停，其余两组照常报告。
+
+**比较与统计：**
+- gain = MAE(参照) − MAE(候选)，正值有利于候选。U 的候选是 LUG（或 LU）；rise 用 run_x5.rise_losses。
+- 区间用 paired_loss_statistics，正式 2000 次，冒烟 200 次（函数下限是 100 次）。两份预测完全相同时，gain 记 0，不跑 bootstrap（X4 的规则）。
+- X5 的参照预测用固定的 completed（a4dc5269…）和 registry 核对 SHA；X2 part A 的参照用固定的 completed（1e8ed09c…）。冒烟时这两份参照只取前 n 行。
+
+**本地验证：** tests/test_wjb.py 共 27 项，26 项通过，1 项因沙箱没有 torch 而跳过（Cabin 跨窗独立和反向对照）；py_compile 通过；两个 shell 脚本的 bash -n 检查通过。没有在真实数据上跑过；依赖 torch 和 LightGBM 的部分由服务器上的冒烟验证。
+
+第 111 次代码审查（wind-journal-baselines-code-R1-codex.md）的决议（Claude，2026-11-24）：★1–★4 Codex 已判通过。
+
+| 编号 | 类型 | 一句话摘要 | 决议 | 理由（一句） | 落实 |
+|---|---|---|---|---|---|
+| R1-B1 | 阻断（Codex 已修） | dev_caches 先解出缓存的全部成员，再按日期筛选 | 采纳，复核通过 | 现在先按成员名判定周期日期，只解早于 V2 终点的成员；覆盖顺序和 run_x5.farm_caches 相同（points_1 覆盖 points_0）。哨兵测试用 object 数组作越界成员，一旦被解出就会报错，测试因此能证明它们没被读 | Codex 实施：run_wjb.py dev_caches；test_cache_boundary_members_never_loaded |
+| R1-B2 | 阻断（Codex 已修） | 两条线比对的是原始输入摘要，而 Cabin 另做 MinMax，实际入模数值可以不同 | 采纳，复核通过 | fit_history_scaler 只用拟合段；paired_inputs 先缩放，再展平、还原、签名，两条线入模的是同一份张量。LightGBM 改吃缩放后的输入：逐列仿射变换不改变树的划分，所以不影响已审设置 | Codex 实施：run_wjb.py fit_history_scaler、paired_inputs、mode_lgbh、mode_cabin；test_scaler_is_shared_at_model_inputs_and_fit_on_train_only |
+| R1-B3 | 阻断（Codex 已修） | 8 个早窗一批预测，"只在 batch = 1 时才偏移"的模型查不出来 | 采纳，复核通过 | 现在 8 个早窗逐个单独预测，再和夹在 64 个晚窗中间的输出比；反向对照（打开作者的 sample softmax）保留。单窗偏移的反例已写成测试 | Codex 实施：run_wjb.py independence_gap；test_independence_check_exposes_singleton_only_effect |
+| R1-B4 | 阻断 | TSG 时限：STAGE_PLAN 写按单场，代码按三场合计；首批外推会把"先慢后快"误判为超时（8.4 h 的批次被外推成 15.6 h） | 采纳 | 口径定为三场合计 15 h（本组上限 5 h × 3；三场任务规模相同，等价于每场 5 h）。停止规则改为"已用时间 + 剩余用时下限 > 15 h"，下限按同一候选的平均用时计，未见过的候选计 0，并假设所有进程排满；只有这个乐观估计也超时才停 | Claude 实施：run_wjb.py mark_started、remaining_lower_bound、check_time_limit、run_pool，任务带 kind = 候选名，tsg_fit_job 记 started.json 和 wall_seconds；configs/wjb_protocol.json 的 tsg.time_limit_scope、time_limit_rule；STAGE_PLAN 第 98–101 行；tests/test_wjb.py TSGTimeLimit 共 6 项 |
+
+**R1-B4 的测试（按派发顺序做列表调度模拟，每完成一棵树就按登记规则判一次）：**
+- 先慢后快不误停：Codex 的反例（8 进程，48 棵 NN 各 1.3 h 先派，48 棵 LR 各 0.1 h），整批 8.4 h，全程不停；旧规则外推 15.6 h 会停。
+- 两种派发顺序都在预算内（NN 1.5 h、LR 0.5 h，整批 12 h）：都不停。
+- 真正超预算会停：
+  - 96 棵各 1.5 h（整批 18 h）：在第一批完成的 1.5 h 时停。
+  - 先快后慢（LR 0.5 h 先派，NN 2.5 h，整批 18 h）：第一棵慢树完成（5.5 h）后停，早于整批结束。
+- 下限公式的单项算例。
+- run_pool 原样接线：用线程池替代进程池，超限时写出 technical_limit.json 并报 TechnicalLimit；不超限和冒烟（不设时限）时完整返回。
+
+**本地：** test_wjb 36 项，34 项通过，2 项因沙箱没有 torch 而跳过（Codex 在 Windows timedart 上已跑过这两项）；py_compile 通过。

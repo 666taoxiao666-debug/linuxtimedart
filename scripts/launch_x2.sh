@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # X2 launcher for Cursor (Claude 2026-11-16).  Run INSIDE a clean worktree of the reviewed commit.
-# Usage: bash scripts/launch_x2.sh <smoke|a|b|report|a2|report2|x3smoke|x3gpu|x3q4|x3final|x4smoke|x4gpu|x4d0|x4final|x5smoke|x5run|x5bsmoke|x5brun>
+# Usage: bash scripts/launch_x2.sh <smoke|a|b|report|a2|report2|x3smoke|x3gpu|x3q4|x3final|x4smoke|x4gpu|x4d0|x4final|x5smoke|x5run|x5bsmoke|x5brun|wjbsmoke|wjbcpu|wjbgpu|wjbfinal>
 #   a2/report2: second A-line round (CPU) against the round-1 run X2_ROUND1 (default x2_91d4d20/a).
 #   smoke : CPU, tiny real slices, A -> B -> report; must pass before a/b.
 #   a     : part A, LightGBM on CPU (X2_THREADS, default 8).
@@ -12,7 +12,7 @@ DATA=${X2_DATA_ROOT:-/home/XT/nuist/pythoncode/TimeDARTFirst}
 LOGS=$DATA/outputs/logs
 PY=${X2_PYTHON:-/home/XT/miniconda3/envs/timedart/bin/python}
 HERE=$(cd "$(dirname "$0")/.." && pwd)
-MODE=${1:?usage: launch_x2.sh <smoke|a|b|report|a2|report2|x3smoke|x3gpu|x3q4|x3final|x4smoke|x4gpu|x4d0|x4final|x5smoke|x5run|x5bsmoke|x5brun>}
+MODE=${1:?usage: launch_x2.sh <smoke|a|b|report|a2|report2|x3smoke|x3gpu|x3q4|x3final|x4smoke|x4gpu|x4d0|x4final|x5smoke|x5run|x5bsmoke|x5brun|wjbsmoke|wjbcpu|wjbgpu|wjbfinal>}
 if [ -n "$(git -C "$HERE" status --porcelain --untracked-files=no)" ]; then
   echo "worktree not clean: $HERE"; exit 1
 fi
@@ -97,6 +97,31 @@ case "$MODE" in
     echo $! > "$X5BASE/$MODE.pid"
     echo "started X5b $MODE pid=$(cat "$X5BASE/$MODE.pid") commit=$COMMIT protocol=$X5SHA"
     echo "base=$X5BASE log=$X5BASE/$MODE.log status: bash scripts/status_x2.sh"
+    exit 0 ;;
+  wjbsmoke|wjbcpu|wjbgpu|wjbfinal)
+    # wind-journal-baselines (Claude 2026-11-24): chains of run_wjb.py modes; a chain stops at the first failure.
+    #   wjbsmoke : krr lgbh tsg cabin report on tiny slices (must complete before any formal chain)
+    #   wjbcpu   : krr lgbh tsg (CPU; TSG last: it may stop as a registered technical limit)
+    #   wjbgpu   : cabin (GPU; may run in parallel with wjbcpu)
+    #   wjbfinal : report (after wjbcpu and wjbgpu have finished)
+    # Env: X2_THREADS (LightGBM / torch threads, default 8), WJB_WORKERS (TSG processes, default 8),
+    #      WJB_WORKER_THREADS (threads per TSG process, default 1), WJB_GPU_FRACTION (default 0.7).
+    WSHA=$(sha256sum "$HERE/configs/wjb_protocol.json" | cut -d' ' -f1)
+    WBASE=$LOGS/WJB/wjb_${COMMIT}
+    mkdir -p "$WBASE"
+    case "$MODE" in
+      wjbsmoke) STEPS="krr lgbh tsg cabin report"; FLAG="--smoke" ;;
+      wjbcpu)   STEPS="krr lgbh tsg"; FLAG="" ;;
+      wjbgpu)   STEPS="cabin"; FLAG="" ;;
+      wjbfinal) STEPS="report"; FLAG="" ;;
+    esac
+    if ! mkdir "$WBASE/.$MODE.launch"; then echo "launch already claimed: $MODE (do not retry)"; exit 1; fi
+    cd "$HERE"
+    nohup bash -c "set -e; for m in $STEPS; do echo \"[WJB] start \$m\"; '$PY' scripts/run_wjb.py --mode \$m --logs '$LOGS' --base '$WBASE' --protocol-sha256 $WSHA $FLAG --threads ${X2_THREADS:-8} --workers ${WJB_WORKERS:-8} --worker-threads ${WJB_WORKER_THREADS:-1} --gpu-fraction ${WJB_GPU_FRACTION:-0.7}; done; echo '[WJB] chain done'" \
+      > "$WBASE/$MODE.log" 2>&1 &
+    echo $! > "$WBASE/$MODE.pid"
+    echo "started WJB chain $MODE pid=$(cat "$WBASE/$MODE.pid") commit=$COMMIT protocol=$WSHA"
+    echo "base=$WBASE log=$WBASE/$MODE.log status: bash scripts/status_x2.sh"
     exit 0 ;;
 esac
 PSHA=$(sha256sum "$HERE/configs/x2_protocol.json" | cut -d' ' -f1)

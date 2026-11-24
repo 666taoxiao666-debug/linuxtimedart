@@ -1,0 +1,152 @@
+{
+  "stage": "wind-journal-baselines",
+  "version": 1,
+  "author": "Claude 2026-11-24; Codex reviews, Cursor runs (user split 2026-11-16)",
+  "plan": "docs/STAGE_PLAN.md (wind-journal-baselines, approved at db32df0; line 84 column mapping corrected by Codex); decisions in docs/review/DECISIONS.md",
+  "seed": 2024,
+  "splits": {
+    "Kelmarsh": {"V1": ["2021-01-01", "2021-07-01"], "V2": ["2021-07-01", "2022-01-01"]},
+    "Penmanshiel": {"V1": ["2020-01-01", "2020-07-01"], "V2": ["2020-07-01", "2021-01-01"]},
+    "HoT": {"V1": ["2023-07-01", "2023-10-01"], "V2": ["2023-10-01", "2024-01-01"]}
+  },
+  "development_only": {
+    "loader": "run_x1.development + run_x2.split_masks (train, V1, V2); every window's label hour must be before the V2 end",
+    "disabled": ["run_x1.paths", "run_x2.load_farm", "run_x5.farm_caches"],
+    "refused_path_parts": ["sealed_prep", "test.npz"],
+    "gfs_caches": "the development point caches of run_x5.farm_caches (K/P: G1 prepared points_{0,1}.npz; HoT: hot_dev points_{0,1}.npz); cycles at or after the farm's V2 end are dropped before use",
+    "cohorts": "V1/V2 issue/turbine/truth hashes and the train count must equal X2 part A before any smoke slicing; a shifted V1 must be detected (negative control)"
+  },
+  "references": {
+    "x2_cohorts": {
+      "dir": "output/x2/x2_0f24875/a/A",
+      "sha256": {
+        "Kelmarsh": "3b16371207304de9d5135d5215cc85720149b04413274290e83e7da173a157e2",
+        "Penmanshiel": "38a49513cfebf6b367106b58637e3e034d640b61d51ddaecb10d698b60ceb05a",
+        "HoT": "089708286efb71fc18b91782fdf2e0a85644cc96a70d72ff87a6dfa823bb20ee"
+      }
+    },
+    "x2_a": {
+      "server_dir": "X2/x2_0f24875/a",
+      "completed_sha256": "1e8ed09c41f9d664817a26b6eb52784144f75e63c134e4ecde62c73bddef28b6",
+      "seed": "2024",
+      "arms": {"L0": "L0", "LU": "LU"},
+      "role": "business reference for the Cabin line only; does not replace LightGBM-hist"
+    },
+    "x5": {
+      "local_dir": "output/x5/x5_e01cc6b/run",
+      "server_dir": "X5/x5_e01cc6b/run",
+      "completed_sha256": "a4dc5269c70d5f69772028d82ee2ce77bd8fd3807d8b6ef3d7994199711e3e72",
+      "delays": [6, 9, 12, 15, 18],
+      "nominal_delay_hours": 6,
+      "mix_sha256": {
+        "Kelmarsh": "7749a85bce0610f2f73cb2dc190308725b331b1086b8dc44aca8cff47402a0cc",
+        "Penmanshiel": "e7517b0e3426338a5820cfb8232a9613232e1f2a15569a731b2caae17ab9a69c",
+        "HoT": "76ccc587de6d133e83bc7f8e7ff90967ea35e9aab5c9f3dd1917b29508158256"
+      },
+      "predictions": "krr: D{d}/<farm>/{LG,LUG}_d{d}/2024/V2.npy (d = 6, 18); tsg: X5/<farm>/{LG,LUG}_mix@{d}/V2.npy (d = 6, 18); SHA-checked against X5/registry.json of the pinned receipt"
+    }
+  },
+  "vendor": {
+    "cabin": {
+      "source": "github.com/xiufengliu/cabin-wind-forecasting",
+      "commit": "392f103426faf600c5469875b020a4693cba6a7d",
+      "license": "MIT, Copyright (c) 2024 Senzhen Wu, Yu Chen, Xinhao He, Zhijin Wang, Xiufeng Liu, Yonggang Fu",
+      "files": {
+        "models/vendor_cabin/base.py": {"git_blob": "10c1228e2409da5662620785b622e26329463830", "origin": "cabin/models/base.py, byte copy"},
+        "models/vendor_cabin/components.py": {"git_blob": "c117c1d62343b5f04367150c67e473dc93f9f7a2", "origin": "cabin/models/components.py, byte copy"},
+        "models/vendor_cabin/cabin.py": {"git_blob": "1fec69c02f59a1776ac97404c00200d42c337a33", "origin": "cabin/models/cabin.py, byte copy"},
+        "models/vendor_cabin/LICENSE": {"git_blob": "8dc5c21eabbf9a497ca334a1f5eda04e74b31b0e", "origin": "LICENSE, raw file at the commit"},
+        "models/vendor_cabin/__init__.py": {"git_blob": "9b54f98683d462e8c023fc7df87c0ea2b6fec8c6", "origin": "ours (provenance + `from .cabin import Cabin`)"}
+      }
+    },
+    "tsg": {
+      "source": "github.com/akylasstrat/wind-forecast-missing-data",
+      "commit": "409f20f0d1117758b9f2e9ff48c4373fe97e945c",
+      "license": "MIT, Copyright (c) 2023 akylasstrat",
+      "files": {
+        "models/vendor_tsg/clean_finite_adaptability_functions.py": {"git_blob": "8b62b85bc5d8fda3db5412c6cdab4a568b2f8686", "origin": "byte copy"},
+        "models/vendor_tsg/clean_torch_custom_layers.py": {"git_blob": "a07282aa1fe0fdd38a88a8aeecff2701d5cef139", "upstream_blob": "84086a276bafec84850235302649f37d043c5d43", "origin": "copy with exactly two lines replaced by comments: the unused imports `import cvxpy as cp` and `from cvxpylayers.torch import CvxpyLayer` (tests/test_wjb.py restores them and checks the upstream blob)"},
+        "models/vendor_tsg/LICENSE": {"git_blob": "1b02c7d18218b36026100bbc5c2c05e77190fa3f", "origin": "byte copy"},
+        "models/vendor_tsg/__init__.py": {"git_blob": "8cf2571e12611d283da88e6a2deb58680a571005", "origin": "ours (provenance only, imports nothing)"}
+      }
+    }
+  },
+  "statistics": {"block_length": 8, "replicates": 2000, "seed": 2024, "loss": "absolute error, window-uniform, clustered by issue time"},
+  "statistics_smoke": {"block_length": 8, "replicates": 200, "seed": 2024},
+  "readouts": {
+    "gain": "MAE(reference) - MAE(candidate) in kW, positive favours the candidate; identical predictions -> 0 without bootstrap",
+    "U": "MAE(LG) - MAE(LUG) (KRR, TSG) or MAE(L0) - MAE(LU) (Cabin line), same windows",
+    "rise": "U(18) - U(6) on the same windows (run_x5.rise_losses)",
+    "metrics": "MAE, RMSE, R2 per horizon 1..4 and overall, V2 only",
+    "18h_note": "all four target leads lie beyond f018 at 18 h, so U(18) includes the loss of forecast coverage"
+  },
+  "budget": {
+    "formal": {"krr_candidates": 4, "grid_cells": 4, "cabin_candidates": 4, "tsg_candidates": 4, "tsg_sample": 50000},
+    "smoke": {"train_rows": 3000, "eval_rows": 500, "krr_candidates": 1, "grid_cells": 1, "n_estimators": 40,
+              "early_stopping_rounds": 10, "cabin_candidates": 1, "cabin_max_epochs": 2, "cabin_patience": 1,
+              "tsg_candidates": 1, "tsg_sample": 3000, "tsg_epochs": 3, "tsg_patience": 2}
+  },
+  "krr": {
+    "infos": ["LG", "LUG"],
+    "delays": [6, 18],
+    "features": "run_x2.tree_matrix(info) of the delay-d inputs (last-step info columns + 24 h power + 24 h nacelle wind + HoT retrofit) with the turbine id replaced by a one-hot block; standardised with the fit-window mean / std (std <= 1e-12 -> scale 1)",
+    "target": "truth / rated, 4 outputs; predictions x rated",
+    "kernel": "exp(-||x - z||^2 / (2 sigma^2))",
+    "centres": 300,
+    "centre_rule": "numpy default_rng(2024).choice(n_train, 300, replace=False), sorted; same rows for every condition and candidate of a farm",
+    "solver": "alpha = (K_nm' K_nm + n lambda K_mm + jitter I)^-1 K_nm' Y, accumulated in chunks (float64)",
+    "chunk_rows": 20000,
+    "jitter": 1e-8,
+    "c": [0.5, 1.0],
+    "lambda": [0.0001, 0.01],
+    "candidate_order": "c outer, lambda inner; sigma = c x sigma_med, sigma_med = median pairwise distance of the 300 standardised centres (> 0 or error)",
+    "saturation": {"below": 1e-6, "above_gap": 1e-6, "fraction": 0.99, "sample_rows": 20000, "rule": "flag only; saturated candidates still enter the V1 selection"},
+    "quantiles": [0.01, 0.5, 0.99]
+  },
+  "lgbh": {
+    "infos": ["L0", "LU"],
+    "columns": {"L0": 218, "LU": 506},
+    "layout": "e dynamic channels over 24 h (time-major), then 24 h power, then the two constants once; built from the same cabin_raw arrays as Cabin",
+    "lightgbm": "configs/x1_protocol.json lightgbm: objective l1, learning rate 0.05, at most 4000 trees, early stopping 200 on V1, feature/bagging fraction 0.8, grid num_leaves {31, 127} x min_child_samples {50, 200}; one model per horizon; no categorical column",
+    "seed": 2024
+  },
+  "cabin": {
+    "infos": ["L0", "LU"],
+    "inputs": "x = x50 channel 49 over 24 h; e = channels 0-7 (L0) or 0-19 (LU) over 24 h + HoT retrofit flag (0 at K/P) + turbine index / number of turbines; MinMax per channel on the fit windows (constant -> scale 1); target truth / rated",
+    "model": "Cabin(input_window_size=24, input_vars=1, output_window_size=4, output_vars=1, ex_vars=C, hidden_size=h, mode='data_first', use_sample_softmax=False)",
+    "candidates": [{"hidden": 64, "lr": 0.001}, {"hidden": 64, "lr": 0.0003}, {"hidden": 128, "lr": 0.001}, {"hidden": 128, "lr": 0.0003}],
+    "loss": "MSE (author), Adam, shuffled batches (default_rng(2024 + epoch))",
+    "batch_size": 512,
+    "max_epochs": 50,
+    "patience": 10,
+    "early_stopping": "V1 MSE of the normalised outputs; best epoch kept; candidate selection by V1 MAE (kW)",
+    "independence": {"windows": 8, "later_windows": 64, "tolerance": 1e-5, "rule": "earliest 8 V1 windows predicted alone vs between 64 strictly later windows, CPU copy of every trained candidate; negative control: the author's sample softmax switched on must exceed the tolerance"},
+    "gpu_fraction": 0.7
+  },
+  "tsg": {
+    "variant": "ARR(learn): Learn_FiniteAdapt_Robust_Reg, learned partitions, linear decision rules, greedy attack, inequality budget",
+    "infos": ["LG", "LUG"],
+    "value_start": {"LG": 10, "LUG": 21},
+    "mapping": "tree_matrix columns without the validity bits 34..46; value channel 21 + k sits at value_start + k (k = 0..12); target_col = those 13 positions, fix_col = all others; validity bits only through the mask",
+    "scaling": "MinMax on the 50 000 fit windows (value columns: valid cells only; constant -> scale 1), then every cell whose raw validity bit is 0 is set back to 0; mask a = 1 exactly there",
+    "eval_delays": [6, 18],
+    "mix": "numpy default_rng(2024): run_x5.mix_assignment over the FULL train then the FULL V1 (X5 call order); counts must equal X5 <farm>_mix.json; assignment SHA recorded",
+    "sample_rule": "default_rng(2024).choice(n_train, 50000, replace=False), sorted by row then stably by issue time; the same rows for LG and LUG",
+    "candidates": [
+      {"name": "LR_s2", "hidden": [], "weight_decay": 0.0, "max_splits": 2},
+      {"name": "LR_s5", "hidden": [], "weight_decay": 0.0, "max_splits": 5},
+      {"name": "NN_s2", "hidden": [50, 50, 50], "weight_decay": 1e-5, "max_splits": 2},
+      {"name": "NN_s5", "hidden": [50, 50, 50], "weight_decay": 1e-5, "max_splits": 5}
+    ],
+    "train": {"D": 100000.0, "red_threshold": -100000.0, "max_gap_threshold": 0.001, "val_split": 0.15, "lr": 0.001,
+              "batch_size": 512, "epochs": 100, "patience": 15},
+    "max_gap_note": "the author script passes max_gap=-1e5, which is not a fit() parameter (it lands in **kwargs, unused); the effective threshold is fit()'s default 0.001, used here explicitly",
+    "per_horizon": "one single-output tree per horizon (author trees are single-output): 3 farms x 2 infos x 4 candidates x 4 horizons = 96 trees",
+    "prediction": "author predict (clipped to [0, 1]) x rated",
+    "acceptance": "6 h and 18 h V2 validity bits and masks differ; mask only at the 13 positions and = 1 - validity; missing cells 0 after scaling; hand-built tree routed by the author's apply/predict (all-valid -> root, f valid -> left, f missing -> right; nominal model iff the mask equals the node pattern); natural 6 h vs 18 h prediction difference logged only",
+    "time_limit_hours": 15,
+    "time_limit_scope": "all three farms together: wall time from the start of mode tsg; the three farms have identical job sets (50 000 windows, 4 candidates x 4 horizons x 2 infos), so 15 h in total = 5 h per farm",
+    "time_limit_rule": "15 h = 3 x the plan's upper estimate (5 h for the whole TSG line). After every finished tree: stop when elapsed + remaining_lower_bound > 15 h, where remaining_lower_bound = max(sum of remaining work / workers, longest remaining job), each unfinished tree counted at the mean wall time of finished trees of its candidate minus the time it has already run, candidates without a finished tree counted 0 (R1-B4). Exceeded -> technical_limit.json, failed.json type TechnicalLimit, the other lines are still reported; smoke has no limit"
+  },
+  "no_2026_data": true
+}
