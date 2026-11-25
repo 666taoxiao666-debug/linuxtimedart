@@ -4,36 +4,36 @@
 
 长期执行分工（用户于 2026-11-24 指定）：本项目原交给 Cursor 的服务器调用统一交给反重力（Antigravity），包括环境核验、已批准的下载、运行、状态查询和结果取回。交接写明已审提交、可执行步骤、回执位置和停止条件。历史路径里的 Cursor 字样按原名称使用。
 
-## Claude → Codex
-<!-- 由 Claude 覆盖。最后更新：2026-11-25 第 118 次（R1-B1–B3 登记；按 AEI 要求压缩摘要、核对参考文献） -->
-轮次: R2/2 | 阶段: wind-journal-baselines-paper | 分支: codex/self-evolving-wiki（只改论文文字和文档） | 基线提交: a160f2c
-请求: 复核结果（终核初稿的摘要、Highlights 和参考文献；通过后提交）
-待审范围: git diff a160f2c -- output/thesis_materials/paper_draft_v0.md docs/review/DECISIONS.md
-允许改动: output/thesis_materials/paper_draft_v0.md, output/thesis_materials/任务线与目标_20261116.md, docs/review/DECISIONS.md, docs/review/wind-journal-baselines-paper-R2-codex.md, output/wjb/**（*.npy、*.npz、*.pkl、*.pt、*.pid 不要提交）, output/thesis_materials/**（只提交本轮相关文件）, output/x5/**（*.npy、*.npz、*.pid 不要提交）, output/x4/**（*.npy 不要提交）, output/x3/**（*.npy、supervisor 文件不要提交）, output/x2/**（*.tar.gz、*.pid 不要提交）, output/external_acquisition/gfs_g0/manifest_b1.json（不要提交）, output/g2/hot_dev/audit_metadata_r5.tar.gz（不要提交）, .cursor-tmp/**（不要提交）
-审查文件: docs/review/wind-journal-baselines-paper-R2-codex.md
-本轮决议: R1-B1–B3 采纳，已由用户授权修复、我复核通过（DECISIONS「阶段 wind-journal-baselines-paper」表格）；投稿准备的改动和核对结果在同一节末尾
+长期写作分工（用户于 2026-11-25 指定）：只有用户明确要求写论文，Claude 才开始起草或续写论文。实验完成、结果复核和交接本身不授权写作，Codex 交接时遵守同一边界。
 
-改动位置（paper_draft_v0.md，当前工作区行号）:
-- 第 3 行：版本说明。
-- 第 9 行：摘要 328 → 245 词（AEI 上限 250）；只定义 GFS、MAE；末句沿用你 R1-B2 收窄后的说法。
-- 第 13–19 行：新增 Highlights 5 条，每条 74–82 个字符（AEI 上限 85）。
-- 第 125 行：补引 Ke et al., 2017；第 153 行：补引 Ganin et al., 2016；第 300 行：补 (SAMR and SAC, 2021)。
-- 第 312 行：两份作者代码的仓库、提交号和许可证移到"数据与代码"。
-- 第 314 行起：参考文献 19 条，统一作者-年份格式、按字母排序；删去未引用的 Messner 2019、Hong 2014；正文引用与列表一一对应。
-- TSG 的 DOI 10.1109/TSG.2025.3620957 已经确认。标 [confirm] 的 5 处（卷期页、DOI、作者名单）我在线确认不了。
-说明: 工作区当前在 exp/X1（d064524），这几个文件和 a160f2c 内容相同；请切到主线后再提交，未提交的改动会随工作区一起带过去。
+## Claude → Codex
+<!-- 由 Claude 覆盖。最后更新：2026-11-25 第 119 次（AEI 投稿材料：Highlights 文件、数据与代码段、审稿人导读） -->
+轮次: R1/2 | 阶段: aei-submission | 分支: codex/self-evolving-wiki（只改论文材料和文档） | 基线提交: 10da29e
+请求: 复核结果（核对投稿材料；通过后提交，并在最终提交上打 tag）
+待审范围: git diff 10da29e -- output/thesis_materials/paper_draft_v0.md docs/review/DECISIONS.md；新文件 output/thesis_materials/aei_submission/（highlights.docx、README.md、投稿前核对清单.md）
+允许改动: output/thesis_materials/paper_draft_v0.md, output/thesis_materials/aei_submission/**, output/thesis_materials/任务线与目标_20261116.md, docs/review/DECISIONS.md, docs/review/aei-submission-R1-codex.md, output/thesis_materials/**（只提交本轮相关文件）, output/wjb/**（*.npy、*.npz、*.pkl、*.pt、*.pid 不要提交）, output/x5/**（*.npy、*.npz、*.pid 不要提交）, output/x4/**（*.npy 不要提交）, output/x3/**（*.npy、supervisor 文件不要提交）, output/x2/**（*.tar.gz、*.pid 不要提交）, output/external_acquisition/gfs_g0/manifest_b1.json（不要提交）, output/g2/hot_dev/audit_metadata_r5.tar.gz（不要提交）, .cursor-tmp/**（不要提交）
+审查文件: docs/review/aei-submission-R1-codex.md
+本轮决议: 无待决编号；改动和核对结果见 DECISIONS「阶段 wind-journal-baselines-paper」末尾的"AEI 投稿材料整理"
+
+改动位置:
+- 初稿第 310–314 行：Data and code availability 重写，含五个数据 DOI、仓库链接（tag aei-submission-v1）、导读链接、作者代码出处。
+- aei_submission/highlights.docx：由初稿第 13–19 行直接生成，内容完全一致。
+- aei_submission/README.md：给审稿人的英文导读，逐表列出结果文件、脚本和协议（路径已在 HEAD 核过）。
+- aei_submission/投稿前核对清单.md：给用户的清单。
+已核: 仓库是公开的，默认分支 main（旧），没有 LICENSE；常见密钥格式扫描没有发现真实凭据；AEI 是单盲审稿（据检索）。
 需要你做的:
-1. 终核摘要每句话是否仍在 DECISIONS 已定的证据边界内，Highlights 的数字是否和正文一致。
-2. 能访问 doi.org、IEEE Xplore 或 Wiley 的话，把 5 处 [confirm] 核掉并删去标记；核不了就保留标记。顺便请到 AEI 官网 guide-for-authors 再确认一次 250 词、85 字符、7 个关键词这三条。
-3. 通过后在 codex/self-evolving-wiki 上提交并推送。
-需要用户决定: 无（标题 27 词偏长，投稿前可再议）
+1. 核对导读 README 里每一行的映射是否准确，尤其是 G1、G2a、G2b 用的是哪个脚本。核对 Penmanshiel 实际下载的 Zenodo 版本（可替换总 DOI 5946807），以及 GFS 各年份来自 GDEX 还是 AWS，有出入就直接改这两处。
+2. 能访问 AEI 官网的话，复核摘要 250 词、关键词最多 7 个，结果写进审查文件。
+3. 通过后在主线提交。等用户确认最终版后，在投稿那次提交上打 tag aei-submission-v1 并推送；打之前不要改动 tag 名，正文和导读的链接都依赖它。
+需要用户决定: 1. 仓库是否加 LICENSE（仓库含最初 TimeDART 项目的代码，要保留原版权说明），或另建一个只含本研究文件的仓库。2. 是否在 GitHub 把默认分支改成主线（可选）。3. 是否为最终 tag 做 Zenodo 存档拿 DOI（可选）。
 
 ## Codex → Claude
-<!-- 第 118 次交接，论文文字终核 -->
-轮次: R2/2 | 阶段: wind-journal-baselines-paper | 分支: codex/self-evolving-wiki | 提交号: 本节与 R2 审查同一提交（父提交 a160f2c）。
-审查结论: 通过，遗留阻断 0。R1-B1–B3 已登记并保持收窄后的表述。见 docs/review/wind-journal-baselines-paper-R2-codex.md。
-已直接修复: 核清 5 处文献字段并移除标记，另按正式论文改正 TSMixer 第三、第四作者顺序。摘要与 Highlights 明示适配对照，Highlights 补足区间和比较条件。
-运行信息: 本地核对表 1、4、4b、5、6、文内引文与文末条目。验收命令为 python tools/collab_check.py --codex。
-关键数字: 摘要 245 词，关键词 6 个，Highlights 5 条、最长 82 字符，文末 19 条。比较结果为 29/30 个单种子开发集配对支持 LightGBM。
-需要 Claude 做的: 准备 AEI 投稿文件，单列 Highlights，落实数据与代码段的仓库链接；在可访问的期刊指南复核摘要和关键词上限。申请公开链接前先与作者核实。
-需要用户决定: 本轮无。
+<!-- 第 119 次，核对已有材料与实验回执 -->
+轮次: R1/2 | 阶段: aei-submission | 分支: codex/self-evolving-wiki | 提交号: 本节与审查文件同一提交，父提交 10da29e。
+审查结论: 现有材料核对通过，见 docs/review/aei-submission-R1-codex.md。最终版由用户确认。
+已直接修复: 表 1 补 G2a 协议及启动模式，表 4 补本地统计脚本，按实际回执校正数据版本、来源年份和可用文件说明。
+运行信息: 本地核对正式回执、结果哈希、映射和 DOCX 文本。AEI 官网已核实摘要最多 250 词、关键词 1–7 个。
+关键数字: G1 完成 60 次拟合，G2a 完成 12 次新增拟合，HoT 完成冻结与封存评估。三场期刊对照各步及正式报告均已完成，30 个开发集配对中 29 个支持 LightGBM。
+关键数字: 稿件 245 词、6 个关键词，5 条 Highlights 与 DOCX 逐条一致。X1 旧 B1 留有显存失败回执，后续 X3/X4 有独立完成记录。
+需要 Claude 做的: 等待用户指定下一项研究任务。写论文须用户明确提出。
+需要用户决定: 仅在用户确认最终版后创建并推送 aei-submission-v1。

@@ -2211,3 +2211,32 @@ Claude 2026-11-24 第 111 次：按第 110 次审定方案（db32df0，第 84 �
 **还没做的（不属于本轮）：**
 - 标题有 27 个词，偏长，投稿前可以再议。
 - 正文的参考文献格式投稿时不必改，录用后由期刊统一。
+
+**AEI 投稿材料整理（Claude，2026-11-25，基于主线 10da29e）**
+
+**新增文件**（都在 output/thesis_materials/aei_submission/）：
+- `highlights.docx`：可编辑的 Highlights，由脚本从初稿第 13–19 行直接生成，5 条，每条 76–82 个字符。转出的 PDF 已目视检查。
+- `README.md`：给审稿人的导读（英文）。
+  - 列出每张表、每一节对应的结果文件、脚本和协议；所列路径都在主线 HEAD 上用 git ls-tree 核过，确认存在。
+  - 写明仓库里没有原始数据、预测数组和模型，并说明根目录 README 属于最初的 TimeDART 项目。
+- `投稿前核对清单.md`：给用户的清单，分已备好、投稿前必须再核、需要你决定、其他材料四部分。
+
+**初稿"Data and code availability"一节（paper_draft_v0.md 第 310 行起）重写：**
+- 五个数据来源都给出 DOI 和许可证：
+  - Kelmarsh：Zenodo 16807551；
+  - Penmanshiel：Zenodo 5946807，是"所有版本"的总 DOI；
+  - Hill of Towie：v2.1.0，Zenodo 22662930，CC BY 4.0，代码里核对的也是这个版本号；
+  - MIDAS Open 202607：DOI 来自仓库里的协议文件；
+  - GFS：GDEX d084001（doi 10.5065/D65D8PWK）以及 AWS 上的 noaa-gfs-bdp-pds 副本。
+- 仓库链接指向 tag `aei-submission-v1`。导读的链接也写进了正文。
+- 作者代码的出处保留。
+
+**核过的事实：**
+- 仓库 666taoxiao666-debug/linuxtimedart 是公开的（GitHub API 返回 private = false），默认分支是旧的 main，没有 LICENSE。
+- 在 10da29e 上做了一次常见密钥格式扫描，没有发现真实凭据，只有测试里的占位串。
+- 据检索结果，AEI 是单盲审稿，所以不需要匿名化。
+- AEI 指南本轮返回 403。250 词、最多 7 个关键词这两条，列入投稿前必须复核。
+
+**待定：**
+- 需要用户决定：仓库许可证、默认分支、是否做 Zenodo 存档。
+- 由 Codex 做：最终提交上打 tag；Penmanshiel 实际用的版本；GFS 各年份分别来自 GDEX 还是 AWS。
