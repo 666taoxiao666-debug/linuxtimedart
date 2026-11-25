@@ -1,0 +1,11 @@
+{
+  "status": "PASS",
+  "groups": 6,
+  "context_length": 168,
+  "permutation_max_abs_kw": 0.00018310546875,
+  "tolerance_kw": 1.0,
+  "member_removal_max_abs_kw": 3.0621337890625,
+  "member_removal_median_kw": 2.4269866943359375,
+  "two_groups_one_call_max_abs_kw": 41.564208984375,
+  "note": "one issue group per call is enforced by run_groups; mixed-call difference is descriptive only"
+}

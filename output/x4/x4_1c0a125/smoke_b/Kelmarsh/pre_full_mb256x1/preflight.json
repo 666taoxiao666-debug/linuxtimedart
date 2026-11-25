@@ -1,0 +1,15 @@
+{
+  "candidate": {
+    "name": "full_mb256x1",
+    "mode": "full",
+    "microbatch": 256,
+    "accumulation": 1,
+    "windows_per_step": 18
+  },
+  "context_length": 1024,
+  "free_gb_before": 23.2657470703125,
+  "total_gb": 23.55999755859375,
+  "limit_gb": 16.491998291015623,
+  "ok": false,
+  "error": "OutOfMemoryError: CUDA out of memory. Tried to allocate 54.00 MiB. GPU 0 has a total capacity of 23.56 GiB of which 6.75 GiB is free. Including non-PyTorch memory, this process has 16.76 GiB memory in use. 16.49 GiB allowed; Of the allocated memory 16.08 GiB is allocated by PyTorch, and 383.50 MiB is reserved by PyTo"
+}

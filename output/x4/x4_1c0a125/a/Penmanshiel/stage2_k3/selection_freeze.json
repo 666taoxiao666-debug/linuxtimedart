@@ -1,0 +1,90 @@
+{
+  "model_sha256": {
+    "selected/config.json": "53ea035a6d1295b77d68173b526550d54e9d3c3a17b096a35876f1c615582b7b",
+    "selected/model.safetensors": "9a40ce6568a88e1033361f2be8cce9b7122516cbb6540b8b804ddb43baa76a46"
+  },
+  "selected": {
+    "step": 0,
+    "mae": 212.9105791250715
+  },
+  "history": [
+    {
+      "step": 0,
+      "mae": 212.9105791250715
+    },
+    {
+      "step": 20,
+      "mae": 218.714984183092
+    },
+    {
+      "step": 40,
+      "mae": 215.78167822256756
+    },
+    {
+      "step": 60,
+      "mae": 215.06730787937585
+    },
+    {
+      "step": 80,
+      "mae": 218.01455929661685
+    },
+    {
+      "step": 100,
+      "mae": 217.6859679038422
+    },
+    {
+      "step": 120,
+      "mae": 221.1074046709481
+    },
+    {
+      "step": 140,
+      "mae": 222.0502645185119
+    },
+    {
+      "step": 160,
+      "mae": 218.5654425581968
+    },
+    {
+      "step": 180,
+      "mae": 218.59713614411157
+    },
+    {
+      "step": 200,
+      "mae": 217.28826303713578
+    }
+  ],
+  "candidate": {
+    "name": "full_mb256x1",
+    "mode": "full",
+    "microbatch": 256,
+    "accumulation": 1,
+    "windows_per_step": 18
+  },
+  "learning_rate": 1e-05,
+  "steps": 200,
+  "eval_every": 20,
+  "eval_step0": true,
+  "init": {
+    "root": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X4/x4_1c0a125/a/Penmanshiel/stage1_lr1",
+    "model_sha256": {
+      "selected/config.json": "5ebdd54c86881d3796d054b729d5dca6548bb4cb736b47bd13538feb3d102f14",
+      "selected/model.safetensors": "9a40ce6568a88e1033361f2be8cce9b7122516cbb6540b8b804ddb43baa76a46"
+    }
+  },
+  "trainer": {
+    "per_device_train_batch_size": 256,
+    "gradient_accumulation_steps": 1,
+    "max_steps": 200,
+    "learning_rate": 1e-05,
+    "n_gpu": 1,
+    "world_size": 1,
+    "seed": 2024,
+    "bf16": true,
+    "fp16": false
+  },
+  "train_windows": 7685,
+  "budget": {
+    "train_windows": 7685
+  },
+  "selection": "median MAE on the registered selection set"
+}

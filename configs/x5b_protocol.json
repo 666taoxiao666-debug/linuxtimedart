@@ -1,0 +1,59 @@
+{
+  "stage": "X5b",
+  "version": 3,
+  "author": "Claude 2026-11-23; option B chosen by GPT on 2026-11-23; GPT reviews, Cursor runs",
+  "registered": "post-hoc development check: the 15 h delay was chosen after seeing the X5 results (e01cc6b); no confirmatory claim",
+  "question": "at the same structural forecast coverage, does an old (15 h) GFS cycle raise the upstream value U compared with a fresh (6 h) cycle, and how much of U(15) - U(6) is the f018 coverage loss itself?",
+  "nominal_delay_hours": 6,
+  "fresh_delay_hours": 6,
+  "old_delay_hours": 15,
+  "states": {
+    "A": "fresh cycle (d = 6) as is = the frozen x50 GFS columns",
+    "C": "old cycle (d = 15) as is = X5 D15 inputs",
+    "D": "A restricted to the positions structurally available for C in the same window (lead = age + offset in [3, 18] h, offsets t0-5..t0+7, history lead = age); values and validity bits zeroed together",
+    "Cc": "C restricted to the positions structurally available for A in the same window",
+    "kept": "each state keeps its own age, cycle-missing flag and natural gaps (missing files); natural gaps are never copied to the other cycle"
+  },
+  "arms": "per state LG and LUG (run_x2.run_a_farm, x1 LightGBM 2x2 grid, V1 early stopping and grid choice, seed 2024); 8 fits per farm; nothing reused from e01cc6b",
+  "cohorts": "exactly X2 part A windows; formal runs check issue/turbine/truth hashes against output/x2/x2_0f24875/a/A/<farm>_cohorts.json; d = 6 must reproduce the frozen x50 (nominal binding)",
+  "readouts": {
+    "U": "MAE(LG_s) - MAE(LUG_s) per state, paired CI",
+    "truncation_fresh": "U(D) - U(A): effect of the coverage loss on a fresh cycle",
+    "cycle_common": "U(Cc) - U(D): old vs fresh cycle at common structural coverage",
+    "old_side_restriction": "U(C) - U(Cc): what restricting the old cycle to A's structure changes",
+    "total": "U(C) - U(A) = the three parts above (checked exactly)",
+    "primary_split": "V2 (development); test years exploratory (opened before)"
+  },
+  "classification": {
+    "near_zero_ratio": 0.5,
+    "min_farms": 2,
+    "rule": "per farm on V2: bound = 0.5 x |U(D) - U(A)| point estimate; truncation_ci_above_0 = U(D) - U(A) CI low > 0; cycle label on the agreeing-window contrast: CI_ABOVE_0 (CI low > 0) / CI_BELOW_0 (CI high < 0) / CI_WITHIN_BOUND (whole 95% CI inside [-bound, +bound]) / CI_WIDE / NOT_ESTIMABLE (agreeing windows span fewer than min_issue_clusters = 40 issue-time clusters = 5 block lengths: only window count, cluster count and point estimate are reported, no CI). Outcome TRUNCATION_CI_ABOVE_0_AND_CYCLE_CI_WITHIN_BOUND if >= 2 farms have both; else CYCLE_CI_ABOVE_0 if >= 2 farms; else NO_COMMON_PATTERN. Labels describe the criteria only; they are not causal claims (no \"coverage dominant\").",
+    "min_issue_clusters": 40
+  },
+  "statistics": {
+    "block_length": 8,
+    "replicates": 2000,
+    "seed": 2024,
+    "loss": "absolute error, window-uniform (mean over h1..h4)"
+  },
+  "budget": {
+    "formal": {
+      "grid_cells": 4,
+      "seeds": 1
+    },
+    "smoke": {
+      "grid_cells": 1,
+      "seeds": 1,
+      "n_estimators": 40,
+      "early_stopping_rounds": 10,
+      "train_rows": 4000,
+      "eval_rows": 600
+    }
+  },
+  "revised": "2026-11-23 after X5b R1 (B1 natural-gap audit and attribution, B2 whole-CI bound and neutral labels, S1 structure check); not yet run; 2026-11-23 after X5b R2 (R2-B1 minimum issue clusters for the agreeing-window contrast); not yet run",
+  "natural_gaps": {
+    "audit": "per farm and split (train, V1, V2, tests): windows where D and Cc differ in any current-cycle validity bit or in the cycle-missing flag inside the common structure; target-bit disagreement; cycle missing on one side only (output X5/<farm>_coverage.json)",
+    "attribution": "cycle_common (all windows) includes any natural-gap difference and is reported as the joint state contrast; cycle_common_agreeing_windows re-estimates U(Cc) - U(D) on the windows where D and Cc agree exactly (same trained models); labels use the agreeing contrast and record natural_gap_difference per farm",
+    "structure_check": "a validity bit outside its own or the common structure is an input error (run stops); differing natural gaps are allowed"
+  }
+}

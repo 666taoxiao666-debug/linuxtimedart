@@ -1,0 +1,524 @@
+{
+  "gfs_binding": {
+    "Kelmarsh": {
+      "train": {
+        "hours": 1800576,
+        "missing": 1152,
+        "source": "a3_grid",
+        "identities": {
+          "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/x1_e4819b0_gpu_r1/A3/Kelmarsh_history.npz": "cd54e76ebad2dc58a24811c1fce46827e2b0503d7367554e323892981907c8df"
+        },
+        "drift_hours": [],
+        "drift_kinds": {
+          "boundary": 0,
+          "edge": 0
+        },
+        "affected_windows": {
+          "24": 0,
+          "168": 0,
+          "512": 0,
+          "1024": 0
+        }
+      },
+      "val": {
+        "hours": 376320,
+        "missing": 1728,
+        "source": "a3_grid",
+        "identities": {
+          "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/x1_e4819b0_gpu_r1/A3/Kelmarsh_history.npz": "cd54e76ebad2dc58a24811c1fce46827e2b0503d7367554e323892981907c8df"
+        },
+        "drift_hours": [],
+        "drift_kinds": {
+          "boundary": 0,
+          "edge": 0
+        },
+        "affected_windows": {
+          "24": 0,
+          "168": 0,
+          "512": 0,
+          "1024": 0
+        }
+      },
+      "Kelmarsh_2022": {
+        "hours": 406776,
+        "missing": 576,
+        "source": "a3_grid",
+        "identities": {
+          "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/x1_e4819b0_gpu_r1/A3/Kelmarsh_history.npz": "cd54e76ebad2dc58a24811c1fce46827e2b0503d7367554e323892981907c8df"
+        },
+        "drift_hours": [],
+        "drift_kinds": {
+          "boundary": 0,
+          "edge": 0
+        },
+        "affected_windows": {
+          "24": 0,
+          "168": 0,
+          "512": 0,
+          "1024": 0
+        }
+      }
+    },
+    "Penmanshiel": {
+      "train": {
+        "hours": 1554504,
+        "missing": 624,
+        "source": "a3_grid",
+        "identities": {
+          "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/x1_e4819b0_gpu_r1/A3/Penmanshiel_history.npz": "f8626eae6f64cdc8a5b386714b683feaeca0ada6afa210e13f6ff6291c4066c2"
+        },
+        "drift_hours": [],
+        "drift_kinds": {
+          "boundary": 0,
+          "edge": 0
+        },
+        "affected_windows": {
+          "24": 0,
+          "168": 0,
+          "512": 0,
+          "1024": 0
+        }
+      },
+      "val": {
+        "hours": 854472,
+        "missing": 0,
+        "source": "a3_grid",
+        "identities": {
+          "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/x1_e4819b0_gpu_r1/A3/Penmanshiel_history.npz": "f8626eae6f64cdc8a5b386714b683feaeca0ada6afa210e13f6ff6291c4066c2"
+        },
+        "drift_hours": [],
+        "drift_kinds": {
+          "boundary": 0,
+          "edge": 0
+        },
+        "affected_windows": {
+          "24": 0,
+          "168": 0,
+          "512": 0,
+          "1024": 0
+        }
+      },
+      "Penmanshiel_2021": {
+        "hours": 915528,
+        "missing": 3396,
+        "source": "a3_grid",
+        "identities": {
+          "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/x1_e4819b0_gpu_r1/A3/Penmanshiel_history.npz": "f8626eae6f64cdc8a5b386714b683feaeca0ada6afa210e13f6ff6291c4066c2"
+        },
+        "drift_hours": [],
+        "drift_kinds": {
+          "boundary": 0,
+          "edge": 0
+        },
+        "affected_windows": {
+          "24": 0,
+          "168": 0,
+          "512": 0,
+          "1024": 0
+        }
+      }
+    },
+    "HoT": {
+      "train": {
+        "hours": 10091400,
+        "missing": 15961,
+        "source": "a3_grid",
+        "identities": {
+          "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/x1_e4819b0_gpu_r1/A3/HoT_history.npz": "2c1539d0357abb3ccc37267ea6da9024fa604215a615c0c063270d0686337f68"
+        },
+        "drift_hours": [],
+        "drift_kinds": {
+          "boundary": 0,
+          "edge": 0
+        },
+        "affected_windows": {
+          "24": 0,
+          "168": 0,
+          "512": 0,
+          "1024": 0
+        }
+      },
+      "val": {
+        "hours": 721344,
+        "missing": 0,
+        "source": "a3_grid",
+        "identities": {
+          "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/x1_e4819b0_gpu_r1/A3/HoT_history.npz": "2c1539d0357abb3ccc37267ea6da9024fa604215a615c0c063270d0686337f68"
+        },
+        "drift_hours": [],
+        "drift_kinds": {
+          "boundary": 0,
+          "edge": 0
+        },
+        "affected_windows": {
+          "24": 0,
+          "168": 0,
+          "512": 0,
+          "1024": 0
+        }
+      },
+      "HoT_2024": {
+        "hours": 1430088,
+        "missing": 0,
+        "source": "hot_sealed_points",
+        "identities": {
+          "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/G2/g2b84_bc7730e_r1/sealed_prep/points.npz": "82aadc0b77f75c59b8fea55288cbc45e1c3a813f8757b42105f0cc614ba50f0e"
+        },
+        "drift_hours": [
+          "2023-01-01T01:00:00.000000000",
+          "2023-01-01T02:00:00.000000000",
+          "2023-01-01T03:00:00.000000000",
+          "2023-01-01T04:00:00.000000000",
+          "2023-01-01T05:00:00.000000000",
+          "2023-12-31T12:00:00.000000000",
+          "2023-12-31T13:00:00.000000000",
+          "2023-12-31T14:00:00.000000000",
+          "2023-12-31T15:00:00.000000000",
+          "2023-12-31T16:00:00.000000000",
+          "2023-12-31T17:00:00.000000000",
+          "2023-12-31T18:00:00.000000000",
+          "2023-12-31T19:00:00.000000000",
+          "2023-12-31T20:00:00.000000000",
+          "2023-12-31T21:00:00.000000000",
+          "2023-12-31T22:00:00.000000000",
+          "2023-12-31T23:00:00.000000000"
+        ],
+        "drift_kinds": {
+          "boundary": 12,
+          "edge": 5
+        },
+        "affected_windows": {
+          "24": 161,
+          "168": 1169,
+          "512": 3301,
+          "1024": 6684
+        }
+      },
+      "HoT_2025": {
+        "hours": 1364568,
+        "missing": 0,
+        "source": "hot_sealed_points",
+        "identities": {
+          "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/G2/g2b84_bc7730e_r1/sealed_prep/points.npz": "82aadc0b77f75c59b8fea55288cbc45e1c3a813f8757b42105f0cc614ba50f0e"
+        },
+        "drift_hours": [
+          "2023-01-01T01:00:00.000000000",
+          "2023-01-01T02:00:00.000000000",
+          "2023-01-01T03:00:00.000000000",
+          "2023-01-01T04:00:00.000000000",
+          "2023-01-01T05:00:00.000000000",
+          "2023-12-31T12:00:00.000000000",
+          "2023-12-31T13:00:00.000000000",
+          "2023-12-31T14:00:00.000000000",
+          "2023-12-31T15:00:00.000000000",
+          "2023-12-31T16:00:00.000000000",
+          "2023-12-31T17:00:00.000000000",
+          "2023-12-31T18:00:00.000000000",
+          "2023-12-31T19:00:00.000000000",
+          "2023-12-31T20:00:00.000000000",
+          "2023-12-31T21:00:00.000000000",
+          "2023-12-31T22:00:00.000000000",
+          "2023-12-31T23:00:00.000000000"
+        ],
+        "drift_kinds": {
+          "boundary": 12,
+          "edge": 5
+        },
+        "affected_windows": {
+          "24": 0,
+          "168": 0,
+          "512": 0,
+          "1024": 0
+        }
+      }
+    }
+  },
+  "features": [
+    "wspd",
+    "temp",
+    "ndir_sin",
+    "ndir_cos",
+    "pitch",
+    "rotor",
+    "power_last10_pu",
+    "wind_last10",
+    "up_0",
+    "up_1",
+    "up_2",
+    "up_3",
+    "up_4",
+    "up_5",
+    "up_6",
+    "up_7",
+    "up_8",
+    "up_9",
+    "up_10",
+    "up_missing",
+    "gfs_0",
+    "gfs_1",
+    "gfs_2",
+    "gfs_3",
+    "gfs_4",
+    "gfs_5",
+    "gfs_6",
+    "gfs_7",
+    "gfs_8",
+    "gfs_9",
+    "gfs_10",
+    "gfs_11",
+    "gfs_12",
+    "gfs_age",
+    "gfs_cycle_missing",
+    "p_hist_0",
+    "p_hist_1",
+    "p_hist_2",
+    "p_hist_3",
+    "p_hist_4",
+    "p_hist_5",
+    "p_hist_6",
+    "p_hist_7",
+    "p_hist_8",
+    "p_hist_9",
+    "p_hist_10",
+    "p_hist_11",
+    "p_hist_12",
+    "p_hist_13",
+    "p_hist_14",
+    "p_hist_15",
+    "p_hist_16",
+    "p_hist_17",
+    "p_hist_18",
+    "p_hist_19",
+    "p_hist_20",
+    "p_hist_21",
+    "p_hist_22",
+    "p_hist_23",
+    "w_hist_0",
+    "w_hist_1",
+    "w_hist_2",
+    "w_hist_3",
+    "w_hist_4",
+    "w_hist_5",
+    "w_hist_6",
+    "w_hist_7",
+    "w_hist_8",
+    "w_hist_9",
+    "w_hist_10",
+    "w_hist_11",
+    "w_hist_12",
+    "w_hist_13",
+    "w_hist_14",
+    "w_hist_15",
+    "w_hist_16",
+    "w_hist_17",
+    "w_hist_18",
+    "w_hist_19",
+    "w_hist_20",
+    "w_hist_21",
+    "w_hist_22",
+    "w_hist_23",
+    "gfs_hist_0",
+    "gfs_hist_1",
+    "gfs_hist_2",
+    "gfs_hist_3",
+    "gfs_hist_4",
+    "gfs_hist_5",
+    "gfs_hist_6",
+    "gfs_hist_7",
+    "gfs_hist_8",
+    "gfs_hist_9",
+    "gfs_hist_10",
+    "gfs_hist_11",
+    "gfs_hist_12",
+    "gfs_hist_13",
+    "gfs_hist_14",
+    "gfs_hist_15",
+    "gfs_hist_16",
+    "gfs_hist_17",
+    "gfs_hist_18",
+    "gfs_hist_19",
+    "gfs_hist_20",
+    "gfs_hist_21",
+    "gfs_hist_22",
+    "gfs_hist_23",
+    "retrofit",
+    "retrofit_applicable",
+    "farm",
+    "farm_turbine"
+  ],
+  "categorical": [
+    "farm",
+    "farm_turbine"
+  ],
+  "Kelmarsh": {
+    "deployment": "2021-01-01T00:00:00.000000000",
+    "zs_history_lower_bound": "2020-12-10T17:00:00.000000000",
+    "arms": {
+      "L_1": {
+        "fit_windows": 1038,
+        "es_windows": 270,
+        "es_cut": "2020-12-26T06:00:00.000000000",
+        "target_windows": 1038,
+        "best_iterations": [
+          20,
+          20,
+          20,
+          20
+        ]
+      },
+      "L_1X": {
+        "fit_windows": 393980,
+        "es_windows": 270,
+        "es_cut": "2020-12-26T06:00:00.000000000",
+        "target_windows": 1038,
+        "best_iterations": [
+          20,
+          20,
+          20,
+          20
+        ]
+      },
+      "L_3": {
+        "fit_windows": 3220,
+        "es_windows": 822,
+        "es_cut": "2020-12-12T06:00:00.000000000",
+        "target_windows": 3220,
+        "best_iterations": [
+          20,
+          20,
+          20,
+          20
+        ]
+      },
+      "L_3X": {
+        "fit_windows": 392320,
+        "es_windows": 822,
+        "es_cut": "2020-12-12T06:00:00.000000000",
+        "target_windows": 3220,
+        "best_iterations": [
+          20,
+          20,
+          20,
+          20
+        ]
+      }
+    },
+    "zs_input": "512 h single, upstream NaN on flagged hours (no fit-segment fill)",
+    "zs_v1_mae": 129.7582244873047,
+    "zs_with_fill_v1_mae_descriptive": 129.7582244873047
+  },
+  "Penmanshiel": {
+    "deployment": "2020-01-01T00:00:00.000000000",
+    "zs_history_lower_bound": "2019-12-10T17:00:00.000000000",
+    "arms": {
+      "L_1": {
+        "fit_windows": 2443,
+        "es_windows": 686,
+        "es_cut": "2019-12-25T18:00:00.000000000",
+        "target_windows": 2443,
+        "best_iterations": [
+          20,
+          20,
+          20,
+          20
+        ]
+      },
+      "L_1X": {
+        "fit_windows": 294071,
+        "es_windows": 686,
+        "es_cut": "2019-12-25T18:00:00.000000000",
+        "target_windows": 2443,
+        "best_iterations": [
+          20,
+          20,
+          20,
+          20
+        ]
+      },
+      "L_3": {
+        "fit_windows": 7685,
+        "es_windows": 2002,
+        "es_cut": "2019-12-13T12:00:00.000000000",
+        "target_windows": 7685,
+        "best_iterations": [
+          20,
+          20,
+          20,
+          20
+        ]
+      },
+      "L_3X": {
+        "fit_windows": 296667,
+        "es_windows": 2002,
+        "es_cut": "2019-12-13T12:00:00.000000000",
+        "target_windows": 7685,
+        "best_iterations": [
+          20,
+          20,
+          20,
+          20
+        ]
+      }
+    },
+    "zs_input": "512 h single, upstream NaN on flagged hours (no fit-segment fill)",
+    "zs_v1_mae": 347.6695251464844,
+    "zs_with_fill_v1_mae_descriptive": 348.86334228515625
+  },
+  "HoT": {
+    "deployment": "2023-07-01T00:00:00.000000000",
+    "zs_history_lower_bound": "2023-06-09T17:00:00.000000000",
+    "arms": {
+      "L_1": {
+        "fit_windows": 3547,
+        "es_windows": 902,
+        "es_cut": "2023-06-23T23:00:00.000000000",
+        "target_windows": 3547,
+        "best_iterations": [
+          20,
+          20,
+          20,
+          20
+        ]
+      },
+      "L_1X": {
+        "fit_windows": 249721,
+        "es_windows": 902,
+        "es_cut": "2023-06-23T23:00:00.000000000",
+        "target_windows": 3547,
+        "best_iterations": [
+          20,
+          20,
+          20,
+          20
+        ]
+      },
+      "L_3": {
+        "fit_windows": 9402,
+        "es_windows": 2901,
+        "es_cut": "2023-06-12T00:00:00.000000000",
+        "target_windows": 9402,
+        "best_iterations": [
+          20,
+          20,
+          20,
+          20
+        ]
+      },
+      "L_3X": {
+        "fit_windows": 255576,
+        "es_windows": 2901,
+        "es_cut": "2023-06-12T00:00:00.000000000",
+        "target_windows": 9402,
+        "best_iterations": [
+          20,
+          20,
+          20,
+          20
+        ]
+      }
+    },
+    "zs_input": "512 h single, upstream NaN on flagged hours (no fit-segment fill)",
+    "zs_v1_mae": 302.9080810546875,
+    "zs_with_fill_v1_mae_descriptive": 297.67913818359375
+  }
+}

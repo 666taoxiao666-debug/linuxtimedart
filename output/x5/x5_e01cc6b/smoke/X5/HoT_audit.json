@@ -1,0 +1,106 @@
+{
+  "counts": {
+    "V1": 14932,
+    "V2": 15103,
+    "crossing_dropped": 21
+  },
+  "caches": {
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/G2/hot_dev_f58f2ce_r5/prepared/points_0.npz": "65f854595a0746b3b77baefd6db29f7f14d9d55fa7d650873a9f79b9d7031e7e",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/G2/hot_dev_f58f2ce_r5/prepared/points_1.npz": "fdd9efd7d228a7b658d70df46603ec0dc4f95f62666fb837f41efff7281c6dba",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/G2/g2b84_bc7730e_r1/sealed_prep/points.npz": "82aadc0b77f75c59b8fea55288cbc45e1c3a813f8757b42105f0cc614ba50f0e"
+  },
+  "mean": 4.21224430898862,
+  "scale": 2.441899127867903,
+  "audit": {
+    "train@6": {
+      "delay": 6,
+      "age_min": 6,
+      "age_max": 9,
+      "cycles_used": 3986,
+      "issues": 4000
+    },
+    "train@12": {
+      "delay": 12,
+      "age_min": 12,
+      "age_max": 15,
+      "cycles_used": 3986,
+      "issues": 4000
+    },
+    "train@binding": {
+      "max_abs_diff": 0.0,
+      "exact_fraction": 1.0
+    },
+    "V1@6": {
+      "delay": 6,
+      "age_min": 6,
+      "age_max": 9,
+      "cycles_used": 600,
+      "issues": 600
+    },
+    "V1@12": {
+      "delay": 12,
+      "age_min": 12,
+      "age_max": 15,
+      "cycles_used": 600,
+      "issues": 600
+    },
+    "V1@binding": {
+      "max_abs_diff": 0.0,
+      "exact_fraction": 1.0
+    },
+    "V2@6": {
+      "delay": 6,
+      "age_min": 6,
+      "age_max": 9,
+      "cycles_used": 600,
+      "issues": 600
+    },
+    "V2@12": {
+      "delay": 12,
+      "age_min": 12,
+      "age_max": 15,
+      "cycles_used": 600,
+      "issues": 600
+    },
+    "V2@binding": {
+      "max_abs_diff": 0.0,
+      "exact_fraction": 1.0
+    },
+    "HoT_2024@6": {
+      "delay": 6,
+      "age_min": 6,
+      "age_max": 9,
+      "cycles_used": 600,
+      "issues": 600
+    },
+    "HoT_2024@12": {
+      "delay": 12,
+      "age_min": 12,
+      "age_max": 15,
+      "cycles_used": 600,
+      "issues": 600
+    },
+    "HoT_2024@binding": {
+      "max_abs_diff": 0.0,
+      "exact_fraction": 1.0
+    },
+    "HoT_2025@6": {
+      "delay": 6,
+      "age_min": 6,
+      "age_max": 9,
+      "cycles_used": 600,
+      "issues": 600
+    },
+    "HoT_2025@12": {
+      "delay": 12,
+      "age_min": 12,
+      "age_max": 15,
+      "cycles_used": 600,
+      "issues": 600
+    },
+    "HoT_2025@binding": {
+      "max_abs_diff": 0.0,
+      "exact_fraction": 1.0
+    }
+  }
+}

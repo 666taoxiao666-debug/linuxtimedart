@@ -1,0 +1,87 @@
+{
+  "counts": {
+    "V1": 7431,
+    "V2": 8249,
+    "crossing_dropped": 0
+  },
+  "caches": {
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/G1/g1c_27312d7_r2/prepared/Kelmarsh/points_0.npz": "3c872914e0d92633fe85019ebec3eeee00d75f7722be0660212340bf31bbf236",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/G1/g1c_27312d7_r2/prepared/Kelmarsh/points_1.npz": "f47516c3808d10d7f9d3fe578a7ac01333cd3a99a08a7352ac94ec9049793190"
+  },
+  "mean": 4.649866244640943,
+  "scale": 2.217332137398861,
+  "audit": {
+    "train@6": {
+      "delay": 6,
+      "age_min": 6,
+      "age_max": 9,
+      "cycles_used": 12729,
+      "issues": 12737
+    },
+    "train@15": {
+      "delay": 15,
+      "age_min": 15,
+      "age_max": 18,
+      "cycles_used": 12729,
+      "issues": 12737
+    },
+    "train@binding": {
+      "max_abs_diff": 0.0,
+      "exact_fraction": 1.0
+    },
+    "V1@6": {
+      "delay": 6,
+      "age_min": 6,
+      "age_max": 9,
+      "cycles_used": 1245,
+      "issues": 1257
+    },
+    "V1@15": {
+      "delay": 15,
+      "age_min": 15,
+      "age_max": 18,
+      "cycles_used": 1245,
+      "issues": 1257
+    },
+    "V1@binding": {
+      "max_abs_diff": 0.0,
+      "exact_fraction": 1.0
+    },
+    "V2@6": {
+      "delay": 6,
+      "age_min": 6,
+      "age_max": 9,
+      "cycles_used": 1405,
+      "issues": 1405
+    },
+    "V2@15": {
+      "delay": 15,
+      "age_min": 15,
+      "age_max": 18,
+      "cycles_used": 1405,
+      "issues": 1405
+    },
+    "V2@binding": {
+      "max_abs_diff": 0.0,
+      "exact_fraction": 1.0
+    },
+    "Kelmarsh_2022@6": {
+      "delay": 6,
+      "age_min": 6,
+      "age_max": 9,
+      "cycles_used": 2864,
+      "issues": 2868
+    },
+    "Kelmarsh_2022@15": {
+      "delay": 15,
+      "age_min": 15,
+      "age_max": 18,
+      "cycles_used": 2864,
+      "issues": 2868
+    },
+    "Kelmarsh_2022@binding": {
+      "max_abs_diff": 0.0,
+      "exact_fraction": 1.0
+    }
+  }
+}

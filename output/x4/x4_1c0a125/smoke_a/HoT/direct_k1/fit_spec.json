@@ -1,0 +1,35 @@
+{
+  "task": "fit",
+  "output": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X4/x4_1c0a125/smoke_a/HoT/direct_k1",
+  "receipt": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/cursor_env/receipt.json",
+  "manifest": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/cursor_env/chronos2_manifest.json",
+  "gpu_fraction": 0.7,
+  "seed": 2024,
+  "train": {
+    "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X4/x4_1c0a125/smoke_a/HoT/fit_k1.npz",
+    "sha256": "874e9fb1f98502037736e6ba094ceb6492346d85e712855edae18bff217439cc"
+  },
+  "eval": {
+    "kind": "arrays",
+    "npz": {
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X4/x4_1c0a125/smoke_a/HoT/es_k1.npz",
+      "sha256": "c1d48ce4888f77b8b4334dab94b72d8effbcb138b1e36283ac7a84d3bdb174fe"
+    }
+  },
+  "init": null,
+  "learning_rate": 1e-06,
+  "num_steps": 4,
+  "eval_every": 2,
+  "eval_step0": true,
+  "budget": {
+    "train_windows": 3547
+  },
+  "candidate": {
+    "name": "full_mb256x1",
+    "mode": "full",
+    "microbatch": 256,
+    "accumulation": 1,
+    "windows_per_step": 18
+  },
+  "context_length": 512
+}

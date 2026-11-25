@@ -1,0 +1,460 @@
+{
+  "family": [
+    "Q2",
+    "Q3",
+    "Q4"
+  ],
+  "z": 2.3939797998185104,
+  "q2_available": true,
+  "note": "V1/V2 were used before: development-stage evidence; Q4 is an exploratory cold-start replay",
+  "Q1_descriptive": {
+    "v2_mae": {
+      "Kelmarsh": {
+        "168_single": 142.23341369628906,
+        "512_single": 141.03440856933594,
+        "1024_single": 130.37460327148438,
+        "168_group": 142.08102416992188,
+        "512_group": 140.57810974121094,
+        "1024_group": 130.7097930908203,
+        "LUG": 131.80401544337246
+      },
+      "Penmanshiel": {
+        "168_single": 125.56819152832031,
+        "512_single": 129.372314453125,
+        "1024_single": 137.5633087158203,
+        "168_group": 127.25631713867188,
+        "512_group": 129.48460388183594,
+        "1024_group": 137.63107299804688,
+        "LUG": 113.95590241202595
+      },
+      "HoT": {
+        "168_single": 272.84857177734375,
+        "512_single": 252.58641052246094,
+        "1024_single": 259.20849609375,
+        "168_group": 273.37481689453125,
+        "512_group": 254.41502380371094,
+        "1024_group": 260.7816467285156,
+        "LUG": 232.18076978590506
+      }
+    },
+    "selection": {
+      "Kelmarsh": {
+        "context_length": 1024,
+        "mode": "single",
+        "v1_mae": {
+          "168_single": 134.65274047851562,
+          "512_single": 129.7582244873047,
+          "1024_single": 129.02587890625,
+          "168_group": 134.92245483398438,
+          "512_group": 130.25662231445312,
+          "1024_group": 129.24188232421875
+        }
+      },
+      "Penmanshiel": {
+        "context_length": 512,
+        "mode": "group",
+        "v1_mae": {
+          "168_single": 371.4671630859375,
+          "512_single": 348.86334228515625,
+          "1024_single": 356.128173828125,
+          "168_group": 370.7392883300781,
+          "512_group": 348.0987854003906,
+          "1024_group": 353.33929443359375
+        }
+      },
+      "HoT": {
+        "context_length": 1024,
+        "mode": "group",
+        "v1_mae": {
+          "168_single": 348.7527770996094,
+          "512_single": 297.67913818359375,
+          "1024_single": 256.02264404296875,
+          "168_group": 345.50506591796875,
+          "512_group": 289.9304504394531,
+          "1024_group": 251.8064422607422
+        }
+      }
+    },
+    "coverage_note": "see q1 coverage.json per farm"
+  },
+  "Q2": {
+    "arm": "Q2-FT20k",
+    "budget": "fixed uniform random subset of 20000 fit-segment windows per farm (seed 2024, without replacement); NOT the full fit segment",
+    "outcome": "NEGATIVE",
+    "pooled": {
+      "status": "OK",
+      "farms": {
+        "Kelmarsh": {
+          "relative_gain": 0.0080453141393236,
+          "relative_se": 0.05876072337187238
+        },
+        "Penmanshiel": {
+          "relative_gain": -0.14065074136612063,
+          "relative_se": 0.05886695673471204
+        },
+        "HoT": {
+          "relative_gain": -0.11794416338426784,
+          "relative_se": 0.055761276967064316
+        }
+      },
+      "pooled_relative_gain": -0.08467440688096915,
+      "pooled_se": 0.03333693381941346,
+      "z": 2.3939797998185104,
+      "ci95_low": -0.1644823530325315,
+      "ci95_high": -0.004866460729406788
+    },
+    "farms_significantly_worse_than_margin": [],
+    "margin": 0.01,
+    "wording": "pooled non-inferiority only; not shown separately per farm (R2-S1)",
+    "training_budget": {
+      "Kelmarsh": {
+        "arm": "Q2-FT20k",
+        "fit_windows_available": 75024,
+        "train_windows": 512,
+        "sampling": "uniform without replacement, seed 2024",
+        "context_length": 1024,
+        "variates_per_window": 15,
+        "sdk_batch_size_rows": 256,
+        "windows_per_step_by_sdk_rule": 18,
+        "window_draws_by_sdk_rule": 72,
+        "note": "derived from the 2.3.2 batching rule (windows drawn uniformly WITH replacement; not every window is seen); trainer settings are recorded in fit_run/selection_freeze.json",
+        "history": {
+          "hours": 1800576,
+          "missing": 1152,
+          "source": "a3_grid",
+          "identities": {
+            "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/x1_e4819b0_gpu_r1/A3/Kelmarsh_history.npz": "cd54e76ebad2dc58a24811c1fce46827e2b0503d7367554e323892981907c8df"
+          },
+          "drift_hours": [],
+          "drift_kinds": {
+            "boundary": 0,
+            "edge": 0
+          },
+          "affected_windows": {
+            "24": 0,
+            "168": 0,
+            "512": 0,
+            "1024": 0
+          }
+        }
+      },
+      "Penmanshiel": {
+        "arm": "Q2-FT20k",
+        "fit_windows_available": 64771,
+        "train_windows": 512,
+        "sampling": "uniform without replacement, seed 2024",
+        "context_length": 512,
+        "variates_per_window": 15,
+        "sdk_batch_size_rows": 256,
+        "windows_per_step_by_sdk_rule": 18,
+        "window_draws_by_sdk_rule": 72,
+        "note": "derived from the 2.3.2 batching rule (windows drawn uniformly WITH replacement; not every window is seen); trainer settings are recorded in fit_run/selection_freeze.json",
+        "history": {
+          "hours": 1554504,
+          "missing": 624,
+          "source": "a3_grid",
+          "identities": {
+            "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/x1_e4819b0_gpu_r1/A3/Penmanshiel_history.npz": "f8626eae6f64cdc8a5b386714b683feaeca0ada6afa210e13f6ff6291c4066c2"
+          },
+          "drift_hours": [],
+          "drift_kinds": {
+            "boundary": 0,
+            "edge": 0
+          },
+          "affected_windows": {
+            "24": 0,
+            "168": 0,
+            "512": 0,
+            "1024": 0
+          }
+        }
+      },
+      "HoT": {
+        "arm": "Q2-FT20k",
+        "fit_windows_available": 420475,
+        "train_windows": 512,
+        "sampling": "uniform without replacement, seed 2024",
+        "context_length": 1024,
+        "variates_per_window": 15,
+        "sdk_batch_size_rows": 256,
+        "windows_per_step_by_sdk_rule": 18,
+        "window_draws_by_sdk_rule": 72,
+        "note": "derived from the 2.3.2 batching rule (windows drawn uniformly WITH replacement; not every window is seen); trainer settings are recorded in fit_run/selection_freeze.json",
+        "history": {
+          "hours": 10091400,
+          "missing": 15961,
+          "source": "a3_grid",
+          "identities": {
+            "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/x1_e4819b0_gpu_r1/A3/HoT_history.npz": "2c1539d0357abb3ccc37267ea6da9024fa604215a615c0c063270d0686337f68"
+          },
+          "drift_hours": [],
+          "drift_kinds": {
+            "boundary": 0,
+            "edge": 0
+          },
+          "affected_windows": {
+            "24": 0,
+            "168": 0,
+            "512": 0,
+            "1024": 0
+          }
+        }
+      }
+    },
+    "setting": {
+      "name": "full_mb135x2",
+      "mode": "full",
+      "microbatch": 135,
+      "accumulation": 2,
+      "windows_per_step": 18
+    }
+  },
+  "Q3": {
+    "vs_LUG": {
+      "passed": false,
+      "pooled": {
+        "status": "OK",
+        "farms": {
+          "Kelmarsh": {
+            "relative_gain": 0.009033867702020193,
+            "relative_se": 0.0038435487606407284
+          },
+          "Penmanshiel": {
+            "relative_gain": 0.005013990108332278,
+            "relative_se": 0.006534113635392034
+          },
+          "HoT": {
+            "relative_gain": -0.012621618314914452,
+            "relative_se": 0.010186278886183254
+          }
+        },
+        "pooled_relative_gain": 0.006027844751262496,
+        "pooled_se": 0.003150463365182176,
+        "z": 2.3939797998185104,
+        "ci95_low": -0.0015143009050518812,
+        "ci95_high": 0.013569990407576872
+      },
+      "farm_relative": {
+        "Kelmarsh": 0.009033867702020193,
+        "Penmanshiel": 0.005013990108332278,
+        "HoT": -0.012621618314914452
+      }
+    },
+    "vs_LUG_plus_Nv1": {
+      "pooled": {
+        "status": "OK",
+        "farms": {
+          "Kelmarsh": {
+            "relative_gain": -0.013921440762948946,
+            "relative_se": 0.011657443108813335
+          },
+          "Penmanshiel": {
+            "relative_gain": 0.005013993929851333,
+            "relative_se": 0.006534115346552785
+          },
+          "HoT": {
+            "relative_gain": -0.012621618954935281,
+            "relative_se": 0.010186279758787227
+          }
+        },
+        "pooled_relative_gain": -0.0026385463400888697,
+        "pooled_se": 0.004974059632109055,
+        "z": 2.3939797998185104,
+        "ci95_low": -0.014546344622450639,
+        "ci95_high": 0.009269251942272898
+      }
+    },
+    "passed": false,
+    "wording": "better than LUG and than the tested ordinary ensemble control; no pre-training attribution"
+  },
+  "Q4": {
+    "k": 1,
+    "passed": false,
+    "pooled": {
+      "status": "OK",
+      "farms": {
+        "Kelmarsh": {
+          "relative_gain": 0.09728663805615499,
+          "relative_se": 0.06085048175625439
+        },
+        "Penmanshiel": {
+          "relative_gain": 0.15833433364573513,
+          "relative_se": 0.1409150265995363
+        },
+        "HoT": {
+          "relative_gain": 0.2859798060813272,
+          "relative_se": 0.17987084780936244
+        }
+      },
+      "pooled_relative_gain": 0.12263728534492561,
+      "pooled_se": 0.05335053957580741,
+      "z": 2.3939797998185104,
+      "ci95_low": -0.0050828287089753205,
+      "ci95_high": 0.25035739939882656
+    },
+    "farm_relative": {
+      "Kelmarsh": 0.09728663805615499,
+      "Penmanshiel": 0.15833433364573513,
+      "HoT": 0.2859798060813272
+    },
+    "wording": "exploratory cold-start replay on target V1; C_zs also uses 512 h of observed history; upstream fill values removed on both arms (no target fit-segment statistic)"
+  },
+  "probabilistic_descriptive": {
+    "Kelmarsh": {
+      "zs": {
+        "pinball": {
+          "0.1": [
+            0.009470173984354102,
+            0.01185494821399329,
+            0.010389352238873337,
+            0.011708993589975002
+          ],
+          "0.5": [
+            0.025275568752632878,
+            0.03475138726960716,
+            0.032298496342264116,
+            0.03486927567543538
+          ],
+          "0.9": [
+            0.012733541425044946,
+            0.020115341371461398,
+            0.02099407408430839,
+            0.02495988116048703
+          ]
+        },
+        "coverage80": 0.7708333333333334,
+        "width80_kw": 367.8323130687078,
+        "crossing_rate": 0.0
+      },
+      "ft": {
+        "pinball": {
+          "0.1": [
+            0.00945006414557376,
+            0.01184924261161104,
+            0.010413000352418713,
+            0.011736028026250322
+          ],
+          "0.5": [
+            0.02526800489025872,
+            0.03488134117348771,
+            0.0324147780958972,
+            0.03499061814544162
+          ],
+          "0.9": [
+            0.0127741982638109,
+            0.0203081395145536,
+            0.0210450871190359,
+            0.02500148642138255
+          ]
+        },
+        "coverage80": 0.7739583333333333,
+        "width80_kw": 366.5590097030004,
+        "crossing_rate": 0.0
+      }
+    },
+    "Penmanshiel": {
+      "zs": {
+        "pinball": {
+          "0.1": [
+            0.00811494212721901,
+            0.01759688908779782,
+            0.014448931415180161,
+            0.01675407210639797
+          ],
+          "0.5": [
+            0.015715991533571876,
+            0.033424332532072394,
+            0.03593534238721986,
+            0.04125076997103897
+          ],
+          "0.9": [
+            0.009539983780101471,
+            0.014451776889292152,
+            0.020982543438680955,
+            0.02623576476788864
+          ]
+        },
+        "coverage80": 0.8610503282275711,
+        "width80_kw": 472.9168404844188,
+        "crossing_rate": 0.0
+      },
+      "ft": {
+        "pinball": {
+          "0.1": [
+            0.00831151944296,
+            0.017608116685803362,
+            0.014403173506428528,
+            0.016761181524526835
+          ],
+          "0.5": [
+            0.015832798305300756,
+            0.03359372422739314,
+            0.03600412181460527,
+            0.041382901583078356
+          ],
+          "0.9": [
+            0.009388805919831893,
+            0.014201114823814778,
+            0.02028388171958308,
+            0.025654106131377197
+          ]
+        },
+        "coverage80": 0.8605032822757112,
+        "width80_kw": 469.1230207898163,
+        "crossing_rate": 0.0
+      }
+    },
+    "HoT": {
+      "zs": {
+        "pinball": {
+          "0.1": [
+            0.020424552321756214,
+            0.026115211784266894,
+            0.028042736984410652,
+            0.02445503955581631
+          ],
+          "0.5": [
+            0.047660898907403736,
+            0.057619923468790475,
+            0.06291772996688662,
+            0.05856809538047414
+          ],
+          "0.9": [
+            0.023856270820857336,
+            0.026445254829924568,
+            0.028630226210394773,
+            0.03128053280656583
+          ]
+        },
+        "coverage80": 0.835431654676259,
+        "width80_kw": 890.4830795123423,
+        "crossing_rate": 0.0
+      },
+      "ft": {
+        "pinball": {
+          "0.1": [
+            0.020770237308635867,
+            0.026058122972310797,
+            0.0279529640737386,
+            0.024148516954948525
+          ],
+          "0.5": [
+            0.04764349369187995,
+            0.05712778462557029,
+            0.06231514110451014,
+            0.058622394503395174
+          ],
+          "0.9": [
+            0.023932447401883616,
+            0.02618445067656333,
+            0.02871876723113626,
+            0.03138947807620565
+          ]
+        },
+        "coverage80": 0.8336330935251799,
+        "width80_kw": 878.8664242861082,
+        "crossing_rate": 0.0
+      }
+    }
+  }
+}

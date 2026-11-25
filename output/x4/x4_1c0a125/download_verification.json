@@ -1,0 +1,9 @@
+{
+  "status": "VERIFIED",
+  "files": 357,
+  "bytes": 49954731,
+  "registered_files_verified": 118,
+  "registry_stages": 8,
+  "excluded_training_npz_and_selected_models": true,
+  "remote_base": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X4/x4_1c0a125"
+}

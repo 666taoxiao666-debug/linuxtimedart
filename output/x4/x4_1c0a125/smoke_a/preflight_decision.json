@@ -1,0 +1,97 @@
+{
+  "chosen": {
+    "name": "full_mb256x1",
+    "mode": "full",
+    "microbatch": 256,
+    "accumulation": 1,
+    "windows_per_step": 18
+  },
+  "tried": [
+    {
+      "candidate": {
+        "name": "full_mb256x1",
+        "mode": "full",
+        "microbatch": 256,
+        "accumulation": 1,
+        "windows_per_step": 18
+      },
+      "farms": {
+        "Kelmarsh": {
+          "candidate": {
+            "name": "full_mb256x1",
+            "mode": "full",
+            "microbatch": 256,
+            "accumulation": 1,
+            "windows_per_step": 18
+          },
+          "context_length": 512,
+          "free_gb_before": 23.2657470703125,
+          "total_gb": 23.55999755859375,
+          "limit_gb": 16.491998291015623,
+          "ok": true,
+          "peak_gb": 11.944350719451904
+        },
+        "Penmanshiel": {
+          "candidate": {
+            "name": "full_mb256x1",
+            "mode": "full",
+            "microbatch": 256,
+            "accumulation": 1,
+            "windows_per_step": 18
+          },
+          "context_length": 512,
+          "free_gb_before": 23.2657470703125,
+          "total_gb": 23.55999755859375,
+          "limit_gb": 16.491998291015623,
+          "ok": true,
+          "peak_gb": 11.944350719451904
+        },
+        "HoT": {
+          "candidate": {
+            "name": "full_mb256x1",
+            "mode": "full",
+            "microbatch": 256,
+            "accumulation": 1,
+            "windows_per_step": 18
+          },
+          "context_length": 512,
+          "free_gb_before": 23.2657470703125,
+          "total_gb": 23.55999755859375,
+          "limit_gb": 16.491998291015623,
+          "ok": true,
+          "peak_gb": 11.944350719451904
+        }
+      }
+    }
+  ],
+  "candidates": [
+    {
+      "name": "full_mb256x1",
+      "mode": "full",
+      "microbatch": 256,
+      "accumulation": 1,
+      "windows_per_step": 18
+    },
+    {
+      "name": "full_mb135x2",
+      "mode": "full",
+      "microbatch": 135,
+      "accumulation": 2,
+      "windows_per_step": 18
+    },
+    {
+      "name": "full_mb90x3",
+      "mode": "full",
+      "microbatch": 90,
+      "accumulation": 3,
+      "windows_per_step": 18
+    },
+    {
+      "name": "full_mb45x6",
+      "mode": "full",
+      "microbatch": 45,
+      "accumulation": 6,
+      "windows_per_step": 18
+    }
+  ]
+}

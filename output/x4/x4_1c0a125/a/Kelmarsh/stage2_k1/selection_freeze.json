@@ -1,0 +1,90 @@
+{
+  "model_sha256": {
+    "selected/config.json": "53ea035a6d1295b77d68173b526550d54e9d3c3a17b096a35876f1c615582b7b",
+    "selected/model.safetensors": "a3eadb0151b5b6d3c6dbf29c52058d07ea491abacca7689b861d7e51a24fe5a0"
+  },
+  "selected": {
+    "step": 0,
+    "mae": 121.92282390965632
+  },
+  "history": [
+    {
+      "step": 0,
+      "mae": 121.92282390965632
+    },
+    {
+      "step": 20,
+      "mae": 126.82082763354259
+    },
+    {
+      "step": 40,
+      "mae": 128.33048256079633
+    },
+    {
+      "step": 60,
+      "mae": 130.47140410405893
+    },
+    {
+      "step": 80,
+      "mae": 131.7633082607968
+    },
+    {
+      "step": 100,
+      "mae": 131.91223931198041
+    },
+    {
+      "step": 120,
+      "mae": 131.47616518930428
+    },
+    {
+      "step": 140,
+      "mae": 131.8058341131856
+    },
+    {
+      "step": 160,
+      "mae": 131.28722551990714
+    },
+    {
+      "step": 180,
+      "mae": 131.08880408799482
+    },
+    {
+      "step": 200,
+      "mae": 130.83736411792538
+    }
+  ],
+  "candidate": {
+    "name": "full_mb256x1",
+    "mode": "full",
+    "microbatch": 256,
+    "accumulation": 1,
+    "windows_per_step": 18
+  },
+  "learning_rate": 1e-06,
+  "steps": 200,
+  "eval_every": 20,
+  "eval_step0": true,
+  "init": {
+    "root": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X4/x4_1c0a125/a/Kelmarsh/stage1_lr0",
+    "model_sha256": {
+      "selected/config.json": "5ebdd54c86881d3796d054b729d5dca6548bb4cb736b47bd13538feb3d102f14",
+      "selected/model.safetensors": "a3eadb0151b5b6d3c6dbf29c52058d07ea491abacca7689b861d7e51a24fe5a0"
+    }
+  },
+  "trainer": {
+    "per_device_train_batch_size": 256,
+    "gradient_accumulation_steps": 1,
+    "max_steps": 200,
+    "learning_rate": 1e-06,
+    "n_gpu": 1,
+    "world_size": 1,
+    "seed": 2024,
+    "bf16": true,
+    "fp16": false
+  },
+  "train_windows": 1038,
+  "budget": {
+    "train_windows": 1038
+  },
+  "selection": "median MAE on the registered selection set"
+}

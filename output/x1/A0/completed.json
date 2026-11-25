@@ -1,0 +1,11 @@
+{
+  "status": "COMPLETED",
+  "new_fits": 0,
+  "predictions": {
+    "Kelmarsh_2022": "8394782064c92f92a13c64d445be0904f5dc235ed17bd9df28f71f6af7c18403",
+    "Penmanshiel_2021": "5134d0f0ac0337296e18e5581cf82ff59604a8ccf63de52b889d658757e195d2",
+    "HoT_2024": "8ed1fdb3519f41791cf0b832d13ce7b3a8691a241de02eb45f46186fd6e20870",
+    "HoT_2025": "caa0d7144448c877db812b24cc9a6cd9536b39c7995e5840aef9680e05d94cb2"
+  },
+  "results_sha256": "2e84e22ee3b7f83939605fe82c8eca7bee2e82f7bd70cf4b4e2c1a03613acb85"
+}

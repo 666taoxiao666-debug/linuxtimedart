@@ -1,0 +1,276 @@
+[X4] start a
+[X4] A arrays Kelmarsh
+[X4] A arrays Penmanshiel
+[X4] A arrays HoT
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 1883.50it/s]
+  0%|          | 0/2 [00:00<?, ?it/s] 50%|█████     | 1/2 [00:02<00:02,  2.83s/it]100%|██████████| 2/2 [00:03<00:00,  1.33s/it]                                             {'train_runtime': '3.118', 'train_samples_per_second': '164.2', 'train_steps_per_second': '0.641', 'train_loss': '0.06151', 'epoch': '1'}
+100%|██████████| 2/2 [00:03<00:00,  1.33s/it]100%|██████████| 2/2 [00:03<00:00,  1.56s/it]
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  3.81it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  3.81it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 1905.04it/s]
+  0%|          | 0/2 [00:00<?, ?it/s] 50%|█████     | 1/2 [00:00<00:00,  2.02it/s]100%|██████████| 2/2 [00:00<00:00,  2.72it/s]                                             {'train_runtime': '0.7831', 'train_samples_per_second': '653.8', 'train_steps_per_second': '2.554', 'train_loss': '0.0533', 'epoch': '1'}
+100%|██████████| 2/2 [00:00<00:00,  2.72it/s]100%|██████████| 2/2 [00:00<00:00,  2.55it/s]
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  3.81it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  3.80it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 2016.21it/s]
+  0%|          | 0/2 [00:00<?, ?it/s] 50%|█████     | 1/2 [00:00<00:00,  2.01it/s]100%|██████████| 2/2 [00:00<00:00,  2.71it/s]                                             {'train_runtime': '0.7855', 'train_samples_per_second': '651.8', 'train_steps_per_second': '2.546', 'train_loss': '0.05714', 'epoch': '1'}
+100%|██████████| 2/2 [00:00<00:00,  2.71it/s]100%|██████████| 2/2 [00:00<00:00,  2.55it/s]
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  3.78it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  3.78it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 1920.93it/s]
+  0%|          | 0/4 [00:00<?, ?it/s] 25%|██▌       | 1/4 [00:00<00:01,  1.87it/s]
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s][A
+Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  3.80it/s][AWriting model shards: 100%|██████████| 1/1 [00:00<00:00,  3.80it/s]
+ 50%|█████     | 2/4 [00:02<00:02,  1.40s/it] 75%|███████▌  | 3/4 [00:02<00:00,  1.13it/s]100%|██████████| 4/4 [00:05<00:00,  1.60s/it]                                             {'train_runtime': '5.521', 'train_samples_per_second': '185.5', 'train_steps_per_second': '0.725', 'train_loss': '0.05418', 'epoch': '1'}
+100%|██████████| 4/4 [00:05<00:00,  1.60s/it]100%|██████████| 4/4 [00:05<00:00,  1.38s/it]
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  3.82it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  3.82it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 1875.28it/s]
+  0%|          | 0/4 [00:00<?, ?it/s] 25%|██▌       | 1/4 [00:00<00:01,  1.88it/s]
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s][A
+Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  3.85it/s][AWriting model shards: 100%|██████████| 1/1 [00:00<00:00,  3.85it/s]
+ 50%|█████     | 2/4 [00:02<00:02,  1.40s/it] 75%|███████▌  | 3/4 [00:02<00:00,  1.13it/s]100%|██████████| 4/4 [00:07<00:00,  2.20s/it]                                             {'train_runtime': '7.04', 'train_samples_per_second': '145.5', 'train_steps_per_second': '0.568', 'train_loss': '0.05519', 'epoch': '1'}
+100%|██████████| 4/4 [00:07<00:00,  2.20s/it]100%|██████████| 4/4 [00:07<00:00,  1.76s/it]
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  3.85it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  3.85it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 1913.36it/s]
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  3.74it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  3.73it/s]
+  0%|          | 0/4 [00:00<?, ?it/s] 25%|██▌       | 1/4 [00:00<00:01,  2.76it/s]
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s][A
+Writing model shards: 100%|██████████| 1/1 [00:30<00:00, 30.64s/it][AWriting model shards: 100%|██████████| 1/1 [00:30<00:00, 30.64s/it]
+ 50%|█████     | 2/4 [00:35<00:41, 20.83s/it] 75%|███████▌  | 3/4 [00:35<00:11, 11.46s/it]
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s][A
+Writing model shards: 100%|██████████| 1/1 [00:28<00:00, 28.80s/it][AWriting model shards: 100%|██████████| 1/1 [00:28<00:00, 28.80s/it]
+100%|██████████| 4/4 [01:08<00:00, 19.80s/it]                                             {'train_runtime': '68.45', 'train_samples_per_second': '14.96', 'train_steps_per_second': '0.058', 'train_loss': '0.07547', 'epoch': '1'}
+100%|██████████| 4/4 [01:08<00:00, 19.80s/it]100%|██████████| 4/4 [01:08<00:00, 17.11s/it]
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  4.88it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  4.88it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 1911.75it/s]
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  3.18it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  3.18it/s]
+  0%|          | 0/4 [00:00<?, ?it/s] 25%|██▌       | 1/4 [00:00<00:01,  2.70it/s]
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s][A
+Writing model shards: 100%|██████████| 1/1 [00:30<00:00, 30.37s/it][AWriting model shards: 100%|██████████| 1/1 [00:30<00:00, 30.37s/it]
+ 50%|█████     | 2/4 [00:36<00:42, 21.26s/it] 75%|███████▌  | 3/4 [00:36<00:11, 11.72s/it]
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s][A
+Writing model shards: 100%|██████████| 1/1 [00:29<00:00, 29.18s/it][AWriting model shards: 100%|██████████| 1/1 [00:29<00:00, 29.18s/it]
+100%|██████████| 4/4 [01:12<00:00, 21.26s/it]                                             {'train_runtime': '72.54', 'train_samples_per_second': '14.12', 'train_steps_per_second': '0.055', 'train_loss': '0.05208', 'epoch': '1'}
+100%|██████████| 4/4 [01:12<00:00, 21.26s/it]100%|██████████| 4/4 [01:12<00:00, 18.14s/it]
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  4.70it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  4.70it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 1944.37it/s]
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  3.43it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  3.43it/s]
+  0%|          | 0/4 [00:00<?, ?it/s] 25%|██▌       | 1/4 [00:00<00:01,  2.77it/s]
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s][A
+Writing model shards: 100%|██████████| 1/1 [00:14<00:00, 14.21s/it][AWriting model shards: 100%|██████████| 1/1 [00:14<00:00, 14.22s/it]
+ 50%|█████     | 2/4 [00:16<00:19,  9.54s/it] 75%|███████▌  | 3/4 [00:16<00:05,  5.31s/it]100%|██████████| 4/4 [00:18<00:00,  3.90s/it]                                             {'train_runtime': '18.35', 'train_samples_per_second': '55.8', 'train_steps_per_second': '0.218', 'train_loss': '0.07517', 'epoch': '1'}
+100%|██████████| 4/4 [00:18<00:00,  3.90s/it]100%|██████████| 4/4 [00:18<00:00,  4.59s/it]
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  4.26it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  4.26it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 1914.66it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 1890.60it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 1859.66it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 1860.92it/s]
+[X4] A done Kelmarsh {'learning_rate': 1e-06, 'step': 2, 'mae': 143.00783769440045}
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 1997.24it/s]
+  0%|          | 0/4 [00:00<?, ?it/s] 25%|██▌       | 1/4 [00:00<00:01,  1.84it/s]
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s][A
+Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  3.05it/s][AWriting model shards: 100%|██████████| 1/1 [00:00<00:00,  3.05it/s]
+ 50%|█████     | 2/4 [00:04<00:05,  2.79s/it] 75%|███████▌  | 3/4 [00:05<00:01,  1.64s/it]100%|██████████| 4/4 [00:10<00:00,  3.17s/it]                                             {'train_runtime': '10.69', 'train_samples_per_second': '95.75', 'train_steps_per_second': '0.374', 'train_loss': '0.0635', 'epoch': '1'}
+100%|██████████| 4/4 [00:10<00:00,  3.17s/it]100%|██████████| 4/4 [00:10<00:00,  2.67s/it]
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  3.26it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  3.26it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 1954.13it/s]
+  0%|          | 0/4 [00:00<?, ?it/s] 25%|██▌       | 1/4 [00:00<00:01,  1.86it/s]
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s][A
+Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  3.25it/s][AWriting model shards: 100%|██████████| 1/1 [00:00<00:00,  3.25it/s]
+ 50%|█████     | 2/4 [00:04<00:05,  2.77s/it] 75%|███████▌  | 3/4 [00:05<00:01,  1.63s/it]100%|██████████| 4/4 [00:09<00:00,  2.58s/it]                                             {'train_runtime': '9.195', 'train_samples_per_second': '111.4', 'train_steps_per_second': '0.435', 'train_loss': '0.0634', 'epoch': '1'}
+100%|██████████| 4/4 [00:09<00:00,  2.58s/it]100%|██████████| 4/4 [00:09<00:00,  2.30s/it]
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  3.53it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  3.53it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 1878.71it/s]
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  3.18it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  3.18it/s]
+  0%|          | 0/4 [00:00<?, ?it/s] 25%|██▌       | 1/4 [00:00<00:01,  2.72it/s]
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s][A
+Writing model shards: 100%|██████████| 1/1 [00:26<00:00, 26.57s/it][AWriting model shards: 100%|██████████| 1/1 [00:26<00:00, 26.57s/it]
+ 50%|█████     | 2/4 [00:32<00:38, 19.13s/it] 75%|███████▌  | 3/4 [00:32<00:10, 10.53s/it]
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s][A
+Writing model shards: 100%|██████████| 1/1 [00:30<00:00, 30.38s/it][AWriting model shards: 100%|██████████| 1/1 [00:30<00:00, 30.38s/it]
+100%|██████████| 4/4 [01:09<00:00, 20.66s/it]                                             {'train_runtime': '69.14', 'train_samples_per_second': '14.81', 'train_steps_per_second': '0.058', 'train_loss': '0.09035', 'epoch': '1'}
+100%|██████████| 4/4 [01:09<00:00, 20.66s/it]100%|██████████| 4/4 [01:09<00:00, 17.28s/it]
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  4.79it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  4.78it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 1950.63it/s]
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  3.59it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  3.59it/s]
+  0%|          | 0/4 [00:00<?, ?it/s] 25%|██▌       | 1/4 [00:00<00:01,  2.67it/s]
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s][A
+Writing model shards: 100%|██████████| 1/1 [00:17<00:00, 17.19s/it][AWriting model shards: 100%|██████████| 1/1 [00:17<00:00, 17.19s/it]
+ 50%|█████     | 2/4 [00:29<00:34, 17.35s/it] 75%|███████▌  | 3/4 [00:29<00:09,  9.57s/it]
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s][A
+Writing model shards: 100%|██████████| 1/1 [00:14<00:00, 14.36s/it][AWriting model shards: 100%|██████████| 1/1 [00:14<00:00, 14.36s/it]
+100%|██████████| 4/4 [00:55<00:00, 15.88s/it]                                             {'train_runtime': '55.48', 'train_samples_per_second': '18.46', 'train_steps_per_second': '0.072', 'train_loss': '0.05735', 'epoch': '1'}
+100%|██████████| 4/4 [00:55<00:00, 15.88s/it]100%|██████████| 4/4 [00:55<00:00, 13.87s/it]
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  3.94it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  3.94it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 1971.15it/s]
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  3.06it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  3.06it/s]
+  0%|          | 0/4 [00:00<?, ?it/s] 25%|██▌       | 1/4 [00:00<00:01,  2.69it/s]
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s][A
+Writing model shards: 100%|██████████| 1/1 [00:16<00:00, 16.85s/it][AWriting model shards: 100%|██████████| 1/1 [00:16<00:00, 16.85s/it]
+ 50%|█████     | 2/4 [00:22<00:26, 13.35s/it] 75%|███████▌  | 3/4 [00:23<00:07,  7.41s/it]
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s][A
+Writing model shards: 100%|██████████| 1/1 [00:20<00:00, 20.32s/it][AWriting model shards: 100%|██████████| 1/1 [00:20<00:00, 20.32s/it]
+100%|██████████| 4/4 [00:49<00:00, 14.77s/it]                                             {'train_runtime': '49.22', 'train_samples_per_second': '20.81', 'train_steps_per_second': '0.081', 'train_loss': '0.09043', 'epoch': '1'}
+100%|██████████| 4/4 [00:49<00:00, 14.77s/it]100%|██████████| 4/4 [00:49<00:00, 12.30s/it]
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  4.76it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  4.76it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 2006.69it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 1967.62it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 1966.77it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 1944.21it/s]
+[X4] A done Penmanshiel {'learning_rate': 1e-06, 'step': 2, 'mae': 252.78895123549682}
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 1921.36it/s]
+  0%|          | 0/4 [00:00<?, ?it/s] 25%|██▌       | 1/4 [00:00<00:01,  1.85it/s]
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s][A
+Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  3.72it/s][AWriting model shards: 100%|██████████| 1/1 [00:00<00:00,  3.71it/s]
+ 50%|█████     | 2/4 [00:06<00:06,  3.46s/it] 75%|███████▌  | 3/4 [00:06<00:02,  2.01s/it]100%|██████████| 4/4 [00:11<00:00,  3.28s/it]                                             {'train_runtime': '11.56', 'train_samples_per_second': '88.6', 'train_steps_per_second': '0.346', 'train_loss': '0.05364', 'epoch': '1'}
+100%|██████████| 4/4 [00:11<00:00,  3.28s/it]100%|██████████| 4/4 [00:11<00:00,  2.89s/it]
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  3.71it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  3.70it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 1917.32it/s]
+  0%|          | 0/4 [00:00<?, ?it/s] 25%|██▌       | 1/4 [00:00<00:01,  1.86it/s]
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s][A
+Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  3.79it/s][AWriting model shards: 100%|██████████| 1/1 [00:00<00:00,  3.79it/s]
+ 50%|█████     | 2/4 [00:06<00:06,  3.45s/it] 75%|███████▌  | 3/4 [00:06<00:02,  2.00s/it]100%|██████████| 4/4 [00:11<00:00,  3.28s/it]                                             {'train_runtime': '11.53', 'train_samples_per_second': '88.78', 'train_steps_per_second': '0.347', 'train_loss': '0.05505', 'epoch': '1'}
+100%|██████████| 4/4 [00:11<00:00,  3.28s/it]100%|██████████| 4/4 [00:11<00:00,  2.88s/it]
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  3.77it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  3.77it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 1888.33it/s]
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  3.73it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  3.73it/s]
+  0%|          | 0/4 [00:00<?, ?it/s] 25%|██▌       | 1/4 [00:00<00:01,  2.69it/s]
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s][A
+Writing model shards: 100%|██████████| 1/1 [00:17<00:00, 17.29s/it][AWriting model shards: 100%|██████████| 1/1 [00:17<00:00, 17.29s/it]
+ 50%|█████     | 2/4 [00:23<00:27, 13.75s/it] 75%|███████▌  | 3/4 [00:23<00:07,  7.60s/it]
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s][A
+Writing model shards: 100%|██████████| 1/1 [00:29<00:00, 29.13s/it][AWriting model shards: 100%|██████████| 1/1 [00:29<00:00, 29.13s/it]
+100%|██████████| 4/4 [01:00<00:00, 18.94s/it]                                             {'train_runtime': '60.13', 'train_samples_per_second': '17.03', 'train_steps_per_second': '0.067', 'train_loss': '0.1068', 'epoch': '1'}
+100%|██████████| 4/4 [01:00<00:00, 18.94s/it]100%|██████████| 4/4 [01:00<00:00, 15.03s/it]
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  4.57it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  4.57it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 1896.47it/s]
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  3.75it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  3.75it/s]
+  0%|          | 0/4 [00:00<?, ?it/s] 25%|██▌       | 1/4 [00:00<00:01,  2.55it/s] 50%|█████     | 2/4 [00:16<00:19,  9.67s/it] 75%|███████▌  | 3/4 [00:16<00:05,  5.38s/it]100%|██████████| 4/4 [00:33<00:00,  9.87s/it]                                             {'train_runtime': '33.58', 'train_samples_per_second': '30.5', 'train_steps_per_second': '0.119', 'train_loss': '0.05886', 'epoch': '1'}
+100%|██████████| 4/4 [00:33<00:00,  9.87s/it]100%|██████████| 4/4 [00:33<00:00,  8.39s/it]
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  3.64it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  3.63it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 1979.18it/s]
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  3.07it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  3.07it/s]
+  0%|          | 0/4 [00:00<?, ?it/s] 25%|██▌       | 1/4 [00:00<00:01,  2.70it/s]
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s][A
+Writing model shards: 100%|██████████| 1/1 [00:18<00:00, 18.01s/it][AWriting model shards: 100%|██████████| 1/1 [00:18<00:00, 18.01s/it]
+ 50%|█████     | 2/4 [00:25<00:29, 14.69s/it] 75%|███████▌  | 3/4 [00:25<00:08,  8.14s/it]
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s][A
+Writing model shards: 100%|██████████| 1/1 [00:19<00:00, 19.07s/it][AWriting model shards: 100%|██████████| 1/1 [00:19<00:00, 19.07s/it]
+100%|██████████| 4/4 [00:50<00:00, 14.63s/it]                                             {'train_runtime': '50.03', 'train_samples_per_second': '20.47', 'train_steps_per_second': '0.08', 'train_loss': '0.1065', 'epoch': '1'}
+100%|██████████| 4/4 [00:50<00:00, 14.63s/it]100%|██████████| 4/4 [00:50<00:00, 12.51s/it]
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  4.24it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  4.24it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 2023.12it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 1956.83it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 1927.52it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 1972.28it/s]
+[X4] A done HoT {'learning_rate': 1e-06, 'step': 2, 'mae': 137.60431246352928}
+[X4] start b
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 1920.58it/s]
+  0%|          | 0/2 [00:00<?, ?it/s]  0%|          | 0/2 [00:00<?, ?it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 1941.57it/s]
+  0%|          | 0/2 [00:00<?, ?it/s] 50%|█████     | 1/2 [00:00<00:00,  1.38it/s]100%|██████████| 2/2 [00:01<00:00,  1.69it/s]                                             {'train_runtime': '1.234', 'train_samples_per_second': '437.5', 'train_steps_per_second': '1.62', 'train_loss': '0.05772', 'epoch': '1'}
+100%|██████████| 2/2 [00:01<00:00,  1.69it/s]100%|██████████| 2/2 [00:01<00:00,  1.62it/s]
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  3.63it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  3.63it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 1875.54it/s]
+  0%|          | 0/2 [00:00<?, ?it/s] 50%|█████     | 1/2 [00:00<00:00,  1.40it/s]100%|██████████| 2/2 [00:01<00:00,  1.70it/s]                                             {'train_runtime': '1.223', 'train_samples_per_second': '441.7', 'train_steps_per_second': '1.636', 'train_loss': '0.1051', 'epoch': '1'}
+100%|██████████| 2/2 [00:01<00:00,  1.70it/s]100%|██████████| 2/2 [00:01<00:00,  1.64it/s]
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  3.63it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  3.63it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 1911.48it/s]
+  0%|          | 0/2 [00:00<?, ?it/s] 50%|█████     | 1/2 [00:00<00:00,  1.39it/s]100%|██████████| 2/2 [00:01<00:00,  1.69it/s]                                             {'train_runtime': '1.233', 'train_samples_per_second': '438', 'train_steps_per_second': '1.622', 'train_loss': '0.0601', 'epoch': '1'}
+100%|██████████| 2/2 [00:01<00:00,  1.69it/s]100%|██████████| 2/2 [00:01<00:00,  1.62it/s]
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  3.60it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  3.60it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 1914.26it/s]
+  0%|          | 0/4 [00:00<?, ?it/s] 25%|██▌       | 1/4 [00:00<00:02,  1.35it/s]
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s][A
+Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  3.82it/s][AWriting model shards: 100%|██████████| 1/1 [00:00<00:00,  3.81it/s]
+ 50%|█████     | 2/4 [00:03<00:04,  2.16s/it] 75%|███████▌  | 3/4 [00:04<00:01,  1.40s/it]100%|██████████| 4/4 [00:07<00:00,  1.99s/it]                                             {'train_runtime': '7.299', 'train_samples_per_second': '148', 'train_steps_per_second': '0.548', 'train_loss': '0.05358', 'epoch': '1'}
+100%|██████████| 4/4 [00:07<00:00,  1.99s/it]100%|██████████| 4/4 [00:07<00:00,  1.82s/it]
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  3.80it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  3.79it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 1932.38it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 2004.24it/s]
+  0%|          | 0/4 [00:00<?, ?it/s] 25%|██▌       | 1/4 [00:00<00:02,  1.31it/s]
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s][A
+Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  3.82it/s][AWriting model shards: 100%|██████████| 1/1 [00:00<00:00,  3.81it/s]
+ 50%|█████     | 2/4 [00:03<00:04,  2.18s/it] 75%|███████▌  | 3/4 [00:04<00:01,  1.41s/it]
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s][A
+Writing model shards: 100%|██████████| 1/1 [00:26<00:00, 26.02s/it][AWriting model shards: 100%|██████████| 1/1 [00:26<00:00, 26.02s/it]
+100%|██████████| 4/4 [00:35<00:00, 13.14s/it]                                             {'train_runtime': '35.58', 'train_samples_per_second': '30.36', 'train_steps_per_second': '0.112', 'train_loss': '0.05486', 'epoch': '1'}
+100%|██████████| 4/4 [00:35<00:00, 13.14s/it]100%|██████████| 4/4 [00:35<00:00,  8.89s/it]
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  5.20it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  5.20it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 1906.95it/s]
+[X4] B done Kelmarsh {'name': 'X3_Q2_FT20k', 'learning_rate': 1e-06, 'v1_mae': 130.56845092773438}
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 1970.75it/s]
+  0%|          | 0/4 [00:00<?, ?it/s] 25%|██▌       | 1/4 [00:00<00:02,  1.31it/s]
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s][A
+Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  3.78it/s][AWriting model shards: 100%|██████████| 1/1 [00:00<00:00,  3.78it/s]
+ 50%|█████     | 2/4 [00:07<00:08,  4.29s/it] 75%|███████▌  | 3/4 [00:08<00:02,  2.56s/it]
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s][A
+Writing model shards: 100%|██████████| 1/1 [00:29<00:00, 29.63s/it][AWriting model shards: 100%|██████████| 1/1 [00:29<00:00, 29.63s/it]
+100%|██████████| 4/4 [00:45<00:00, 16.20s/it]                                             {'train_runtime': '45.15', 'train_samples_per_second': '23.92', 'train_steps_per_second': '0.089', 'train_loss': '0.07284', 'epoch': '1'}
+100%|██████████| 4/4 [00:45<00:00, 16.20s/it]100%|██████████| 4/4 [00:45<00:00, 11.29s/it]
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  4.70it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  4.69it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 2017.20it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 1920.33it/s]
+  0%|          | 0/4 [00:00<?, ?it/s] 25%|██▌       | 1/4 [00:00<00:02,  1.32it/s]
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s][A
+Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  3.79it/s][AWriting model shards: 100%|██████████| 1/1 [00:00<00:00,  3.78it/s]
+ 50%|█████     | 2/4 [00:07<00:08,  4.30s/it] 75%|███████▌  | 3/4 [00:08<00:02,  2.56s/it]100%|██████████| 4/4 [00:14<00:00,  4.13s/it]                                             {'train_runtime': '14.55', 'train_samples_per_second': '74.22', 'train_steps_per_second': '0.275', 'train_loss': '0.07377', 'epoch': '1'}
+100%|██████████| 4/4 [00:14<00:00,  4.13s/it]100%|██████████| 4/4 [00:14<00:00,  3.64s/it]
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  3.61it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  3.61it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 1988.88it/s]
+[X4] B done Penmanshiel {'name': 'X3_Q2_FT20k', 'learning_rate': 1e-06, 'v1_mae': 341.5207824707031}
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 1946.15it/s]
+  0%|          | 0/4 [00:00<?, ?it/s] 25%|██▌       | 1/4 [00:00<00:02,  1.31it/s]
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s][A
+Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  3.87it/s][AWriting model shards: 100%|██████████| 1/1 [00:00<00:00,  3.86it/s]
+ 50%|█████     | 2/4 [00:04<00:05,  2.52s/it] 75%|███████▌  | 3/4 [00:05<00:01,  1.61s/it]100%|██████████| 4/4 [00:08<00:00,  2.36s/it]                                             {'train_runtime': '8.539', 'train_samples_per_second': '126.5', 'train_steps_per_second': '0.468', 'train_loss': '0.05373', 'epoch': '1'}
+100%|██████████| 4/4 [00:08<00:00,  2.36s/it]100%|██████████| 4/4 [00:08<00:00,  2.13s/it]
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  3.87it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  3.87it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 1899.36it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 1928.06it/s]
+  0%|          | 0/4 [00:00<?, ?it/s] 25%|██▌       | 1/4 [00:00<00:02,  1.32it/s]
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s][A
+Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  3.87it/s][AWriting model shards: 100%|██████████| 1/1 [00:00<00:00,  3.87it/s]
+ 50%|█████     | 2/4 [00:04<00:05,  2.52s/it] 75%|███████▌  | 3/4 [00:05<00:01,  1.60s/it]100%|██████████| 4/4 [00:09<00:00,  2.80s/it]                                             {'train_runtime': '9.653', 'train_samples_per_second': '111.9', 'train_steps_per_second': '0.414', 'train_loss': '0.05372', 'epoch': '1'}
+100%|██████████| 4/4 [00:09<00:00,  2.80s/it]100%|██████████| 4/4 [00:09<00:00,  2.41s/it]
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  3.85it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  3.85it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 1883.65it/s]
+Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]Loading weights: 100%|██████████| 170/170 [00:00<00:00, 1912.55it/s]
+[X4] B done HoT {'name': 'lr0', 'learning_rate': 3e-06, 'step': 2, 'v1_mae': 255.13677978515625}
+[X4] start d0
+/home/XT/nuist/pythoncode/TimeDARTFirst_X4_1c0a125/scripts/run_x4.py:191: RuntimeWarning: Mean of empty slice
+  fut = np.nanmean(g[:, 6:10], 1) if g.size else np.zeros(0)
+/home/XT/nuist/pythoncode/TimeDARTFirst_X4_1c0a125/scripts/run_x4.py:191: RuntimeWarning: Mean of empty slice
+  fut = np.nanmean(g[:, 6:10], 1) if g.size else np.zeros(0)
+/home/XT/nuist/pythoncode/TimeDARTFirst_X4_1c0a125/scripts/run_x4.py:191: RuntimeWarning: Mean of empty slice
+  fut = np.nanmean(g[:, 6:10], 1) if g.size else np.zeros(0)
+/home/XT/nuist/pythoncode/TimeDARTFirst_X4_1c0a125/scripts/run_x4.py:191: RuntimeWarning: Mean of empty slice
+  fut = np.nanmean(g[:, 6:10], 1) if g.size else np.zeros(0)
+[X4] D0 Kelmarsh DETERMINED 0.06666666666666672
+/home/XT/nuist/pythoncode/TimeDARTFirst_X4_1c0a125/scripts/run_x4.py:191: RuntimeWarning: Mean of empty slice
+  fut = np.nanmean(g[:, 6:10], 1) if g.size else np.zeros(0)
+/home/XT/nuist/pythoncode/TimeDARTFirst_X4_1c0a125/scripts/run_x4.py:191: RuntimeWarning: Mean of empty slice
+  fut = np.nanmean(g[:, 6:10], 1) if g.size else np.zeros(0)
+/home/XT/nuist/pythoncode/TimeDARTFirst_X4_1c0a125/scripts/run_x4.py:191: RuntimeWarning: Mean of empty slice
+  fut = np.nanmean(g[:, 6:10], 1) if g.size else np.zeros(0)
+/home/XT/nuist/pythoncode/TimeDARTFirst_X4_1c0a125/scripts/run_x4.py:191: RuntimeWarning: Mean of empty slice
+  fut = np.nanmean(g[:, 6:10], 1) if g.size else np.zeros(0)
+[X4] D0 Penmanshiel DETERMINED -0.7142857142857143
+/home/XT/nuist/pythoncode/TimeDARTFirst_X4_1c0a125/scripts/run_x4.py:191: RuntimeWarning: Mean of empty slice
+  fut = np.nanmean(g[:, 6:10], 1) if g.size else np.zeros(0)
+[LightGBM] [Warning] Met categorical feature which contains sparse values. Consider renumbering to consecutive integers started from zero
+[LightGBM] [Warning] Met categorical feature which contains sparse values. Consider renumbering to consecutive integers started from zero
+/home/XT/nuist/pythoncode/TimeDARTFirst_X4_1c0a125/scripts/run_x4.py:191: RuntimeWarning: Mean of empty slice
+  fut = np.nanmean(g[:, 6:10], 1) if g.size else np.zeros(0)
+[LightGBM] [Warning] Met categorical feature which contains sparse values. Consider renumbering to consecutive integers started from zero
+[LightGBM] [Warning] Met categorical feature which contains sparse values. Consider renumbering to consecutive integers started from zero
+[LightGBM] [Warning] Met categorical feature which contains sparse values. Consider renumbering to consecutive integers started from zero
+[LightGBM] [Warning] Met categorical feature which contains sparse values. Consider renumbering to consecutive integers started from zero
+/home/XT/nuist/pythoncode/TimeDARTFirst_X4_1c0a125/scripts/run_x4.py:191: RuntimeWarning: Mean of empty slice
+  fut = np.nanmean(g[:, 6:10], 1) if g.size else np.zeros(0)
+[LightGBM] [Warning] Met categorical feature which contains sparse values. Consider renumbering to consecutive integers started from zero
+[LightGBM] [Warning] Met categorical feature which contains sparse values. Consider renumbering to consecutive integers started from zero
+/home/XT/nuist/pythoncode/TimeDARTFirst_X4_1c0a125/scripts/run_x4.py:191: RuntimeWarning: Mean of empty slice
+  fut = np.nanmean(g[:, 6:10], 1) if g.size else np.zeros(0)
+[LightGBM] [Warning] Met categorical feature which contains sparse values. Consider renumbering to consecutive integers started from zero
+[LightGBM] [Warning] Met categorical feature which contains sparse values. Consider renumbering to consecutive integers started from zero
+[X4] D0 HoT DETERMINED -0.2761904761904762
+[X4] start report
+[X4] chain done

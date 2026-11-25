@@ -1,0 +1,70 @@
+{
+  "caches": {
+    "identities": {
+      "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/G1/g1c_27312d7_r2/prepared/Penmanshiel/points_0.npz": "7d8773e6a5e29bb5420a7f7873e3cbd8048bda4679b8f9aa6337a4ff3be87669",
+      "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/G1/g1c_27312d7_r2/prepared/Penmanshiel/points_1.npz": "84f86d4b749b2c9f16f4887949227d063b69d0dbba015650a7b96df8b8d8a793"
+    },
+    "cycles": 8753,
+    "cycles_kept": 7300,
+    "kept_before": "2021-01-01"
+  },
+  "mean": 6.039576776904598,
+  "scale": 2.7983884000013877,
+  "cutoff": "2024-01-01",
+  "audit": {
+    "train@6": {
+      "delay": 6,
+      "age_min": 6,
+      "age_max": 9,
+      "cycles_used": 4747,
+      "issues": 4749
+    },
+    "train@18": {
+      "delay": 18,
+      "age_min": 18,
+      "age_max": 21,
+      "cycles_used": 4747,
+      "issues": 4749
+    },
+    "train@binding": {
+      "max_abs_diff": 0.0,
+      "exact_fraction": 1.0
+    },
+    "V1@6": {
+      "delay": 6,
+      "age_min": 6,
+      "age_max": 9,
+      "cycles_used": 1400,
+      "issues": 1400
+    },
+    "V1@18": {
+      "delay": 18,
+      "age_min": 18,
+      "age_max": 21,
+      "cycles_used": 1400,
+      "issues": 1400
+    },
+    "V1@binding": {
+      "max_abs_diff": 0.0,
+      "exact_fraction": 1.0
+    },
+    "V2@6": {
+      "delay": 6,
+      "age_min": 6,
+      "age_max": 9,
+      "cycles_used": 1256,
+      "issues": 1256
+    },
+    "V2@18": {
+      "delay": 18,
+      "age_min": 18,
+      "age_max": 21,
+      "cycles_used": 1256,
+      "issues": 1256
+    },
+    "V2@binding": {
+      "max_abs_diff": 0.0,
+      "exact_fraction": 1.0
+    }
+  }
+}

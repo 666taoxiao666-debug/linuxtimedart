@@ -1,0 +1,4 @@
+[X3-HS0] done Kelmarsh
+[X3-HS0] done Penmanshiel
+[X3-HS0] done HoT
+[X3-HS0] NOT_CONFIRMED {"P1_cause": true, "P2_native_source_binds_every_pack": true, "P3_no_time_offset_explains_it": true, "P4_sources_differ_only_at_outside_development_hours": false, "a3_grid_mismatch_occurrences": {"Kelmarsh/train": 0, "Kelmarsh/validation": 0, "Kelmarsh/Kelmarsh_2022": 0, "Penmanshiel/train": 0, "Penmanshiel/validation": 0, "Penmanshiel/Penmanshiel_2021": 0, "HoT/train": 0, "HoT/validation": 0, "HoT/HoT_2024": 1470, "HoT/HoT_2025": 0}, "native_mismatch_occurrences": {"Kelmarsh/train": 0, "Kelmarsh/validation": 0, "Kelmarsh/Kelmarsh_2022": 0, "Penmanshiel/train": 0, "Penmanshiel/validation": 0, "Penmanshiel/Penmanshiel_2021": 0, "HoT/train": 0, "HoT/validation": 0, "HoT/HoT_2024": 0, "HoT/HoT_2025": 0}}

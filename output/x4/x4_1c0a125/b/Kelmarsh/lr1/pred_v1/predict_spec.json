@@ -1,0 +1,37 @@
+{
+  "task": "predict",
+  "output": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X4/x4_1c0a125/b/Kelmarsh/lr1/pred_v1",
+  "receipt": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/cursor_env/receipt.json",
+  "manifest": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/cursor_env/chronos2_manifest.json",
+  "gpu_fraction": 0.7,
+  "context_length": 1024,
+  "masked": false,
+  "models": [
+    {
+      "name": "m",
+      "init": {
+        "root": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X4/x4_1c0a125/b/Kelmarsh/lr1",
+        "model_sha256": {
+          "selected/config.json": "5ebdd54c86881d3796d054b729d5dca6548bb4cb736b47bd13538feb3d102f14",
+          "selected/model.safetensors": "2a8bf85f71e7d914d112004f7b38e8a83fab704d454bc466c5baa256ade5102e"
+        }
+      }
+    }
+  ],
+  "contexts": [
+    {
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X4/x4_1c0a125/b/Kelmarsh/V1_context.npz",
+      "sha256": "e41c840ac9122224671fea3f7366a7b8bb2d2d779d7959fbf300afd4b3ab4cbb",
+      "name": "V1",
+      "history": {
+        "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X4/x4_1c0a125/b/history/Kelmarsh_a3_grid.npz",
+        "sha256": "9fb6b37c8f6e1aeaa512e948a770d8a35ea10d2ebf3b6b852dccc4cc8165a78e",
+        "source": "a3_grid"
+      },
+      "grid": {
+        "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/x1_e4819b0_gpu_r1/A3/Kelmarsh_history.npz",
+        "sha256": "cd54e76ebad2dc58a24811c1fce46827e2b0503d7367554e323892981907c8df"
+      }
+    }
+  ]
+}

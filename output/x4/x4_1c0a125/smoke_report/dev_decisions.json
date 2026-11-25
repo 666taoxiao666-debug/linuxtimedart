@@ -1,0 +1,484 @@
+{
+  "family": [
+    "A",
+    "B1",
+    "B2"
+  ],
+  "z": 2.3939797998185104,
+  "note": "development-stage evidence; V1/V2/tests were used in X3 (R1-S3)",
+  "A": {
+    "passed": false,
+    "pooled": {
+      "status": "OK",
+      "farms": {
+        "Kelmarsh": {
+          "relative_gain": -0.03614538622462225,
+          "relative_se": 0.053827332938527477
+        },
+        "Penmanshiel": {
+          "relative_gain": -0.12950421811748616,
+          "relative_se": 0.03741906040808138
+        },
+        "HoT": {
+          "relative_gain": 0.2649070297747347,
+          "relative_se": 0.19336183967453535
+        }
+      },
+      "pooled_relative_gain": -0.0901232654862092,
+      "pooled_se": 0.03034379535020117,
+      "z": 2.3939797998185104,
+      "ci95_low": -0.16276569860441764,
+      "ci95_high": -0.017480832368000757
+    },
+    "farm_relative": {
+      "Kelmarsh": -0.03614538622462225,
+      "Penmanshiel": -0.12950421811748616,
+      "HoT": 0.2649070297747347
+    },
+    "comparison": "C_T1 vs L_1X on target V1 (k = 1)",
+    "descriptive": {
+      "Kelmarsh": {
+        "mae": {
+          "C_T0": 129.59805297851562,
+          "C_T1": 129.49722290039062,
+          "C_T3": 130.1777801513672,
+          "C_D1": 129.61557006835938,
+          "C_zs": 129.75820922851562,
+          "L_1": 127.9808578491211,
+          "L_1X": 124.97978210449219,
+          "L_3": 129.37965393066406,
+          "L_3X": 121.80419158935547
+        },
+        "C_T1_vs_C_D1": {
+          "loss": "absolute_error",
+          "units": "kW",
+          "gain_definition": "mean reference loss - mean candidate loss; positive favours candidate",
+          "estimand": "window_uniform",
+          "candidate_mean_loss": 129.49722219202255,
+          "reference_mean_loss": 129.61556624253592,
+          "gain": 0.11834405051337347,
+          "ci95_low": -0.08942856253792465,
+          "ci95_high": 0.5368293575530357,
+          "probability_gain_positive": 0.87,
+          "bootstrap": {
+            "block_length_issue_times": 8,
+            "replicates": 200,
+            "seed": 2024
+          },
+          "newey_west": {
+            "statistic": 0.6793729179233583,
+            "p_value_two_sided": 0.49690160502539843,
+            "lag": 7,
+            "time_points": 40
+          },
+          "windows": 225,
+          "issue_time_clusters": 40,
+          "candidate_better_window_pct": 51.11111111111111
+        },
+        "C_T1_vs_C_zs": {
+          "loss": "absolute_error",
+          "units": "kW",
+          "gain_definition": "mean reference loss - mean candidate loss; positive favours candidate",
+          "estimand": "window_uniform",
+          "candidate_mean_loss": 129.49722219202255,
+          "reference_mean_loss": 129.75821798271602,
+          "gain": 0.260995790693495,
+          "ci95_low": -0.1713184888129649,
+          "ci95_high": 0.8405161270911515,
+          "probability_gain_positive": 0.86,
+          "bootstrap": {
+            "block_length_issue_times": 8,
+            "replicates": 200,
+            "seed": 2024
+          },
+          "newey_west": {
+            "statistic": 0.9864826706149019,
+            "p_value_two_sided": 0.3238963149363615,
+            "lag": 7,
+            "time_points": 40
+          },
+          "windows": 225,
+          "issue_time_clusters": 40,
+          "candidate_better_window_pct": 50.66666666666667
+        },
+        "C_D1_vs_C_zs": {
+          "loss": "absolute_error",
+          "units": "kW",
+          "gain_definition": "mean reference loss - mean candidate loss; positive favours candidate",
+          "estimand": "window_uniform",
+          "candidate_mean_loss": 129.61556624253592,
+          "reference_mean_loss": 129.75821798271602,
+          "gain": 0.14265174018012153,
+          "ci95_low": -0.2681546199682987,
+          "ci95_high": 0.5364487944963795,
+          "probability_gain_positive": 0.745,
+          "bootstrap": {
+            "block_length_issue_times": 8,
+            "replicates": 200,
+            "seed": 2024
+          },
+          "newey_west": {
+            "statistic": 0.7300148563830855,
+            "p_value_two_sided": 0.465381103615268,
+            "lag": 7,
+            "time_points": 40
+          },
+          "windows": 225,
+          "issue_time_clusters": 40,
+          "candidate_better_window_pct": 47.11111111111111
+        }
+      },
+      "Penmanshiel": {
+        "mae": {
+          "C_T0": 347.10101318359375,
+          "C_T1": 346.4669494628906,
+          "C_T3": 347.0634460449219,
+          "C_D1": 346.92425537109375,
+          "C_zs": 347.6695251464844,
+          "L_1": 381.0103759765625,
+          "L_1X": 306.74249267578125,
+          "L_3": 331.1734313964844,
+          "L_3X": 308.7899475097656
+        },
+        "C_T1_vs_C_D1": {
+          "loss": "absolute_error",
+          "units": "kW",
+          "gain_definition": "mean reference loss - mean candidate loss; positive favours candidate",
+          "estimand": "window_uniform",
+          "candidate_mean_loss": 346.46693668545424,
+          "reference_mean_loss": 346.92425733133155,
+          "gain": 0.45732064587729315,
+          "ci95_low": -0.434606123651777,
+          "ci95_high": 1.2584479937383108,
+          "probability_gain_positive": 0.83,
+          "bootstrap": {
+            "block_length_issue_times": 8,
+            "replicates": 200,
+            "seed": 2024
+          },
+          "newey_west": {
+            "statistic": 1.029237769612605,
+            "p_value_two_sided": 0.30336795796373706,
+            "lag": 7,
+            "time_points": 40
+          },
+          "windows": 560,
+          "issue_time_clusters": 40,
+          "candidate_better_window_pct": 53.75
+        },
+        "C_T1_vs_C_zs": {
+          "loss": "absolute_error",
+          "units": "kW",
+          "gain_definition": "mean reference loss - mean candidate loss; positive favours candidate",
+          "estimand": "window_uniform",
+          "candidate_mean_loss": 346.46693668545424,
+          "reference_mean_loss": 347.66953761076354,
+          "gain": 1.2026009253093175,
+          "ci95_low": -1.4719504165649413,
+          "ci95_high": 4.331277098315103,
+          "probability_gain_positive": 0.81,
+          "bootstrap": {
+            "block_length_issue_times": 8,
+            "replicates": 200,
+            "seed": 2024
+          },
+          "newey_west": {
+            "statistic": 0.8613585514740232,
+            "p_value_two_sided": 0.38904059689198867,
+            "lag": 7,
+            "time_points": 40
+          },
+          "windows": 560,
+          "issue_time_clusters": 40,
+          "candidate_better_window_pct": 56.25
+        },
+        "C_D1_vs_C_zs": {
+          "loss": "absolute_error",
+          "units": "kW",
+          "gain_definition": "mean reference loss - mean candidate loss; positive favours candidate",
+          "estimand": "window_uniform",
+          "candidate_mean_loss": 346.92425733133155,
+          "reference_mean_loss": 347.66953761076354,
+          "gain": 0.7452802794320242,
+          "ci95_low": -1.1917425683566503,
+          "ci95_high": 3.294138857637134,
+          "probability_gain_positive": 0.755,
+          "bootstrap": {
+            "block_length_issue_times": 8,
+            "replicates": 200,
+            "seed": 2024
+          },
+          "newey_west": {
+            "statistic": 0.6866078418550544,
+            "p_value_two_sided": 0.49232988548893164,
+            "lag": 7,
+            "time_points": 40
+          },
+          "windows": 560,
+          "issue_time_clusters": 40,
+          "candidate_better_window_pct": 55.892857142857146
+        }
+      },
+      "HoT": {
+        "mae": {
+          "C_T0": 303.0929260253906,
+          "C_T1": 301.3656311035156,
+          "C_T3": 303.0929260253906,
+          "C_D1": 301.2300109863281,
+          "C_zs": 302.9080810546875,
+          "L_1": 448.1485595703125,
+          "L_1X": 409.96942138671875,
+          "L_3": 263.9669494628906,
+          "L_3X": 334.9259033203125
+        },
+        "C_T1_vs_C_D1": {
+          "loss": "absolute_error",
+          "units": "kW",
+          "gain_definition": "mean reference loss - mean candidate loss; positive favours candidate",
+          "estimand": "window_uniform",
+          "candidate_mean_loss": 301.3656154725035,
+          "reference_mean_loss": 301.23000903298544,
+          "gain": -0.13560643951807702,
+          "ci95_low": -2.193229878345238,
+          "ci95_high": 2.4633618784110465,
+          "probability_gain_positive": 0.545,
+          "bootstrap": {
+            "block_length_issue_times": 8,
+            "replicates": 200,
+            "seed": 2024
+          },
+          "newey_west": {
+            "statistic": -0.1127165627924057,
+            "p_value_two_sided": 0.9102552697255302,
+            "lag": 7,
+            "time_points": 40
+          },
+          "windows": 280,
+          "issue_time_clusters": 40,
+          "candidate_better_window_pct": 53.57142857142857
+        },
+        "C_T1_vs_C_zs": {
+          "loss": "absolute_error",
+          "units": "kW",
+          "gain_definition": "mean reference loss - mean candidate loss; positive favours candidate",
+          "estimand": "window_uniform",
+          "candidate_mean_loss": 301.3656154725035,
+          "reference_mean_loss": 302.90811202780213,
+          "gain": 1.5424965552985668,
+          "ci95_low": -1.654444422373282,
+          "ci95_high": 6.769230904770749,
+          "probability_gain_positive": 0.745,
+          "bootstrap": {
+            "block_length_issue_times": 8,
+            "replicates": 200,
+            "seed": 2024
+          },
+          "newey_west": {
+            "statistic": 0.7172641567316791,
+            "p_value_two_sided": 0.47321111917732867,
+            "lag": 7,
+            "time_points": 40
+          },
+          "windows": 280,
+          "issue_time_clusters": 40,
+          "candidate_better_window_pct": 56.42857142857143
+        },
+        "C_D1_vs_C_zs": {
+          "loss": "absolute_error",
+          "units": "kW",
+          "gain_definition": "mean reference loss - mean candidate loss; positive favours candidate",
+          "estimand": "window_uniform",
+          "candidate_mean_loss": 301.23000903298544,
+          "reference_mean_loss": 302.90811202780213,
+          "gain": 1.678102994816644,
+          "ci95_low": -3.2819011927183186,
+          "ci95_high": 7.766808595785076,
+          "probability_gain_positive": 0.69,
+          "bootstrap": {
+            "block_length_issue_times": 8,
+            "replicates": 200,
+            "seed": 2024
+          },
+          "newey_west": {
+            "statistic": 0.6651901217995745,
+            "p_value_two_sided": 0.5059288978326881,
+            "lag": 7,
+            "time_points": 40
+          },
+          "windows": 280,
+          "issue_time_clusters": 40,
+          "candidate_better_window_pct": 56.07142857142857
+        }
+      }
+    },
+    "wording": "the tested two-stage adaptation pipeline; no causal attribution to source transfer (R1-S4)",
+    "a_meta_sha256": "9cdd898641e0ccfba19618093821781ce5b52d9312c4049f2ccdc04405bf713a"
+  },
+  "B1": {
+    "outcome": "NEGATIVE",
+    "pooled": {
+      "status": "OK",
+      "farms": {
+        "Kelmarsh": {
+          "relative_gain": 0.028976121332061667,
+          "relative_se": 0.06133945560999634
+        },
+        "Penmanshiel": {
+          "relative_gain": -0.023634673144230397,
+          "relative_se": 0.03546682096240918
+        },
+        "HoT": {
+          "relative_gain": -0.13128912407233287,
+          "relative_se": 0.05136545719074506
+        }
+      },
+      "pooled_relative_gain": -0.04226256460726008,
+      "pooled_se": 0.02635438671681978,
+      "z": 2.3939797998185104,
+      "ci95_low": -0.10535443404393191,
+      "ci95_high": 0.020829304829411754
+    },
+    "farms_significantly_worse_than_margin": [
+      "HoT"
+    ],
+    "margin": 0.01,
+    "wording": "pooled non-inferiority only; not shown separately per farm (R2-S1)"
+  },
+  "B2": {
+    "vs_LUG": {
+      "passed": false,
+      "farm_relative": {
+        "Kelmarsh": 0.0,
+        "Penmanshiel": 0.02102296789929035,
+        "HoT": -0.009490532336534142
+      },
+      "pooled": {
+        "status": "UNDEFINED_IDENTICAL",
+        "farms": [
+          "Kelmarsh"
+        ],
+        "reason": "candidate equals reference for these farms (gain exactly 0, e.g. V1 weight w = 1)"
+      }
+    },
+    "vs_LUG_plus_Nv1": {
+      "pooled": {
+        "status": "OK",
+        "farms": {
+          "Kelmarsh": {
+            "relative_gain": -0.02316458131557253,
+            "relative_se": 0.012725254400368166
+          },
+          "Penmanshiel": {
+            "relative_gain": 0.02102296789929035,
+            "relative_se": 0.010640277288507359
+          },
+          "HoT": {
+            "relative_gain": -0.009490532336534142,
+            "relative_se": 0.007584497138793473
+          }
+        },
+        "pooled_relative_gain": -0.0037769663111544426,
+        "pooled_se": 0.00555624081013221,
+        "z": 2.3939797998185104,
+        "ci95_low": -0.01707849457353819,
+        "ci95_high": 0.009524561951229304
+      }
+    },
+    "passed": false,
+    "weights": {
+      "Kelmarsh": {
+        "w": 1.0,
+        "control_w": 0.65,
+        "pinball": {
+          "pinball": {
+            "0.1": [
+              0.009408433278038243,
+              0.012582488439704585,
+              0.010004009191114905,
+              0.01165823384484624
+            ],
+            "0.5": [
+              0.02499863421892732,
+              0.03416769958120899,
+              0.02971381238270248,
+              0.03598311849992449
+            ],
+            "0.9": [
+              0.011744611044603639,
+              0.017999292602014483,
+              0.018143354308309895,
+              0.023606943776912796
+            ]
+          },
+          "coverage80": 0.7802083333333333,
+          "width80_kw": 365.4256595293681,
+          "crossing_rate": 0.0
+        }
+      },
+      "Penmanshiel": {
+        "w": 0.75,
+        "control_w": 1.0,
+        "pinball": {
+          "pinball": {
+            "0.1": [
+              0.007661479258329859,
+              0.019527124686837163,
+              0.012587679944031005,
+              0.013161491634248035
+            ],
+            "0.5": [
+              0.01527135278519883,
+              0.03197082169907079,
+              0.030813556032812685,
+              0.03574837964720063
+            ],
+            "0.9": [
+              0.007072538885821126,
+              0.012963437427952454,
+              0.015693596372719134,
+              0.019300630780068526
+            ]
+          },
+          "coverage80": 0.7981400437636762,
+          "width80_kw": 385.5557503397668,
+          "crossing_rate": 0.0
+        }
+      },
+      "HoT": {
+        "w": 0.85,
+        "control_w": 1.0,
+        "pinball": {
+          "pinball": {
+            "0.1": [
+              0.0206553651019727,
+              0.026303282062528605,
+              0.02831372179504058,
+              0.024458759589645114
+            ],
+            "0.5": [
+              0.0480765538639338,
+              0.05754748069722011,
+              0.06319993197547973,
+              0.05957914622644155
+            ],
+            "0.9": [
+              0.023450768272424788,
+              0.025868948957269603,
+              0.028467672963091523,
+              0.031368422801550104
+            ]
+          },
+          "coverage80": 0.8309352517985612,
+          "width80_kw": 864.1342723489665,
+          "crossing_rate": 0.0
+        }
+      }
+    },
+    "b_meta_sha256": "68abcd74f54d2b714b60e9dd0d8e52e42aea3c0885035c463b455b152040388d"
+  },
+  "D0": {
+    "outcome": "STOP_P1",
+    "d0_sha256": "f490712d19edf40547ee1b34560f60353be47e39f6e937e0b669b661250f9056"
+  },
+  "diagnostics_sha256": "2eb1550d3ba1996ac332a07a2ba05b58c4fbc4b67e1fc4fc819ad345322e24b0"
+}

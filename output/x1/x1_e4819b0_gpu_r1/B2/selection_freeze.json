@@ -1,0 +1,298 @@
+{
+  "fits": [
+    {
+      "farm": "Kelmarsh",
+      "variant": "median",
+      "seed": 2024,
+      "checkpoint": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/x1_e4819b0_gpu_r1/B2/Kelmarsh/median/2024/selected.pt",
+      "sha256": "887f428d4b2763b08bcfd48f670034cfb9fedc4dda249c5c40bbae6c7f2a3f92",
+      "validation_mae": 135.29739379882812
+    },
+    {
+      "farm": "Kelmarsh",
+      "variant": "median",
+      "seed": 2025,
+      "checkpoint": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/x1_e4819b0_gpu_r1/B2/Kelmarsh/median/2025/selected.pt",
+      "sha256": "5142cb3d5a5d2164cae7d357edaab1a625f91956366e7ac63a4cd185b5d33292",
+      "validation_mae": 134.66168212890625
+    },
+    {
+      "farm": "Kelmarsh",
+      "variant": "median",
+      "seed": 2026,
+      "checkpoint": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/x1_e4819b0_gpu_r1/B2/Kelmarsh/median/2026/selected.pt",
+      "sha256": "5dd0421ab8abd2165714c2c38b58ac75bb6a336a091a92c61a7630914be2ec89",
+      "validation_mae": 133.57452392578125
+    },
+    {
+      "farm": "Kelmarsh",
+      "variant": "quantiles",
+      "seed": 2024,
+      "checkpoint": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/x1_e4819b0_gpu_r1/B2/Kelmarsh/quantiles/2024/selected.pt",
+      "sha256": "20ae472b503aa76de3bb37df82185d434c71c1bfbbdea23e1db1e209d8f07e1d",
+      "validation_mae": 135.69342041015625
+    },
+    {
+      "farm": "Kelmarsh",
+      "variant": "quantiles",
+      "seed": 2025,
+      "checkpoint": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/x1_e4819b0_gpu_r1/B2/Kelmarsh/quantiles/2025/selected.pt",
+      "sha256": "bf5df633a756a1b80fee00e84c4fbf974fc856b519da05d45c3938fd8775e080",
+      "validation_mae": 133.60398864746094
+    },
+    {
+      "farm": "Kelmarsh",
+      "variant": "quantiles",
+      "seed": 2026,
+      "checkpoint": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/x1_e4819b0_gpu_r1/B2/Kelmarsh/quantiles/2026/selected.pt",
+      "sha256": "741c0d2e796557b87a0314dd16dff5deb37102f2e6251b6b042148bbbc28898f",
+      "validation_mae": 134.05589294433594
+    },
+    {
+      "farm": "Kelmarsh",
+      "variant": "residual",
+      "seed": 2024,
+      "checkpoint": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/x1_e4819b0_gpu_r1/B2/Kelmarsh/residual/2024/selected.pt",
+      "sha256": "6fac04349b925a6e6930bfed9c04d1f2ecff615f0d1df1a763ef29fddae0357e",
+      "validation_mae": 135.43621826171875
+    },
+    {
+      "farm": "Kelmarsh",
+      "variant": "residual",
+      "seed": 2025,
+      "checkpoint": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/x1_e4819b0_gpu_r1/B2/Kelmarsh/residual/2025/selected.pt",
+      "sha256": "8d2240480bb354f206e9abb45efbf06b24f68ddd4fcdf08c06ecc4e0a7b4a1a1",
+      "validation_mae": 135.52613830566406
+    },
+    {
+      "farm": "Kelmarsh",
+      "variant": "residual",
+      "seed": 2026,
+      "checkpoint": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/x1_e4819b0_gpu_r1/B2/Kelmarsh/residual/2026/selected.pt",
+      "sha256": "8fe860149eb7bd134ecf0bf245b5b201d10df46df63b29eb6014519267311654",
+      "validation_mae": 136.29000854492188
+    },
+    {
+      "farm": "Penmanshiel",
+      "variant": "median",
+      "seed": 2024,
+      "checkpoint": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/x1_e4819b0_gpu_r1/B2/Penmanshiel/median/2024/selected.pt",
+      "sha256": "3690e6b479b3b8dabdfb7df84bf76b47083ef196f5060a8a310d8eb885e88ee8",
+      "validation_mae": 190.80813598632812
+    },
+    {
+      "farm": "Penmanshiel",
+      "variant": "median",
+      "seed": 2025,
+      "checkpoint": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/x1_e4819b0_gpu_r1/B2/Penmanshiel/median/2025/selected.pt",
+      "sha256": "9e4ebf8746d62d6e2708a85af1dac1404f833738c3e97d856a3974ca59ee93d6",
+      "validation_mae": 190.1431427001953
+    },
+    {
+      "farm": "Penmanshiel",
+      "variant": "median",
+      "seed": 2026,
+      "checkpoint": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/x1_e4819b0_gpu_r1/B2/Penmanshiel/median/2026/selected.pt",
+      "sha256": "a2847d3480643d246644ef6e0e00cab3fbcfc6c9e349415e36d2e53796ab796d",
+      "validation_mae": 187.21298217773438
+    },
+    {
+      "farm": "Penmanshiel",
+      "variant": "quantiles",
+      "seed": 2024,
+      "checkpoint": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/x1_e4819b0_gpu_r1/B2/Penmanshiel/quantiles/2024/selected.pt",
+      "sha256": "c2a85e0950f43008d71f186acf45552a2c9ff294aff3cff222692f7dc246bdb7",
+      "validation_mae": 189.04934692382812
+    },
+    {
+      "farm": "Penmanshiel",
+      "variant": "quantiles",
+      "seed": 2025,
+      "checkpoint": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/x1_e4819b0_gpu_r1/B2/Penmanshiel/quantiles/2025/selected.pt",
+      "sha256": "88679e3ea864027db8dccd680019fcee2a54128c43c1bf3583a510667266dcba",
+      "validation_mae": 189.38943481445312
+    },
+    {
+      "farm": "Penmanshiel",
+      "variant": "quantiles",
+      "seed": 2026,
+      "checkpoint": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/x1_e4819b0_gpu_r1/B2/Penmanshiel/quantiles/2026/selected.pt",
+      "sha256": "cfa7f2d883c822f1f1f0383e0cf4f7b3f7732e7abf4ea390f01a802c49e562fc",
+      "validation_mae": 189.5681610107422
+    },
+    {
+      "farm": "Penmanshiel",
+      "variant": "residual",
+      "seed": 2024,
+      "checkpoint": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/x1_e4819b0_gpu_r1/B2/Penmanshiel/residual/2024/selected.pt",
+      "sha256": "7dcd45566062e8a15c034cbae9d4861e329f5d2c95e6cc01d9ac99cd746e3f6f",
+      "validation_mae": 192.73233032226562
+    },
+    {
+      "farm": "Penmanshiel",
+      "variant": "residual",
+      "seed": 2025,
+      "checkpoint": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/x1_e4819b0_gpu_r1/B2/Penmanshiel/residual/2025/selected.pt",
+      "sha256": "1a3d7f542cb0ea0e9faff190d66ca0dbdd237e3c6ef2d245a298ee1af02c1dbb",
+      "validation_mae": 192.15689086914062
+    },
+    {
+      "farm": "Penmanshiel",
+      "variant": "residual",
+      "seed": 2026,
+      "checkpoint": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/x1_e4819b0_gpu_r1/B2/Penmanshiel/residual/2026/selected.pt",
+      "sha256": "6513456d89cb400995439a893f347c89f23e7555db631106b52e913d2371f6d0",
+      "validation_mae": 192.59849548339844
+    },
+    {
+      "farm": "HoT",
+      "variant": "median",
+      "seed": 2024,
+      "checkpoint": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/x1_e4819b0_gpu_r1/B2/HoT/median/2024/selected.pt",
+      "sha256": "b0337f66536cbf15d7ca2341fc3756902981f12278521ce70d4348e1f5d0005e",
+      "validation_mae": 182.48373413085938
+    },
+    {
+      "farm": "HoT",
+      "variant": "median",
+      "seed": 2025,
+      "checkpoint": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/x1_e4819b0_gpu_r1/B2/HoT/median/2025/selected.pt",
+      "sha256": "2eaebd35b3dff02ba11ed7418f211d478903339e0cd5182860a770fb01c541d9",
+      "validation_mae": 180.67141723632812
+    },
+    {
+      "farm": "HoT",
+      "variant": "median",
+      "seed": 2026,
+      "checkpoint": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/x1_e4819b0_gpu_r1/B2/HoT/median/2026/selected.pt",
+      "sha256": "224b4f9d333e19d274df33f5c6276c4afc0de7099a26465eb48344fa2d3f36be",
+      "validation_mae": 183.35313415527344
+    },
+    {
+      "farm": "HoT",
+      "variant": "quantiles",
+      "seed": 2024,
+      "checkpoint": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/x1_e4819b0_gpu_r1/B2/HoT/quantiles/2024/selected.pt",
+      "sha256": "0f2c62bba8cb341e5cb56ade546a32c796013409896f619b250393d9696fb712",
+      "validation_mae": 181.89602661132812
+    },
+    {
+      "farm": "HoT",
+      "variant": "quantiles",
+      "seed": 2025,
+      "checkpoint": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/x1_e4819b0_gpu_r1/B2/HoT/quantiles/2025/selected.pt",
+      "sha256": "5cd010ec869cddc2ba58278c051f91c4696ce24961b7d8b2bfc7751947f9a005",
+      "validation_mae": 181.54348754882812
+    },
+    {
+      "farm": "HoT",
+      "variant": "quantiles",
+      "seed": 2026,
+      "checkpoint": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/x1_e4819b0_gpu_r1/B2/HoT/quantiles/2026/selected.pt",
+      "sha256": "01887a7fcac845542304b7b0668060193b4af29da0a7a13f5039af56fba2615a",
+      "validation_mae": 181.8325958251953
+    },
+    {
+      "farm": "HoT",
+      "variant": "residual",
+      "seed": 2024,
+      "checkpoint": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/x1_e4819b0_gpu_r1/B2/HoT/residual/2024/selected.pt",
+      "sha256": "2b9e5171ce23bb1e9ae8c761affe4ad5be3246ef4a24d5be85cd0f206f372ae1",
+      "validation_mae": 183.2392578125
+    },
+    {
+      "farm": "HoT",
+      "variant": "residual",
+      "seed": 2025,
+      "checkpoint": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/x1_e4819b0_gpu_r1/B2/HoT/residual/2025/selected.pt",
+      "sha256": "c68ba09a06c0958aae4b61462c7624666a257e268e865388834b0fbb5c8a6d84",
+      "validation_mae": 183.28993225097656
+    },
+    {
+      "farm": "HoT",
+      "variant": "residual",
+      "seed": 2026,
+      "checkpoint": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/x1_e4819b0_gpu_r1/B2/HoT/residual/2026/selected.pt",
+      "sha256": "eec990aac0bc07f8b1a3009be00700a6dfc68f5c23e13138a05af8c352fbeb27",
+      "validation_mae": 184.03775024414062
+    }
+  ],
+  "validation": {
+    "Kelmarsh": {
+      "median": [
+        135.29739379882812,
+        134.66168212890625,
+        133.57452392578125
+      ],
+      "quantiles": [
+        135.69342041015625,
+        133.60398864746094,
+        134.05589294433594
+      ],
+      "residual": [
+        135.43621826171875,
+        135.52613830566406,
+        136.29000854492188
+      ]
+    },
+    "Penmanshiel": {
+      "median": [
+        190.80813598632812,
+        190.1431427001953,
+        187.21298217773438
+      ],
+      "quantiles": [
+        189.04934692382812,
+        189.38943481445312,
+        189.5681610107422
+      ],
+      "residual": [
+        192.73233032226562,
+        192.15689086914062,
+        192.59849548339844
+      ]
+    },
+    "HoT": {
+      "median": [
+        182.48373413085938,
+        180.67141723632812,
+        183.35313415527344
+      ],
+      "quantiles": [
+        181.89602661132812,
+        181.54348754882812,
+        181.8325958251953
+      ],
+      "residual": [
+        183.2392578125,
+        183.28993225097656,
+        184.03775024414062
+      ]
+    }
+  },
+  "reference": {
+    "Kelmarsh": 135.19192504882812,
+    "Penmanshiel": 190.2100830078125,
+    "HoT": 182.22434997558594
+  },
+  "relative_gain": {
+    "median": {
+      "Kelmarsh": 0.005035249682334153,
+      "Penmanshiel": 0.004321516714895446,
+      "HoT": 0.0003013947812481321
+    },
+    "quantiles": {
+      "Kelmarsh": 0.005479797563669897,
+      "Penmanshiel": 0.0045972085757870484,
+      "HoT": 0.0025626650913080917
+    },
+    "residual": {
+      "Kelmarsh": -0.00413385135050226,
+      "Penmanshiel": -0.012017357409816354,
+      "HoT": -0.007122887037107617
+    }
+  },
+  "selected": "quantiles",
+  "passed": false,
+  "test_started": false
+}

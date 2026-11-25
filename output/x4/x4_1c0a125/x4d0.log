@@ -1,0 +1,41 @@
+[X4] start d0
+/home/XT/nuist/pythoncode/TimeDARTFirst_X4_1c0a125/scripts/run_x4.py:191: RuntimeWarning: Mean of empty slice
+  fut = np.nanmean(g[:, 6:10], 1) if g.size else np.zeros(0)
+/home/XT/nuist/pythoncode/TimeDARTFirst_X4_1c0a125/scripts/run_x4.py:191: RuntimeWarning: Mean of empty slice
+  fut = np.nanmean(g[:, 6:10], 1) if g.size else np.zeros(0)
+/home/XT/nuist/pythoncode/TimeDARTFirst_X4_1c0a125/scripts/run_x4.py:191: RuntimeWarning: Mean of empty slice
+  fut = np.nanmean(g[:, 6:10], 1) if g.size else np.zeros(0)
+/home/XT/nuist/pythoncode/TimeDARTFirst_X4_1c0a125/scripts/run_x4.py:191: RuntimeWarning: Mean of empty slice
+  fut = np.nanmean(g[:, 6:10], 1) if g.size else np.zeros(0)
+[X4] D0 Kelmarsh DETERMINED 0.10476190476190479
+/home/XT/nuist/pythoncode/TimeDARTFirst_X4_1c0a125/scripts/run_x4.py:191: RuntimeWarning: Mean of empty slice
+  fut = np.nanmean(g[:, 6:10], 1) if g.size else np.zeros(0)
+/home/XT/nuist/pythoncode/TimeDARTFirst_X4_1c0a125/scripts/run_x4.py:191: RuntimeWarning: Mean of empty slice
+  fut = np.nanmean(g[:, 6:10], 1) if g.size else np.zeros(0)
+/home/XT/nuist/pythoncode/TimeDARTFirst_X4_1c0a125/scripts/run_x4.py:191: RuntimeWarning: Mean of empty slice
+  fut = np.nanmean(g[:, 6:10], 1) if g.size else np.zeros(0)
+/home/XT/nuist/pythoncode/TimeDARTFirst_X4_1c0a125/scripts/run_x4.py:191: RuntimeWarning: Mean of empty slice
+  fut = np.nanmean(g[:, 6:10], 1) if g.size else np.zeros(0)
+[X4] D0 Penmanshiel DETERMINED -0.20000000000000004
+/home/XT/nuist/pythoncode/TimeDARTFirst_X4_1c0a125/scripts/run_x4.py:191: RuntimeWarning: Mean of empty slice
+  fut = np.nanmean(g[:, 6:10], 1) if g.size else np.zeros(0)
+[LightGBM] [Warning] Met categorical feature which contains sparse values. Consider renumbering to consecutive integers started from zero
+[LightGBM] [Warning] Met categorical feature which contains sparse values. Consider renumbering to consecutive integers started from zero
+/home/XT/nuist/pythoncode/TimeDARTFirst_X4_1c0a125/scripts/run_x4.py:191: RuntimeWarning: Mean of empty slice
+  fut = np.nanmean(g[:, 6:10], 1) if g.size else np.zeros(0)
+[LightGBM] [Warning] Met categorical feature which contains sparse values. Consider renumbering to consecutive integers started from zero
+[LightGBM] [Warning] Met categorical feature which contains sparse values. Consider renumbering to consecutive integers started from zero
+[LightGBM] [Warning] Met categorical feature which contains sparse values. Consider renumbering to consecutive integers started from zero
+[LightGBM] [Warning] Met categorical feature which contains sparse values. Consider renumbering to consecutive integers started from zero
+/home/XT/nuist/pythoncode/TimeDARTFirst_X4_1c0a125/scripts/run_x4.py:191: RuntimeWarning: Mean of empty slice
+  fut = np.nanmean(g[:, 6:10], 1) if g.size else np.zeros(0)
+[LightGBM] [Warning] Met categorical feature which contains sparse values. Consider renumbering to consecutive integers started from zero
+[LightGBM] [Warning] Met categorical feature which contains sparse values. Consider renumbering to consecutive integers started from zero
+[LightGBM] [Warning] Met categorical feature which contains sparse values. Consider renumbering to consecutive integers started from zero
+/home/XT/nuist/pythoncode/TimeDARTFirst_X4_1c0a125/scripts/run_x4.py:191: RuntimeWarning: Mean of empty slice
+  fut = np.nanmean(g[:, 6:10], 1) if g.size else np.zeros(0)
+[LightGBM] [Warning] Met categorical feature which contains sparse values. Consider renumbering to consecutive integers started from zero
+[LightGBM] [Warning] Met categorical feature which contains sparse values. Consider renumbering to consecutive integers started from zero
+[LightGBM] [Warning] Met categorical feature which contains sparse values. Consider renumbering to consecutive integers started from zero
+[X4] D0 HoT DETERMINED 0.8476190476190476
+[X4] chain done

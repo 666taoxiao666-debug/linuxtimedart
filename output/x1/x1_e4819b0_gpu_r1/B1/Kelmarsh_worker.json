@@ -1,0 +1,13 @@
+{
+  "train": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/x1_e4819b0_gpu_r1/B1/Kelmarsh_train.npz",
+  "train_sha256": "995e1e13c483ded83f232e25a3be4fde9253abb132852cc8ed88c7f95a2271a9",
+  "validation": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/x1_e4819b0_gpu_r1/B1/Kelmarsh_validation.npz",
+  "validation_sha256": "88313bb242548a2959d4bd2230ddb1d3cbaff2da0433e499a76c026408fbca2a",
+  "tests": [
+    {
+      "name": "Kelmarsh_2022",
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/x1_e4819b0_gpu_r1/A3/Kelmarsh_2022_context.npz",
+      "sha256": "9a81ca7e44f2f3a59582c17d3dcf90d5d7481bc5e6e7623139e0e70e60935fee"
+    }
+  ]
+}

@@ -1,0 +1,5 @@
+{
+  "type": "ValueError",
+  "message": "Dense input equivalence failed: HoT_2024/truth",
+  "stop_E1_only": true
+}

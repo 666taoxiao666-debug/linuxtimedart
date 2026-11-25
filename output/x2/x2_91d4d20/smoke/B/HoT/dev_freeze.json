@@ -1,0 +1,101 @@
+{
+  "config": {
+    "max_epochs": 1,
+    "patience": 5,
+    "batch_size": 64,
+    "learning_rate": 0.001,
+    "weight_decay": 0.0001,
+    "mae_weight": 0.8,
+    "mse_weight": 0.2,
+    "grad_clip": 1.0,
+    "eta_min": 1e-05,
+    "blocks": 2,
+    "ff_dim": 32,
+    "dropout": 0.1,
+    "norm_eps": 0.001
+  },
+  "arms": {
+    "N_v1": {
+      "runs": {
+        "none": {
+          "2024": {
+            "v1_mae": 289.66827392578125,
+            "best_epoch": 1,
+            "epochs": 1,
+            "sha256": "6005c999da20715352ab59bbd127d04c8ac61d145f0662722a100677d5d1e9c1"
+          }
+        }
+      },
+      "selected": "none",
+      "selection": "mean V1 MAE over seeds"
+    },
+    "TCNGRU": {
+      "runs": {
+        "none": {
+          "2024": {
+            "v1_mae": 226.35494995117188,
+            "best_epoch": 1,
+            "epochs": 1,
+            "sha256": "f7b5038bb9c09569233f7ef1093713e76dad25df29643c2aeeaf8b376e51e50c"
+          }
+        }
+      },
+      "selected": "none",
+      "selection": "mean V1 MAE over seeds"
+    },
+    "DATCNGRU": {
+      "runs": {
+        "0.005": {
+          "2024": {
+            "v1_mae": 263.0606689453125,
+            "best_epoch": 1,
+            "epochs": 1,
+            "sha256": "04185f87655f943e49e220f78dcce62467b22b32a6a561148bd4516bb1333a59"
+          }
+        }
+      },
+      "selected": "0.005",
+      "selection": "mean V1 MAE over seeds"
+    },
+    "CNN": {
+      "runs": {
+        "none": {
+          "2024": {
+            "v1_mae": 241.94410705566406,
+            "best_epoch": 1,
+            "epochs": 1,
+            "sha256": "42e02a306b95287d3d4303338f6d160864261b69cae1ad4cbd290e4fc556b603"
+          }
+        }
+      },
+      "selected": "none",
+      "selection": "mean V1 MAE over seeds"
+    },
+    "BILSTM": {
+      "runs": {
+        "none": {
+          "2024": {
+            "v1_mae": 278.3974304199219,
+            "best_epoch": 1,
+            "epochs": 1,
+            "sha256": "fcfa1329dc29158975cbae3ef570b8ec781223db65200588ee2925259b396acb"
+          }
+        }
+      },
+      "selected": "none",
+      "selection": "mean V1 MAE over seeds"
+    }
+  },
+  "predictions": {
+    "B/HoT/N_v1/none/2024/V1.npy": "80bafd334f84a87fa4c186dee9c185c5b0bb3a5cd7e769cd76ceb74ea6dd3f1e",
+    "B/HoT/N_v1/none/2024/V2.npy": "d7111e3deaa0a00b68b08a3e8e68024db1f5aaca772557ec03d28a8c98373a1b",
+    "B/HoT/TCNGRU/none/2024/V1.npy": "4fc0112feebbb22537e41579c29ed2e7319dcf02de1fadd3968a2edf890aee19",
+    "B/HoT/TCNGRU/none/2024/V2.npy": "9281b026618e05d849371f0350f6bb36e8ea0b4b7df1e71c2e123f7c6cb0dac4",
+    "B/HoT/DATCNGRU/0.005/2024/V1.npy": "a59e5e994fe9fd4d879171166079cecb3724edec3a0c873f3dd3db0904d9f1e7",
+    "B/HoT/DATCNGRU/0.005/2024/V2.npy": "e841a82f957f5d0370f61e40b703c29a0dd4311b837a0d1e7b6af28600a80cc2",
+    "B/HoT/CNN/none/2024/V1.npy": "c86e58be51dd76900fc2e33f73c2e4488c61dc7dd4a013368901ebd36e80e51a",
+    "B/HoT/CNN/none/2024/V2.npy": "43a146b90b43b779ffc0bce3038e2035840c5f8f8a28ffdbe8e3fbc21279bcb5",
+    "B/HoT/BILSTM/none/2024/V1.npy": "547249064007055afb942696775ab7b06e094746878f371678f1f34ec87177e4",
+    "B/HoT/BILSTM/none/2024/V2.npy": "0947bc44381287f1157d04497871c024e99a293eecd71a9d46a6b9a4ef4dc29d"
+  }
+}

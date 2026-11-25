@@ -1,0 +1,15 @@
+{
+  "python": "/home/XT/venvs/chronos2-e1/bin/python",
+  "real_data_access": false,
+  "packages": {
+    "chronos-forecasting": "2.3.2",
+    "torch": "2.6.0",
+    "transformers": "5.9.0",
+    "accelerate": "1.15.0",
+    "numpy": "1.26.4",
+    "pandas": "2.2.3"
+  },
+  "import_ok": true,
+  "status": "INCOMPLETE",
+  "error_type": "ConnectError"
+}

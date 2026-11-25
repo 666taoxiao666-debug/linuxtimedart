@@ -1,0 +1,111 @@
+{
+  "config": {
+    "max_epochs": 1,
+    "patience": 5,
+    "batch_size": 64,
+    "learning_rate": 0.001,
+    "weight_decay": 0.0001,
+    "mae_weight": 0.8,
+    "mse_weight": 0.2,
+    "grad_clip": 1.0,
+    "eta_min": 1e-05,
+    "blocks": 2,
+    "ff_dim": 32,
+    "dropout": 0.1,
+    "norm_eps": 0.001
+  },
+  "arms": {
+    "N_v1": {
+      "runs": {
+        "none": {
+          "2024": {
+            "v1_mae": 317.8487548828125,
+            "best_epoch": 1,
+            "epochs": 1,
+            "sha256": "10692f1851dd628b6cbbc636dcb5966ea03d042099db3c8598357596f4f0ab04",
+            "selected_lambda": 0.0,
+            "seconds_per_epoch": 0.6388961769989692
+          }
+        }
+      },
+      "selected": "none",
+      "selection": "mean V1 MAE over seeds"
+    },
+    "TCNGRU": {
+      "runs": {
+        "none": {
+          "2024": {
+            "v1_mae": 276.1465759277344,
+            "best_epoch": 1,
+            "epochs": 1,
+            "sha256": "c6c65aca934df49319a4336823096c57f4b2738d96259125180fe630b7cccca1",
+            "selected_lambda": 0.0,
+            "seconds_per_epoch": 5.948574655980337
+          }
+        }
+      },
+      "selected": "none",
+      "selection": "mean V1 MAE over seeds"
+    },
+    "DATCNGRU": {
+      "runs": {
+        "0.05": {
+          "2024": {
+            "v1_mae": 268.7681884765625,
+            "best_epoch": 1,
+            "epochs": 1,
+            "sha256": "dd044098e8ceb65e782efad8589b736456dbe370a3bbfd00af37b20ac17a50b7",
+            "selected_lambda": 0.05,
+            "seconds_per_epoch": 6.002884401998017
+          }
+        }
+      },
+      "selected": "0.05",
+      "selection": "mean V1 MAE over seeds"
+    },
+    "CNN": {
+      "runs": {
+        "none": {
+          "2024": {
+            "v1_mae": 317.5348815917969,
+            "best_epoch": 1,
+            "epochs": 1,
+            "sha256": "9a9026d09c2eb7f86c437a43d1614743d249bd816f9afccca7aa6d327824deaa",
+            "selected_lambda": 0.0,
+            "seconds_per_epoch": 1.4346881770179607
+          }
+        }
+      },
+      "selected": "none",
+      "selection": "mean V1 MAE over seeds"
+    },
+    "BILSTM": {
+      "runs": {
+        "none": {
+          "2024": {
+            "v1_mae": 407.5558776855469,
+            "best_epoch": 1,
+            "epochs": 1,
+            "sha256": "2f5d3178b1adbf18c93fdcd92159830288ab7256a9dd30cd10f5c801aba6eda8",
+            "selected_lambda": 0.0,
+            "seconds_per_epoch": 5.096523354004603
+          }
+        }
+      },
+      "selected": "none",
+      "selection": "mean V1 MAE over seeds"
+    }
+  },
+  "predictions": {
+    "B/Kelmarsh/N_v1/none/2024/V1.npy": "d74d0b63b2566a3e0ed85ec84c006687ba36202c2aed0bd367ad0e98e7cc408d",
+    "B/Kelmarsh/N_v1/none/2024/V2.npy": "d0ce7d51df523f7aa1d9888dd771bfc76969bef22087c98465694e0dbc3bfc9c",
+    "B/Kelmarsh/TCNGRU/none/2024/V1.npy": "8f815a81db6099b4a8d58edd3cc9b01d1f442e44792043df7ec00b11cd4695ea",
+    "B/Kelmarsh/TCNGRU/none/2024/V2.npy": "e2cd4d0ccc57ba36c88684b0e7a0f66e1abf190c30c270590ccf7177bf2d2f44",
+    "B/Kelmarsh/DATCNGRU/0.05/2024/V1.npy": "194bc9265be8104fa8c6c8a857a00c61286f86801b989148fc39d04cbcf44ee1",
+    "B/Kelmarsh/DATCNGRU/0.05/2024/V2.npy": "0bef2751b2d39c355b4a4d9c5e149a585f1aa254770c6a40efc4606c9de1f7df",
+    "B/Kelmarsh/CNN/none/2024/V1.npy": "3537b87a4c90aeecdf10a68d1238f41061fe040c4991697592f71c7d10f25e80",
+    "B/Kelmarsh/CNN/none/2024/V2.npy": "405393d69f1cf496a77d15ecc0d409f9dd787186255ea84576e8143152a40abd",
+    "B/Kelmarsh/BILSTM/none/2024/V1.npy": "e068d6896f0f0ad8ddea88b07942fcca67aeae48598f278ad2d49594f6015e87",
+    "B/Kelmarsh/BILSTM/none/2024/V2.npy": "c134a3ef2e0583505ba9bc20cef0ba7092e4b478df28af56ba79d0a4f155a78e"
+  }
+}

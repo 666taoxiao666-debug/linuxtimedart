@@ -1,0 +1,5 @@
+{
+  "type": "CalledProcessError",
+  "message": "Command '['/home/XT/miniconda3/envs/tsfm/bin/python', '-u', '/home/XT/nuist/pythoncode/TimeDARTFirst_X1_e4819b0/scripts/run_x1.py', '--arm', 'B1-worker', '--logs', '/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs', '--output', '/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/x1_e4819b0_gpu_r1/B1/Kelmarsh', '--protocol-sha256', 'd75b1312ac6aa1f6a0d60b933340c09e4e56abacdb5a047134ddf0ec1b2c1bf3', '--chronos-receipt', '/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/cursor_env/receipt.json', '--chronos-manifest', '/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/cursor_env/chronos2_manifest.json', '--worker-input', '/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/x1_e4819b0_gpu_r1/B1/Kelmarsh_worker.json', '--worker-input-sha', '02c7a9091da61680242cd81663e0f6a2bbc100aa13a566b0f1713b8085831fab']' returned non-zero exit status 1.",
+  "retry": false
+}

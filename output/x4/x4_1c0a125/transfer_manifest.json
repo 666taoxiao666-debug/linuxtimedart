@@ -1,0 +1,1993 @@
+{
+  "state": {
+    "time": "2026-11-21T03:00:17.069388+00:00",
+    "commit": "1c0a1256e962d9b8da46abcf0f48696b4e0bd917",
+    "worktree_clean": true,
+    "failed": {},
+    "completed": {
+      "smoke_a": {
+        "status": "COMPLETED",
+        "registry_sha256": "53d694277bfa467c1321f62ac6bc088bba9310cec83f578d467c8a7eb9986112",
+        "meta_sha256": "9cdd898641e0ccfba19618093821781ce5b52d9312c4049f2ccdc04405bf713a"
+      },
+      "smoke_b": {
+        "status": "COMPLETED",
+        "registry_sha256": "61d4a7d90854558b0e9e62051bb642b7476169a2a45b840428a137ee16719ece",
+        "meta_sha256": "68abcd74f54d2b714b60e9dd0d8e52e42aea3c0885035c463b455b152040388d"
+      },
+      "smoke_d0": {
+        "status": "COMPLETED",
+        "registry_sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+        "d0_sha256": "f490712d19edf40547ee1b34560f60353be47e39f6e937e0b669b661250f9056",
+        "outcome": "STOP_P1"
+      },
+      "smoke_report": {
+        "status": "COMPLETED",
+        "registry_sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+        "dev_decisions_sha256": "bf94922e3b7b74943ed408e57c2aec7f8c9bb986af2ab9b26c738afd3258c45e",
+        "results_sha256": "4d0f96dae40a9099d3f531a58c28270266735565435cce10f4847d563ed37fe8"
+      },
+      "a": {
+        "status": "COMPLETED",
+        "registry_sha256": "1091ac140bbff4f3a46fe5223a42b219c1bdbfecafdabb113d3b3f724c70195f",
+        "meta_sha256": "9e73daf24d0028291702534f20830b3bc053a62f2c99a260387a82111d73d02b"
+      },
+      "b": {
+        "status": "COMPLETED",
+        "registry_sha256": "51d6d81ffad9da60ff122c32d5b840f92e6a7cac35348ebe0737251be45fbbe1",
+        "meta_sha256": "c5af4b46b008d4fb27db883921e9aee4d86c730a3a4fc0c114281a6a42f6c42d"
+      },
+      "d0": {
+        "status": "COMPLETED",
+        "registry_sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+        "d0_sha256": "9be25f1e0ccf2ea26a0c2b45e7426999dc6a8128122c13e0151d516cf949b842",
+        "outcome": "STOP_P1"
+      },
+      "report": {
+        "status": "COMPLETED",
+        "registry_sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+        "dev_decisions_sha256": "cd58897a796d2f45bdc3afe721f3b04df8c8903379947b6c783bd15383daf958",
+        "results_sha256": "fd1113915de34082a8795e3b8fafb6804d9b0c01a60209a954436c07005eaa74"
+      }
+    },
+    "chains": {
+      "x4smoke": {
+        "pid": 2854604,
+        "alive": false,
+        "last_line": "[X4] chain done",
+        "log_last_50": [
+          "Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]",
+          "Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  3.85it/s]",
+          "Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  3.85it/s]",
+          "",
+          "Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]",
+          "Loading weights: 100%|██████████| 170/170 [00:00<00:00, 1883.65it/s]",
+          "",
+          "Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]",
+          "Loading weights: 100%|██████████| 170/170 [00:00<00:00, 1912.55it/s]",
+          "[X4] B done HoT {'name': 'lr0', 'learning_rate': 3e-06, 'step': 2, 'v1_mae': 255.13677978515625}",
+          "[X4] start d0",
+          "/home/XT/nuist/pythoncode/TimeDARTFirst_X4_1c0a125/scripts/run_x4.py:191: RuntimeWarning: Mean of empty slice",
+          "  fut = np.nanmean(g[:, 6:10], 1) if g.size else np.zeros(0)",
+          "/home/XT/nuist/pythoncode/TimeDARTFirst_X4_1c0a125/scripts/run_x4.py:191: RuntimeWarning: Mean of empty slice",
+          "  fut = np.nanmean(g[:, 6:10], 1) if g.size else np.zeros(0)",
+          "/home/XT/nuist/pythoncode/TimeDARTFirst_X4_1c0a125/scripts/run_x4.py:191: RuntimeWarning: Mean of empty slice",
+          "  fut = np.nanmean(g[:, 6:10], 1) if g.size else np.zeros(0)",
+          "/home/XT/nuist/pythoncode/TimeDARTFirst_X4_1c0a125/scripts/run_x4.py:191: RuntimeWarning: Mean of empty slice",
+          "  fut = np.nanmean(g[:, 6:10], 1) if g.size else np.zeros(0)",
+          "[X4] D0 Kelmarsh DETERMINED 0.06666666666666672",
+          "/home/XT/nuist/pythoncode/TimeDARTFirst_X4_1c0a125/scripts/run_x4.py:191: RuntimeWarning: Mean of empty slice",
+          "  fut = np.nanmean(g[:, 6:10], 1) if g.size else np.zeros(0)",
+          "/home/XT/nuist/pythoncode/TimeDARTFirst_X4_1c0a125/scripts/run_x4.py:191: RuntimeWarning: Mean of empty slice",
+          "  fut = np.nanmean(g[:, 6:10], 1) if g.size else np.zeros(0)",
+          "/home/XT/nuist/pythoncode/TimeDARTFirst_X4_1c0a125/scripts/run_x4.py:191: RuntimeWarning: Mean of empty slice",
+          "  fut = np.nanmean(g[:, 6:10], 1) if g.size else np.zeros(0)",
+          "/home/XT/nuist/pythoncode/TimeDARTFirst_X4_1c0a125/scripts/run_x4.py:191: RuntimeWarning: Mean of empty slice",
+          "  fut = np.nanmean(g[:, 6:10], 1) if g.size else np.zeros(0)",
+          "[X4] D0 Penmanshiel DETERMINED -0.7142857142857143",
+          "/home/XT/nuist/pythoncode/TimeDARTFirst_X4_1c0a125/scripts/run_x4.py:191: RuntimeWarning: Mean of empty slice",
+          "  fut = np.nanmean(g[:, 6:10], 1) if g.size else np.zeros(0)",
+          "[LightGBM] [Warning] Met categorical feature which contains sparse values. Consider renumbering to consecutive integers started from zero",
+          "[LightGBM] [Warning] Met categorical feature which contains sparse values. Consider renumbering to consecutive integers started from zero",
+          "/home/XT/nuist/pythoncode/TimeDARTFirst_X4_1c0a125/scripts/run_x4.py:191: RuntimeWarning: Mean of empty slice",
+          "  fut = np.nanmean(g[:, 6:10], 1) if g.size else np.zeros(0)",
+          "[LightGBM] [Warning] Met categorical feature which contains sparse values. Consider renumbering to consecutive integers started from zero",
+          "[LightGBM] [Warning] Met categorical feature which contains sparse values. Consider renumbering to consecutive integers started from zero",
+          "[LightGBM] [Warning] Met categorical feature which contains sparse values. Consider renumbering to consecutive integers started from zero",
+          "[LightGBM] [Warning] Met categorical feature which contains sparse values. Consider renumbering to consecutive integers started from zero",
+          "/home/XT/nuist/pythoncode/TimeDARTFirst_X4_1c0a125/scripts/run_x4.py:191: RuntimeWarning: Mean of empty slice",
+          "  fut = np.nanmean(g[:, 6:10], 1) if g.size else np.zeros(0)",
+          "[LightGBM] [Warning] Met categorical feature which contains sparse values. Consider renumbering to consecutive integers started from zero",
+          "[LightGBM] [Warning] Met categorical feature which contains sparse values. Consider renumbering to consecutive integers started from zero",
+          "/home/XT/nuist/pythoncode/TimeDARTFirst_X4_1c0a125/scripts/run_x4.py:191: RuntimeWarning: Mean of empty slice",
+          "  fut = np.nanmean(g[:, 6:10], 1) if g.size else np.zeros(0)",
+          "[LightGBM] [Warning] Met categorical feature which contains sparse values. Consider renumbering to consecutive integers started from zero",
+          "[LightGBM] [Warning] Met categorical feature which contains sparse values. Consider renumbering to consecutive integers started from zero",
+          "[X4] D0 HoT DETERMINED -0.2761904761904762",
+          "[X4] start report",
+          "[X4] chain done"
+        ]
+      },
+      "x4gpu": {
+        "pid": 2864517,
+        "alive": false,
+        "last_line": "[X4] chain done",
+        "log_last_50": [
+          " 99%|█████████▊| 1972/2000 [42:02<00:14,  1.94it/s]",
+          " 99%|█████████▊| 1973/2000 [42:02<00:13,  1.94it/s]",
+          " 99%|█████████▊| 1974/2000 [42:03<00:13,  1.94it/s]",
+          " 99%|█████████▉| 1975/2000 [42:03<00:12,  1.94it/s]",
+          " 99%|█████████▉| 1976/2000 [42:04<00:12,  1.94it/s]",
+          " 99%|█████████▉| 1977/2000 [42:04<00:11,  1.94it/s]",
+          " 99%|█████████▉| 1978/2000 [42:05<00:11,  1.94it/s]",
+          " 99%|█████████▉| 1979/2000 [42:05<00:10,  1.94it/s]",
+          " 99%|█████████▉| 1980/2000 [42:06<00:10,  1.94it/s]",
+          " 99%|█████████▉| 1981/2000 [42:06<00:09,  1.94it/s]",
+          " 99%|█████████▉| 1982/2000 [42:07<00:09,  1.94it/s]",
+          " 99%|█████████▉| 1983/2000 [42:07<00:08,  1.94it/s]",
+          " 99%|█████████▉| 1984/2000 [42:08<00:08,  1.94it/s]",
+          " 99%|█████████▉| 1985/2000 [42:08<00:07,  1.94it/s]",
+          " 99%|█████████▉| 1986/2000 [42:09<00:07,  1.94it/s]",
+          " 99%|█████████▉| 1987/2000 [42:10<00:06,  1.94it/s]",
+          " 99%|█████████▉| 1988/2000 [42:10<00:06,  1.94it/s]",
+          " 99%|█████████▉| 1989/2000 [42:11<00:05,  1.94it/s]",
+          "100%|█████████▉| 1990/2000 [42:11<00:05,  1.94it/s]",
+          "100%|█████████▉| 1991/2000 [42:12<00:04,  1.94it/s]",
+          "100%|█████████▉| 1992/2000 [42:12<00:04,  1.94it/s]",
+          "100%|█████████▉| 1993/2000 [42:13<00:03,  1.94it/s]",
+          "100%|█████████▉| 1994/2000 [42:13<00:03,  1.94it/s]",
+          "100%|█████████▉| 1995/2000 [42:14<00:02,  1.94it/s]",
+          "100%|█████████▉| 1996/2000 [42:14<00:02,  1.94it/s]",
+          "100%|█████████▉| 1997/2000 [42:15<00:01,  1.94it/s]",
+          "100%|█████████▉| 1998/2000 [42:15<00:01,  1.94it/s]",
+          "100%|█████████▉| 1999/2000 [42:16<00:00,  1.94it/s]",
+          "100%|██████████| 2000/2000 [44:58<00:00, 48.92s/it]",
+          "                                                   ",
+          "{'loss': '0.05103', 'grad_norm': '0.8566', 'learning_rate': '5e-09', 'epoch': '1'}",
+          "",
+          "100%|██████████| 2000/2000 [44:58<00:00, 48.92s/it]",
+          "                                                   ",
+          "{'train_runtime': '2698', 'train_samples_per_second': '200.1', 'train_steps_per_second': '0.741', 'train_loss': '0.0552', 'epoch': '1'}",
+          "",
+          "100%|██████████| 2000/2000 [44:58<00:00, 48.92s/it]",
+          "100%|██████████| 2000/2000 [44:58<00:00,  1.35s/it]",
+          "",
+          "Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]",
+          "Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  4.00it/s]",
+          "Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  4.00it/s]",
+          "",
+          "Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]",
+          "Loading weights: 100%|██████████| 170/170 [00:00<00:00, 1896.85it/s]",
+          "",
+          "Loading weights:   0%|          | 0/170 [00:00<?, ?it/s]",
+          "Loading weights: 100%|██████████| 170/170 [00:00<00:00, 1876.68it/s]",
+          "[X4] B done HoT {'name': 'lr0', 'learning_rate': 3e-06, 'step': 2000, 'v1_mae': 175.9176025390625}",
+          "[X4] chain done"
+        ]
+      },
+      "x4d0": {
+        "pid": 2864559,
+        "alive": false,
+        "last_line": "[X4] chain done",
+        "log_last_50": [
+          "[X4] start d0",
+          "/home/XT/nuist/pythoncode/TimeDARTFirst_X4_1c0a125/scripts/run_x4.py:191: RuntimeWarning: Mean of empty slice",
+          "  fut = np.nanmean(g[:, 6:10], 1) if g.size else np.zeros(0)",
+          "/home/XT/nuist/pythoncode/TimeDARTFirst_X4_1c0a125/scripts/run_x4.py:191: RuntimeWarning: Mean of empty slice",
+          "  fut = np.nanmean(g[:, 6:10], 1) if g.size else np.zeros(0)",
+          "/home/XT/nuist/pythoncode/TimeDARTFirst_X4_1c0a125/scripts/run_x4.py:191: RuntimeWarning: Mean of empty slice",
+          "  fut = np.nanmean(g[:, 6:10], 1) if g.size else np.zeros(0)",
+          "/home/XT/nuist/pythoncode/TimeDARTFirst_X4_1c0a125/scripts/run_x4.py:191: RuntimeWarning: Mean of empty slice",
+          "  fut = np.nanmean(g[:, 6:10], 1) if g.size else np.zeros(0)",
+          "[X4] D0 Kelmarsh DETERMINED 0.10476190476190479",
+          "/home/XT/nuist/pythoncode/TimeDARTFirst_X4_1c0a125/scripts/run_x4.py:191: RuntimeWarning: Mean of empty slice",
+          "  fut = np.nanmean(g[:, 6:10], 1) if g.size else np.zeros(0)",
+          "/home/XT/nuist/pythoncode/TimeDARTFirst_X4_1c0a125/scripts/run_x4.py:191: RuntimeWarning: Mean of empty slice",
+          "  fut = np.nanmean(g[:, 6:10], 1) if g.size else np.zeros(0)",
+          "/home/XT/nuist/pythoncode/TimeDARTFirst_X4_1c0a125/scripts/run_x4.py:191: RuntimeWarning: Mean of empty slice",
+          "  fut = np.nanmean(g[:, 6:10], 1) if g.size else np.zeros(0)",
+          "/home/XT/nuist/pythoncode/TimeDARTFirst_X4_1c0a125/scripts/run_x4.py:191: RuntimeWarning: Mean of empty slice",
+          "  fut = np.nanmean(g[:, 6:10], 1) if g.size else np.zeros(0)",
+          "[X4] D0 Penmanshiel DETERMINED -0.20000000000000004",
+          "/home/XT/nuist/pythoncode/TimeDARTFirst_X4_1c0a125/scripts/run_x4.py:191: RuntimeWarning: Mean of empty slice",
+          "  fut = np.nanmean(g[:, 6:10], 1) if g.size else np.zeros(0)",
+          "[LightGBM] [Warning] Met categorical feature which contains sparse values. Consider renumbering to consecutive integers started from zero",
+          "[LightGBM] [Warning] Met categorical feature which contains sparse values. Consider renumbering to consecutive integers started from zero",
+          "/home/XT/nuist/pythoncode/TimeDARTFirst_X4_1c0a125/scripts/run_x4.py:191: RuntimeWarning: Mean of empty slice",
+          "  fut = np.nanmean(g[:, 6:10], 1) if g.size else np.zeros(0)",
+          "[LightGBM] [Warning] Met categorical feature which contains sparse values. Consider renumbering to consecutive integers started from zero",
+          "[LightGBM] [Warning] Met categorical feature which contains sparse values. Consider renumbering to consecutive integers started from zero",
+          "[LightGBM] [Warning] Met categorical feature which contains sparse values. Consider renumbering to consecutive integers started from zero",
+          "[LightGBM] [Warning] Met categorical feature which contains sparse values. Consider renumbering to consecutive integers started from zero",
+          "/home/XT/nuist/pythoncode/TimeDARTFirst_X4_1c0a125/scripts/run_x4.py:191: RuntimeWarning: Mean of empty slice",
+          "  fut = np.nanmean(g[:, 6:10], 1) if g.size else np.zeros(0)",
+          "[LightGBM] [Warning] Met categorical feature which contains sparse values. Consider renumbering to consecutive integers started from zero",
+          "[LightGBM] [Warning] Met categorical feature which contains sparse values. Consider renumbering to consecutive integers started from zero",
+          "[LightGBM] [Warning] Met categorical feature which contains sparse values. Consider renumbering to consecutive integers started from zero",
+          "/home/XT/nuist/pythoncode/TimeDARTFirst_X4_1c0a125/scripts/run_x4.py:191: RuntimeWarning: Mean of empty slice",
+          "  fut = np.nanmean(g[:, 6:10], 1) if g.size else np.zeros(0)",
+          "[LightGBM] [Warning] Met categorical feature which contains sparse values. Consider renumbering to consecutive integers started from zero",
+          "[LightGBM] [Warning] Met categorical feature which contains sparse values. Consider renumbering to consecutive integers started from zero",
+          "[LightGBM] [Warning] Met categorical feature which contains sparse values. Consider renumbering to consecutive integers started from zero",
+          "[X4] D0 HoT DETERMINED 0.8476190476190476",
+          "[X4] chain done"
+        ]
+      },
+      "x4final": {
+        "pid": 3008802,
+        "alive": false,
+        "last_line": "[X4] chain done",
+        "log_last_50": [
+          "[X4] start report",
+          "[X4] chain done"
+        ]
+      }
+    },
+    "final_claimed": true
+  },
+  "files": {
+    "x4d0.log": {
+      "sha256": "33774031a8283eeadae4411fb3fcd891de263e51ec2483c7786dd0ace9856a03",
+      "bytes": 3880
+    },
+    "x4gpu.log": {
+      "sha256": "5d1af61b8ab4e9251ceb4a2bc16a872b084e1827abf292e6a4f3c27d72d85def",
+      "bytes": 1702889
+    },
+    "x4final.log": {
+      "sha256": "ca8afc5b1f6c27f0a4c1b8a10584cb6136ef5d7d991d0a2d834a16b3672ed2ee",
+      "bytes": 34
+    },
+    "x4smoke.log": {
+      "sha256": "9bb43569af3584bd4d4245e8e9924abce4c0e8bed7f554a74aaaa803d1a4b0a7",
+      "bytes": 42170
+    },
+    "smoke_report/completed.json": {
+      "sha256": "052c1bdf8fea65872f98733cbdda20ed68d7f2f7a71eb40151dc64204dccf07f",
+      "bytes": 299
+    },
+    "smoke_report/launch.json": {
+      "sha256": "e4f1183aec96c6fc4bf5252e53e195cb6d4e970630435ea8d51ffe509fc656fb",
+      "bytes": 343
+    },
+    "smoke_report/dev_decisions.json": {
+      "sha256": "bf94922e3b7b74943ed408e57c2aec7f8c9bb986af2ab9b26c738afd3258c45e",
+      "bytes": 15812
+    },
+    "smoke_report/registry.json": {
+      "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+      "bytes": 3
+    },
+    "smoke_report/results.json": {
+      "sha256": "4d0f96dae40a9099d3f531a58c28270266735565435cce10f4847d563ed37fe8",
+      "bytes": 8458
+    },
+    "smoke_report/report_diagnostics.json": {
+      "sha256": "2eb1550d3ba1996ac332a07a2ba05b58c4fbc4b67e1fc4fc819ad345322e24b0",
+      "bytes": 4618
+    },
+    "b/completed.json": {
+      "sha256": "44bdd9e515e9a59059b3a41779f8f38beac76a100fe2905a60410840b9225fcb",
+      "bytes": 202
+    },
+    "b/b_meta.json": {
+      "sha256": "c5af4b46b008d4fb27db883921e9aee4d86c730a3a4fc0c114281a6a42f6c42d",
+      "bytes": 7451
+    },
+    "b/preflight_decision.json": {
+      "sha256": "83b4a029fd282021905bc49a79935cd6f5b96ecf4a10ed977d80c1d13dd321ab",
+      "bytes": 3297
+    },
+    "b/launch.json": {
+      "sha256": "cc6c59fbb4454891d89164ece969ba07f6f1c85a6282623a332a211ca563570e",
+      "bytes": 339
+    },
+    "b/registry.json": {
+      "sha256": "51d6d81ffad9da60ff122c32d5b840f92e6a7cac35348ebe0737251be45fbbe1",
+      "bytes": 5812
+    },
+    "b/Kelmarsh/FTB_Kelmarsh_2022.npy": {
+      "sha256": "735f653a98661b324c2ff73d58a5eb4593fec18ed9f00fc8fb957160e0bfb49e",
+      "bytes": 813680
+    },
+    "b/Kelmarsh/FTB_V2.npy": {
+      "sha256": "32ad8e573699959f1d724de1d588bcfb5250af778c02f236b5952d35f349aeb9",
+      "bytes": 396080
+    },
+    "b/Kelmarsh/FTB_V1.npy": {
+      "sha256": "5c882d599475191cb591ff90edb8c1d188a275df205db9cd6d47329f3fdcfea6",
+      "bytes": 356816
+    },
+    "b/Kelmarsh/lr0/eval_preds.npy": {
+      "sha256": "81632167ab45a766532eecdf5ac2b5818a14ac2e5b67f3b212da9e97bb53eb91",
+      "bytes": 1189088
+    },
+    "b/Kelmarsh/lr0/eval_history.json": {
+      "sha256": "5e6bc96447d8b933d505cff7a733984aeb306767ed0214d400fc5236c914e883",
+      "bytes": 564
+    },
+    "b/Kelmarsh/lr0/selection.json": {
+      "sha256": "651758a605e0c640e747cb1113b17be61e2459fbbaccce94f4f7c56c98d0a7e1",
+      "bytes": 48
+    },
+    "b/Kelmarsh/lr0/selection_freeze.json": {
+      "sha256": "e93f8d278992ea27d7f554754b308af65723e3446397b9aa4706c40e2271b959",
+      "bytes": 1573
+    },
+    "b/Kelmarsh/lr0/fit_spec.json": {
+      "sha256": "edd7cdb4af36ee8d9435f5155fb225a68e8c021539d360c173bfe33c80a5135d",
+      "bytes": 2097
+    },
+    "b/Kelmarsh/lr0/fit/finetuned-ckpt/config.json": {
+      "sha256": "5ebdd54c86881d3796d054b729d5dca6548bb4cb736b47bd13538feb3d102f14",
+      "bytes": 1062
+    },
+    "b/Kelmarsh/lr0/pred_v1/predict_spec.json": {
+      "sha256": "429981effc31c38e430602f662e9abec23be4194f15b643c3d6074edede607fb",
+      "bytes": 1552
+    },
+    "b/Kelmarsh/lr0/pred_v1/m_V1.npy": {
+      "sha256": "5c882d599475191cb591ff90edb8c1d188a275df205db9cd6d47329f3fdcfea6",
+      "bytes": 356816
+    },
+    "b/Kelmarsh/pred_ftb/FTB_Kelmarsh_2022.npy": {
+      "sha256": "735f653a98661b324c2ff73d58a5eb4593fec18ed9f00fc8fb957160e0bfb49e",
+      "bytes": 813680
+    },
+    "b/Kelmarsh/pred_ftb/FTB_V2.npy": {
+      "sha256": "32ad8e573699959f1d724de1d588bcfb5250af778c02f236b5952d35f349aeb9",
+      "bytes": 396080
+    },
+    "b/Kelmarsh/pred_ftb/predict_spec.json": {
+      "sha256": "4262b32da1d296c0366d09725a4a8c3cf517c6ed2aafad2e95ca06e5ab99f878",
+      "bytes": 2285
+    },
+    "b/Kelmarsh/lr1/eval_preds.npy": {
+      "sha256": "d219ef70070fb95eda0ced343c0adc1568397d6abe5c54795e6c0df978bd5b56",
+      "bytes": 1189088
+    },
+    "b/Kelmarsh/lr1/eval_history.json": {
+      "sha256": "3e327ea3c098637ac72aa8b0e01494245b4d78bace138e6c38af171e4b00557b",
+      "bytes": 565
+    },
+    "b/Kelmarsh/lr1/selection.json": {
+      "sha256": "5aad96e7b8626c6eeecaa48932e0dee5ec59381bff207737b2699d92ed88b275",
+      "bytes": 46
+    },
+    "b/Kelmarsh/lr1/selection_freeze.json": {
+      "sha256": "383ae0a5c68eb787d9dc3fb292d68de379e6199337e88d16815e00cc3bf9b28d",
+      "bytes": 1572
+    },
+    "b/Kelmarsh/lr1/fit_spec.json": {
+      "sha256": "a86602de14b6c2183d1d4267bd9dd0e447ebc2e7c56148c00d079ccaf7c93d6c",
+      "bytes": 2097
+    },
+    "b/Kelmarsh/lr1/fit/finetuned-ckpt/config.json": {
+      "sha256": "5ebdd54c86881d3796d054b729d5dca6548bb4cb736b47bd13538feb3d102f14",
+      "bytes": 1062
+    },
+    "b/Kelmarsh/lr1/pred_v1/predict_spec.json": {
+      "sha256": "5f46be4aa4ac29fd425e6588fe7c2496278f19e0e48679cbc3460bcab1acfb90",
+      "bytes": 1552
+    },
+    "b/Kelmarsh/lr1/pred_v1/m_V1.npy": {
+      "sha256": "c77b6f927463eec046b91675ef5ea6ba27561e688481aaa94d04ab3fabd64454",
+      "bytes": 356816
+    },
+    "b/Kelmarsh/pre_full_mb256x1/preflight.json": {
+      "sha256": "707e79eb5ae639cbdc4dc00da7ccb0306773cb21b62141de51049c98331507e9",
+      "bytes": 625
+    },
+    "b/Kelmarsh/pre_full_mb256x1/preflight_spec.json": {
+      "sha256": "056a7e067ffb0659b501b6d07be68b06675722d4e07d2607605998bdedfeb28c",
+      "bytes": 830
+    },
+    "b/Kelmarsh/pre_full_mb135x2/preflight.json": {
+      "sha256": "95d8f54fb9897aa84e04b1462c297d2495f72fefc104318437c015bce21fdb4a",
+      "bytes": 324
+    },
+    "b/Kelmarsh/pre_full_mb135x2/preflight_spec.json": {
+      "sha256": "ad56304f108c7bf01c29b26d6003d0df7f62e1f288e83d17133247c1eb79ab21",
+      "bytes": 830
+    },
+    "b/Kelmarsh/pre_full_mb135x2/fit/finetuned-ckpt/config.json": {
+      "sha256": "5ebdd54c86881d3796d054b729d5dca6548bb4cb736b47bd13538feb3d102f14",
+      "bytes": 1062
+    },
+    "b/Penmanshiel/FTB_V2.npy": {
+      "sha256": "3fdde20c2d2da48e5e6f6e151ddc95a7947287d8ee8e1287334cdd2c7348d8f0",
+      "bytes": 776576
+    },
+    "b/Penmanshiel/FTB_Penmanshiel_2021.npy": {
+      "sha256": "35fe7e8a957de721566e2b3db3480b7975b7142f6693c366890084cac8a9179d",
+      "bytes": 1831184
+    },
+    "b/Penmanshiel/FTB_V1.npy": {
+      "sha256": "7cbd8c61acc514cfa9fa62024e1597e251816fc7d766186b03ef0ae7a37860d8",
+      "bytes": 931952
+    },
+    "b/Penmanshiel/lr0/eval_preds.npy": {
+      "sha256": "26ccc5bf1d6b93a94dd528c8536cb13bbab0324479bd59d478785943a77e455c",
+      "bytes": 3106208
+    },
+    "b/Penmanshiel/lr0/eval_history.json": {
+      "sha256": "cfebeb84e66bca3ca1be45c98d97639697341ad5bf785b4b1d91e748b176229f",
+      "bytes": 567
+    },
+    "b/Penmanshiel/lr0/selection.json": {
+      "sha256": "f0a1c1e3a6ad64677a0ad5893ad97ca95957d1465a020df1e95ade6aaddd7307",
+      "bytes": 47
+    },
+    "b/Penmanshiel/lr0/selection_freeze.json": {
+      "sha256": "a73ff82b60dad2fef5cd176ac86d3d81a0edd3ef17f4ce47803ca47d89b540ee",
+      "bytes": 1575
+    },
+    "b/Penmanshiel/lr0/fit_spec.json": {
+      "sha256": "4d6c3f93ed84dd8a0691928c1562f7ca18a7d13fbee463691348d425a075f623",
+      "bytes": 2118
+    },
+    "b/Penmanshiel/lr0/fit/finetuned-ckpt/config.json": {
+      "sha256": "5ebdd54c86881d3796d054b729d5dca6548bb4cb736b47bd13538feb3d102f14",
+      "bytes": 1062
+    },
+    "b/Penmanshiel/lr0/pred_v1/predict_spec.json": {
+      "sha256": "b83ca3e611a09556026c44bf46b933f14f518e78c79043cef233e4034b6e1dd0",
+      "bytes": 1567
+    },
+    "b/Penmanshiel/lr0/pred_v1/m_V1.npy": {
+      "sha256": "7cbd8c61acc514cfa9fa62024e1597e251816fc7d766186b03ef0ae7a37860d8",
+      "bytes": 931952
+    },
+    "b/Penmanshiel/pred_ftb/FTB_V2.npy": {
+      "sha256": "3fdde20c2d2da48e5e6f6e151ddc95a7947287d8ee8e1287334cdd2c7348d8f0",
+      "bytes": 776576
+    },
+    "b/Penmanshiel/pred_ftb/predict_spec.json": {
+      "sha256": "7b1183b04c219af8442c3f811e5e9823fad9fbe8a737a11499a0e8de79a1a63a",
+      "bytes": 2315
+    },
+    "b/Penmanshiel/pred_ftb/FTB_Penmanshiel_2021.npy": {
+      "sha256": "35fe7e8a957de721566e2b3db3480b7975b7142f6693c366890084cac8a9179d",
+      "bytes": 1831184
+    },
+    "b/Penmanshiel/lr1/eval_preds.npy": {
+      "sha256": "2e5351067e27aafae0b3e592de3cdedf338a08f5408912de61f32dd25a5f720d",
+      "bytes": 3106208
+    },
+    "b/Penmanshiel/lr1/eval_history.json": {
+      "sha256": "29872fb17a22b6b8d4fc13904f73013a7584b2d1035eafa854cf841eaf2e477c",
+      "bytes": 565
+    },
+    "b/Penmanshiel/lr1/selection.json": {
+      "sha256": "3a0bbe4edcb4fd0b4d1ad897bf5679736e097f477fa65674d3ed68fbcee16c16",
+      "bytes": 46
+    },
+    "b/Penmanshiel/lr1/selection_freeze.json": {
+      "sha256": "604381f4ad9c28c224846ccce827438044f42cda3cd44295c0382e8567f1c1d7",
+      "bytes": 1572
+    },
+    "b/Penmanshiel/lr1/fit_spec.json": {
+      "sha256": "aabca3e28172b2de24fb1d6388658e741bd0032b4ac33270e7db088930d2bf3e",
+      "bytes": 2118
+    },
+    "b/Penmanshiel/lr1/fit/finetuned-ckpt/config.json": {
+      "sha256": "5ebdd54c86881d3796d054b729d5dca6548bb4cb736b47bd13538feb3d102f14",
+      "bytes": 1062
+    },
+    "b/Penmanshiel/lr1/pred_v1/predict_spec.json": {
+      "sha256": "245fd6bc7a6c3345987a7d62d402c41fe3938e74f31cc357143097811c453e1e",
+      "bytes": 1567
+    },
+    "b/Penmanshiel/lr1/pred_v1/m_V1.npy": {
+      "sha256": "a9b9182b05622bfbb14d9e00594f073bf86e652d5ab0950c44d8bfce9c17a2d6",
+      "bytes": 931952
+    },
+    "b/Penmanshiel/pre_full_mb135x2/preflight.json": {
+      "sha256": "95d8f54fb9897aa84e04b1462c297d2495f72fefc104318437c015bce21fdb4a",
+      "bytes": 324
+    },
+    "b/Penmanshiel/pre_full_mb135x2/preflight_spec.json": {
+      "sha256": "f7e07d8a5874b39cf23b8d16e3c973b86041417f05940575227b5f4ae46908ad",
+      "bytes": 836
+    },
+    "b/Penmanshiel/pre_full_mb135x2/fit/finetuned-ckpt/config.json": {
+      "sha256": "5ebdd54c86881d3796d054b729d5dca6548bb4cb736b47bd13538feb3d102f14",
+      "bytes": 1062
+    },
+    "b/HoT/FTB_HoT_2025.npy": {
+      "sha256": "7366c04ef327d8d19b256d3b2f7c554e9c1c5fedcbd06df31ef07b10e66f1ec5",
+      "bytes": 2729264
+    },
+    "b/HoT/FTB_V2.npy": {
+      "sha256": "49deafbc75ffbd8e0235d9ee344f800a3b652e6def2198e245c07744daa3e277",
+      "bytes": 725072
+    },
+    "b/HoT/FTB_V1.npy": {
+      "sha256": "43897811b0b4596febe15730f35ee9d0e327499a6eda7b2a83d94cc4ade2dc46",
+      "bytes": 716864
+    },
+    "b/HoT/FTB_HoT_2024.npy": {
+      "sha256": "93be05f7dd42ea359a98bf4f7d471dd0d3bf077dcb77b2fc9ffbadf4c9299079",
+      "bytes": 2860304
+    },
+    "b/HoT/lr0/eval_preds.npy": {
+      "sha256": "cd2b71234424509bfce878af1dea20c2acf38f25d7840ad29c6870993177df91",
+      "bytes": 2389248
+    },
+    "b/HoT/lr0/eval_history.json": {
+      "sha256": "23c64c30ebff2df7981460310658ebd68f876ea64a683310e221b5c23f283a18",
+      "bytes": 566
+    },
+    "b/HoT/lr0/selection.json": {
+      "sha256": "1f6202b5d77d0c5e3c6c39fa41e2c8cda338ae4d9463ddf8e2025d0bbff7acbb",
+      "bytes": 48
+    },
+    "b/HoT/lr0/selection_freeze.json": {
+      "sha256": "6777137025ef98773ae91f38b744121e78834b8179cff662fd48f9d2f5c0a9d4",
+      "bytes": 1575
+    },
+    "b/HoT/lr0/fit_spec.json": {
+      "sha256": "21c58af81a9bfdd986e6ecfb27ac5031707c6afa9e0e8c8477185ad4ddee55ba",
+      "bytes": 2062
+    },
+    "b/HoT/lr0/fit/finetuned-ckpt/config.json": {
+      "sha256": "5ebdd54c86881d3796d054b729d5dca6548bb4cb736b47bd13538feb3d102f14",
+      "bytes": 1062
+    },
+    "b/HoT/lr0/pred_v1/predict_spec.json": {
+      "sha256": "26f9377e149d938a9b0962ce6e5d9c0614750c88808726c36a8147c9f1dda00b",
+      "bytes": 1527
+    },
+    "b/HoT/lr0/pred_v1/m_V1.npy": {
+      "sha256": "43897811b0b4596febe15730f35ee9d0e327499a6eda7b2a83d94cc4ade2dc46",
+      "bytes": 716864
+    },
+    "b/HoT/pred_ftb/FTB_HoT_2025.npy": {
+      "sha256": "7366c04ef327d8d19b256d3b2f7c554e9c1c5fedcbd06df31ef07b10e66f1ec5",
+      "bytes": 2729264
+    },
+    "b/HoT/pred_ftb/FTB_V2.npy": {
+      "sha256": "49deafbc75ffbd8e0235d9ee344f800a3b652e6def2198e245c07744daa3e277",
+      "bytes": 725072
+    },
+    "b/HoT/pred_ftb/predict_spec.json": {
+      "sha256": "fcfff6903b4c0b3219498a939c908be50819d7650277fc87cc24c1e9c48089bd",
+      "bytes": 2984
+    },
+    "b/HoT/pred_ftb/FTB_HoT_2024.npy": {
+      "sha256": "93be05f7dd42ea359a98bf4f7d471dd0d3bf077dcb77b2fc9ffbadf4c9299079",
+      "bytes": 2860304
+    },
+    "b/HoT/lr1/eval_preds.npy": {
+      "sha256": "5eae23ffa4e606b66122f15c7e3dc198f146c0999a12a428b315797aadb97242",
+      "bytes": 2389248
+    },
+    "b/HoT/lr1/eval_history.json": {
+      "sha256": "e92e7ca5ba5893bcb0545766a16a444153105bac0b94874cd312bd1b382e81a8",
+      "bytes": 565
+    },
+    "b/HoT/lr1/selection.json": {
+      "sha256": "2a0fb0bcde97297b4cdb5517f7b5b1628f4224087ffd5ca0f7e8b8fbceab2cdf",
+      "bytes": 48
+    },
+    "b/HoT/lr1/selection_freeze.json": {
+      "sha256": "2027e2578c7e761d18528877f43fc66db4ea0914761e152fd1cff42513b3c493",
+      "bytes": 1574
+    },
+    "b/HoT/lr1/fit_spec.json": {
+      "sha256": "c8f300abd1e232151adbeaf6aa64bc277d0a04e0376e9ff5bc781a4e5b3f70ce",
+      "bytes": 2062
+    },
+    "b/HoT/lr1/fit/finetuned-ckpt/config.json": {
+      "sha256": "5ebdd54c86881d3796d054b729d5dca6548bb4cb736b47bd13538feb3d102f14",
+      "bytes": 1062
+    },
+    "b/HoT/lr1/pred_v1/predict_spec.json": {
+      "sha256": "d1d268977bced75fc27f12340293c8c4d0450f4ec07dcc18d681b346ce03c054",
+      "bytes": 1527
+    },
+    "b/HoT/lr1/pred_v1/m_V1.npy": {
+      "sha256": "7340c467b58c6d44159bd924827829a2ec7b54b66a7b1c8eb97c6d7c5d7673c8",
+      "bytes": 716864
+    },
+    "b/HoT/pre_full_mb135x2/preflight.json": {
+      "sha256": "95d8f54fb9897aa84e04b1462c297d2495f72fefc104318437c015bce21fdb4a",
+      "bytes": 324
+    },
+    "b/HoT/pre_full_mb135x2/preflight_spec.json": {
+      "sha256": "4dbcaa36278c71b6cea0e3da7d460acc877dcffa829cef7198d5d7876ed680a0",
+      "bytes": 820
+    },
+    "b/HoT/pre_full_mb135x2/fit/finetuned-ckpt/config.json": {
+      "sha256": "5ebdd54c86881d3796d054b729d5dca6548bb4cb736b47bd13538feb3d102f14",
+      "bytes": 1062
+    },
+    "smoke_d0/completed.json": {
+      "sha256": "ea6fdc01abe166a01752b3de3a8ac8da3d26b8de612f38d7fecdebf23f206293",
+      "bytes": 224
+    },
+    "smoke_d0/d0.json": {
+      "sha256": "f490712d19edf40547ee1b34560f60353be47e39f6e937e0b669b661250f9056",
+      "bytes": 27932
+    },
+    "smoke_d0/launch.json": {
+      "sha256": "51b6031829e866fdca9af2dff299b1e08ed205776f8d64e57f811466161653dd",
+      "bytes": 339
+    },
+    "smoke_d0/registry.json": {
+      "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+      "bytes": 3
+    },
+    "smoke_b/completed.json": {
+      "sha256": "ca0a71cddd6918b247a934e4397b313c97ea06958d7c00e7db84834233bc1f5d",
+      "bytes": 202
+    },
+    "smoke_b/b_meta.json": {
+      "sha256": "68abcd74f54d2b714b60e9dd0d8e52e42aea3c0885035c463b455b152040388d",
+      "bytes": 7407
+    },
+    "smoke_b/preflight_decision.json": {
+      "sha256": "83b4a029fd282021905bc49a79935cd6f5b96ecf4a10ed977d80c1d13dd321ab",
+      "bytes": 3297
+    },
+    "smoke_b/launch.json": {
+      "sha256": "2a907110afc09cfaa2c247d09eac112771df40a4b6d8327bd3493b012ff63e84",
+      "bytes": 338
+    },
+    "smoke_b/registry.json": {
+      "sha256": "61d4a7d90854558b0e9e62051bb642b7476169a2a45b840428a137ee16719ece",
+      "bytes": 6104
+    },
+    "smoke_b/Kelmarsh/lr0/eval_history.json": {
+      "sha256": "b3954d4caed4fcc92de5b7709ae671fd12f58047f599c2a779ab50fb20e862c1",
+      "bytes": 111
+    },
+    "smoke_b/Kelmarsh/lr0/selection.json": {
+      "sha256": "418eb8f7be6f34a608bf7c33d8fc6dd2f5f266315bb8cbce8cd29ad4394dc4df",
+      "bytes": 45
+    },
+    "smoke_b/Kelmarsh/lr0/selection_freeze.json": {
+      "sha256": "8c83ebc58f4c41f0a3f3e2c83d3f110009418285a8bd9a99331ef930e120f0cd",
+      "bytes": 1041
+    },
+    "smoke_b/Kelmarsh/lr0/fit_spec.json": {
+      "sha256": "d340a42cc14628fff26de8e1f8c170becff11ecb765bd86e01cca89e2ac71933",
+      "bytes": 2125
+    },
+    "smoke_b/Kelmarsh/lr0/fit/finetuned-ckpt/config.json": {
+      "sha256": "5ebdd54c86881d3796d054b729d5dca6548bb4cb736b47bd13538feb3d102f14",
+      "bytes": 1062
+    },
+    "smoke_b/Kelmarsh/lr0/pred_v1/predict_spec.json": {
+      "sha256": "8002ccb9fcbfd2bda9c689ab197c6675251d4157545ee8860b190c393b3c4f4c",
+      "bytes": 1576
+    },
+    "smoke_b/Kelmarsh/lr1/eval_history.json": {
+      "sha256": "b0413b8d63c5d6a5a3b24c4e05374e58bb70e921635e9beecc9c575aac607d83",
+      "bytes": 111
+    },
+    "smoke_b/Kelmarsh/lr1/selection.json": {
+      "sha256": "93f691abb6f2715bacde84f61832877b78c3476924726612bc5eea492335880c",
+      "bytes": 45
+    },
+    "smoke_b/Kelmarsh/lr1/selection_freeze.json": {
+      "sha256": "4a9f1d30b976bcda27658f90eeb1424c7896e534a756f3f2b0b9d47a024c0b54",
+      "bytes": 1041
+    },
+    "smoke_b/Kelmarsh/lr1/fit_spec.json": {
+      "sha256": "cf53cea7162ac761d410f35849e4c4dcb8a9936061eee1f8b36ece93d62b465e",
+      "bytes": 2125
+    },
+    "smoke_b/Kelmarsh/lr1/fit/finetuned-ckpt/config.json": {
+      "sha256": "5ebdd54c86881d3796d054b729d5dca6548bb4cb736b47bd13538feb3d102f14",
+      "bytes": 1062
+    },
+    "smoke_b/Kelmarsh/lr1/pred_v1/predict_spec.json": {
+      "sha256": "de65ae0482360e0b51e5ddfdc974633e9e9ed592fab2d67f5ecd7f5a70c0f4a2",
+      "bytes": 1576
+    },
+    "smoke_b/Kelmarsh/pre_full_mb256x1/preflight.json": {
+      "sha256": "707e79eb5ae639cbdc4dc00da7ccb0306773cb21b62141de51049c98331507e9",
+      "bytes": 625
+    },
+    "smoke_b/Kelmarsh/pre_full_mb256x1/preflight_spec.json": {
+      "sha256": "f2ab8c2b2528389d1c4c4d31fa8345d8808ac67925f45043cbc891baff72e431",
+      "bytes": 844
+    },
+    "smoke_b/Kelmarsh/pre_full_mb135x2/preflight.json": {
+      "sha256": "95d8f54fb9897aa84e04b1462c297d2495f72fefc104318437c015bce21fdb4a",
+      "bytes": 324
+    },
+    "smoke_b/Kelmarsh/pre_full_mb135x2/preflight_spec.json": {
+      "sha256": "7c9d4f280c6bb06f7d41f06f3bd39c54a32ae3fbe056d72157a928c4ba6bbb25",
+      "bytes": 844
+    },
+    "smoke_b/Kelmarsh/pre_full_mb135x2/fit/finetuned-ckpt/config.json": {
+      "sha256": "5ebdd54c86881d3796d054b729d5dca6548bb4cb736b47bd13538feb3d102f14",
+      "bytes": 1062
+    },
+    "smoke_b/Penmanshiel/lr0/eval_history.json": {
+      "sha256": "2c71bb01ec14947589e154e2947245fafa19f760faebee5c4fd6ac1eedfba519",
+      "bytes": 110
+    },
+    "smoke_b/Penmanshiel/lr0/selection.json": {
+      "sha256": "885e62e4cfcff4410b60f39ccb00fa072393faebec52dd59a1f2429b9a545296",
+      "bytes": 44
+    },
+    "smoke_b/Penmanshiel/lr0/selection_freeze.json": {
+      "sha256": "12e71d382c3fb00b2c84c16d3e5e8fcf4a79dffd33caf8a044b965416fc82ce4",
+      "bytes": 1039
+    },
+    "smoke_b/Penmanshiel/lr0/fit_spec.json": {
+      "sha256": "2a94df56c0ec96effae09c120dba1e7957e6132db31cd567d19cb10e381491b0",
+      "bytes": 2146
+    },
+    "smoke_b/Penmanshiel/lr0/fit/finetuned-ckpt/config.json": {
+      "sha256": "5ebdd54c86881d3796d054b729d5dca6548bb4cb736b47bd13538feb3d102f14",
+      "bytes": 1062
+    },
+    "smoke_b/Penmanshiel/lr0/pred_v1/predict_spec.json": {
+      "sha256": "952ebb5dcf3c4df68da42d8ea6f898be825b070385114537b4a3fdeca3474e52",
+      "bytes": 1591
+    },
+    "smoke_b/Penmanshiel/lr1/eval_history.json": {
+      "sha256": "dcf6acb6cf0c104e32a74f8b1ebbb8a170e699600368affaf93fc8d512d83718",
+      "bytes": 108
+    },
+    "smoke_b/Penmanshiel/lr1/selection.json": {
+      "sha256": "91d3ae57d871e3c2859a17e87e5d9f96cf381eb9c4769755b8ae0fd488871872",
+      "bytes": 43
+    },
+    "smoke_b/Penmanshiel/lr1/selection_freeze.json": {
+      "sha256": "a1cc505c47c6e6f5a633eac55ff1dad9f0978c771fd0667eb7bbd1faee251d80",
+      "bytes": 1036
+    },
+    "smoke_b/Penmanshiel/lr1/fit_spec.json": {
+      "sha256": "92b10ed418c18887130eacb64dc3993824a45d5465a40339370924961c08259b",
+      "bytes": 2146
+    },
+    "smoke_b/Penmanshiel/lr1/fit/finetuned-ckpt/config.json": {
+      "sha256": "5ebdd54c86881d3796d054b729d5dca6548bb4cb736b47bd13538feb3d102f14",
+      "bytes": 1062
+    },
+    "smoke_b/Penmanshiel/lr1/pred_v1/predict_spec.json": {
+      "sha256": "9d4d75b2250f85c9cacee210ab866b97b8a72ab98601f8c78a84069222505bf6",
+      "bytes": 1591
+    },
+    "smoke_b/Penmanshiel/pre_full_mb135x2/preflight.json": {
+      "sha256": "95d8f54fb9897aa84e04b1462c297d2495f72fefc104318437c015bce21fdb4a",
+      "bytes": 324
+    },
+    "smoke_b/Penmanshiel/pre_full_mb135x2/preflight_spec.json": {
+      "sha256": "8dcea443720f717552fa2093f23ff638c3744a299df14763b70f5a7fcdfbf80e",
+      "bytes": 850
+    },
+    "smoke_b/Penmanshiel/pre_full_mb135x2/fit/finetuned-ckpt/config.json": {
+      "sha256": "5ebdd54c86881d3796d054b729d5dca6548bb4cb736b47bd13538feb3d102f14",
+      "bytes": 1062
+    },
+    "smoke_b/HoT/lr0/eval_history.json": {
+      "sha256": "8fa0fcf2af5d6f178fc4e1cd41406c01fb2111ef127a83cd6abdad537c141482",
+      "bytes": 110
+    },
+    "smoke_b/HoT/lr0/selection.json": {
+      "sha256": "335f50c3bf0a24aac2d9aeb43883f21c49b44ab85b24f2621e59d133c5430877",
+      "bytes": 45
+    },
+    "smoke_b/HoT/lr0/selection_freeze.json": {
+      "sha256": "4babe49a73a170a765a8b304990e34ad5a74e8caee08121c392981eb2ef3f34c",
+      "bytes": 1040
+    },
+    "smoke_b/HoT/lr0/fit_spec.json": {
+      "sha256": "6719f14a759f159a4c08fc0117d19031b8ecd8babd5169afe7c77edc5b48cb28",
+      "bytes": 2090
+    },
+    "smoke_b/HoT/lr0/fit/finetuned-ckpt/config.json": {
+      "sha256": "5ebdd54c86881d3796d054b729d5dca6548bb4cb736b47bd13538feb3d102f14",
+      "bytes": 1062
+    },
+    "smoke_b/HoT/lr0/pred_v1/predict_spec.json": {
+      "sha256": "289a996d15c1fdd7e532e525e9a94eda4b46cee161516b4685be8f0c8b149da5",
+      "bytes": 1551
+    },
+    "smoke_b/HoT/pred_ftb/predict_spec.json": {
+      "sha256": "fa5a36b31f0236f3573879567e9ff3c393b535ca0cdeca50f01ee0a02bd3622b",
+      "bytes": 3032
+    },
+    "smoke_b/HoT/lr1/eval_history.json": {
+      "sha256": "e967fafd677bcaadd4e0397c72c7ab3b06db83e265df8757734823385e73c604",
+      "bytes": 111
+    },
+    "smoke_b/HoT/lr1/selection.json": {
+      "sha256": "fd31241351aa422690fc06b78a7c02d92818245cff37fb50bce7d45c8a6cbc64",
+      "bytes": 45
+    },
+    "smoke_b/HoT/lr1/selection_freeze.json": {
+      "sha256": "8a65d85bf470dd4557620bae886e30b2e5a25450be224889f96d05f531a21493",
+      "bytes": 1041
+    },
+    "smoke_b/HoT/lr1/fit_spec.json": {
+      "sha256": "fe9107c5618559c74cb63ed1074274c9e03ecc7695686e79c14679792007010d",
+      "bytes": 2090
+    },
+    "smoke_b/HoT/lr1/fit/finetuned-ckpt/config.json": {
+      "sha256": "5ebdd54c86881d3796d054b729d5dca6548bb4cb736b47bd13538feb3d102f14",
+      "bytes": 1062
+    },
+    "smoke_b/HoT/lr1/pred_v1/predict_spec.json": {
+      "sha256": "c8e83a6b775320d07ec3c6044b29e65d9b66ccdea3fa205dae0cfd4bda583e45",
+      "bytes": 1551
+    },
+    "smoke_b/HoT/pre_full_mb135x2/preflight.json": {
+      "sha256": "95d8f54fb9897aa84e04b1462c297d2495f72fefc104318437c015bce21fdb4a",
+      "bytes": 324
+    },
+    "smoke_b/HoT/pre_full_mb135x2/preflight_spec.json": {
+      "sha256": "f4236b10cca9bcab560b3bd439684bb6da59dd1f1fc1687261d229761d48661c",
+      "bytes": 834
+    },
+    "smoke_b/HoT/pre_full_mb135x2/fit/finetuned-ckpt/config.json": {
+      "sha256": "5ebdd54c86881d3796d054b729d5dca6548bb4cb736b47bd13538feb3d102f14",
+      "bytes": 1062
+    },
+    "report/completed.json": {
+      "sha256": "4099a377f6e485cf31f4a896826c36348e6293233888e410941b97196b1ad0bf",
+      "bytes": 299
+    },
+    "report/launch.json": {
+      "sha256": "08f252f0493eb4c59b4addb4e3f61fd166f973c7dc872079f65a3a036f8584e2",
+      "bytes": 344
+    },
+    "report/dev_decisions.json": {
+      "sha256": "cd58897a796d2f45bdc3afe721f3b04df8c8903379947b6c783bd15383daf958",
+      "bytes": 16439
+    },
+    "report/registry.json": {
+      "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+      "bytes": 3
+    },
+    "report/results.json": {
+      "sha256": "fd1113915de34082a8795e3b8fafb6804d9b0c01a60209a954436c07005eaa74",
+      "bytes": 8604
+    },
+    "report/report_diagnostics.json": {
+      "sha256": "efa2ab0944aad1025544f215a77699ba5e08529f3a93f3eb51122e948c96ac2d",
+      "bytes": 4727
+    },
+    "smoke_a/completed.json": {
+      "sha256": "e42513a29cf457e1d24b169578c80da85a27c369990099d53a94c828e6d88c47",
+      "bytes": 202
+    },
+    "smoke_a/preflight_decision.json": {
+      "sha256": "05b61d42150a27324c9bf4b6663bc327885949a29f9f10db2b786e9b4bc1d29f",
+      "bytes": 2328
+    },
+    "smoke_a/launch.json": {
+      "sha256": "788a97c913a1396735cca089c6dbc854176dfeb4a8d77af4221a382d28282157",
+      "bytes": 338
+    },
+    "smoke_a/registry.json": {
+      "sha256": "53d694277bfa467c1321f62ac6bc088bba9310cec83f578d467c8a7eb9986112",
+      "bytes": 8992
+    },
+    "smoke_a/a_meta.json": {
+      "sha256": "9cdd898641e0ccfba19618093821781ce5b52d9312c4049f2ccdc04405bf713a",
+      "bytes": 32811
+    },
+    "smoke_a/Kelmarsh/stage2_k1/eval_history.json": {
+      "sha256": "c6967c78219d6aed6548bdbb07bd2b28992db346a1442e8492bac390d4decaab",
+      "bytes": 164
+    },
+    "smoke_a/Kelmarsh/stage2_k1/selection.json": {
+      "sha256": "825da192e9b979171005718c73a261ace15e84630643c1c428335201901d620a",
+      "bytes": 45
+    },
+    "smoke_a/Kelmarsh/stage2_k1/selection_freeze.json": {
+      "sha256": "7efa777078f6e1a2a51faab8366597dcd3389d9a7434a253d408633acb05521e",
+      "bytes": 1443
+    },
+    "smoke_a/Kelmarsh/stage2_k1/fit_spec.json": {
+      "sha256": "ff6b4b90a0e116e80236c4beeb28c68c40c6470b97601b2e400ed4917fda4990",
+      "bytes": 1486
+    },
+    "smoke_a/Kelmarsh/stage2_k1/fit/finetuned-ckpt/config.json": {
+      "sha256": "5ebdd54c86881d3796d054b729d5dca6548bb4cb736b47bd13538feb3d102f14",
+      "bytes": 1062
+    },
+    "smoke_a/Kelmarsh/stage2_k3/eval_history.json": {
+      "sha256": "10e29b0827d021f4f18c962dcb712c91f3df052631511572bc9676dbc56322bb",
+      "bytes": 165
+    },
+    "smoke_a/Kelmarsh/stage2_k3/selection.json": {
+      "sha256": "d96277bc9bc84d000aebc3a2b5cd852d3a3e8e42761bacfbc0cc08dc4d3882c8",
+      "bytes": 45
+    },
+    "smoke_a/Kelmarsh/stage2_k3/selection_freeze.json": {
+      "sha256": "c72b022907ace98ffd536e5a6894e6cfbf76029e919453246c7071112fbe8bf8",
+      "bytes": 1444
+    },
+    "smoke_a/Kelmarsh/stage2_k3/fit_spec.json": {
+      "sha256": "6370ffd1213bbab5b50c2d50bdd08d32d6619c1e00f6690899966f53676416a9",
+      "bytes": 1486
+    },
+    "smoke_a/Kelmarsh/stage2_k3/fit/finetuned-ckpt/config.json": {
+      "sha256": "5ebdd54c86881d3796d054b729d5dca6548bb4cb736b47bd13538feb3d102f14",
+      "bytes": 1062
+    },
+    "smoke_a/Kelmarsh/pred/predict_spec.json": {
+      "sha256": "75c67ee24f8a2d786b4995719cb37cc2b08f76331a3d5df64390247887429090",
+      "bytes": 2828
+    },
+    "smoke_a/Kelmarsh/stage1_lr1/eval_history.json": {
+      "sha256": "dc0a0e1c23eb693bf96243804c48f42d5a6a1572ac82963fd946081e3b21828d",
+      "bytes": 111
+    },
+    "smoke_a/Kelmarsh/stage1_lr1/selection.json": {
+      "sha256": "852a4f5f19e4286593b1b4341b2abcf901e4ba02356edb00da264cd19be2c076",
+      "bytes": 45
+    },
+    "smoke_a/Kelmarsh/stage1_lr1/selection_freeze.json": {
+      "sha256": "634bde0b46479b86fbf00ed29b232befd07724de040e7b8caaeb2abb7428b178",
+      "bytes": 1041
+    },
+    "smoke_a/Kelmarsh/stage1_lr1/fit_spec.json": {
+      "sha256": "06657820790d2187268495931f3d2cb31538353b6e5cf52f9f50a83af4e06dd8",
+      "bytes": 1153
+    },
+    "smoke_a/Kelmarsh/stage1_lr1/fit/finetuned-ckpt/config.json": {
+      "sha256": "5ebdd54c86881d3796d054b729d5dca6548bb4cb736b47bd13538feb3d102f14",
+      "bytes": 1062
+    },
+    "smoke_a/Kelmarsh/direct_k1/eval_history.json": {
+      "sha256": "df02a763c797370d93f29f22373f8e4e5fd4cb7166cb4ca272179d0ea9fb2346",
+      "bytes": 165
+    },
+    "smoke_a/Kelmarsh/direct_k1/selection.json": {
+      "sha256": "517b717bff6ce988b5ed545d6eb3d093a3743c8f7f5cacb1111105b50386bfe7",
+      "bytes": 45
+    },
+    "smoke_a/Kelmarsh/direct_k1/selection_freeze.json": {
+      "sha256": "34c0804fdb9d16f3ecd51ffafb60bfa797f45d7f065bd7fd895bfb15afa5a388",
+      "bytes": 1104
+    },
+    "smoke_a/Kelmarsh/direct_k1/fit_spec.json": {
+      "sha256": "0216da47ac0096e2bc484e43689a2249b9ef9373afe1f3553c071a8dec33d312",
+      "bytes": 1146
+    },
+    "smoke_a/Kelmarsh/direct_k1/fit/finetuned-ckpt/config.json": {
+      "sha256": "5ebdd54c86881d3796d054b729d5dca6548bb4cb736b47bd13538feb3d102f14",
+      "bytes": 1062
+    },
+    "smoke_a/Kelmarsh/pre_full_mb256x1/preflight.json": {
+      "sha256": "60111ce6389752311eacb2704ebae689813738306f15ea7c1e84a98fb10d8ec6",
+      "bytes": 323
+    },
+    "smoke_a/Kelmarsh/pre_full_mb256x1/preflight_spec.json": {
+      "sha256": "5abc7fe4091ad553fce830d1a3c8504e80f6fa097e8a793d44f13afdc3bbdcea",
+      "bytes": 844
+    },
+    "smoke_a/Kelmarsh/pre_full_mb256x1/fit/finetuned-ckpt/config.json": {
+      "sha256": "5ebdd54c86881d3796d054b729d5dca6548bb4cb736b47bd13538feb3d102f14",
+      "bytes": 1062
+    },
+    "smoke_a/Kelmarsh/stage1_lr0/eval_history.json": {
+      "sha256": "1048179a8b4756ec7eb5d500bf0e73434623da2532659e17556a114c33bd1f31",
+      "bytes": 111
+    },
+    "smoke_a/Kelmarsh/stage1_lr0/selection.json": {
+      "sha256": "c8dfa2365f5daea1163ebda4a3e122f9b2b7dd26c2fa4f8b3a9366e98e74d930",
+      "bytes": 45
+    },
+    "smoke_a/Kelmarsh/stage1_lr0/selection_freeze.json": {
+      "sha256": "56386466f037c9bc9f9998457445ca8ed6dc300a43eb1d0c89387f1744873813",
+      "bytes": 1041
+    },
+    "smoke_a/Kelmarsh/stage1_lr0/fit_spec.json": {
+      "sha256": "ca5e5ff47fbe8ec7e28e056cfaca0cfbd6c41037e730fe74a6b74aa5318de1ef",
+      "bytes": 1153
+    },
+    "smoke_a/Kelmarsh/stage1_lr0/fit/finetuned-ckpt/config.json": {
+      "sha256": "5ebdd54c86881d3796d054b729d5dca6548bb4cb736b47bd13538feb3d102f14",
+      "bytes": 1062
+    },
+    "smoke_a/Penmanshiel/stage2_k1/eval_history.json": {
+      "sha256": "d6ca06afa3ebd90a235a46689e07470aad0f44363723e49469c7bf57949234e1",
+      "bytes": 165
+    },
+    "smoke_a/Penmanshiel/stage2_k1/selection.json": {
+      "sha256": "6d229ce00cbe679747eadf743de28b84b4dcf4f99145b5f7c72a125eda8463e0",
+      "bytes": 45
+    },
+    "smoke_a/Penmanshiel/stage2_k1/selection_freeze.json": {
+      "sha256": "ac9a2352a173b320d21d1d03bae582e58c6600bb51d9915e70921e3832a1f8d7",
+      "bytes": 1447
+    },
+    "smoke_a/Penmanshiel/stage2_k1/fit_spec.json": {
+      "sha256": "d3e5eae5f4959c834d4232eb2762fe1bc5a8385aff3d37bccca1ffa315105d19",
+      "bytes": 1498
+    },
+    "smoke_a/Penmanshiel/stage2_k1/fit/finetuned-ckpt/config.json": {
+      "sha256": "5ebdd54c86881d3796d054b729d5dca6548bb4cb736b47bd13538feb3d102f14",
+      "bytes": 1062
+    },
+    "smoke_a/Penmanshiel/stage2_k3/eval_history.json": {
+      "sha256": "a9a6ab7fb558f106a75afafd8eb2c7cee22f46af2a6b300f0b0f3cd8e9888553",
+      "bytes": 164
+    },
+    "smoke_a/Penmanshiel/stage2_k3/selection.json": {
+      "sha256": "6c1eed42fe10413bc6ffda2213d1e34bb73cef1819d34bba0b4217ac555abab9",
+      "bytes": 45
+    },
+    "smoke_a/Penmanshiel/stage2_k3/selection_freeze.json": {
+      "sha256": "6d7048e22b096ae29e34b0341d261005c6a824dd5f537449b2bd2798924a9395",
+      "bytes": 1446
+    },
+    "smoke_a/Penmanshiel/stage2_k3/fit_spec.json": {
+      "sha256": "8db1d3984542c17cc95014fbebefc33d878729d1e72a5070cf3c2e1d91b09b31",
+      "bytes": 1498
+    },
+    "smoke_a/Penmanshiel/stage2_k3/fit/finetuned-ckpt/config.json": {
+      "sha256": "5ebdd54c86881d3796d054b729d5dca6548bb4cb736b47bd13538feb3d102f14",
+      "bytes": 1062
+    },
+    "smoke_a/Penmanshiel/pred/predict_spec.json": {
+      "sha256": "03639a6de96659939a34d8d5654761c83d2227608a5c8b5fb6f94e9edf1b901d",
+      "bytes": 2852
+    },
+    "smoke_a/Penmanshiel/stage1_lr1/eval_history.json": {
+      "sha256": "532a6f03b2251f0bdbdef0ebd61bbd320752ac73575c383061c0541cb2b9dc3c",
+      "bytes": 110
+    },
+    "smoke_a/Penmanshiel/stage1_lr1/selection.json": {
+      "sha256": "16c8aa270cf3384258194e2f9b5fab4be79c8e9554aa09a1765949c637e3362b",
+      "bytes": 44
+    },
+    "smoke_a/Penmanshiel/stage1_lr1/selection_freeze.json": {
+      "sha256": "70899ae5a97a0052f383d9c4d9171070df0fb41eb6b3fcf0e173489745c1b28e",
+      "bytes": 1039
+    },
+    "smoke_a/Penmanshiel/stage1_lr1/fit_spec.json": {
+      "sha256": "433938f5881dc94ec4af32232e20df92e538756a1df227356e48913a39118e53",
+      "bytes": 1162
+    },
+    "smoke_a/Penmanshiel/stage1_lr1/fit/finetuned-ckpt/config.json": {
+      "sha256": "5ebdd54c86881d3796d054b729d5dca6548bb4cb736b47bd13538feb3d102f14",
+      "bytes": 1062
+    },
+    "smoke_a/Penmanshiel/direct_k1/eval_history.json": {
+      "sha256": "3f86365fc67bdcf3ef939bd5143b5fe919b2d84278faf672b124f02b629b9922",
+      "bytes": 162
+    },
+    "smoke_a/Penmanshiel/direct_k1/selection.json": {
+      "sha256": "bb9b29bad47f653f64ff4ce69c3e657d710ec59fe588dee754368bd24d5ec260",
+      "bytes": 43
+    },
+    "smoke_a/Penmanshiel/direct_k1/selection_freeze.json": {
+      "sha256": "22a0899b8cb0d9024740bbb8a67b50ebe453f3ecee6e6741ba72a8973c038e78",
+      "bytes": 1099
+    },
+    "smoke_a/Penmanshiel/direct_k1/fit_spec.json": {
+      "sha256": "76e4003f212c23efef375497ea0b34153dee6e2c867f4ee2a97e1d4e909434ce",
+      "bytes": 1155
+    },
+    "smoke_a/Penmanshiel/direct_k1/fit/finetuned-ckpt/config.json": {
+      "sha256": "5ebdd54c86881d3796d054b729d5dca6548bb4cb736b47bd13538feb3d102f14",
+      "bytes": 1062
+    },
+    "smoke_a/Penmanshiel/pre_full_mb256x1/preflight.json": {
+      "sha256": "60111ce6389752311eacb2704ebae689813738306f15ea7c1e84a98fb10d8ec6",
+      "bytes": 323
+    },
+    "smoke_a/Penmanshiel/pre_full_mb256x1/preflight_spec.json": {
+      "sha256": "e5a1a8131847b70d603ffee750b36d12d55158d7bb3f522c2346d5875bf2e1b0",
+      "bytes": 850
+    },
+    "smoke_a/Penmanshiel/pre_full_mb256x1/fit/finetuned-ckpt/config.json": {
+      "sha256": "5ebdd54c86881d3796d054b729d5dca6548bb4cb736b47bd13538feb3d102f14",
+      "bytes": 1062
+    },
+    "smoke_a/Penmanshiel/stage1_lr0/eval_history.json": {
+      "sha256": "be90960388ca66a2e660f066009b4af7fd3b60d13b0fc5eed2c8778493d4de0e",
+      "bytes": 111
+    },
+    "smoke_a/Penmanshiel/stage1_lr0/selection.json": {
+      "sha256": "8258e76b143d84ba21e3faddb75bbca8c26d7adc3d848af387f9f4abb6287290",
+      "bytes": 45
+    },
+    "smoke_a/Penmanshiel/stage1_lr0/selection_freeze.json": {
+      "sha256": "c1de23e2dcfe2da2521b1349a340f4c0be7db29bb6a04259121cd06db93db0e5",
+      "bytes": 1041
+    },
+    "smoke_a/Penmanshiel/stage1_lr0/fit_spec.json": {
+      "sha256": "4d08d0c0a8ed15db234811dfca5bf52f5560ba2ffcdb1842dc762ce9a28a3cbb",
+      "bytes": 1162
+    },
+    "smoke_a/Penmanshiel/stage1_lr0/fit/finetuned-ckpt/config.json": {
+      "sha256": "5ebdd54c86881d3796d054b729d5dca6548bb4cb736b47bd13538feb3d102f14",
+      "bytes": 1062
+    },
+    "smoke_a/HoT/stage2_k1/eval_history.json": {
+      "sha256": "39c38a9d30bbdfbe170bd64eba46b49c76d3749c92b7efcefbb045816aefd883",
+      "bytes": 165
+    },
+    "smoke_a/HoT/stage2_k1/selection.json": {
+      "sha256": "f61664b58c80e35c939a287ec5e49239124c7511f1ccb5f970c779b33d57e5f2",
+      "bytes": 45
+    },
+    "smoke_a/HoT/stage2_k1/selection_freeze.json": {
+      "sha256": "2b9880dd412cd561a601a55684d32cfd2b964232e6fcde6ce60aa2c832b2e4bd",
+      "bytes": 1439
+    },
+    "smoke_a/HoT/stage2_k1/fit_spec.json": {
+      "sha256": "f175b754548178bfbc3c97e68d88062efbb70e636ab802359869f6734891a09b",
+      "bytes": 1466
+    },
+    "smoke_a/HoT/stage2_k1/fit/finetuned-ckpt/config.json": {
+      "sha256": "5ebdd54c86881d3796d054b729d5dca6548bb4cb736b47bd13538feb3d102f14",
+      "bytes": 1062
+    },
+    "smoke_a/HoT/stage2_k3/eval_history.json": {
+      "sha256": "4daee521a15c2f81d5937240a2495baf1b5b284a8b427e69b202b29d82e568bc",
+      "bytes": 165
+    },
+    "smoke_a/HoT/stage2_k3/selection.json": {
+      "sha256": "a4b0285e47944cf73e46d3444572b4b7ad9b8805f217099e797237ad3f1943e3",
+      "bytes": 45
+    },
+    "smoke_a/HoT/stage2_k3/selection_freeze.json": {
+      "sha256": "95a45c37e008b745ab49758675a0c7ceb29e86de75691e639ecd4a6f2bc8d14e",
+      "bytes": 1439
+    },
+    "smoke_a/HoT/stage2_k3/fit_spec.json": {
+      "sha256": "ca52f6b2eb6065c3022b26c80801de70902a60cba2695b53105d504b7255da52",
+      "bytes": 1466
+    },
+    "smoke_a/HoT/stage2_k3/fit/finetuned-ckpt/config.json": {
+      "sha256": "5ebdd54c86881d3796d054b729d5dca6548bb4cb736b47bd13538feb3d102f14",
+      "bytes": 1062
+    },
+    "smoke_a/HoT/pred/predict_spec.json": {
+      "sha256": "f87493fda507d06dedcd28dbe7fce74e5e7ee0eeecbe8c4f14843cba227b2125",
+      "bytes": 2788
+    },
+    "smoke_a/HoT/stage1_lr1/eval_history.json": {
+      "sha256": "c56fd7738bc9d65ea0c98a2573b7b9a1f2a450a5b00339a5073cdbe5830edc73",
+      "bytes": 110
+    },
+    "smoke_a/HoT/stage1_lr1/selection.json": {
+      "sha256": "c7308730784a3b8a252d40f0fe4d25daa3dc093ad39eabe757b72b3f34083cbb",
+      "bytes": 45
+    },
+    "smoke_a/HoT/stage1_lr1/selection_freeze.json": {
+      "sha256": "934c39a4e36150e5d813154538140b56e12143d4c7f978374a83b7bb0e1cf1aa",
+      "bytes": 1040
+    },
+    "smoke_a/HoT/stage1_lr1/fit_spec.json": {
+      "sha256": "ea9222400282cdd0b5c9633561f6350babfa77028232a571f1b323ea8e48705e",
+      "bytes": 1138
+    },
+    "smoke_a/HoT/stage1_lr1/fit/finetuned-ckpt/config.json": {
+      "sha256": "5ebdd54c86881d3796d054b729d5dca6548bb4cb736b47bd13538feb3d102f14",
+      "bytes": 1062
+    },
+    "smoke_a/HoT/direct_k1/eval_history.json": {
+      "sha256": "56e178a4e26647508608cd69e5b0d645a4dc1d067b1143fde022f2e825398cd2",
+      "bytes": 164
+    },
+    "smoke_a/HoT/direct_k1/selection.json": {
+      "sha256": "ba36db8c4d53db588c9c15c361e07238937bbc1f7f42a7ef9c5dcf362c74090c",
+      "bytes": 45
+    },
+    "smoke_a/HoT/direct_k1/selection_freeze.json": {
+      "sha256": "f9bc9f2f526345d0e13ef306ffd90b7be105b7fd688eb477a6577a870c8a6375",
+      "bytes": 1103
+    },
+    "smoke_a/HoT/direct_k1/fit_spec.json": {
+      "sha256": "89b2d72ac09c03a5702428e846ebf109c8d39210030352bbeef171099da8a520",
+      "bytes": 1131
+    },
+    "smoke_a/HoT/direct_k1/fit/finetuned-ckpt/config.json": {
+      "sha256": "5ebdd54c86881d3796d054b729d5dca6548bb4cb736b47bd13538feb3d102f14",
+      "bytes": 1062
+    },
+    "smoke_a/HoT/pre_full_mb256x1/preflight.json": {
+      "sha256": "60111ce6389752311eacb2704ebae689813738306f15ea7c1e84a98fb10d8ec6",
+      "bytes": 323
+    },
+    "smoke_a/HoT/pre_full_mb256x1/preflight_spec.json": {
+      "sha256": "2b658ac88c8d8d80b4f441d427b2451823299c4933ba4d6c97ab7a81e4bf111c",
+      "bytes": 834
+    },
+    "smoke_a/HoT/pre_full_mb256x1/fit/finetuned-ckpt/config.json": {
+      "sha256": "5ebdd54c86881d3796d054b729d5dca6548bb4cb736b47bd13538feb3d102f14",
+      "bytes": 1062
+    },
+    "smoke_a/HoT/stage1_lr0/eval_history.json": {
+      "sha256": "c872920d1bd4142c2d002987a4680145acafc33379d2c24ad0b49ec674cb14e7",
+      "bytes": 111
+    },
+    "smoke_a/HoT/stage1_lr0/selection.json": {
+      "sha256": "484b1a05d7be21ef78ca4404333a7919eab96456c8b5c9afcf49f27125ad0e5b",
+      "bytes": 45
+    },
+    "smoke_a/HoT/stage1_lr0/selection_freeze.json": {
+      "sha256": "7134d77ed3617cc8bcc24bd5303a6ed14ddb061a2709b1afabff89647a484aa5",
+      "bytes": 1041
+    },
+    "smoke_a/HoT/stage1_lr0/fit_spec.json": {
+      "sha256": "7e5f22f2972060b04afe8e54d0c98ce4eec74eae40eb6c3175addffa45e23732",
+      "bytes": 1138
+    },
+    "smoke_a/HoT/stage1_lr0/fit/finetuned-ckpt/config.json": {
+      "sha256": "5ebdd54c86881d3796d054b729d5dca6548bb4cb736b47bd13538feb3d102f14",
+      "bytes": 1062
+    },
+    "d0/completed.json": {
+      "sha256": "4589a846acef8332a6e5a14278f09a6086c1be65dc4adc184231067fdc237fc8",
+      "bytes": 224
+    },
+    "d0/d0.json": {
+      "sha256": "9be25f1e0ccf2ea26a0c2b45e7426999dc6a8128122c13e0151d516cf949b842",
+      "bytes": 28063
+    },
+    "d0/launch.json": {
+      "sha256": "d689fadeeb5297d38a50708b8dad920b12c19921e39e5c7ff920e394cfbbd029",
+      "bytes": 340
+    },
+    "d0/registry.json": {
+      "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+      "bytes": 3
+    },
+    "a/completed.json": {
+      "sha256": "6fe0470ba0fd8e5f0a768bbf90fe7bdd81bd4dddd892ce1aa25f7e6c4e65987e",
+      "bytes": 202
+    },
+    "a/preflight_decision.json": {
+      "sha256": "6e99bacd13152aaa2e5032ed771d6cdd977a984e4fb99504cf5250ba4d383c69",
+      "bytes": 2328
+    },
+    "a/launch.json": {
+      "sha256": "7f3a44198c6fe846f87076cbbe1a304e462ac4dd2333a2f79587f9ac6fac6844",
+      "bytes": 339
+    },
+    "a/registry.json": {
+      "sha256": "1091ac140bbff4f3a46fe5223a42b219c1bdbfecafdabb113d3b3f724c70195f",
+      "bytes": 8992
+    },
+    "a/a_meta.json": {
+      "sha256": "9e73daf24d0028291702534f20830b3bc053a62f2c99a260387a82111d73d02b",
+      "bytes": 64147
+    },
+    "a/Kelmarsh/stage2_k1/eval_history.json": {
+      "sha256": "27cae7cc8380ea6a9d83d18c82a2cd9e17445f9b115e917f11900ab7ef08883b",
+      "bytes": 611
+    },
+    "a/Kelmarsh/stage2_k1/selection.json": {
+      "sha256": "29a0831b388f5459be83fadd69f95a98baa18986dc137e7182800b4e333dae6b",
+      "bytes": 45
+    },
+    "a/Kelmarsh/stage2_k1/selection_freeze.json": {
+      "sha256": "e145e98bf5a2ec31f3566ca4e5d89595b393e0dbe7185f8d921fa86fdfa4e381",
+      "bytes": 1953
+    },
+    "a/Kelmarsh/stage2_k1/fit_spec.json": {
+      "sha256": "b133f9ad292620342a1a1a98902adcb515d57388409b6551cf25444343eb78df",
+      "bytes": 1465
+    },
+    "a/Kelmarsh/stage2_k1/fit/finetuned-ckpt/config.json": {
+      "sha256": "5ebdd54c86881d3796d054b729d5dca6548bb4cb736b47bd13538feb3d102f14",
+      "bytes": 1062
+    },
+    "a/Kelmarsh/stage2_k3/eval_history.json": {
+      "sha256": "433dd700a6ad724fb7a5cf6ff14b6d17d3ea7276b90f9b5ef99c19d1f3048f7f",
+      "bytes": 609
+    },
+    "a/Kelmarsh/stage2_k3/selection.json": {
+      "sha256": "5af8bb0aeb52e5c5d904537ec5d7d6eadaba80b833b5da215a6677b7438573d4",
+      "bytes": 45
+    },
+    "a/Kelmarsh/stage2_k3/selection_freeze.json": {
+      "sha256": "ae2a9d272f681fa9f9494dbf241ac4173e470534f8f307c617b2a83e7534c441",
+      "bytes": 1951
+    },
+    "a/Kelmarsh/stage2_k3/fit_spec.json": {
+      "sha256": "1c65fba10f99545c966101dba3708b243267d9455a6a3ab296736a3ecb9d4c1f",
+      "bytes": 1465
+    },
+    "a/Kelmarsh/stage2_k3/fit/finetuned-ckpt/config.json": {
+      "sha256": "5ebdd54c86881d3796d054b729d5dca6548bb4cb736b47bd13538feb3d102f14",
+      "bytes": 1062
+    },
+    "a/Kelmarsh/pred/C_D1_V1.npy": {
+      "sha256": "2c551036be6037d3a9a8b836fda0bc9f2ff783dede26648d7d1a77f8a563faac",
+      "bytes": 356816
+    },
+    "a/Kelmarsh/pred/predict_spec.json": {
+      "sha256": "8bad31d9d9a58b3cfe8811fdf87e7eeb517102363c079a413ca389cc1a5f925a",
+      "bytes": 2786
+    },
+    "a/Kelmarsh/pred/C_T3_V1.npy": {
+      "sha256": "f4fdff042264d5f320f6627f40bf58ab7376a5ce65d3a68449acfdf31bc88cf6",
+      "bytes": 356816
+    },
+    "a/Kelmarsh/pred/C_T0_V1.npy": {
+      "sha256": "f4fdff042264d5f320f6627f40bf58ab7376a5ce65d3a68449acfdf31bc88cf6",
+      "bytes": 356816
+    },
+    "a/Kelmarsh/pred/C_T1_V1.npy": {
+      "sha256": "f4fdff042264d5f320f6627f40bf58ab7376a5ce65d3a68449acfdf31bc88cf6",
+      "bytes": 356816
+    },
+    "a/Kelmarsh/stage1_lr1/eval_history.json": {
+      "sha256": "663234be55ed209f2d3cfbd0c5e00cd496d465f28a22f8a7fef2db471a61eff7",
+      "bytes": 568
+    },
+    "a/Kelmarsh/stage1_lr1/selection.json": {
+      "sha256": "b584dfb8e28a7676918f864523eae5e0aff2ffe38ca948c00738ba186dc1fc52",
+      "bytes": 48
+    },
+    "a/Kelmarsh/stage1_lr1/selection_freeze.json": {
+      "sha256": "fae2be34efafece417b2fb087c558a57ca73aa59aae33eb1c1112ad86791f374",
+      "bytes": 1577
+    },
+    "a/Kelmarsh/stage1_lr1/fit_spec.json": {
+      "sha256": "0a0a26fea69c4d58bbfd731ef8d389a70d5ae3d5bd4af158875089789ca883ff",
+      "bytes": 1142
+    },
+    "a/Kelmarsh/stage1_lr1/fit/finetuned-ckpt/config.json": {
+      "sha256": "5ebdd54c86881d3796d054b729d5dca6548bb4cb736b47bd13538feb3d102f14",
+      "bytes": 1062
+    },
+    "a/Kelmarsh/direct_k1/eval_history.json": {
+      "sha256": "833bbb8539725656fe216e7f658fbfa1691648a50e7dc3219f0fac461f9d8487",
+      "bytes": 611
+    },
+    "a/Kelmarsh/direct_k1/selection.json": {
+      "sha256": "7bb7988318aa0e7209a5fe2ea44049605d98aa98100cf5cb2c4f0f88a64a9517",
+      "bytes": 46
+    },
+    "a/Kelmarsh/direct_k1/selection_freeze.json": {
+      "sha256": "7acf058d769a351eefd62ef815dab4f6c8eda5df6441d108e5e2eabd17793356",
+      "bytes": 1620
+    },
+    "a/Kelmarsh/direct_k1/fit_spec.json": {
+      "sha256": "f034d0293d58f1c2fedc299930d6db9639aeedfb1f6e080ae4e65f65b386a235",
+      "bytes": 1131
+    },
+    "a/Kelmarsh/direct_k1/fit/finetuned-ckpt/config.json": {
+      "sha256": "5ebdd54c86881d3796d054b729d5dca6548bb4cb736b47bd13538feb3d102f14",
+      "bytes": 1062
+    },
+    "a/Kelmarsh/pre_full_mb256x1/preflight.json": {
+      "sha256": "37cda5e249be8cef3a7ac2f0f54cb3a23e65ca353b4c237bd8ba67bd31a8bc34",
+      "bytes": 323
+    },
+    "a/Kelmarsh/pre_full_mb256x1/preflight_spec.json": {
+      "sha256": "dfcd693f11dc5b86940393c8aefd1ef9bc17f4ca216e70e96081a82c69052e76",
+      "bytes": 835
+    },
+    "a/Kelmarsh/pre_full_mb256x1/fit/finetuned-ckpt/config.json": {
+      "sha256": "5ebdd54c86881d3796d054b729d5dca6548bb4cb736b47bd13538feb3d102f14",
+      "bytes": 1062
+    },
+    "a/Kelmarsh/stage1_lr0/eval_history.json": {
+      "sha256": "785803721d59c4f6dab1cff2ed9a48ef74c0dd4e10cda167be6d95ed8d7dc61f",
+      "bytes": 566
+    },
+    "a/Kelmarsh/stage1_lr0/selection.json": {
+      "sha256": "bcaab5c08bf93b2eff2f4ab2f7c14cf8388ffbe002b4cd215e3c3c2fa7696492",
+      "bytes": 46
+    },
+    "a/Kelmarsh/stage1_lr0/selection_freeze.json": {
+      "sha256": "528568118a17fab9c2011f1c0a3f819a29fe975f6e56f5d0258a0ee1a7e6be0c",
+      "bytes": 1573
+    },
+    "a/Kelmarsh/stage1_lr0/fit_spec.json": {
+      "sha256": "15866ecb1dbd5c3869f1f371b3a4a9da49140125821a2fc569746dbeb01c0a98",
+      "bytes": 1142
+    },
+    "a/Kelmarsh/stage1_lr0/fit/finetuned-ckpt/config.json": {
+      "sha256": "5ebdd54c86881d3796d054b729d5dca6548bb4cb736b47bd13538feb3d102f14",
+      "bytes": 1062
+    },
+    "a/Penmanshiel/stage2_k1/eval_history.json": {
+      "sha256": "7a162f32f72bf03b29bb5e2d955cff416fda4784275bba450ef0c00b8a7500c0",
+      "bytes": 606
+    },
+    "a/Penmanshiel/stage2_k1/selection.json": {
+      "sha256": "fe1fba94795e4ad08882f09e744a58665afba7ad08c15b730d55b0c21ffb6e4a",
+      "bytes": 45
+    },
+    "a/Penmanshiel/stage2_k1/selection_freeze.json": {
+      "sha256": "7d023dcc156e22b02d221297de66fc3306d5191032fbb14f784652b2914de53a",
+      "bytes": 1951
+    },
+    "a/Penmanshiel/stage2_k1/fit_spec.json": {
+      "sha256": "f251d698c46f3902018c9ae5c400a85151ce4303e1af06f1ed3956131bace135",
+      "bytes": 1477
+    },
+    "a/Penmanshiel/stage2_k1/fit/finetuned-ckpt/config.json": {
+      "sha256": "5ebdd54c86881d3796d054b729d5dca6548bb4cb736b47bd13538feb3d102f14",
+      "bytes": 1062
+    },
+    "a/Penmanshiel/stage2_k3/eval_history.json": {
+      "sha256": "ecb254d8232d558397b8de636f310bf7d9b68a9f9c633928e6fdbc9a8a5baf6d",
+      "bytes": 606
+    },
+    "a/Penmanshiel/stage2_k3/selection.json": {
+      "sha256": "5991043dbfea96d33460c54218c1bd3ce3c67416b934ea91832ccd879a7781c0",
+      "bytes": 44
+    },
+    "a/Penmanshiel/stage2_k3/selection_freeze.json": {
+      "sha256": "7ab6377626ddf4882a8ef8b92d5ad6156eb20e55df66ce451f5baf37def8957b",
+      "bytes": 1950
+    },
+    "a/Penmanshiel/stage2_k3/fit_spec.json": {
+      "sha256": "aa4331c539bd684de718791b5ec0335a0c84f149d1c4dcc2b8391f6b558a2b33",
+      "bytes": 1477
+    },
+    "a/Penmanshiel/stage2_k3/fit/finetuned-ckpt/config.json": {
+      "sha256": "5ebdd54c86881d3796d054b729d5dca6548bb4cb736b47bd13538feb3d102f14",
+      "bytes": 1062
+    },
+    "a/Penmanshiel/pred/C_D1_V1.npy": {
+      "sha256": "0e904f3f8057cad8eec9e1d3a1876bc904732d8e75753a6d0daebbc361feb385",
+      "bytes": 931952
+    },
+    "a/Penmanshiel/pred/predict_spec.json": {
+      "sha256": "a07fb41707611a2e8ca4158dbbc5c6113a0bb5d89c302e16d92ba9c1ded32299",
+      "bytes": 2810
+    },
+    "a/Penmanshiel/pred/C_T3_V1.npy": {
+      "sha256": "571c99401db628bb1cf6d0bf22008e491c5b81481a0f3450bc9c5b117949dfb3",
+      "bytes": 931952
+    },
+    "a/Penmanshiel/pred/C_T0_V1.npy": {
+      "sha256": "571c99401db628bb1cf6d0bf22008e491c5b81481a0f3450bc9c5b117949dfb3",
+      "bytes": 931952
+    },
+    "a/Penmanshiel/pred/C_T1_V1.npy": {
+      "sha256": "571c99401db628bb1cf6d0bf22008e491c5b81481a0f3450bc9c5b117949dfb3",
+      "bytes": 931952
+    },
+    "a/Penmanshiel/stage1_lr1/eval_history.json": {
+      "sha256": "df45a31044524dec5269d39cd114dac481fbe653142de92f48b1fccbc4497345",
+      "bytes": 568
+    },
+    "a/Penmanshiel/stage1_lr1/selection.json": {
+      "sha256": "d62c976f05e5275de3852d6f0ebf30ea38d78b30fbfbe220fd788e9c64b16caa",
+      "bytes": 48
+    },
+    "a/Penmanshiel/stage1_lr1/selection_freeze.json": {
+      "sha256": "6456f900a251ba71b5bcbd3fe285938fbed48f25cca1f0eead6e803e983ec455",
+      "bytes": 1577
+    },
+    "a/Penmanshiel/stage1_lr1/fit_spec.json": {
+      "sha256": "8bcc517be683d3a0139d73cf855c0281ede3818d6f8039159a7c35d22efcf3fa",
+      "bytes": 1151
+    },
+    "a/Penmanshiel/stage1_lr1/fit/finetuned-ckpt/config.json": {
+      "sha256": "5ebdd54c86881d3796d054b729d5dca6548bb4cb736b47bd13538feb3d102f14",
+      "bytes": 1062
+    },
+    "a/Penmanshiel/direct_k1/eval_history.json": {
+      "sha256": "9a628348b780a0056c05d68f6d38122a50776642c100b88e509ebe5b3eb25804",
+      "bytes": 608
+    },
+    "a/Penmanshiel/direct_k1/selection.json": {
+      "sha256": "d6102c92337230090bc870e712901a9e751acdbfeee324f84b775a014be40754",
+      "bytes": 45
+    },
+    "a/Penmanshiel/direct_k1/selection_freeze.json": {
+      "sha256": "f365dedba682ef4a5f826fab233b1979bda611b965f918d5495ddb6f6e6dd5e5",
+      "bytes": 1616
+    },
+    "a/Penmanshiel/direct_k1/fit_spec.json": {
+      "sha256": "b53aa94d44a097e85e1a6d9aab7a08852b7b025e3fbabe00b5d88fd2425e79c3",
+      "bytes": 1140
+    },
+    "a/Penmanshiel/direct_k1/fit/finetuned-ckpt/config.json": {
+      "sha256": "5ebdd54c86881d3796d054b729d5dca6548bb4cb736b47bd13538feb3d102f14",
+      "bytes": 1062
+    },
+    "a/Penmanshiel/pre_full_mb256x1/preflight.json": {
+      "sha256": "37cda5e249be8cef3a7ac2f0f54cb3a23e65ca353b4c237bd8ba67bd31a8bc34",
+      "bytes": 323
+    },
+    "a/Penmanshiel/pre_full_mb256x1/preflight_spec.json": {
+      "sha256": "b7e84acfa8414b390416888d122eb5c9e5a0bd14f451c3baac2d779b9376584f",
+      "bytes": 841
+    },
+    "a/Penmanshiel/pre_full_mb256x1/fit/finetuned-ckpt/config.json": {
+      "sha256": "5ebdd54c86881d3796d054b729d5dca6548bb4cb736b47bd13538feb3d102f14",
+      "bytes": 1062
+    },
+    "a/Penmanshiel/stage1_lr0/eval_history.json": {
+      "sha256": "2e61e208a8e52a94fcd4ba3cf3b6c038a29e2546a781e9ed33c77a98434eb6a5",
+      "bytes": 563
+    },
+    "a/Penmanshiel/stage1_lr0/selection.json": {
+      "sha256": "c178d9a84270d2a5a86067375c4e0faef970c23ee9b1e3a591ee27a6db06c517",
+      "bytes": 47
+    },
+    "a/Penmanshiel/stage1_lr0/selection_freeze.json": {
+      "sha256": "3a0c24f693ccdfb2c079dbcad05aae906d95f81716ddb95a16adec391107d65e",
+      "bytes": 1571
+    },
+    "a/Penmanshiel/stage1_lr0/fit_spec.json": {
+      "sha256": "5c26426c6a83a13cba1f01710e50794a1bc249efbad32688a0505be5ac1c19ea",
+      "bytes": 1151
+    },
+    "a/Penmanshiel/stage1_lr0/fit/finetuned-ckpt/config.json": {
+      "sha256": "5ebdd54c86881d3796d054b729d5dca6548bb4cb736b47bd13538feb3d102f14",
+      "bytes": 1062
+    },
+    "a/HoT/stage2_k1/eval_history.json": {
+      "sha256": "9dfe308d8a85522a486098b03c4e5538b648cd15aa76eb83295edd83fbb45646",
+      "bytes": 607
+    },
+    "a/HoT/stage2_k1/selection.json": {
+      "sha256": "922ad4a9804f0aa9b0de906aacb2706f870a4edb617bf609a19e4d36c4668dbb",
+      "bytes": 47
+    },
+    "a/HoT/stage2_k1/selection_freeze.json": {
+      "sha256": "be1294692e46ea283ab32d382ab0dd0ebd9903bcb67bc3ed60a991506b25f7c8",
+      "bytes": 1946
+    },
+    "a/HoT/stage2_k1/fit_spec.json": {
+      "sha256": "e2dc401a47ad629aeb82125c3f1f8531e05de0045dff5e3caec8b844d1c6c43f",
+      "bytes": 1445
+    },
+    "a/HoT/stage2_k1/fit/finetuned-ckpt/config.json": {
+      "sha256": "5ebdd54c86881d3796d054b729d5dca6548bb4cb736b47bd13538feb3d102f14",
+      "bytes": 1062
+    },
+    "a/HoT/stage2_k3/eval_history.json": {
+      "sha256": "3a648138649725baf906a4a06de7eb05a358a535394c29581ea9c01c9613087f",
+      "bytes": 608
+    },
+    "a/HoT/stage2_k3/selection.json": {
+      "sha256": "3a4b534843e1182c2e024248f0ffdf625bac76a2862d84963962fd2ae8291724",
+      "bytes": 45
+    },
+    "a/HoT/stage2_k3/selection_freeze.json": {
+      "sha256": "b8c23c10be69fe193cf377d5a0deecd809d92fbc40dbb8f3e8e94c2fde2aa578",
+      "bytes": 1945
+    },
+    "a/HoT/stage2_k3/fit_spec.json": {
+      "sha256": "5b1fc34e6c02083d854b6d970c644525b76c5c28fa064b848e78bc19deb9d11d",
+      "bytes": 1445
+    },
+    "a/HoT/stage2_k3/fit/finetuned-ckpt/config.json": {
+      "sha256": "5ebdd54c86881d3796d054b729d5dca6548bb4cb736b47bd13538feb3d102f14",
+      "bytes": 1062
+    },
+    "a/HoT/pred/C_D1_V1.npy": {
+      "sha256": "5b61386cd1719b6cc781020a10d793ce4819bcccaf56833d6168267ada69e8a6",
+      "bytes": 716864
+    },
+    "a/HoT/pred/predict_spec.json": {
+      "sha256": "582ec69c63f16c00fae08a1084f72f97613f0dfc9c0173d77091c93ac817c7a5",
+      "bytes": 2746
+    },
+    "a/HoT/pred/C_T3_V1.npy": {
+      "sha256": "cecc97da6f3ef013f5b1ca58e191ddc6ab7ad45652d742b0e7746865d4fc9c11",
+      "bytes": 716864
+    },
+    "a/HoT/pred/C_T0_V1.npy": {
+      "sha256": "cecc97da6f3ef013f5b1ca58e191ddc6ab7ad45652d742b0e7746865d4fc9c11",
+      "bytes": 716864
+    },
+    "a/HoT/pred/C_T1_V1.npy": {
+      "sha256": "e75984c1a80744a56ec38044cef550e776c492322494d729a4ceccb3b08419c5",
+      "bytes": 716864
+    },
+    "a/HoT/stage1_lr1/eval_history.json": {
+      "sha256": "797f3c50596701f90fcc6e1febe39c9720e150ed3bdd9aa7cf78d1b944d352c6",
+      "bytes": 563
+    },
+    "a/HoT/stage1_lr1/selection.json": {
+      "sha256": "93556d1e061a168b0b53b52086c40a5818cfddc2a1e21a62247e5e34bdff30f5",
+      "bytes": 48
+    },
+    "a/HoT/stage1_lr1/selection_freeze.json": {
+      "sha256": "7a9e704f2bf8dba06d86a1818b60963bc7c2088afe88c60b8db25f275c68346f",
+      "bytes": 1572
+    },
+    "a/HoT/stage1_lr1/fit_spec.json": {
+      "sha256": "7ddb8ed0c445a354714349612dbae87907ba1e68a1b6bca32d6d0a77ca11ee04",
+      "bytes": 1127
+    },
+    "a/HoT/stage1_lr1/fit/finetuned-ckpt/config.json": {
+      "sha256": "5ebdd54c86881d3796d054b729d5dca6548bb4cb736b47bd13538feb3d102f14",
+      "bytes": 1062
+    },
+    "a/HoT/direct_k1/eval_history.json": {
+      "sha256": "49847fc5d169cf265b38013289893414e5800c29eed76a775fd998806514b8de",
+      "bytes": 608
+    },
+    "a/HoT/direct_k1/selection.json": {
+      "sha256": "3e6925348f151b9cf39c3daf09c31ed0c1272146de230dba946cf16e80c3d359",
+      "bytes": 46
+    },
+    "a/HoT/direct_k1/selection_freeze.json": {
+      "sha256": "958880a6e1884b946c2b2227ed5ffd7d8eb2d6e2b0aa8d22b72da2b4cd792516",
+      "bytes": 1617
+    },
+    "a/HoT/direct_k1/fit_spec.json": {
+      "sha256": "df338faf5a7c13b40676bde9eaae852fdcba832cd39d2556bfa3753ce2e2522d",
+      "bytes": 1116
+    },
+    "a/HoT/direct_k1/fit/finetuned-ckpt/config.json": {
+      "sha256": "5ebdd54c86881d3796d054b729d5dca6548bb4cb736b47bd13538feb3d102f14",
+      "bytes": 1062
+    },
+    "a/HoT/pre_full_mb256x1/preflight.json": {
+      "sha256": "37cda5e249be8cef3a7ac2f0f54cb3a23e65ca353b4c237bd8ba67bd31a8bc34",
+      "bytes": 323
+    },
+    "a/HoT/pre_full_mb256x1/preflight_spec.json": {
+      "sha256": "18d120ab80494dcd905355467befd40f6e3ca27f8cc84e5c6fe466f5e536bb7a",
+      "bytes": 825
+    },
+    "a/HoT/pre_full_mb256x1/fit/finetuned-ckpt/config.json": {
+      "sha256": "5ebdd54c86881d3796d054b729d5dca6548bb4cb736b47bd13538feb3d102f14",
+      "bytes": 1062
+    },
+    "a/HoT/stage1_lr0/eval_history.json": {
+      "sha256": "b28a2b09c79acf0f34db6b45821a99e1e22546d889c47a796b230b7630c07379",
+      "bytes": 565
+    },
+    "a/HoT/stage1_lr0/selection.json": {
+      "sha256": "7c76dad6f5a4b7621eec3ca407ddfa7f840327fd6410b8114e9121b2792ff299",
+      "bytes": 47
+    },
+    "a/HoT/stage1_lr0/selection_freeze.json": {
+      "sha256": "9734b9dd1184705879b1870692a96efde1a58891af6e857d5175abbc383f0ec7",
+      "bytes": 1573
+    },
+    "a/HoT/stage1_lr0/fit_spec.json": {
+      "sha256": "6bcf3556b3c4d667c27120e7962e00fceeb3e4d796ac3f08db10a0a8d396b77f",
+      "bytes": 1127
+    },
+    "a/HoT/stage1_lr0/fit/finetuned-ckpt/config.json": {
+      "sha256": "5ebdd54c86881d3796d054b729d5dca6548bb4cb736b47bd13538feb3d102f14",
+      "bytes": 1062
+    }
+  },
+  "registry_verification": {
+    "smoke_a": {
+      "verified": [
+        "Kelmarsh/stage1_lr0/selection_freeze.json",
+        "Kelmarsh/stage1_lr0/eval_history.json",
+        "Kelmarsh/stage1_lr1/selection_freeze.json",
+        "Kelmarsh/stage1_lr1/eval_history.json",
+        "Kelmarsh/stage2_k1/selection_freeze.json",
+        "Kelmarsh/stage2_k1/eval_history.json",
+        "Kelmarsh/stage2_k3/selection_freeze.json",
+        "Kelmarsh/stage2_k3/eval_history.json",
+        "Kelmarsh/direct_k1/selection_freeze.json",
+        "Kelmarsh/direct_k1/eval_history.json",
+        "Penmanshiel/stage1_lr0/selection_freeze.json",
+        "Penmanshiel/stage1_lr0/eval_history.json",
+        "Penmanshiel/stage1_lr1/selection_freeze.json",
+        "Penmanshiel/stage1_lr1/eval_history.json",
+        "Penmanshiel/stage2_k1/selection_freeze.json",
+        "Penmanshiel/stage2_k1/eval_history.json",
+        "Penmanshiel/stage2_k3/selection_freeze.json",
+        "Penmanshiel/stage2_k3/eval_history.json",
+        "Penmanshiel/direct_k1/selection_freeze.json",
+        "Penmanshiel/direct_k1/eval_history.json",
+        "HoT/stage1_lr0/selection_freeze.json",
+        "HoT/stage1_lr0/eval_history.json",
+        "HoT/stage1_lr1/selection_freeze.json",
+        "HoT/stage1_lr1/eval_history.json",
+        "HoT/stage2_k1/selection_freeze.json",
+        "HoT/stage2_k1/eval_history.json",
+        "HoT/stage2_k3/selection_freeze.json",
+        "HoT/stage2_k3/eval_history.json",
+        "HoT/direct_k1/selection_freeze.json",
+        "HoT/direct_k1/eval_history.json"
+      ],
+      "excluded_not_requested": [
+        "Penmanshiel/src_Kelmarsh.npz",
+        "HoT/src_Kelmarsh.npz",
+        "Kelmarsh/fit_k1.npz",
+        "Kelmarsh/es_k1.npz",
+        "Kelmarsh/fit_k3.npz",
+        "Kelmarsh/es_k3.npz",
+        "Kelmarsh/v1_context.npz",
+        "Kelmarsh/v1_keys.npz",
+        "Kelmarsh/src_Penmanshiel.npz",
+        "HoT/src_Penmanshiel.npz",
+        "Penmanshiel/fit_k1.npz",
+        "Penmanshiel/es_k1.npz",
+        "Penmanshiel/fit_k3.npz",
+        "Penmanshiel/es_k3.npz",
+        "Penmanshiel/v1_context.npz",
+        "Penmanshiel/v1_keys.npz",
+        "Kelmarsh/src_HoT.npz",
+        "Penmanshiel/src_HoT.npz",
+        "HoT/fit_k1.npz",
+        "HoT/es_k1.npz",
+        "HoT/fit_k3.npz",
+        "HoT/es_k3.npz",
+        "HoT/v1_context.npz",
+        "HoT/v1_keys.npz",
+        "Kelmarsh/stage1_train.npz",
+        "Penmanshiel/stage1_train.npz",
+        "HoT/stage1_train.npz",
+        "Kelmarsh/stage1_lr0/eval_preds.npy",
+        "Kelmarsh/stage1_lr1/eval_preds.npy",
+        "Kelmarsh/stage2_k1/eval_preds.npy",
+        "Kelmarsh/stage2_k3/eval_preds.npy",
+        "Kelmarsh/direct_k1/eval_preds.npy",
+        "Kelmarsh/pred/C_T0_V1.npy",
+        "Kelmarsh/pred/C_T1_V1.npy",
+        "Kelmarsh/pred/C_T3_V1.npy",
+        "Kelmarsh/pred/C_D1_V1.npy",
+        "Penmanshiel/stage1_lr0/eval_preds.npy",
+        "Penmanshiel/stage1_lr1/eval_preds.npy",
+        "Penmanshiel/stage2_k1/eval_preds.npy",
+        "Penmanshiel/stage2_k3/eval_preds.npy",
+        "Penmanshiel/direct_k1/eval_preds.npy",
+        "Penmanshiel/pred/C_T0_V1.npy",
+        "Penmanshiel/pred/C_T1_V1.npy",
+        "Penmanshiel/pred/C_T3_V1.npy",
+        "Penmanshiel/pred/C_D1_V1.npy",
+        "HoT/stage1_lr0/eval_preds.npy",
+        "HoT/stage1_lr1/eval_preds.npy",
+        "HoT/stage2_k1/eval_preds.npy",
+        "HoT/stage2_k3/eval_preds.npy",
+        "HoT/direct_k1/eval_preds.npy",
+        "HoT/pred/C_T0_V1.npy",
+        "HoT/pred/C_T1_V1.npy",
+        "HoT/pred/C_T3_V1.npy",
+        "HoT/pred/C_D1_V1.npy",
+        "history/Kelmarsh_a3_grid.npz",
+        "history/Penmanshiel_a3_grid.npz",
+        "history/HoT_a3_grid.npz"
+      ]
+    },
+    "smoke_b": {
+      "verified": [
+        "Kelmarsh/lr0/selection_freeze.json",
+        "Kelmarsh/lr0/eval_history.json",
+        "Kelmarsh/lr1/selection_freeze.json",
+        "Kelmarsh/lr1/eval_history.json",
+        "Penmanshiel/lr0/selection_freeze.json",
+        "Penmanshiel/lr0/eval_history.json",
+        "Penmanshiel/lr1/selection_freeze.json",
+        "Penmanshiel/lr1/eval_history.json",
+        "HoT/lr0/selection_freeze.json",
+        "HoT/lr0/eval_history.json",
+        "HoT/lr1/selection_freeze.json",
+        "HoT/lr1/eval_history.json"
+      ],
+      "excluded_not_requested": [
+        "Kelmarsh/train_smoke.npz",
+        "Kelmarsh/V1_context.npz",
+        "Kelmarsh/V1_keys.npz",
+        "Kelmarsh/V2_context.npz",
+        "Kelmarsh/V2_keys.npz",
+        "Kelmarsh/Kelmarsh_2022_context.npz",
+        "Kelmarsh/Kelmarsh_2022_keys.npz",
+        "Penmanshiel/train_smoke.npz",
+        "Penmanshiel/V1_context.npz",
+        "Penmanshiel/V1_keys.npz",
+        "Penmanshiel/V2_context.npz",
+        "Penmanshiel/V2_keys.npz",
+        "Penmanshiel/Penmanshiel_2021_context.npz",
+        "Penmanshiel/Penmanshiel_2021_keys.npz",
+        "HoT/train_smoke.npz",
+        "HoT/V1_context.npz",
+        "HoT/V1_keys.npz",
+        "HoT/V2_context.npz",
+        "HoT/V2_keys.npz",
+        "HoT/HoT_2024_context.npz",
+        "HoT/HoT_2024_keys.npz",
+        "HoT/HoT_2025_context.npz",
+        "HoT/HoT_2025_keys.npz",
+        "Kelmarsh/lr0/eval_preds.npy",
+        "Kelmarsh/lr0/pred_v1/m_V1.npy",
+        "Kelmarsh/lr1/eval_preds.npy",
+        "Kelmarsh/lr1/pred_v1/m_V1.npy",
+        "Kelmarsh/FTB_V1.npy",
+        "Kelmarsh/FTB_V2.npy",
+        "Kelmarsh/FTB_Kelmarsh_2022.npy",
+        "Penmanshiel/lr0/eval_preds.npy",
+        "Penmanshiel/lr0/pred_v1/m_V1.npy",
+        "Penmanshiel/lr1/eval_preds.npy",
+        "Penmanshiel/lr1/pred_v1/m_V1.npy",
+        "Penmanshiel/FTB_V1.npy",
+        "Penmanshiel/FTB_V2.npy",
+        "Penmanshiel/FTB_Penmanshiel_2021.npy",
+        "HoT/lr0/eval_preds.npy",
+        "HoT/lr0/pred_v1/m_V1.npy",
+        "HoT/lr1/eval_preds.npy",
+        "HoT/lr1/pred_v1/m_V1.npy",
+        "HoT/FTB_V1.npy",
+        "HoT/FTB_V2.npy",
+        "HoT/FTB_HoT_2024.npy",
+        "HoT/FTB_HoT_2025.npy",
+        "history/Kelmarsh_a3_grid.npz",
+        "history/Penmanshiel_a3_grid.npz",
+        "history/HoT_hot_sealed_points.npz",
+        "history/HoT_a3_grid.npz"
+      ]
+    },
+    "smoke_d0": {
+      "verified": [],
+      "excluded_not_requested": []
+    },
+    "smoke_report": {
+      "verified": [],
+      "excluded_not_requested": []
+    },
+    "a": {
+      "verified": [
+        "Kelmarsh/stage1_lr0/selection_freeze.json",
+        "Kelmarsh/stage1_lr0/eval_history.json",
+        "Kelmarsh/stage1_lr1/selection_freeze.json",
+        "Kelmarsh/stage1_lr1/eval_history.json",
+        "Kelmarsh/stage2_k1/selection_freeze.json",
+        "Kelmarsh/stage2_k1/eval_history.json",
+        "Kelmarsh/stage2_k3/selection_freeze.json",
+        "Kelmarsh/stage2_k3/eval_history.json",
+        "Kelmarsh/direct_k1/selection_freeze.json",
+        "Kelmarsh/direct_k1/eval_history.json",
+        "Kelmarsh/pred/C_T0_V1.npy",
+        "Kelmarsh/pred/C_T1_V1.npy",
+        "Kelmarsh/pred/C_T3_V1.npy",
+        "Kelmarsh/pred/C_D1_V1.npy",
+        "Penmanshiel/stage1_lr0/selection_freeze.json",
+        "Penmanshiel/stage1_lr0/eval_history.json",
+        "Penmanshiel/stage1_lr1/selection_freeze.json",
+        "Penmanshiel/stage1_lr1/eval_history.json",
+        "Penmanshiel/stage2_k1/selection_freeze.json",
+        "Penmanshiel/stage2_k1/eval_history.json",
+        "Penmanshiel/stage2_k3/selection_freeze.json",
+        "Penmanshiel/stage2_k3/eval_history.json",
+        "Penmanshiel/direct_k1/selection_freeze.json",
+        "Penmanshiel/direct_k1/eval_history.json",
+        "Penmanshiel/pred/C_T0_V1.npy",
+        "Penmanshiel/pred/C_T1_V1.npy",
+        "Penmanshiel/pred/C_T3_V1.npy",
+        "Penmanshiel/pred/C_D1_V1.npy",
+        "HoT/stage1_lr0/selection_freeze.json",
+        "HoT/stage1_lr0/eval_history.json",
+        "HoT/stage1_lr1/selection_freeze.json",
+        "HoT/stage1_lr1/eval_history.json",
+        "HoT/stage2_k1/selection_freeze.json",
+        "HoT/stage2_k1/eval_history.json",
+        "HoT/stage2_k3/selection_freeze.json",
+        "HoT/stage2_k3/eval_history.json",
+        "HoT/direct_k1/selection_freeze.json",
+        "HoT/direct_k1/eval_history.json",
+        "HoT/pred/C_T0_V1.npy",
+        "HoT/pred/C_T1_V1.npy",
+        "HoT/pred/C_T3_V1.npy",
+        "HoT/pred/C_D1_V1.npy"
+      ],
+      "excluded_not_requested": [
+        "Penmanshiel/src_Kelmarsh.npz",
+        "HoT/src_Kelmarsh.npz",
+        "Kelmarsh/fit_k1.npz",
+        "Kelmarsh/es_k1.npz",
+        "Kelmarsh/fit_k3.npz",
+        "Kelmarsh/es_k3.npz",
+        "Kelmarsh/v1_context.npz",
+        "Kelmarsh/v1_keys.npz",
+        "Kelmarsh/src_Penmanshiel.npz",
+        "HoT/src_Penmanshiel.npz",
+        "Penmanshiel/fit_k1.npz",
+        "Penmanshiel/es_k1.npz",
+        "Penmanshiel/fit_k3.npz",
+        "Penmanshiel/es_k3.npz",
+        "Penmanshiel/v1_context.npz",
+        "Penmanshiel/v1_keys.npz",
+        "Kelmarsh/src_HoT.npz",
+        "Penmanshiel/src_HoT.npz",
+        "HoT/fit_k1.npz",
+        "HoT/es_k1.npz",
+        "HoT/fit_k3.npz",
+        "HoT/es_k3.npz",
+        "HoT/v1_context.npz",
+        "HoT/v1_keys.npz",
+        "Kelmarsh/stage1_train.npz",
+        "Penmanshiel/stage1_train.npz",
+        "HoT/stage1_train.npz",
+        "Kelmarsh/stage1_lr0/eval_preds.npy",
+        "Kelmarsh/stage1_lr1/eval_preds.npy",
+        "Kelmarsh/stage2_k1/eval_preds.npy",
+        "Kelmarsh/stage2_k3/eval_preds.npy",
+        "Kelmarsh/direct_k1/eval_preds.npy",
+        "Penmanshiel/stage1_lr0/eval_preds.npy",
+        "Penmanshiel/stage1_lr1/eval_preds.npy",
+        "Penmanshiel/stage2_k1/eval_preds.npy",
+        "Penmanshiel/stage2_k3/eval_preds.npy",
+        "Penmanshiel/direct_k1/eval_preds.npy",
+        "HoT/stage1_lr0/eval_preds.npy",
+        "HoT/stage1_lr1/eval_preds.npy",
+        "HoT/stage2_k1/eval_preds.npy",
+        "HoT/stage2_k3/eval_preds.npy",
+        "HoT/direct_k1/eval_preds.npy",
+        "history/Kelmarsh_a3_grid.npz",
+        "history/Penmanshiel_a3_grid.npz",
+        "history/HoT_a3_grid.npz"
+      ]
+    },
+    "b": {
+      "verified": [
+        "Kelmarsh/lr0/selection_freeze.json",
+        "Kelmarsh/lr0/eval_history.json",
+        "Kelmarsh/lr0/eval_preds.npy",
+        "Kelmarsh/lr0/pred_v1/m_V1.npy",
+        "Kelmarsh/lr1/selection_freeze.json",
+        "Kelmarsh/lr1/eval_history.json",
+        "Kelmarsh/lr1/eval_preds.npy",
+        "Kelmarsh/lr1/pred_v1/m_V1.npy",
+        "Kelmarsh/FTB_V1.npy",
+        "Kelmarsh/FTB_V2.npy",
+        "Kelmarsh/FTB_Kelmarsh_2022.npy",
+        "Penmanshiel/lr0/selection_freeze.json",
+        "Penmanshiel/lr0/eval_history.json",
+        "Penmanshiel/lr0/eval_preds.npy",
+        "Penmanshiel/lr0/pred_v1/m_V1.npy",
+        "Penmanshiel/lr1/selection_freeze.json",
+        "Penmanshiel/lr1/eval_history.json",
+        "Penmanshiel/lr1/eval_preds.npy",
+        "Penmanshiel/lr1/pred_v1/m_V1.npy",
+        "Penmanshiel/FTB_V1.npy",
+        "Penmanshiel/FTB_V2.npy",
+        "Penmanshiel/FTB_Penmanshiel_2021.npy",
+        "HoT/lr0/selection_freeze.json",
+        "HoT/lr0/eval_history.json",
+        "HoT/lr0/eval_preds.npy",
+        "HoT/lr0/pred_v1/m_V1.npy",
+        "HoT/lr1/selection_freeze.json",
+        "HoT/lr1/eval_history.json",
+        "HoT/lr1/eval_preds.npy",
+        "HoT/lr1/pred_v1/m_V1.npy",
+        "HoT/FTB_V1.npy",
+        "HoT/FTB_V2.npy",
+        "HoT/FTB_HoT_2024.npy",
+        "HoT/FTB_HoT_2025.npy"
+      ],
+      "excluded_not_requested": [
+        "Kelmarsh/V1_context.npz",
+        "Kelmarsh/V1_keys.npz",
+        "Kelmarsh/V2_context.npz",
+        "Kelmarsh/V2_keys.npz",
+        "Kelmarsh/Kelmarsh_2022_context.npz",
+        "Kelmarsh/Kelmarsh_2022_keys.npz",
+        "Penmanshiel/V1_context.npz",
+        "Penmanshiel/V1_keys.npz",
+        "Penmanshiel/V2_context.npz",
+        "Penmanshiel/V2_keys.npz",
+        "Penmanshiel/Penmanshiel_2021_context.npz",
+        "Penmanshiel/Penmanshiel_2021_keys.npz",
+        "HoT/V1_context.npz",
+        "HoT/V1_keys.npz",
+        "HoT/V2_context.npz",
+        "HoT/V2_keys.npz",
+        "HoT/HoT_2024_context.npz",
+        "HoT/HoT_2024_keys.npz",
+        "HoT/HoT_2025_context.npz",
+        "HoT/HoT_2025_keys.npz",
+        "history/Kelmarsh_a3_grid.npz",
+        "history/Penmanshiel_a3_grid.npz",
+        "history/HoT_hot_sealed_points.npz",
+        "history/HoT_a3_grid.npz"
+      ]
+    },
+    "d0": {
+      "verified": [],
+      "excluded_not_requested": []
+    },
+    "report": {
+      "verified": [],
+      "excluded_not_requested": []
+    }
+  }
+}

@@ -1,0 +1,166 @@
+{
+  "train": {
+    "A": {
+      "target_valid": 0.9985,
+      "windows_no_target": 0.0015,
+      "age_mean": 7.5,
+      "cycle_missing": 0.001500000013038516,
+      "natural_gap_targets": 0.0015
+    },
+    "C": {
+      "target_valid": 0.3744375,
+      "windows_no_target": 0.50075,
+      "age_mean": 16.5,
+      "cycle_missing": 0.001500000013038516,
+      "natural_gap_targets": 0.0005625
+    },
+    "Cc": {
+      "target_valid": 0.3744375,
+      "windows_no_target": 0.50075,
+      "age_mean": 16.5,
+      "cycle_missing": 0.001500000013038516
+    },
+    "D": {
+      "target_valid": 0.3744375,
+      "windows_no_target": 0.50075,
+      "age_mean": 7.5,
+      "cycle_missing": 0.001500000013038516
+    },
+    "Cc_windows_differ_from_C": 0.49925,
+    "D_windows_differ_from_A": 0.9985,
+    "masks_within_own_structure": true,
+    "matched_within_common_structure": true,
+    "natural_gap": {
+      "windows": 4000,
+      "windows_disagree": 12,
+      "windows_mask_disagree": 12,
+      "windows_target_mask_disagree": 6,
+      "windows_cycle_status_disagree": 12,
+      "cycle_missing_D_only": 6,
+      "cycle_missing_Cc_only": 6
+    }
+  },
+  "V1": {
+    "A": {
+      "target_valid": 0.98,
+      "windows_no_target": 0.02,
+      "age_mean": 7.5,
+      "cycle_missing": 0.019999999552965164,
+      "natural_gap_targets": 0.02
+    },
+    "C": {
+      "target_valid": 0.3675,
+      "windows_no_target": 0.51,
+      "age_mean": 16.5,
+      "cycle_missing": 0.019999999552965164,
+      "natural_gap_targets": 0.0075
+    },
+    "Cc": {
+      "target_valid": 0.3675,
+      "windows_no_target": 0.51,
+      "age_mean": 16.5,
+      "cycle_missing": 0.019999999552965164
+    },
+    "D": {
+      "target_valid": 0.3675,
+      "windows_no_target": 0.51,
+      "age_mean": 7.5,
+      "cycle_missing": 0.019999999552965164
+    },
+    "Cc_windows_differ_from_C": 0.49,
+    "D_windows_differ_from_A": 0.98,
+    "masks_within_own_structure": true,
+    "matched_within_common_structure": true,
+    "natural_gap": {
+      "windows": 600,
+      "windows_disagree": 20,
+      "windows_mask_disagree": 20,
+      "windows_target_mask_disagree": 8,
+      "windows_cycle_status_disagree": 20,
+      "cycle_missing_D_only": 10,
+      "cycle_missing_Cc_only": 10
+    }
+  },
+  "V2": {
+    "A": {
+      "target_valid": 1.0,
+      "windows_no_target": 0.0,
+      "age_mean": 7.5,
+      "cycle_missing": 0.0,
+      "natural_gap_targets": 0.0
+    },
+    "C": {
+      "target_valid": 0.375,
+      "windows_no_target": 0.5,
+      "age_mean": 16.5,
+      "cycle_missing": 0.0,
+      "natural_gap_targets": 0.0
+    },
+    "Cc": {
+      "target_valid": 0.375,
+      "windows_no_target": 0.5,
+      "age_mean": 16.5,
+      "cycle_missing": 0.0
+    },
+    "D": {
+      "target_valid": 0.375,
+      "windows_no_target": 0.5,
+      "age_mean": 7.5,
+      "cycle_missing": 0.0
+    },
+    "Cc_windows_differ_from_C": 0.5,
+    "D_windows_differ_from_A": 1.0,
+    "masks_within_own_structure": true,
+    "matched_within_common_structure": true,
+    "natural_gap": {
+      "windows": 600,
+      "windows_disagree": 0,
+      "windows_mask_disagree": 0,
+      "windows_target_mask_disagree": 0,
+      "windows_cycle_status_disagree": 0,
+      "cycle_missing_D_only": 0,
+      "cycle_missing_Cc_only": 0
+    }
+  },
+  "Kelmarsh_2022": {
+    "A": {
+      "target_valid": 1.0,
+      "windows_no_target": 0.0,
+      "age_mean": 7.5,
+      "cycle_missing": 0.0,
+      "natural_gap_targets": 0.0
+    },
+    "C": {
+      "target_valid": 0.375,
+      "windows_no_target": 0.5,
+      "age_mean": 16.5,
+      "cycle_missing": 0.0,
+      "natural_gap_targets": 0.0
+    },
+    "Cc": {
+      "target_valid": 0.375,
+      "windows_no_target": 0.5,
+      "age_mean": 16.5,
+      "cycle_missing": 0.0
+    },
+    "D": {
+      "target_valid": 0.375,
+      "windows_no_target": 0.5,
+      "age_mean": 7.5,
+      "cycle_missing": 0.0
+    },
+    "Cc_windows_differ_from_C": 0.5,
+    "D_windows_differ_from_A": 1.0,
+    "masks_within_own_structure": true,
+    "matched_within_common_structure": true,
+    "natural_gap": {
+      "windows": 600,
+      "windows_disagree": 0,
+      "windows_mask_disagree": 0,
+      "windows_target_mask_disagree": 0,
+      "windows_cycle_status_disagree": 0,
+      "cycle_missing_D_only": 0,
+      "cycle_missing_Cc_only": 0
+    }
+  }
+}

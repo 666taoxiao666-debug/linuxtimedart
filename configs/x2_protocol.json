@@ -1,0 +1,61 @@
+{
+  "stage": "X2",
+  "version": 3,
+  "author": "Claude 2026-11-16; GPT reviews, Cursor runs (user split 2026-11-16)",
+  "plan": "docs/STAGE_PLAN.md (X2); decisions in docs/review/DECISIONS.md (stage X2)",
+  "splits": {
+    "Kelmarsh": {"V1": ["2021-01-01", "2021-07-01"], "V2": ["2021-07-01", "2022-01-01"]},
+    "Penmanshiel": {"V1": ["2020-01-01", "2020-07-01"], "V2": ["2020-07-01", "2021-01-01"]},
+    "HoT": {"V1": ["2023-07-01", "2023-10-01"], "V2": ["2023-10-01", "2024-01-01"]}
+  },
+  "part_a": {
+    "lightgbm": "configs/x1_protocol.json lightgbm (2x2 grid, lr 0.05, 4000 trees, early stop 200 on V1, ff 0.8, bagging 0.8 freq 1); timedart lightgbm 4.5.0",
+    "arms": {
+      "L0": {"info": "L0", "extra": null, "seeds": [2024]},
+      "LU": {"info": "LU", "extra": null, "seeds": [2024]},
+      "LG": {"info": "LG", "extra": null, "seeds": [2024]},
+      "LUG": {"info": "LUG", "extra": null, "seeds": [2024, 2025, 2026]},
+      "LUG_PCL": {"info": "LUG", "extra": "PCL", "seeds": [2024, 2025, 2026]},
+      "LUG_ANI": {"info": "LUG", "extra": "ANI", "seeds": [2024, 2025, 2026]}
+    },
+    "curve": {"width": 0.5, "minimum": 30, "min_bins": 2},
+    "gates": {"min_gain": 0.01, "min_positive": 2}
+  },
+  "part_a2": {
+    "registered": "2026-11-17, before any A2 fit; user asked for another A-line round after the round-1 NEGATIVE",
+    "reference": {"commit": "91d4d207ad7e0af36eadd01e51be201bb1fc3523", "protocol_sha256": "ad53ec6cd15d3ecc6b62394a7810355b59734b29e0c3a5df12daf48641c290e2",
+                  "reused": ["LUG", "LUG_PCL", "LUG_ANI"]},
+    "arms": {
+      "LUG_VN": {"info": "LUG", "extra": "VN", "seeds": [2024, 2025, 2026]},
+      "LUG_VR": {"info": "LUG", "extra": "VR", "seeds": [2024, 2025, 2026]},
+      "LUG_VB": {"info": "LUG", "extra": "VB", "seeds": [2024, 2025, 2026]}
+    },
+    "nacelle_curve": "same width/minimum/min_bins; fit-period hourly nacelle wind vs power, HoT works hours excluded",
+    "gates": {"min_gain": 0.01, "min_positive": 2},
+    "multiplicity": "Bonferroni over the 3 variants for the pooled interval (z = 2.394)",
+    "stop": "no variant passes and none is a near pass (all farms positive) -> the A line stops; a near pass needs a registered round 3"
+  },
+  "part_b": {
+    "fit": "configs/g1_protocol.json fit (Kelmarsh, Penmanshiel) / configs/g2b_protocol.json fit (HoT); early stopping on V1",
+    "arms": {
+      "N_v1": {"seeds": [2024, 2025, 2026]},
+      "TCNGRU": {"seeds": [2024, 2025, 2026], "select_after_warmup": true},
+      "DATCNGRU": {"seeds": [2024, 2025, 2026], "select_after_warmup": true, "lambda_end": [0.05, 0.5]},
+      "CNN": {"seeds": [2024, 2025, 2026]},
+      "BILSTM": {"seeds": [2024, 2025, 2026]}
+    },
+    "domains": 3,
+    "rerun_x2b2": "2026-11-17: the 91d4d20 B run never activated lambda (all DA fits stopped at epoch 16 = end of the 40% warm-up) and the TCN path ran 266-307 s/epoch; it was stopped and is archived, not used. Rerun: TCN and DA selected only after the warm-up (epoch > int(0.4 max_epochs)), patience counted from there; lambda_end grid {0.05, 0.5}; every B arm uses device-resident data, one finiteness check per epoch and cuDNN benchmark (non-deterministic)",
+    "fusion": {"members": ["CNN", "BILSTM", "LUG"], "alphas": [0.1, 1, 10, 20, 50], "blocks": 3, "fit": "V1 only"},
+    "selection": {"reference": "LUG", "margin": 0.01}
+  },
+  "statistics": {"block_length": 8, "replicates": 5000, "seed": 2024},
+  "statistics_smoke": {"block_length": 8, "replicates": 200, "seed": 2024},
+  "budget": {
+    "formal": {"grid_cells": 4, "seeds": 3, "lambda_cells": 2},
+    "smoke": {"grid_cells": 1, "seeds": 1, "lambda_cells": 1, "n_estimators": 40, "early_stopping_rounds": 10,
+              "max_epochs": 1, "train_rows": 4000, "eval_rows": 600}
+  },
+  "test_sets": "the four X1 test sets (configs/x1_protocol.json datasets); exposed before, exploratory only",
+  "no_2026_data": true
+}

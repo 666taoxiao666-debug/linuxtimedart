@@ -1,0 +1,62 @@
+{
+  "Kelmarsh_validation_168_single": {
+    "mean": 0.9697203636169434,
+    "min": 0.1428571492433548
+  },
+  "Kelmarsh_validation_512_single": {
+    "mean": 0.9429353475570679,
+    "min": 0.28515625
+  },
+  "Kelmarsh_validation_1024_single": {
+    "mean": 0.9313310980796814,
+    "min": 0.6337890625
+  },
+  "Kelmarsh_validation_168_group": {
+    "mean": 0.9697203636169434,
+    "min": 0.1428571492433548
+  },
+  "Kelmarsh_validation_512_group": {
+    "mean": 0.9429353475570679,
+    "min": 0.28515625
+  },
+  "Kelmarsh_validation_1024_group": {
+    "mean": 0.9313310980796814,
+    "min": 0.6337890625
+  },
+  "Kelmarsh_validation_24_single": {
+    "mean": 1.0,
+    "min": 1.0
+  },
+  "Kelmarsh_validation_512_single_masked": {
+    "mean": 0.9429353475570679,
+    "min": 0.28515625
+  },
+  "Kelmarsh_2022_168_single": {
+    "mean": 0.9900215268135071,
+    "min": 0.6785714030265808
+  },
+  "Kelmarsh_2022_512_single": {
+    "mean": 0.9885739684104919,
+    "min": 0.87109375
+  },
+  "Kelmarsh_2022_1024_single": {
+    "mean": 0.9880952835083008,
+    "min": 0.91796875
+  },
+  "Kelmarsh_2022_168_group": {
+    "mean": 0.9900215268135071,
+    "min": 0.6785714030265808
+  },
+  "Kelmarsh_2022_512_group": {
+    "mean": 0.9885739684104919,
+    "min": 0.87109375
+  },
+  "Kelmarsh_2022_1024_group": {
+    "mean": 0.9880952835083008,
+    "min": 0.91796875
+  },
+  "Kelmarsh_2022_24_single": {
+    "mean": 1.0,
+    "min": 1.0
+  }
+}

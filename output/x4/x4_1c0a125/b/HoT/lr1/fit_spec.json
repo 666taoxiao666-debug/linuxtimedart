@@ -1,0 +1,54 @@
+{
+  "task": "fit",
+  "output": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X4/x4_1c0a125/b/HoT/lr1",
+  "receipt": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/cursor_env/receipt.json",
+  "manifest": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/cursor_env/chronos2_manifest.json",
+  "gpu_fraction": 0.7,
+  "seed": 2024,
+  "train": {
+    "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X3/x3_f8af1b6/q2/HoT_train.npz",
+    "sha256": "581042c141dd72c696ccacc5de032eec15044a0eb27fb6693993b5d86b2ca0d4"
+  },
+  "init": null,
+  "learning_rate": 1e-05,
+  "num_steps": 2000,
+  "eval": {
+    "kind": "context",
+    "context": {
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X4/x4_1c0a125/b/HoT/V1_context.npz",
+      "sha256": "3073c9ef0b1265c468c4bac6f0a8ad9ac4b43adf5d941a2a5c2498cf26b2091f",
+      "name": "V1",
+      "history": {
+        "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X4/x4_1c0a125/b/history/HoT_a3_grid.npz",
+        "sha256": "948f8521e95754fe23019dca3c2634278420c35a2618028eb116305e82b2c46c",
+        "source": "a3_grid"
+      },
+      "grid": {
+        "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/x1_e4819b0_gpu_r1/A3/HoT_history.npz",
+        "sha256": "2c1539d0357abb3ccc37267ea6da9024fa604215a615c0c063270d0686337f68"
+      }
+    },
+    "grid": {
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/x1_e4819b0_gpu_r1/A3/HoT_history.npz",
+      "sha256": "2c1539d0357abb3ccc37267ea6da9024fa604215a615c0c063270d0686337f68"
+    },
+    "keys": {
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X4/x4_1c0a125/b/HoT/V1_keys.npz",
+      "sha256": "d914a9182079bccda44a3899c3cdad6dfbfe5439e81016850452fe02fbe25830"
+    },
+    "masked": false
+  },
+  "eval_every": 200,
+  "eval_step0": false,
+  "candidate": {
+    "name": "full_mb135x2",
+    "mode": "full",
+    "microbatch": 135,
+    "accumulation": 2,
+    "windows_per_step": 18
+  },
+  "context_length": 1024,
+  "budget": {
+    "train_windows": 20000
+  }
+}

@@ -1,0 +1,175 @@
+[WJB] start krr
+[WJB] krr Kelmarsh LG_d6: selected {'c': 0.5, 'lam': 0.0001, 'sigma': 5.221490811469229, 'v1_mae': 240.70239618222723, 'saturated': False}
+[WJB] krr Kelmarsh LUG_d6: selected {'c': 0.5, 'lam': 0.0001, 'sigma': 5.754337956549192, 'v1_mae': 245.40436607167206, 'saturated': False}
+[WJB] krr Kelmarsh LG_d18: selected {'c': 0.5, 'lam': 0.0001, 'sigma': 5.06937534410859, 'v1_mae': 264.14910617755464, 'saturated': False}
+[WJB] krr Kelmarsh LUG_d18: selected {'c': 0.5, 'lam': 0.0001, 'sigma': 5.633709281078261, 'v1_mae': 259.008534156277, 'saturated': False}
+[WJB] krr Penmanshiel LG_d6: selected {'c': 0.5, 'lam': 0.0001, 'sigma': 4.982414288059001, 'v1_mae': 346.6166140662303, 'saturated': False}
+[WJB] krr Penmanshiel LUG_d6: selected {'c': 0.5, 'lam': 0.0001, 'sigma': 5.474306785687789, 'v1_mae': 351.6074101969384, 'saturated': False}
+[WJB] krr Penmanshiel LG_d18: selected {'c': 0.5, 'lam': 0.0001, 'sigma': 4.813660694155338, 'v1_mae': 377.99902447073265, 'saturated': False}
+[WJB] krr Penmanshiel LUG_d18: selected {'c': 0.5, 'lam': 0.0001, 'sigma': 5.326023148827178, 'v1_mae': 380.5724413686596, 'saturated': False}
+[WJB] krr HoT LG_d6: selected {'c': 0.5, 'lam': 0.0001, 'sigma': 5.018017737394365, 'v1_mae': 175.0637855283895, 'saturated': False}
+[WJB] krr HoT LUG_d6: selected {'c': 0.5, 'lam': 0.0001, 'sigma': 5.5402940270886, 'v1_mae': 180.5363701065544, 'saturated': False}
+[WJB] krr HoT LG_d18: selected {'c': 0.5, 'lam': 0.0001, 'sigma': 4.841053651560873, 'v1_mae': 200.2107338761075, 'saturated': False}
+[WJB] krr HoT LUG_d18: selected {'c': 0.5, 'lam': 0.0001, 'sigma': 5.3648601801530935, 'v1_mae': 193.06538083825285, 'saturated': False}
+[WJB] V1 selections of all farms frozen; predicting V2
+[WJB] start lgbh
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+[WJB] lgbh Kelmarsh L0 grid {'num_leaves': 31, 'min_child_samples': 50, 'v1_mae': 243.43140130494135, 'best_iterations': [40, 40, 40, 40], 'seconds': 0.3542124730302021}
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+[WJB] lgbh Kelmarsh LU grid {'num_leaves': 31, 'min_child_samples': 50, 'v1_mae': 242.81533407303488, 'best_iterations': [40, 40, 40, 40], 'seconds': 0.7300121349981055}
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+[WJB] lgbh Penmanshiel L0 grid {'num_leaves': 31, 'min_child_samples': 50, 'v1_mae': 337.31572903190823, 'best_iterations': [40, 40, 40, 40], 'seconds': 0.32984933292027563}
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+[WJB] lgbh Penmanshiel LU grid {'num_leaves': 31, 'min_child_samples': 50, 'v1_mae': 329.089513448204, 'best_iterations': [40, 40, 40, 40], 'seconds': 0.7239951280644163}
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+[WJB] lgbh HoT L0 grid {'num_leaves': 31, 'min_child_samples': 50, 'v1_mae': 197.5053289737034, 'best_iterations': [40, 40, 40, 40], 'seconds': 0.33033701800741255}
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+/home/XT/miniconda3/envs/timedart/lib/python3.10/site-packages/lightgbm/basic.py:722: UserWarning: Usage of np.ndarray subset (sliced data) is not recommended due to it will double the peak memory cost in LightGBM.
+  _log_warning(
+[WJB] lgbh HoT LU grid {'num_leaves': 31, 'min_child_samples': 50, 'v1_mae': 188.9565265550885, 'best_iterations': [40, 40, 40, 40], 'seconds': 0.7381404229672626}
+[WJB] V1 selections of all farms frozen; predicting V2
+[WJB] start tsg
+[WJB] tsg Kelmarsh LG: data ready, acceptance {'mask_cells_6': 500, 'mask_cells_18': 4250, 'windows_differing': 500, 'routing': {'split_column': 16, 'other_column': 10, 'rows': 1004, 'root': 251, 'left': 251, 'right_nominal': 1, 'right_robust': 501}}
+[WJB] tsg Kelmarsh LUG: data ready, acceptance {'mask_cells_6': 500, 'mask_cells_18': 4250, 'windows_differing': 500, 'routing': {'split_column': 27, 'other_column': 21, 'rows': 1004, 'root': 251, 'left': 251, 'right_nominal': 1, 'right_robust': 501}}
+[WJB] tsg Penmanshiel LG: data ready, acceptance {'mask_cells_6': 498, 'mask_cells_18': 4253, 'windows_differing': 500, 'routing': {'split_column': 16, 'other_column': 10, 'rows': 1004, 'root': 252, 'left': 250, 'right_nominal': 1, 'right_robust': 501}}
+[WJB] tsg Penmanshiel LUG: data ready, acceptance {'mask_cells_6': 498, 'mask_cells_18': 4253, 'windows_differing': 500, 'routing': {'split_column': 27, 'other_column': 21, 'rows': 1004, 'root': 252, 'left': 250, 'right_nominal': 1, 'right_robust': 501}}
+[WJB] tsg HoT LG: data ready, acceptance {'mask_cells_6': 500, 'mask_cells_18': 4250, 'windows_differing': 500, 'routing': {'split_column': 16, 'other_column': 10, 'rows': 1004, 'root': 251, 'left': 251, 'right_nominal': 1, 'right_robust': 501}}
+[WJB] tsg HoT LUG: data ready, acceptance {'mask_cells_6': 500, 'mask_cells_18': 4250, 'windows_differing': 500, 'routing': {'split_column': 27, 'other_column': 21, 'rows': 1004, 'root': 251, 'left': 251, 'right_nominal': 1, 'right_robust': 501}}
+/home/XT/nuist/pythoncode/TimeDARTFirst_WJB_1fe7ab6/models/vendor_tsg/clean_torch_custom_layers.py:230: UserWarning: The use of `x.T` on tensors of dimension other than 2 to reverse their shape is deprecated and it will throw an error in a future release. Consider `x.mT` to transpose batches of matrices or `x.permute(*torch.arange(x.ndim - 1, -1, -1))` to reverse the dimensions of a tensor. (Triggered internally at /pytorch/aten/src/ATen/native/TensorShape.cpp:3725.)
+  return ( (self.weight@x.T).T + self.bias)  + torch.sum( (self.W@a.T).T*(x), dim = 1).reshape(-1,1)
+/home/XT/nuist/pythoncode/TimeDARTFirst_WJB_1fe7ab6/models/vendor_tsg/clean_torch_custom_layers.py:230: UserWarning: The use of `x.T` on tensors of dimension other than 2 to reverse their shape is deprecated and it will throw an error in a future release. Consider `x.mT` to transpose batches of matrices or `x.permute(*torch.arange(x.ndim - 1, -1, -1))` to reverse the dimensions of a tensor. (Triggered internally at /pytorch/aten/src/ATen/native/TensorShape.cpp:3725.)
+  return ( (self.weight@x.T).T + self.bias)  + torch.sum( (self.W@a.T).T*(x), dim = 1).reshape(-1,1)
+/home/XT/nuist/pythoncode/TimeDARTFirst_WJB_1fe7ab6/models/vendor_tsg/clean_torch_custom_layers.py:230: UserWarning: The use of `x.T` on tensors of dimension other than 2 to reverse their shape is deprecated and it will throw an error in a future release. Consider `x.mT` to transpose batches of matrices or `x.permute(*torch.arange(x.ndim - 1, -1, -1))` to reverse the dimensions of a tensor. (Triggered internally at /pytorch/aten/src/ATen/native/TensorShape.cpp:3725.)
+  return ( (self.weight@x.T).T + self.bias)  + torch.sum( (self.W@a.T).T*(x), dim = 1).reshape(-1,1)
+/home/XT/nuist/pythoncode/TimeDARTFirst_WJB_1fe7ab6/models/vendor_tsg/clean_torch_custom_layers.py:230: UserWarning: The use of `x.T` on tensors of dimension other than 2 to reverse their shape is deprecated and it will throw an error in a future release. Consider `x.mT` to transpose batches of matrices or `x.permute(*torch.arange(x.ndim - 1, -1, -1))` to reverse the dimensions of a tensor. (Triggered internally at /pytorch/aten/src/ATen/native/TensorShape.cpp:3725.)
+  return ( (self.weight@x.T).T + self.bias)  + torch.sum( (self.W@a.T).T*(x), dim = 1).reshape(-1,1)
+/home/XT/nuist/pythoncode/TimeDARTFirst_WJB_1fe7ab6/models/vendor_tsg/clean_torch_custom_layers.py:230: UserWarning: The use of `x.T` on tensors of dimension other than 2 to reverse their shape is deprecated and it will throw an error in a future release. Consider `x.mT` to transpose batches of matrices or `x.permute(*torch.arange(x.ndim - 1, -1, -1))` to reverse the dimensions of a tensor. (Triggered internally at /pytorch/aten/src/ATen/native/TensorShape.cpp:3725.)
+  return ( (self.weight@x.T).T + self.bias)  + torch.sum( (self.W@a.T).T*(x), dim = 1).reshape(-1,1)
+/home/XT/nuist/pythoncode/TimeDARTFirst_WJB_1fe7ab6/models/vendor_tsg/clean_torch_custom_layers.py:230: UserWarning: The use of `x.T` on tensors of dimension other than 2 to reverse their shape is deprecated and it will throw an error in a future release. Consider `x.mT` to transpose batches of matrices or `x.permute(*torch.arange(x.ndim - 1, -1, -1))` to reverse the dimensions of a tensor. (Triggered internally at /pytorch/aten/src/ATen/native/TensorShape.cpp:3725.)
+  return ( (self.weight@x.T).T + self.bias)  + torch.sum( (self.W@a.T).T*(x), dim = 1).reshape(-1,1)
+/home/XT/nuist/pythoncode/TimeDARTFirst_WJB_1fe7ab6/models/vendor_tsg/clean_torch_custom_layers.py:230: UserWarning: The use of `x.T` on tensors of dimension other than 2 to reverse their shape is deprecated and it will throw an error in a future release. Consider `x.mT` to transpose batches of matrices or `x.permute(*torch.arange(x.ndim - 1, -1, -1))` to reverse the dimensions of a tensor. (Triggered internally at /pytorch/aten/src/ATen/native/TensorShape.cpp:3725.)
+  return ( (self.weight@x.T).T + self.bias)  + torch.sum( (self.W@a.T).T*(x), dim = 1).reshape(-1,1)
+/home/XT/nuist/pythoncode/TimeDARTFirst_WJB_1fe7ab6/models/vendor_tsg/clean_torch_custom_layers.py:230: UserWarning: The use of `x.T` on tensors of dimension other than 2 to reverse their shape is deprecated and it will throw an error in a future release. Consider `x.mT` to transpose batches of matrices or `x.permute(*torch.arange(x.ndim - 1, -1, -1))` to reverse the dimensions of a tensor. (Triggered internally at /pytorch/aten/src/ATen/native/TensorShape.cpp:3725.)
+  return ( (self.weight@x.T).T + self.bias)  + torch.sum( (self.W@a.T).T*(x), dim = 1).reshape(-1,1)
+/home/XT/nuist/pythoncode/TimeDARTFirst_WJB_1fe7ab6/models/vendor_tsg/clean_torch_custom_layers.py:230: UserWarning: The use of `x.T` on tensors of dimension other than 2 to reverse their shape is deprecated and it will throw an error in a future release. Consider `x.mT` to transpose batches of matrices or `x.permute(*torch.arange(x.ndim - 1, -1, -1))` to reverse the dimensions of a tensor. (Triggered internally at /pytorch/aten/src/ATen/native/TensorShape.cpp:3725.)
+  return ( (self.weight@x.T).T + self.bias)  + torch.sum( (self.W@a.T).T*(x), dim = 1).reshape(-1,1)
+/home/XT/nuist/pythoncode/TimeDARTFirst_WJB_1fe7ab6/models/vendor_tsg/clean_torch_custom_layers.py:230: UserWarning: The use of `x.T` on tensors of dimension other than 2 to reverse their shape is deprecated and it will throw an error in a future release. Consider `x.mT` to transpose batches of matrices or `x.permute(*torch.arange(x.ndim - 1, -1, -1))` to reverse the dimensions of a tensor. (Triggered internally at /pytorch/aten/src/ATen/native/TensorShape.cpp:3725.)
+  return ( (self.weight@x.T).T + self.bias)  + torch.sum( (self.W@a.T).T*(x), dim = 1).reshape(-1,1)
+/home/XT/nuist/pythoncode/TimeDARTFirst_WJB_1fe7ab6/models/vendor_tsg/clean_torch_custom_layers.py:230: UserWarning: The use of `x.T` on tensors of dimension other than 2 to reverse their shape is deprecated and it will throw an error in a future release. Consider `x.mT` to transpose batches of matrices or `x.permute(*torch.arange(x.ndim - 1, -1, -1))` to reverse the dimensions of a tensor. (Triggered internally at /pytorch/aten/src/ATen/native/TensorShape.cpp:3725.)
+  return ( (self.weight@x.T).T + self.bias)  + torch.sum( (self.W@a.T).T*(x), dim = 1).reshape(-1,1)
+/home/XT/nuist/pythoncode/TimeDARTFirst_WJB_1fe7ab6/models/vendor_tsg/clean_torch_custom_layers.py:230: UserWarning: The use of `x.T` on tensors of dimension other than 2 to reverse their shape is deprecated and it will throw an error in a future release. Consider `x.mT` to transpose batches of matrices or `x.permute(*torch.arange(x.ndim - 1, -1, -1))` to reverse the dimensions of a tensor. (Triggered internally at /pytorch/aten/src/ATen/native/TensorShape.cpp:3725.)
+  return ( (self.weight@x.T).T + self.bias)  + torch.sum( (self.W@a.T).T*(x), dim = 1).reshape(-1,1)
+[WJB] tsg_fit_job 1/24 done: Kelmarsh/LG/cand0/h2
+[WJB] tsg_fit_job 2/24 done: HoT/LUG/cand0/h2
+[WJB] tsg_fit_job 3/24 done: HoT/LG/cand0/h1
+[WJB] tsg_fit_job 4/24 done: HoT/LUG/cand0/h4
+[WJB] tsg_fit_job 5/24 done: Kelmarsh/LG/cand0/h1
+[WJB] tsg_fit_job 6/24 done: HoT/LG/cand0/h3
+[WJB] tsg_fit_job 7/24 done: Kelmarsh/LG/cand0/h3
+[WJB] tsg_fit_job 8/24 done: Kelmarsh/LG/cand0/h4
+[WJB] tsg_fit_job 9/24 done: Kelmarsh/LUG/cand0/h1
+[WJB] tsg_fit_job 10/24 done: HoT/LG/cand0/h2
+[WJB] tsg_fit_job 11/24 done: HoT/LG/cand0/h4
+[WJB] tsg_fit_job 12/24 done: HoT/LUG/cand0/h3
+[WJB] tsg_fit_job 13/24 done: Kelmarsh/LUG/cand0/h3
+[WJB] tsg_fit_job 14/24 done: Kelmarsh/LUG/cand0/h2
+[WJB] tsg_fit_job 15/24 done: HoT/LUG/cand0/h1
+[WJB] tsg_fit_job 16/24 done: Kelmarsh/LUG/cand0/h4
+[WJB] tsg_fit_job 17/24 done: Penmanshiel/LUG/cand0/h1
+[WJB] tsg_fit_job 18/24 done: Penmanshiel/LG/cand0/h2
+[WJB] tsg_fit_job 19/24 done: Penmanshiel/LG/cand0/h3
+[WJB] tsg_fit_job 20/24 done: Penmanshiel/LG/cand0/h1
+[WJB] tsg_fit_job 21/24 done: Penmanshiel/LUG/cand0/h3
+[WJB] tsg_fit_job 22/24 done: Penmanshiel/LG/cand0/h4
+[WJB] tsg_fit_job 23/24 done: Penmanshiel/LUG/cand0/h2
+[WJB] tsg_fit_job 24/24 done: Penmanshiel/LUG/cand0/h4
+[WJB] V1 selections of all farms frozen; predicting V2
+[WJB] tsg_predict_job 1/24 done: Kelmarsh/LG/cand0/h1
+[WJB] tsg_predict_job 2/24 done: Kelmarsh/LG/cand0/h2
+[WJB] tsg_predict_job 3/24 done: Penmanshiel/LG/cand0/h1
+[WJB] tsg_predict_job 4/24 done: Kelmarsh/LUG/cand0/h4
+[WJB] tsg_predict_job 5/24 done: Penmanshiel/LG/cand0/h3
+[WJB] tsg_predict_job 6/24 done: Penmanshiel/LG/cand0/h4
+[WJB] tsg_predict_job 7/24 done: Kelmarsh/LG/cand0/h4
+[WJB] tsg_predict_job 8/24 done: Kelmarsh/LUG/cand0/h1
+[WJB] tsg_predict_job 9/24 done: HoT/LG/cand0/h1
+[WJB] tsg_predict_job 10/24 done: HoT/LG/cand0/h2
+[WJB] tsg_predict_job 11/24 done: HoT/LG/cand0/h3
+[WJB] tsg_predict_job 12/24 done: HoT/LG/cand0/h4
+[WJB] tsg_predict_job 13/24 done: HoT/LUG/cand0/h1
+[WJB] tsg_predict_job 14/24 done: HoT/LUG/cand0/h2
+[WJB] tsg_predict_job 15/24 done: Kelmarsh/LG/cand0/h3
+[WJB] tsg_predict_job 16/24 done: HoT/LUG/cand0/h3
+[WJB] tsg_predict_job 17/24 done: HoT/LUG/cand0/h4
+[WJB] tsg_predict_job 18/24 done: Kelmarsh/LUG/cand0/h2
+[WJB] tsg_predict_job 19/24 done: Penmanshiel/LG/cand0/h2
+[WJB] tsg_predict_job 20/24 done: Kelmarsh/LUG/cand0/h3
+[WJB] tsg_predict_job 21/24 done: Penmanshiel/LUG/cand0/h1
+[WJB] tsg_predict_job 22/24 done: Penmanshiel/LUG/cand0/h3
+[WJB] tsg_predict_job 23/24 done: Penmanshiel/LUG/cand0/h4
+[WJB] tsg_predict_job 24/24 done: Penmanshiel/LUG/cand0/h2
+[WJB] start cabin
+[WJB] cabin Kelmarsh L0 {'hidden': 64, 'lr': 0.001} epoch 1 V1 MSE 0.160700 1.6s
+[WJB] cabin Kelmarsh L0 {'hidden': 64, 'lr': 0.001} epoch 2 V1 MSE 0.118320 0.0s
+[WJB] cabin Kelmarsh L0 cand 0: V1 MAE 585.974 best epoch 2
+[WJB] cabin Kelmarsh LU {'hidden': 64, 'lr': 0.001} epoch 1 V1 MSE 0.190611 0.0s
+[WJB] cabin Kelmarsh LU {'hidden': 64, 'lr': 0.001} epoch 2 V1 MSE 0.141847 0.0s
+[WJB] cabin Kelmarsh LU cand 0: V1 MAE 576.696 best epoch 2
+[WJB] cabin Penmanshiel L0 {'hidden': 64, 'lr': 0.001} epoch 1 V1 MSE 0.288542 0.0s
+[WJB] cabin Penmanshiel L0 {'hidden': 64, 'lr': 0.001} epoch 2 V1 MSE 0.175709 0.0s
+[WJB] cabin Penmanshiel L0 cand 0: V1 MAE 731.719 best epoch 2
+[WJB] cabin Penmanshiel LU {'hidden': 64, 'lr': 0.001} epoch 1 V1 MSE 0.345775 0.0s
+[WJB] cabin Penmanshiel LU {'hidden': 64, 'lr': 0.001} epoch 2 V1 MSE 0.251762 0.0s
+[WJB] cabin Penmanshiel LU cand 0: V1 MAE 841.791 best epoch 2
+[WJB] cabin HoT L0 {'hidden': 64, 'lr': 0.001} epoch 1 V1 MSE 0.045184 0.0s
+[WJB] cabin HoT L0 {'hidden': 64, 'lr': 0.001} epoch 2 V1 MSE 0.072668 0.0s
+[WJB] cabin HoT L0 cand 0: V1 MAE 362.982 best epoch 1
+[WJB] cabin HoT LU {'hidden': 64, 'lr': 0.001} epoch 1 V1 MSE 0.048242 0.0s
+[WJB] cabin HoT LU {'hidden': 64, 'lr': 0.001} epoch 2 V1 MSE 0.044747 0.0s
+[WJB] cabin HoT LU cand 0: V1 MAE 394.790 best epoch 2
+[WJB] V1 selections of all farms frozen; predicting V2
+[WJB] start report
+[WJB] report Kelmarsh done
+[WJB] report Penmanshiel done
+[WJB] report HoT done
+[WJB] chain done

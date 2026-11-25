@@ -1,0 +1,152 @@
+{
+  "chosen": {
+    "name": "full_mb135x2",
+    "mode": "full",
+    "microbatch": 135,
+    "accumulation": 2,
+    "windows_per_step": 18
+  },
+  "tried": [
+    {
+      "candidate": {
+        "name": "full_mb256x1",
+        "mode": "full",
+        "microbatch": 256,
+        "accumulation": 1,
+        "windows_per_step": 18
+      },
+      "farms": {
+        "Kelmarsh": {
+          "candidate": {
+            "name": "full_mb256x1",
+            "mode": "full",
+            "microbatch": 256,
+            "accumulation": 1,
+            "windows_per_step": 18
+          },
+          "context_length": 1024,
+          "free_gb_before": 23.2657470703125,
+          "total_gb": 23.55999755859375,
+          "limit_gb": 16.491998291015623,
+          "ok": false,
+          "error": "OutOfMemoryError: CUDA out of memory. Tried to allocate 54.00 MiB. GPU 0 has a total capacity of 23.56 GiB of which 6.75 GiB is free. Including non-PyTorch memory, this process has 16.76 GiB memory in use. 16.49 GiB allowed; Of the allocated memory 16.08 GiB is allocated by PyTorch, and 383.50 MiB is reserved by PyTo"
+        }
+      }
+    },
+    {
+      "candidate": {
+        "name": "full_mb135x2",
+        "mode": "full",
+        "microbatch": 135,
+        "accumulation": 2,
+        "windows_per_step": 18
+      },
+      "farms": {
+        "Kelmarsh": {
+          "candidate": {
+            "name": "full_mb135x2",
+            "mode": "full",
+            "microbatch": 135,
+            "accumulation": 2,
+            "windows_per_step": 18
+          },
+          "context_length": 1024,
+          "free_gb_before": 23.2657470703125,
+          "total_gb": 23.55999755859375,
+          "limit_gb": 16.491998291015623,
+          "ok": true,
+          "peak_gb": 10.688086986541748
+        },
+        "Penmanshiel": {
+          "candidate": {
+            "name": "full_mb135x2",
+            "mode": "full",
+            "microbatch": 135,
+            "accumulation": 2,
+            "windows_per_step": 18
+          },
+          "context_length": 512,
+          "free_gb_before": 23.2657470703125,
+          "total_gb": 23.55999755859375,
+          "limit_gb": 16.491998291015623,
+          "ok": true,
+          "peak_gb": 6.770844459533691
+        },
+        "HoT": {
+          "candidate": {
+            "name": "full_mb135x2",
+            "mode": "full",
+            "microbatch": 135,
+            "accumulation": 2,
+            "windows_per_step": 18
+          },
+          "context_length": 1024,
+          "free_gb_before": 23.2657470703125,
+          "total_gb": 23.55999755859375,
+          "limit_gb": 16.491998291015623,
+          "ok": true,
+          "peak_gb": 10.688086986541748
+        }
+      }
+    }
+  ],
+  "candidates": [
+    {
+      "name": "full_mb256x1",
+      "mode": "full",
+      "microbatch": 256,
+      "accumulation": 1,
+      "windows_per_step": 18
+    },
+    {
+      "name": "full_mb135x2",
+      "mode": "full",
+      "microbatch": 135,
+      "accumulation": 2,
+      "windows_per_step": 18
+    },
+    {
+      "name": "full_mb90x3",
+      "mode": "full",
+      "microbatch": 90,
+      "accumulation": 3,
+      "windows_per_step": 18
+    },
+    {
+      "name": "full_mb45x6",
+      "mode": "full",
+      "microbatch": 45,
+      "accumulation": 6,
+      "windows_per_step": 18
+    },
+    {
+      "name": "lora_mb256x1",
+      "mode": "lora",
+      "microbatch": 256,
+      "accumulation": 1,
+      "windows_per_step": 18
+    },
+    {
+      "name": "lora_mb135x2",
+      "mode": "lora",
+      "microbatch": 135,
+      "accumulation": 2,
+      "windows_per_step": 18
+    },
+    {
+      "name": "lora_mb90x3",
+      "mode": "lora",
+      "microbatch": 90,
+      "accumulation": 3,
+      "windows_per_step": 18
+    },
+    {
+      "name": "lora_mb45x6",
+      "mode": "lora",
+      "microbatch": 45,
+      "accumulation": 6,
+      "windows_per_step": 18
+    }
+  ],
+  "rule": "first candidate (full first, then smaller microbatch with accumulation, then LoRA) passing on every farm"
+}

@@ -1,0 +1,3872 @@
+{
+  "line": "tsg",
+  "guard": {
+    "run_x1.paths": "refused",
+    "run_x2.load_farm": "refused",
+    "run_x5.farm_caches": "refused",
+    "load_pack(sealed_prep)": "refused"
+  },
+  "farms": {
+    "Kelmarsh": {
+      "full": {
+        "train": 75024,
+        "V1": 7431,
+        "V2": 8249,
+        "keys": {
+          "V1": {
+            "issue": "7810d46cd81d30cb9c9666da0f70433a235c6f46b2af1d8f927dff47af9dff8c",
+            "turbines": "aea065485b99528ad273ada03c574f05c8e86dc2bb29faa252c07c5f01314823",
+            "truth": "80146c1901d66056db94585024cdde5ef8a3ac7a378505dac99750b8d8659189"
+          },
+          "V2": {
+            "issue": "2094b2ebd4ca402c48593cfca39752955bc033345ec36c07e847283ed89073a9",
+            "turbines": "23c911e507fa9eb897e73a795ff52e4a9431d833d8f6371093ae7e7e354a13e0",
+            "truth": "b123f412699802b42f1252a7e70a351b16093195f7d31b70505f337acad2f10f"
+          }
+        },
+        "train_last_label": "2020-12-31T21:00:00.000000000",
+        "V1_start": "2021-01-01",
+        "units": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ]
+      },
+      "assignment_counts": {
+        "train": [
+          14927,
+          14918,
+          15157,
+          15114,
+          14908
+        ],
+        "V1": [
+          1452,
+          1478,
+          1462,
+          1503,
+          1536
+        ]
+      },
+      "sample": 50000,
+      "assignment_sha256": {
+        "train": "841bed9ffa1ff3c96b63af81675436fc83651f44f722a44d3099a180314e40e9",
+        "V1": "8bd804f095d99f9f0394f70cf1325187266d425d06ce77306b952d5b0251a46a"
+      },
+      "sample_keys_sha256": "1003582b4a6fbb7b79f9c4965a131f555fc352799eb7c4f3aa29c0985cb693e3",
+      "infos": {
+        "LG": {
+          "features": 79,
+          "value_positions": [
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22
+          ],
+          "acceptance": {
+            "mask_cells_6": 8252,
+            "mask_cells_18": 70112,
+            "windows_differing": 8249,
+            "routing": {
+              "split_column": 16,
+              "other_column": 10,
+              "rows": 4004,
+              "root": 1000,
+              "left": 1002,
+              "right_nominal": 1,
+              "right_robust": 2001
+            }
+          },
+          "data_sha256": "a46f7bd239fc4748dfe335626ba0a376e9a1b36fe59c75bb40c47432d914129e",
+          "candidates": [
+            {
+              "name": "LR_s2",
+              "hidden": [],
+              "weight_decay": 0.0,
+              "max_splits": 2,
+              "v1_mae": 1119.5009236849726,
+              "trees": {
+                "Kelmarsh/LG/cand0/h1": {
+                  "name": "Kelmarsh/LG/cand0/h1",
+                  "fit_seconds": 868.3504996080883,
+                  "v1_predict_seconds": 1.7421678060200065,
+                  "tree": {
+                    "total_models": 2,
+                    "nodes": 3,
+                    "leaves": 2,
+                    "split_columns": [
+                      14
+                    ],
+                    "lower_loss": [
+                      0.006990206427872181,
+                      0.006990206427872181,
+                      0.006990351248532534
+                    ],
+                    "upper_loss": [
+                      4152197.0584,
+                      3595641.5050666668,
+                      0.009239183975756168
+                    ]
+                  },
+                  "torch_threads": 1,
+                  "model_sha256": "76ea9af1c26e39492fa1089866ad1a60eb87d500ad6193b76633a9d43f6476da",
+                  "v1_sha256": "35a3a94e8633f7d288b119ffb751d8b4384f324f7212f9547bb4c5f05d1b0830",
+                  "wall_seconds": 870.3174908161163
+                },
+                "Kelmarsh/LG/cand0/h2": {
+                  "name": "Kelmarsh/LG/cand0/h2",
+                  "fit_seconds": 738.0574128627777,
+                  "v1_predict_seconds": 1.117148059187457,
+                  "tree": {
+                    "total_models": 2,
+                    "nodes": 3,
+                    "leaves": 2,
+                    "split_columns": [
+                      14
+                    ],
+                    "lower_loss": [
+                      0.014751878567039967,
+                      0.014751878567039967,
+                      0.014745090156793594
+                    ],
+                    "upper_loss": [
+                      448062577.5616,
+                      441253390.7456,
+                      0.17516619497140248
+                    ]
+                  },
+                  "torch_threads": 1,
+                  "model_sha256": "3dee632618253166491df6dbfe6f8dd33935282ac0b5b12ae8131e4643631277",
+                  "v1_sha256": "7f419a5cf25aa10f5f0892c576c9238955ed23bcc175b95c83299a187235a8ba",
+                  "wall_seconds": 739.2801921367645
+                },
+                "Kelmarsh/LG/cand0/h3": {
+                  "name": "Kelmarsh/LG/cand0/h3",
+                  "fit_seconds": 647.3004799038172,
+                  "v1_predict_seconds": 1.242479796987027,
+                  "tree": {
+                    "total_models": 2,
+                    "nodes": 3,
+                    "leaves": 2,
+                    "split_columns": [
+                      15
+                    ],
+                    "lower_loss": [
+                      0.018700020387768745,
+                      0.018700020387768745,
+                      0.018699998036026955
+                    ],
+                    "upper_loss": [
+                      2015869.494,
+                      2015869.494,
+                      3.627211166127523
+                    ]
+                  },
+                  "torch_threads": 1,
+                  "model_sha256": "cde56bca923b5d00b77f9a9a7964d636ed552e9eda5d9ddef87b9a0f872e803b",
+                  "v1_sha256": "96c367ce2945b0134f8ac8bb51985da1dea51e65ca53e32a05a8badd4a9163d0",
+                  "wall_seconds": 648.6273810863495
+                },
+                "Kelmarsh/LG/cand0/h4": {
+                  "name": "Kelmarsh/LG/cand0/h4",
+                  "fit_seconds": 688.8752226089127,
+                  "v1_predict_seconds": 1.0755863469094038,
+                  "tree": {
+                    "total_models": 2,
+                    "nodes": 3,
+                    "leaves": 2,
+                    "split_columns": [
+                      14
+                    ],
+                    "lower_loss": [
+                      0.021866921335458755,
+                      0.021866921335458755,
+                      0.0218669380992651
+                    ],
+                    "upper_loss": [
+                      490396.735,
+                      335526.3185,
+                      6.850001299031575
+                    ]
+                  },
+                  "torch_threads": 1,
+                  "model_sha256": "ef30737c7ac99cee02946c3adabd0732a50bb2b880716d197e5e49ceb7c96d14",
+                  "v1_sha256": "0ef5ab6c2ff63c9ed295f8696d9f77e81970e57500cef75f3431ee12c0d56c54",
+                  "wall_seconds": 690.0642619132996
+                }
+              },
+              "fit_seconds": 2942.583614983596
+            },
+            {
+              "name": "LR_s5",
+              "hidden": [],
+              "weight_decay": 0.0,
+              "max_splits": 5,
+              "v1_mae": 1075.677762538266,
+              "trees": {
+                "Kelmarsh/LG/cand1/h1": {
+                  "name": "Kelmarsh/LG/cand1/h1",
+                  "fit_seconds": 1992.1556983939372,
+                  "v1_predict_seconds": 1.5514737269841135,
+                  "tree": {
+                    "total_models": 5,
+                    "nodes": 9,
+                    "leaves": 5,
+                    "split_columns": [
+                      14,
+                      16,
+                      18,
+                      13
+                    ],
+                    "lower_loss": [
+                      0.006990206427872181,
+                      0.006990206427872181,
+                      0.006990351248532534,
+                      0.006990206427872181,
+                      0.00699066324159503,
+                      0.00699066324159503,
+                      0.006991025060415268,
+                      0.006990206427872181,
+                      0.00699059572070837
+                    ],
+                    "upper_loss": [
+                      4152197.0584,
+                      3595641.5050666668,
+                      0.009239183975756168,
+                      3595619.268533333,
+                      3802778.9802666665,
+                      837003.6179333334,
+                      0.007570370051761468,
+                      3595605.5504,
+                      3767742.954133333
+                    ]
+                  },
+                  "torch_threads": 1,
+                  "model_sha256": "d897037b9c5fe7d22ba2339c87c1ad9e567e53d6e0dd114d9cb3dfa3ca4538ef",
+                  "v1_sha256": "35a3a94e8633f7d288b119ffb751d8b4384f324f7212f9547bb4c5f05d1b0830",
+                  "wall_seconds": 1993.7912318706512
+                },
+                "Kelmarsh/LG/cand1/h2": {
+                  "name": "Kelmarsh/LG/cand1/h2",
+                  "fit_seconds": 2082.9521441238467,
+                  "v1_predict_seconds": 1.25179861811921,
+                  "tree": {
+                    "total_models": 5,
+                    "nodes": 9,
+                    "leaves": 5,
+                    "split_columns": [
+                      14,
+                      16,
+                      18,
+                      13
+                    ],
+                    "lower_loss": [
+                      0.014751878567039967,
+                      0.014751878567039967,
+                      0.014745090156793594,
+                      0.014751878567039967,
+                      0.014758179895579815,
+                      0.014758179895579815,
+                      0.014752842485904694,
+                      0.014751878567039967,
+                      0.014757824130356312
+                    ],
+                    "upper_loss": [
+                      448062577.5616,
+                      441253390.7456,
+                      0.17516619497140248,
+                      441253175.6032,
+                      447360258.2186667,
+                      112643208.37973334,
+                      0.016034794969360035,
+                      441253100.68053335,
+                      446296574.2592
+                    ]
+                  },
+                  "torch_threads": 1,
+                  "model_sha256": "9e5a889de6ff63a9f5d6a410ab15f455b5de1eabe85e8bd0eabb4b4cd63caf84",
+                  "v1_sha256": "7f419a5cf25aa10f5f0892c576c9238955ed23bcc175b95c83299a187235a8ba",
+                  "wall_seconds": 2084.303559064865
+                },
+                "Kelmarsh/LG/cand1/h3": {
+                  "name": "Kelmarsh/LG/cand1/h3",
+                  "fit_seconds": 1856.0476942611858,
+                  "v1_predict_seconds": 1.250091949943453,
+                  "tree": {
+                    "total_models": 5,
+                    "nodes": 9,
+                    "leaves": 5,
+                    "split_columns": [
+                      15,
+                      13,
+                      16,
+                      18
+                    ],
+                    "lower_loss": [
+                      0.018700020387768745,
+                      0.018700020387768745,
+                      0.018699998036026955,
+                      0.018700020387768745,
+                      0.018700003623962402,
+                      0.018700020387768745,
+                      0.018729526549577713,
+                      0.018700020387768745,
+                      0.018722184002399445
+                    ],
+                    "upper_loss": [
+                      2015869.494,
+                      2015869.494,
+                      3.627211166127523,
+                      2015869.494,
+                      4.463471306610107,
+                      2015869.494,
+                      1299802.0964,
+                      2015867.6084,
+                      1383667.5696666667
+                    ]
+                  },
+                  "torch_threads": 1,
+                  "model_sha256": "c0e8cdb415cb819fb74743140ec68f5911424bd5be6eea3b4989855e814c8de2",
+                  "v1_sha256": "96c367ce2945b0134f8ac8bb51985da1dea51e65ca53e32a05a8badd4a9163d0",
+                  "wall_seconds": 1857.3654434680939
+                },
+                "Kelmarsh/LG/cand1/h4": {
+                  "name": "Kelmarsh/LG/cand1/h4",
+                  "fit_seconds": 2084.6414843299426,
+                  "v1_predict_seconds": 1.7423712851013988,
+                  "tree": {
+                    "total_models": 5,
+                    "nodes": 9,
+                    "leaves": 5,
+                    "split_columns": [
+                      14,
+                      16,
+                      17,
+                      15
+                    ],
+                    "lower_loss": [
+                      0.021866921335458755,
+                      0.021866921335458755,
+                      0.0218669380992651,
+                      0.021866921335458755,
+                      0.021914975717663765,
+                      0.021914975717663765,
+                      0.024210119619965553,
+                      0.024210119619965553,
+                      0.024209966883063316
+                    ],
+                    "upper_loss": [
+                      490396.735,
+                      335526.3185,
+                      6.850001299031575,
+                      335524.63146666664,
+                      873980.2604666667,
+                      873970.6847333333,
+                      1667510.2541333332,
+                      325182.2833,
+                      0.028285022248824437
+                    ]
+                  },
+                  "torch_threads": 1,
+                  "model_sha256": "41fb3b88336efaa301c78118cc15222bcc3de44fd9473107a5434c6d7e86a7bc",
+                  "v1_sha256": "62ca91054f1aaaed48772d9fcf631b21fa52ebbecca2307ab86ddf1518af6505",
+                  "wall_seconds": 2086.5295975208282
+                }
+              },
+              "fit_seconds": 8015.797021108912
+            },
+            {
+              "name": "NN_s2",
+              "hidden": [
+                50,
+                50,
+                50
+              ],
+              "weight_decay": 1e-05,
+              "max_splits": 2,
+              "v1_mae": 180.40005473169728,
+              "trees": {
+                "Kelmarsh/LG/cand2/h1": {
+                  "name": "Kelmarsh/LG/cand2/h1",
+                  "fit_seconds": 386.1642270600423,
+                  "v1_predict_seconds": 2.2891903179697692,
+                  "tree": {
+                    "total_models": 1,
+                    "nodes": 1,
+                    "leaves": 1,
+                    "split_columns": [],
+                    "lower_loss": [
+                      0.007166197523474693
+                    ],
+                    "upper_loss": [
+                      0.00651335135747989
+                    ]
+                  },
+                  "torch_threads": 1,
+                  "model_sha256": "69097a53391cd2a0ffb8ac32d87e9ccfade69b3ecb4dbd7579ef417f9138c850",
+                  "v1_sha256": "dfa7db28dfa920308b4693d280e8cf6eca14fa91b6aba3654f8a7a7a3ceea9d9",
+                  "wall_seconds": 388.64973735809326
+                },
+                "Kelmarsh/LG/cand2/h2": {
+                  "name": "Kelmarsh/LG/cand2/h2",
+                  "fit_seconds": 934.209798052907,
+                  "v1_predict_seconds": 2.6531636570580304,
+                  "tree": {
+                    "total_models": 2,
+                    "nodes": 3,
+                    "leaves": 2,
+                    "split_columns": [
+                      10
+                    ],
+                    "lower_loss": [
+                      0.01634640246629715,
+                      0.01634640246629715,
+                      0.01616991125047207
+                    ],
+                    "upper_loss": [
+                      0.016884283421436944,
+                      0.014916613560914994,
+                      0.014263820985953014
+                    ]
+                  },
+                  "torch_threads": 1,
+                  "model_sha256": "9f609a0b88f8c2e8574ad1f3885eebe0bc63aa557fd8e7751a9224c506c7fafc",
+                  "v1_sha256": "d52e0f7a21db4142478091216dcb0a590868bb34bb4976d1a7976c385d0e1479",
+                  "wall_seconds": 936.9422428607941
+                },
+                "Kelmarsh/LG/cand2/h3": {
+                  "name": "Kelmarsh/LG/cand2/h3",
+                  "fit_seconds": 334.4375361800194,
+                  "v1_predict_seconds": 2.448233167990111,
+                  "tree": {
+                    "total_models": 1,
+                    "nodes": 1,
+                    "leaves": 1,
+                    "split_columns": [],
+                    "lower_loss": [
+                      0.021186385303735733
+                    ],
+                    "upper_loss": [
+                      0.021016970812280975
+                    ]
+                  },
+                  "torch_threads": 1,
+                  "model_sha256": "9beca690b9718bc70d6fcb0ff3b42ee87398f40c3b01c008087e901c272a583d",
+                  "v1_sha256": "bef897965879162c50ec0cbb503bccc9f34efd0627461b80aba7a042a73fceab",
+                  "wall_seconds": 336.980051279068
+                },
+                "Kelmarsh/LG/cand2/h4": {
+                  "name": "Kelmarsh/LG/cand2/h4",
+                  "fit_seconds": 1353.5941304729786,
+                  "v1_predict_seconds": 4.69634103612043,
+                  "tree": {
+                    "total_models": 2,
+                    "nodes": 3,
+                    "leaves": 2,
+                    "split_columns": [
+                      18
+                    ],
+                    "lower_loss": [
+                      0.02263040468096733,
+                      0.02263040468096733,
+                      0.024756669998168945
+                    ],
+                    "upper_loss": [
+                      0.026486537957191466,
+                      0.02100011174281438,
+                      0.026698612141609193
+                    ]
+                  },
+                  "torch_threads": 1,
+                  "model_sha256": "e144c7d1af2f9577f7a683d81aaaa491cb6a7ac5ffcfe88456452bae945444df",
+                  "v1_sha256": "943fec43806e48885fe4230952a142b05fe10e5c6d3b46e10b04c239ed4c8916",
+                  "wall_seconds": 1358.3671460151672
+                }
+              },
+              "fit_seconds": 3008.4056917659473
+            },
+            {
+              "name": "NN_s5",
+              "hidden": [
+                50,
+                50,
+                50
+              ],
+              "weight_decay": 1e-05,
+              "max_splits": 5,
+              "v1_mae": 180.9287467252601,
+              "trees": {
+                "Kelmarsh/LG/cand3/h1": {
+                  "name": "Kelmarsh/LG/cand3/h1",
+                  "fit_seconds": 407.7576858260436,
+                  "v1_predict_seconds": 3.370754975825548,
+                  "tree": {
+                    "total_models": 1,
+                    "nodes": 1,
+                    "leaves": 1,
+                    "split_columns": [],
+                    "lower_loss": [
+                      0.007166197523474693
+                    ],
+                    "upper_loss": [
+                      0.00651335135747989
+                    ]
+                  },
+                  "torch_threads": 1,
+                  "model_sha256": "213d4f2a79b1be2bdcc5c54e4a77cd8e163b33dbf2e77aabaf617f845e30075a",
+                  "v1_sha256": "dfa7db28dfa920308b4693d280e8cf6eca14fa91b6aba3654f8a7a7a3ceea9d9",
+                  "wall_seconds": 411.40462017059326
+                },
+                "Kelmarsh/LG/cand3/h2": {
+                  "name": "Kelmarsh/LG/cand3/h2",
+                  "fit_seconds": 857.4065065259347,
+                  "v1_predict_seconds": 2.2847025180235505,
+                  "tree": {
+                    "total_models": 2,
+                    "nodes": 3,
+                    "leaves": 2,
+                    "split_columns": [
+                      10
+                    ],
+                    "lower_loss": [
+                      0.01634640246629715,
+                      0.01634640246629715,
+                      0.01616991125047207
+                    ],
+                    "upper_loss": [
+                      0.016884283421436944,
+                      0.014916613560914994,
+                      0.014263820985953014
+                    ]
+                  },
+                  "torch_threads": 1,
+                  "model_sha256": "a0a20532869201b11f892d6a2f1bc319263c2a6ad4e7c9b54cb5ee8c642fd931",
+                  "v1_sha256": "d52e0f7a21db4142478091216dcb0a590868bb34bb4976d1a7976c385d0e1479",
+                  "wall_seconds": 859.7997283935547
+                },
+                "Kelmarsh/LG/cand3/h3": {
+                  "name": "Kelmarsh/LG/cand3/h3",
+                  "fit_seconds": 312.00417015585117,
+                  "v1_predict_seconds": 4.58758043916896,
+                  "tree": {
+                    "total_models": 1,
+                    "nodes": 1,
+                    "leaves": 1,
+                    "split_columns": [],
+                    "lower_loss": [
+                      0.021186385303735733
+                    ],
+                    "upper_loss": [
+                      0.021016970812280975
+                    ]
+                  },
+                  "torch_threads": 1,
+                  "model_sha256": "d8897d9c1912e4b801febd417beeb933333a3e865cd894ddaaaba86bafe48eb2",
+                  "v1_sha256": "bef897965879162c50ec0cbb503bccc9f34efd0627461b80aba7a042a73fceab",
+                  "wall_seconds": 316.6904649734497
+                },
+                "Kelmarsh/LG/cand3/h4": {
+                  "name": "Kelmarsh/LG/cand3/h4",
+                  "fit_seconds": 3214.3055199030787,
+                  "v1_predict_seconds": 2.75464845681563,
+                  "tree": {
+                    "total_models": 5,
+                    "nodes": 9,
+                    "leaves": 5,
+                    "split_columns": [
+                      18,
+                      10,
+                      17,
+                      19
+                    ],
+                    "lower_loss": [
+                      0.02263040468096733,
+                      0.02263040468096733,
+                      0.024756669998168945,
+                      0.024756669998168945,
+                      0.02503451332449913,
+                      0.02503451332449913,
+                      0.023253140971064568,
+                      0.023253140971064568,
+                      0.0238614734262228
+                    ],
+                    "upper_loss": [
+                      0.026486537957191466,
+                      0.02100011174281438,
+                      0.026698612141609193,
+                      0.027463105809688568,
+                      0.028068510657548906,
+                      0.025279214904705683,
+                      0.025817566319306692,
+                      0.023156487329800923,
+                      0.028101243700583776
+                    ]
+                  },
+                  "torch_threads": 1,
+                  "model_sha256": "771547970d425322563eae9ad167aa7b08b0a08c7cdfd630d98c51aa17852255",
+                  "v1_sha256": "99e8a0ade93ecc489fbded0512e2aa46c323b2a7e2e2ac032a8118a348f4cf3e",
+                  "wall_seconds": 3217.2112419605255
+                }
+              },
+              "fit_seconds": 4791.473882410908
+            }
+          ],
+          "selected": 2
+        },
+        "LUG": {
+          "features": 91,
+          "value_positions": [
+            21,
+            22,
+            23,
+            24,
+            25,
+            26,
+            27,
+            28,
+            29,
+            30,
+            31,
+            32,
+            33
+          ],
+          "acceptance": {
+            "mask_cells_6": 8252,
+            "mask_cells_18": 70112,
+            "windows_differing": 8249,
+            "routing": {
+              "split_column": 27,
+              "other_column": 21,
+              "rows": 4004,
+              "root": 1000,
+              "left": 1002,
+              "right_nominal": 1,
+              "right_robust": 2001
+            }
+          },
+          "data_sha256": "d491ef63a0117c1358f9c643f158d7aecb9b429df123fa21eb195c85dc17971c",
+          "candidates": [
+            {
+              "name": "LR_s2",
+              "hidden": [],
+              "weight_decay": 0.0,
+              "max_splits": 2,
+              "v1_mae": 1115.4455835904976,
+              "trees": {
+                "Kelmarsh/LUG/cand0/h1": {
+                  "name": "Kelmarsh/LUG/cand0/h1",
+                  "fit_seconds": 681.0664121659938,
+                  "v1_predict_seconds": 1.322411326924339,
+                  "tree": {
+                    "total_models": 2,
+                    "nodes": 3,
+                    "leaves": 2,
+                    "split_columns": [
+                      25
+                    ],
+                    "lower_loss": [
+                      0.0067613860592246056,
+                      0.0067613860592246056,
+                      0.0067611560225486755
+                    ],
+                    "upper_loss": [
+                      7753828.202666666,
+                      6813378.681066667,
+                      0.009003734098374844
+                    ]
+                  },
+                  "torch_threads": 1,
+                  "model_sha256": "1d38c0c7eee88e72b05815b91f6840d05bd526756a8b6bad03120d8f2425d44b",
+                  "v1_sha256": "b9cc046cc21751b508bc7c7bfaf79af347d63d800dc4789673f2fa0e5878d3ef",
+                  "wall_seconds": 682.580374956131
+                },
+                "Kelmarsh/LUG/cand0/h2": {
+                  "name": "Kelmarsh/LUG/cand0/h2",
+                  "fit_seconds": 770.1786948749796,
+                  "v1_predict_seconds": 1.1464374491479248,
+                  "tree": {
+                    "total_models": 2,
+                    "nodes": 3,
+                    "leaves": 2,
+                    "split_columns": [
+                      25
+                    ],
+                    "lower_loss": [
+                      0.013912460766732693,
+                      0.013912460766732693,
+                      0.013906218111515045
+                    ],
+                    "upper_loss": [
+                      514759563.74186665,
+                      505942309.5125333,
+                      0.049947927310069404
+                    ]
+                  },
+                  "torch_threads": 1,
+                  "model_sha256": "f02fbac8eabc26d7731c2380c4ee03f9a3cf00c7602f7204937a4ee7eedeac9c",
+                  "v1_sha256": "41d542402ec66b072b4a9be0880cbeea6802ccfee7b391f93c3a97f5f6c6c2ca",
+                  "wall_seconds": 771.386590719223
+                },
+                "Kelmarsh/LUG/cand0/h3": {
+                  "name": "Kelmarsh/LUG/cand0/h3",
+                  "fit_seconds": 773.4618864560034,
+                  "v1_predict_seconds": 1.9608536628074944,
+                  "tree": {
+                    "total_models": 2,
+                    "nodes": 3,
+                    "leaves": 2,
+                    "split_columns": [
+                      26
+                    ],
+                    "lower_loss": [
+                      0.017460675910115242,
+                      0.017460675910115242,
+                      0.017460837960243225
+                    ],
+                    "upper_loss": [
+                      262997.7333833333,
+                      208281.32963333334,
+                      1.6830545985539753
+                    ]
+                  },
+                  "torch_threads": 1,
+                  "model_sha256": "301e5dd1590b9de50c9980bbcff283116a6047fa2b3ce749d18f2f9f115f63a7",
+                  "v1_sha256": "25a65230d892a3dbbf862893edcbf5649c207834f5eba2f359493ae293568854",
+                  "wall_seconds": 775.5606744289398
+                },
+                "Kelmarsh/LUG/cand0/h4": {
+                  "name": "Kelmarsh/LUG/cand0/h4",
+                  "fit_seconds": 815.9532628820743,
+                  "v1_predict_seconds": 1.4550654420163482,
+                  "tree": {
+                    "total_models": 2,
+                    "nodes": 3,
+                    "leaves": 2,
+                    "split_columns": [
+                      25
+                    ],
+                    "lower_loss": [
+                      0.020367491990327835,
+                      0.020367491990327835,
+                      0.02036747708916664
+                    ],
+                    "upper_loss": [
+                      1729781.4874666666,
+                      1338785.7248666666,
+                      5.3454930836995445
+                    ]
+                  },
+                  "torch_threads": 1,
+                  "model_sha256": "627407d6ed7720114018b899f73e9029dc3e738755ff601c5aa4596471becf9b",
+                  "v1_sha256": "add65d8480ec965360774a1e88f023212846a31cb033391ef61a1ec76d6acba1",
+                  "wall_seconds": 817.5975637435913
+                }
+              },
+              "fit_seconds": 3040.660256379051
+            },
+            {
+              "name": "LR_s5",
+              "hidden": [],
+              "weight_decay": 0.0,
+              "max_splits": 5,
+              "v1_mae": 836.5023204202216,
+              "trees": {
+                "Kelmarsh/LUG/cand1/h1": {
+                  "name": "Kelmarsh/LUG/cand1/h1",
+                  "fit_seconds": 2187.583154900931,
+                  "v1_predict_seconds": 1.9872142791282386,
+                  "tree": {
+                    "total_models": 5,
+                    "nodes": 9,
+                    "leaves": 5,
+                    "split_columns": [
+                      25,
+                      26,
+                      28,
+                      24
+                    ],
+                    "lower_loss": [
+                      0.0067613860592246056,
+                      0.0067613860592246056,
+                      0.0067611560225486755,
+                      0.0067613860592246056,
+                      0.006761156488209963,
+                      0.0067613860592246056,
+                      0.006761156488209963,
+                      0.0067611560225486755,
+                      0.006761365570127964
+                    ],
+                    "upper_loss": [
+                      7753828.202666666,
+                      6813378.681066667,
+                      0.009003734098374844,
+                      1446088.6676,
+                      0.008434465550382932,
+                      0.007843376057843368,
+                      0.007607833775877953,
+                      0.008953844085832437,
+                      0.007711405417323113
+                    ]
+                  },
+                  "torch_threads": 1,
+                  "model_sha256": "b9401a661534035ebe34d99aa7a788124b8e08b2829e730cd89976d5b0691662",
+                  "v1_sha256": "afda51d810a8d17747caa2c9e70790a373b9e40a327247a8a0c4fc334bb3fee6",
+                  "wall_seconds": 2189.6684906482697
+                },
+                "Kelmarsh/LUG/cand1/h2": {
+                  "name": "Kelmarsh/LUG/cand1/h2",
+                  "fit_seconds": 2227.043752336176,
+                  "v1_predict_seconds": 1.290919580962509,
+                  "tree": {
+                    "total_models": 5,
+                    "nodes": 9,
+                    "leaves": 5,
+                    "split_columns": [
+                      25,
+                      27,
+                      29,
+                      26
+                    ],
+                    "lower_loss": [
+                      0.013912460766732693,
+                      0.013912460766732693,
+                      0.013906218111515045,
+                      0.013912460766732693,
+                      0.013912836089730263,
+                      0.013912836089730263,
+                      0.013910485431551933,
+                      0.013912460766732693,
+                      0.01390627771615982
+                    ],
+                    "upper_loss": [
+                      514759563.74186665,
+                      505942309.5125333,
+                      0.049947927310069404,
+                      505942163.38773334,
+                      510155419.27253336,
+                      123836826.23146667,
+                      0.015008428878585497,
+                      505941962.0010667,
+                      509239488.0
+                    ]
+                  },
+                  "torch_threads": 1,
+                  "model_sha256": "ef5cc5b8645caeecd7ffdda80036c04c6d1c3196d13ab3d406fe8e9764b8d608",
+                  "v1_sha256": "41d542402ec66b072b4a9be0880cbeea6802ccfee7b391f93c3a97f5f6c6c2ca",
+                  "wall_seconds": 2228.415296792984
+                },
+                "Kelmarsh/LUG/cand1/h3": {
+                  "name": "Kelmarsh/LUG/cand1/h3",
+                  "fit_seconds": 2052.8395117290784,
+                  "v1_predict_seconds": 1.2722318209707737,
+                  "tree": {
+                    "total_models": 5,
+                    "nodes": 9,
+                    "leaves": 5,
+                    "split_columns": [
+                      26,
+                      24,
+                      27,
+                      29
+                    ],
+                    "lower_loss": [
+                      0.017460675910115242,
+                      0.017460675910115242,
+                      0.017460837960243225,
+                      0.017460675910115242,
+                      0.017460841685533524,
+                      0.017460675910115242,
+                      0.017481738701462746,
+                      0.017460675910115242,
+                      0.01747683249413967
+                    ],
+                    "upper_loss": [
+                      262997.7333833333,
+                      208281.32963333334,
+                      1.6830545985539753,
+                      164757.74116666667,
+                      1.6592231464385987,
+                      164757.4179,
+                      54770.768545833336,
+                      164756.912525,
+                      65461.339883333334
+                    ]
+                  },
+                  "torch_threads": 1,
+                  "model_sha256": "ab754589d00b8ed70fb3c41eba3e665d9200c47c7cc2a0fd87a6ee491c65ee2d",
+                  "v1_sha256": "25a65230d892a3dbbf862893edcbf5649c207834f5eba2f359493ae293568854",
+                  "wall_seconds": 2054.19890832901
+                },
+                "Kelmarsh/LUG/cand1/h4": {
+                  "name": "Kelmarsh/LUG/cand1/h4",
+                  "fit_seconds": 2208.3682076209225,
+                  "v1_predict_seconds": 1.2668693270534277,
+                  "tree": {
+                    "total_models": 5,
+                    "nodes": 9,
+                    "leaves": 5,
+                    "split_columns": [
+                      25,
+                      27,
+                      28,
+                      26
+                    ],
+                    "lower_loss": [
+                      0.020367491990327835,
+                      0.020367491990327835,
+                      0.02036747708916664,
+                      0.020367491990327835,
+                      0.020405730232596397,
+                      0.020405730232596397,
+                      0.022224819287657738,
+                      0.020405730232596397,
+                      0.0204057265073061
+                    ],
+                    "upper_loss": [
+                      1729781.4874666666,
+                      1338785.7248666666,
+                      5.3454930836995445,
+                      1338778.0766,
+                      2094444.3964,
+                      2094434.7822666666,
+                      139173.25561458332,
+                      402483.7989666667,
+                      0.023499056541919708
+                    ]
+                  },
+                  "torch_threads": 1,
+                  "model_sha256": "398f390b0e121156ce607b1a63f10b6988ab015a415380e5c5e645e5b65c14bb",
+                  "v1_sha256": "689ad7decc8a269df43d9d9a834512194fc206d14fc007c6b9c2ed8439e4c686",
+                  "wall_seconds": 2209.7357094287872
+                }
+              },
+              "fit_seconds": 8675.834626587108
+            },
+            {
+              "name": "NN_s2",
+              "hidden": [
+                50,
+                50,
+                50
+              ],
+              "weight_decay": 1e-05,
+              "max_splits": 2,
+              "v1_mae": 175.29170898038342,
+              "trees": {
+                "Kelmarsh/LUG/cand2/h1": {
+                  "name": "Kelmarsh/LUG/cand2/h1",
+                  "fit_seconds": 277.77503546793014,
+                  "v1_predict_seconds": 2.2169727000873536,
+                  "tree": {
+                    "total_models": 1,
+                    "nodes": 1,
+                    "leaves": 1,
+                    "split_columns": [],
+                    "lower_loss": [
+                      0.006737781688570976
+                    ],
+                    "upper_loss": [
+                      0.006724401292701562
+                    ]
+                  },
+                  "torch_threads": 1,
+                  "model_sha256": "bf0d9c9cf7d53d73ac54fb2db9aa4ac2e369831f64fc4d00c0f32f3aa0c9b361",
+                  "v1_sha256": "5e7bf34cf5b4f35619634be48772f50ad5502bc095a72a113ed378f9ce57d8c2",
+                  "wall_seconds": 280.23682856559753
+                },
+                "Kelmarsh/LUG/cand2/h2": {
+                  "name": "Kelmarsh/LUG/cand2/h2",
+                  "fit_seconds": 274.2738629139494,
+                  "v1_predict_seconds": 2.332310785073787,
+                  "tree": {
+                    "total_models": 1,
+                    "nodes": 1,
+                    "leaves": 1,
+                    "split_columns": [],
+                    "lower_loss": [
+                      0.014928828924894333
+                    ],
+                    "upper_loss": [
+                      0.013997642674048742
+                    ]
+                  },
+                  "torch_threads": 1,
+                  "model_sha256": "fe808dc5236816d4f7f0a06050dec58e0a13b7f34ec5361a5718cbb6341b1f5a",
+                  "v1_sha256": "2f415cb94af6e02a97f48f3f252292729cefb139b65d572f86eae3088536310a",
+                  "wall_seconds": 276.73980236053467
+                },
+                "Kelmarsh/LUG/cand2/h3": {
+                  "name": "Kelmarsh/LUG/cand2/h3",
+                  "fit_seconds": 1695.5297817708924,
+                  "v1_predict_seconds": 5.086183881154284,
+                  "tree": {
+                    "total_models": 2,
+                    "nodes": 3,
+                    "leaves": 2,
+                    "split_columns": [
+                      29
+                    ],
+                    "lower_loss": [
+                      0.018412845209240913,
+                      0.018412845209240913,
+                      0.01935826800763607
+                    ],
+                    "upper_loss": [
+                      0.018941894792517025,
+                      0.01656524234513442,
+                      0.017690402194857596
+                    ]
+                  },
+                  "torch_threads": 1,
+                  "model_sha256": "c532acc3a7a2e9972297e9672d6cd166d4ad3c9a6e1d0a30a510e426d5c42067",
+                  "v1_sha256": "0392f586fb62e24ef1aa482060cca3ef88e303948b17c73d2943b19ec4e8cf6a",
+                  "wall_seconds": 1700.7043888568878
+                },
+                "Kelmarsh/LUG/cand2/h4": {
+                  "name": "Kelmarsh/LUG/cand2/h4",
+                  "fit_seconds": 1447.0709102849942,
+                  "v1_predict_seconds": 3.258525019045919,
+                  "tree": {
+                    "total_models": 2,
+                    "nodes": 3,
+                    "leaves": 2,
+                    "split_columns": [
+                      29
+                    ],
+                    "lower_loss": [
+                      0.02383989840745926,
+                      0.02383989840745926,
+                      0.0212431438267231
+                    ],
+                    "upper_loss": [
+                      0.026514835757017137,
+                      0.024386362698674204,
+                      0.023178093190987906
+                    ]
+                  },
+                  "torch_threads": 1,
+                  "model_sha256": "2f517aa61d4c04dd5be0990c5ae88b58587bd632fc2ca814e63f06d88588ff72",
+                  "v1_sha256": "9f2248acfafa10b960ad5f88b536d564de7b093ea2c95ce7aa0576d86cae6c6c",
+                  "wall_seconds": 1450.4701080322266
+                }
+              },
+              "fit_seconds": 3694.649590437766
+            },
+            {
+              "name": "NN_s5",
+              "hidden": [
+                50,
+                50,
+                50
+              ],
+              "weight_decay": 1e-05,
+              "max_splits": 5,
+              "v1_mae": 176.14523922018944,
+              "trees": {
+                "Kelmarsh/LUG/cand3/h1": {
+                  "name": "Kelmarsh/LUG/cand3/h1",
+                  "fit_seconds": 291.9957461638842,
+                  "v1_predict_seconds": 2.3520022809971124,
+                  "tree": {
+                    "total_models": 1,
+                    "nodes": 1,
+                    "leaves": 1,
+                    "split_columns": [],
+                    "lower_loss": [
+                      0.006737781688570976
+                    ],
+                    "upper_loss": [
+                      0.006724401292701562
+                    ]
+                  },
+                  "torch_threads": 1,
+                  "model_sha256": "8ac52caf67c09a82b6f1f5a758965392a066eaed79f9f7fe535ad156f97d6d76",
+                  "v1_sha256": "5e7bf34cf5b4f35619634be48772f50ad5502bc095a72a113ed378f9ce57d8c2",
+                  "wall_seconds": 294.483008146286
+                },
+                "Kelmarsh/LUG/cand3/h2": {
+                  "name": "Kelmarsh/LUG/cand3/h2",
+                  "fit_seconds": 367.9408262418583,
+                  "v1_predict_seconds": 2.8964351220056415,
+                  "tree": {
+                    "total_models": 1,
+                    "nodes": 1,
+                    "leaves": 1,
+                    "split_columns": [],
+                    "lower_loss": [
+                      0.014928828924894333
+                    ],
+                    "upper_loss": [
+                      0.013997642674048742
+                    ]
+                  },
+                  "torch_threads": 1,
+                  "model_sha256": "79a8bbe1d87ccdbffbe37dc33ce6284dfd27fed3c381967fbf4430662017350d",
+                  "v1_sha256": "2f415cb94af6e02a97f48f3f252292729cefb139b65d572f86eae3088536310a",
+                  "wall_seconds": 370.9902968406677
+                },
+                "Kelmarsh/LUG/cand3/h3": {
+                  "name": "Kelmarsh/LUG/cand3/h3",
+                  "fit_seconds": 1737.3396095430944,
+                  "v1_predict_seconds": 3.5995210849214345,
+                  "tree": {
+                    "total_models": 2,
+                    "nodes": 3,
+                    "leaves": 2,
+                    "split_columns": [
+                      29
+                    ],
+                    "lower_loss": [
+                      0.018412845209240913,
+                      0.018412845209240913,
+                      0.01935826800763607
+                    ],
+                    "upper_loss": [
+                      0.018941894792517025,
+                      0.01656524234513442,
+                      0.017690402194857596
+                    ]
+                  },
+                  "torch_threads": 1,
+                  "model_sha256": "58e8a847051f3d68ef8796c3d444b9c1cd731d55c7725a9d89afa3581362fcbc",
+                  "v1_sha256": "0392f586fb62e24ef1aa482060cca3ef88e303948b17c73d2943b19ec4e8cf6a",
+                  "wall_seconds": 1741.088591337204
+                },
+                "Kelmarsh/LUG/cand3/h4": {
+                  "name": "Kelmarsh/LUG/cand3/h4",
+                  "fit_seconds": 4139.7987550951075,
+                  "v1_predict_seconds": 3.4302500118501484,
+                  "tree": {
+                    "total_models": 5,
+                    "nodes": 9,
+                    "leaves": 5,
+                    "split_columns": [
+                      29,
+                      28,
+                      24,
+                      30
+                    ],
+                    "lower_loss": [
+                      0.02383989840745926,
+                      0.02383989840745926,
+                      0.0212431438267231,
+                      0.0212431438267231,
+                      0.022823786363005638,
+                      0.022823786363005638,
+                      0.02248084731400013,
+                      0.022823786363005638,
+                      0.02360435202717781
+                    ],
+                    "upper_loss": [
+                      0.026514835757017137,
+                      0.024386362698674204,
+                      0.023178093190987906,
+                      0.021259974962472915,
+                      0.024090321696798006,
+                      0.024208341135581336,
+                      0.023508923159042995,
+                      0.02011222467124462,
+                      0.02591804993947347
+                    ]
+                  },
+                  "torch_threads": 1,
+                  "model_sha256": "a8919dce2803e6c82ff852d0c4a087d516a165db5d861af3e8d9bdfd785e42d3",
+                  "v1_sha256": "1c2174eff0b74f670faf10af7c2191c66ab6d0e8abf822a10bf5dd35b5fce5fa",
+                  "wall_seconds": 4143.618002414703
+                }
+              },
+              "fit_seconds": 6537.074937043944
+            }
+          ],
+          "selected": 2
+        }
+      }
+    },
+    "Penmanshiel": {
+      "full": {
+        "train": 64771,
+        "V1": 19413,
+        "V2": 16176,
+        "keys": {
+          "V1": {
+            "issue": "c37bbde3aec2de949d3b4a02bbc7a97d74077bb0e2f89f1002e1f5bfaec8f739",
+            "turbines": "dc224f87eb3dc2de2ebb4a3f52cea570125e50979cb6d73a7006a26fecb41619",
+            "truth": "e02de90c967167ff4f685842033d690bd701ad7d5c41bb6ded886b63b3c375e0"
+          },
+          "V2": {
+            "issue": "4c235a58761df138e051c10a3f0f853c1d4faa3f138ed94e00b2de698d40d993",
+            "turbines": "56304f1aacef759b99ceee899e9a1d5ff998fb6e2fbacc8fc927b14e9a1634ca",
+            "truth": "30ca0c85b4efa19ae4c03f7d233ce228f8f76426d629bb84190eac5a2fc1704a"
+          }
+        },
+        "train_last_label": "2019-12-31T21:00:00.000000000",
+        "V1_start": "2020-01-01",
+        "units": [
+          1,
+          2,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15
+        ]
+      },
+      "assignment_counts": {
+        "train": [
+          12912,
+          12900,
+          13060,
+          13068,
+          12831
+        ],
+        "V1": [
+          3834,
+          3863,
+          3882,
+          3881,
+          3953
+        ]
+      },
+      "sample": 50000,
+      "assignment_sha256": {
+        "train": "b632d3330791009e933310274d5557a7d41b46d540a0f0d93d2fce17c7c81940",
+        "V1": "3172ad033649b4ba5409f597481de8f076306fbd48ed6867be43f305dc331bec"
+      },
+      "sample_keys_sha256": "2b9f01fbc2bdf3bd82a5e360f94a736e4f2b4739c0b8cf00bdc1ebf99e38b980",
+      "infos": {
+        "LG": {
+          "features": 87,
+          "value_positions": [
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22
+          ],
+          "acceptance": {
+            "mask_cells_6": 16178,
+            "mask_cells_18": 137493,
+            "windows_differing": 16176,
+            "routing": {
+              "split_column": 16,
+              "other_column": 10,
+              "rows": 4004,
+              "root": 1002,
+              "left": 1000,
+              "right_nominal": 1,
+              "right_robust": 2001
+            }
+          },
+          "data_sha256": "3058b55f38a98b7bf62f067f3d70d6c58f67e2da202d945b1d534e26a6d7b638",
+          "candidates": [
+            {
+              "name": "LR_s2",
+              "hidden": [],
+              "weight_decay": 0.0,
+              "max_splits": 2,
+              "v1_mae": 840.6840917588218,
+              "trees": {
+                "Penmanshiel/LG/cand0/h1": {
+                  "name": "Penmanshiel/LG/cand0/h1",
+                  "fit_seconds": 946.2604582251515,
+                  "v1_predict_seconds": 5.055851066950709,
+                  "tree": {
+                    "total_models": 2,
+                    "nodes": 3,
+                    "leaves": 2,
+                    "split_columns": [
+                      13
+                    ],
+                    "lower_loss": [
+                      0.00829858798533678,
+                      0.00829858798533678,
+                      0.00829447153955698
+                    ],
+                    "upper_loss": [
+                      701387827.1658666,
+                      701387827.1658666,
+                      3044736.9156
+                    ]
+                  },
+                  "torch_threads": 1,
+                  "model_sha256": "da251d285ed0b274468e1b0237d71fba3d81cd2af6ee8a30c9805f70a0ddfd37",
+                  "v1_sha256": "08039a360e6f375344e122620b8a3dd417859ed09b8127ce96f5911f9f41197c",
+                  "wall_seconds": 951.7907617092133
+                },
+                "Penmanshiel/LG/cand0/h2": {
+                  "name": "Penmanshiel/LG/cand0/h2",
+                  "fit_seconds": 1234.2224970480893,
+                  "v1_predict_seconds": 3.1260460319463164,
+                  "tree": {
+                    "total_models": 2,
+                    "nodes": 3,
+                    "leaves": 2,
+                    "split_columns": [
+                      13
+                    ],
+                    "lower_loss": [
+                      0.0173152107745409,
+                      0.0173152107745409,
+                      0.01731773093342781
+                    ],
+                    "upper_loss": [
+                      5128156375.4496,
+                      4754270498.816,
+                      1615007866.5386667
+                    ]
+                  },
+                  "torch_threads": 1,
+                  "model_sha256": "9c33cd638bfa895f09b51d0fde2672c779abf25cd61ac079105651b7d2a27d47",
+                  "v1_sha256": "6b46a4d102cb28cad9aecce5acc52cad293d5b697756659db93c17be4869b3a8",
+                  "wall_seconds": 1237.4882678985596
+                },
+                "Penmanshiel/LG/cand0/h3": {
+                  "name": "Penmanshiel/LG/cand0/h3",
+                  "fit_seconds": 1025.0446848431602,
+                  "v1_predict_seconds": 3.858988662948832,
+                  "tree": {
+                    "total_models": 2,
+                    "nodes": 3,
+                    "leaves": 2,
+                    "split_columns": [
+                      13
+                    ],
+                    "lower_loss": [
+                      0.022993752732872963,
+                      0.022993752732872963,
+                      0.022990088909864426
+                    ],
+                    "upper_loss": [
+                      870480243.5072,
+                      825654179.2938666,
+                      780564133.7514666
+                    ]
+                  },
+                  "torch_threads": 1,
+                  "model_sha256": "99acddb8f86f1de98a1c3c3907c181bcca695dba266c68ded9a885ee4489bced",
+                  "v1_sha256": "5389720e9445772afcebc847aba358c72065027e26634833cf86bbcd96b18206",
+                  "wall_seconds": 1029.0673956871033
+                },
+                "Penmanshiel/LG/cand0/h4": {
+                  "name": "Penmanshiel/LG/cand0/h4",
+                  "fit_seconds": 974.8460427809041,
+                  "v1_predict_seconds": 3.751329852035269,
+                  "tree": {
+                    "total_models": 2,
+                    "nodes": 3,
+                    "leaves": 2,
+                    "split_columns": [
+                      13
+                    ],
+                    "lower_loss": [
+                      0.027974111959338188,
+                      0.027974111959338188,
+                      0.027981989085674286
+                    ],
+                    "upper_loss": [
+                      4711580256.6656,
+                      4028666456.7466664,
+                      3398595860.8896
+                    ]
+                  },
+                  "torch_threads": 1,
+                  "model_sha256": "a7c3ef5e8565810902491649c5901833e5b4268c241e1b1e6de8df159be9cd76",
+                  "v1_sha256": "ddce739ccf9710fc19f8ddf7963ef4f242e936b3b6f0a4a5e3071073925f1a92",
+                  "wall_seconds": 978.7062878608704
+                }
+              },
+              "fit_seconds": 4180.373682897305
+            },
+            {
+              "name": "LR_s5",
+              "hidden": [],
+              "weight_decay": 0.0,
+              "max_splits": 5,
+              "v1_mae": 840.6840917588218,
+              "trees": {
+                "Penmanshiel/LG/cand1/h1": {
+                  "name": "Penmanshiel/LG/cand1/h1",
+                  "fit_seconds": 2784.8340700520203,
+                  "v1_predict_seconds": 3.654841148061678,
+                  "tree": {
+                    "total_models": 5,
+                    "nodes": 9,
+                    "leaves": 5,
+                    "split_columns": [
+                      13,
+                      15,
+                      17,
+                      20
+                    ],
+                    "lower_loss": [
+                      0.00829858798533678,
+                      0.00829858798533678,
+                      0.00829447153955698,
+                      0.00829858798533678,
+                      0.008294722065329552,
+                      0.00829858798533678,
+                      0.008295029401779175,
+                      0.00829858798533678,
+                      0.008301278576254845
+                    ],
+                    "upper_loss": [
+                      701387827.1658666,
+                      701387827.1658666,
+                      3044736.9156,
+                      701387827.1658666,
+                      3045090.4129333333,
+                      701387827.1658666,
+                      616454397.3034667,
+                      701387827.1658666,
+                      701621854.72
+                    ]
+                  },
+                  "torch_threads": 1,
+                  "model_sha256": "d65fd25e4b0edf69c67604a3ef0884e10acb96615ff75e15bd120cdbba76176e",
+                  "v1_sha256": "08039a360e6f375344e122620b8a3dd417859ed09b8127ce96f5911f9f41197c",
+                  "wall_seconds": 2788.607924938202
+                },
+                "Penmanshiel/LG/cand1/h2": {
+                  "name": "Penmanshiel/LG/cand1/h2",
+                  "fit_seconds": 2926.5349329710007,
+                  "v1_predict_seconds": 2.9569159280508757,
+                  "tree": {
+                    "total_models": 5,
+                    "nodes": 9,
+                    "leaves": 5,
+                    "split_columns": [
+                      13,
+                      15,
+                      17,
+                      19
+                    ],
+                    "lower_loss": [
+                      0.0173152107745409,
+                      0.0173152107745409,
+                      0.01731773093342781,
+                      0.0173152107745409,
+                      0.017305737361311913,
+                      0.0173152107745409,
+                      0.017314357683062553,
+                      0.0173152107745409,
+                      0.01730964332818985
+                    ],
+                    "upper_loss": [
+                      5128156375.4496,
+                      4754270498.816,
+                      1615007866.5386667,
+                      4464328467.797334,
+                      1615013269.5722666,
+                      5108729827.874133,
+                      1676243408.2133334,
+                      5108729827.874133,
+                      4030072296.7893333
+                    ]
+                  },
+                  "torch_threads": 1,
+                  "model_sha256": "1a5de845b6688f92806a18e414889e11bb917812b6d36462d94aa2bc241c4367",
+                  "v1_sha256": "6b46a4d102cb28cad9aecce5acc52cad293d5b697756659db93c17be4869b3a8",
+                  "wall_seconds": 2929.619997739792
+                },
+                "Penmanshiel/LG/cand1/h3": {
+                  "name": "Penmanshiel/LG/cand1/h3",
+                  "fit_seconds": 2370.475551089039,
+                  "v1_predict_seconds": 3.0181944880168885,
+                  "tree": {
+                    "total_models": 5,
+                    "nodes": 9,
+                    "leaves": 5,
+                    "split_columns": [
+                      13,
+                      15,
+                      17,
+                      17
+                    ],
+                    "lower_loss": [
+                      0.022993752732872963,
+                      0.022993752732872963,
+                      0.022990088909864426,
+                      0.022993752732872963,
+                      0.022992275655269623,
+                      0.022990088909864426,
+                      0.02298601157963276,
+                      0.022992275655269623,
+                      0.0229893010109663
+                    ],
+                    "upper_loss": [
+                      870480243.5072,
+                      825654179.2938666,
+                      780564133.7514666,
+                      780599854.4554666,
+                      780567446.7669333,
+                      555012627.7632,
+                      549845596.8768,
+                      555014345.2842667,
+                      549847352.6272
+                    ]
+                  },
+                  "torch_threads": 1,
+                  "model_sha256": "ed0606e073b38b7f785548b3d106d894b185d1c85e465f145c5ddec6a26dbbf5",
+                  "v1_sha256": "5389720e9445772afcebc847aba358c72065027e26634833cf86bbcd96b18206",
+                  "wall_seconds": 2373.6365909576416
+                },
+                "Penmanshiel/LG/cand1/h4": {
+                  "name": "Penmanshiel/LG/cand1/h4",
+                  "fit_seconds": 2355.8168466810603,
+                  "v1_predict_seconds": 3.405783595982939,
+                  "tree": {
+                    "total_models": 5,
+                    "nodes": 9,
+                    "leaves": 5,
+                    "split_columns": [
+                      13,
+                      15,
+                      17,
+                      17
+                    ],
+                    "lower_loss": [
+                      0.027974111959338188,
+                      0.027974111959338188,
+                      0.027981989085674286,
+                      0.027974111959338188,
+                      0.027978481724858284,
+                      0.027974111959338188,
+                      0.02797856368124485,
+                      0.027978481724858284,
+                      0.027986133471131325
+                    ],
+                    "upper_loss": [
+                      4711580256.6656,
+                      4028666456.7466664,
+                      3398595860.8896,
+                      3402109585.5445333,
+                      3398602688.2389336,
+                      2976889345.501867,
+                      2966470251.451733,
+                      2989359198.4810667,
+                      2979270903.5349336
+                    ]
+                  },
+                  "torch_threads": 1,
+                  "model_sha256": "df0a716c4f9fec1f9899b38465aad295570c492a8700a01d6424bddc70ae9359",
+                  "v1_sha256": "ddce739ccf9710fc19f8ddf7963ef4f242e936b3b6f0a4a5e3071073925f1a92",
+                  "wall_seconds": 2359.3224341869354
+                }
+              },
+              "fit_seconds": 10437.66140079312
+            },
+            {
+              "name": "NN_s2",
+              "hidden": [
+                50,
+                50,
+                50
+              ],
+              "weight_decay": 1e-05,
+              "max_splits": 2,
+              "v1_mae": 222.9412044219052,
+              "trees": {
+                "Penmanshiel/LG/cand2/h1": {
+                  "name": "Penmanshiel/LG/cand2/h1",
+                  "fit_seconds": 773.5016679349355,
+                  "v1_predict_seconds": 6.779406076064333,
+                  "tree": {
+                    "total_models": 2,
+                    "nodes": 3,
+                    "leaves": 2,
+                    "split_columns": [
+                      13
+                    ],
+                    "lower_loss": [
+                      0.00882826466113329,
+                      0.00882826466113329,
+                      0.009173760190606117
+                    ],
+                    "upper_loss": [
+                      0.011423301939169565,
+                      0.013634332411487897,
+                      0.011463861735661825
+                    ]
+                  },
+                  "torch_threads": 1,
+                  "model_sha256": "fe7e2bc8c3e243e8122e284d6e6b6e92be7c0b22228fe2bd5d2890a3799be2e0",
+                  "v1_sha256": "5639b653f77616bfedd0ecdcf6f9293ff1a640fe4a1ef67f7c74218a03b3f650",
+                  "wall_seconds": 780.6742081642151
+                },
+                "Penmanshiel/LG/cand2/h2": {
+                  "name": "Penmanshiel/LG/cand2/h2",
+                  "fit_seconds": 950.9599527590908,
+                  "v1_predict_seconds": 9.04174191900529,
+                  "tree": {
+                    "total_models": 2,
+                    "nodes": 3,
+                    "leaves": 2,
+                    "split_columns": [
+                      13
+                    ],
+                    "lower_loss": [
+                      0.018653981387615204,
+                      0.018653981387615204,
+                      0.019783981144428253
+                    ],
+                    "upper_loss": [
+                      0.024863492467006046,
+                      0.02483027797440688,
+                      0.025602915609876317
+                    ]
+                  },
+                  "torch_threads": 1,
+                  "model_sha256": "662a32d3fc168d46837db0fd17092237f3acaf5be5acf6f12a6664cb3ed06955",
+                  "v1_sha256": "6e5ca197dea47e6795dbbbf18f7d1cb0c91ed3842c119488afabcb0faafc3b2d",
+                  "wall_seconds": 960.1460020542145
+                },
+                "Penmanshiel/LG/cand2/h3": {
+                  "name": "Penmanshiel/LG/cand2/h3",
+                  "fit_seconds": 1828.3659579798114,
+                  "v1_predict_seconds": 7.308854699134827,
+                  "tree": {
+                    "total_models": 2,
+                    "nodes": 3,
+                    "leaves": 2,
+                    "split_columns": [
+                      18
+                    ],
+                    "lower_loss": [
+                      0.02317470870912075,
+                      0.02317470870912075,
+                      0.025691449642181396
+                    ],
+                    "upper_loss": [
+                      0.036912117115656534,
+                      0.029370006982485455,
+                      0.03568755489488443
+                    ]
+                  },
+                  "torch_threads": 1,
+                  "model_sha256": "012bb65eda1f9681fb2eea9e7e12cce938266a01716ab6b831cbbf04ef3df0d1",
+                  "v1_sha256": "741d49487cbc104eb7a1b4f7432574f653eeb935fa6c133e0e6fd73d74883877",
+                  "wall_seconds": 1835.8580799102783
+                },
+                "Penmanshiel/LG/cand2/h4": {
+                  "name": "Penmanshiel/LG/cand2/h4",
+                  "fit_seconds": 1322.6619399110787,
+                  "v1_predict_seconds": 7.6032762948889285,
+                  "tree": {
+                    "total_models": 2,
+                    "nodes": 3,
+                    "leaves": 2,
+                    "split_columns": [
+                      18
+                    ],
+                    "lower_loss": [
+                      0.025238312780857086,
+                      0.025238312780857086,
+                      0.025160495191812515
+                    ],
+                    "upper_loss": [
+                      0.0501643630584081,
+                      0.037635978521903354,
+                      0.048102440285682675
+                    ]
+                  },
+                  "torch_threads": 1,
+                  "model_sha256": "3e7d5bed374b7fb251c52c0169d93405910351240e37e3010e54e1dd480c2e9d",
+                  "v1_sha256": "9f4a2aa8650d76d9c4b12fa86d0d16c43be8694ad75f7b503ccabdc9969b336d",
+                  "wall_seconds": 1330.3623840808868
+                }
+              },
+              "fit_seconds": 4875.489518584916
+            },
+            {
+              "name": "NN_s5",
+              "hidden": [
+                50,
+                50,
+                50
+              ],
+              "weight_decay": 1e-05,
+              "max_splits": 5,
+              "v1_mae": 220.8195129529056,
+              "trees": {
+                "Penmanshiel/LG/cand3/h1": {
+                  "name": "Penmanshiel/LG/cand3/h1",
+                  "fit_seconds": 2233.9675023308955,
+                  "v1_predict_seconds": 9.158058549975976,
+                  "tree": {
+                    "total_models": 5,
+                    "nodes": 9,
+                    "leaves": 5,
+                    "split_columns": [
+                      13,
+                      16,
+                      16,
+                      11
+                    ],
+                    "lower_loss": [
+                      0.00882826466113329,
+                      0.00882826466113329,
+                      0.009173760190606117,
+                      0.00882826466113329,
+                      0.008845948614180088,
+                      0.009173760190606117,
+                      0.009008899331092834,
+                      0.00882826466113329,
+                      0.008314334787428379
+                    ],
+                    "upper_loss": [
+                      0.011423301939169565,
+                      0.013634332411487897,
+                      0.011463861735661825,
+                      0.010763092596332232,
+                      0.010341770453254382,
+                      0.01078983698139588,
+                      0.010981958157320818,
+                      0.012107601548731327,
+                      0.010571024231115977
+                    ]
+                  },
+                  "torch_threads": 1,
+                  "model_sha256": "0336fa572f6b5944d82902564101f068de531fcc63d0239abceb8345d7f31ef2",
+                  "v1_sha256": "f305019dc4ef78fb58dbc4e48cb6476caeb355576167eb96f73f91615127fddf",
+                  "wall_seconds": 2243.330559492111
+                },
+                "Penmanshiel/LG/cand3/h2": {
+                  "name": "Penmanshiel/LG/cand3/h2",
+                  "fit_seconds": 2681.0799088631757,
+                  "v1_predict_seconds": 7.357672645011917,
+                  "tree": {
+                    "total_models": 5,
+                    "nodes": 9,
+                    "leaves": 5,
+                    "split_columns": [
+                      13,
+                      16,
+                      10,
+                      10
+                    ],
+                    "lower_loss": [
+                      0.018653981387615204,
+                      0.018653981387615204,
+                      0.019783981144428253,
+                      0.018653981387615204,
+                      0.019892852753400803,
+                      0.018653981387615204,
+                      0.0198668222874403,
+                      0.019783981144428253,
+                      0.01902691461145878
+                    ],
+                    "upper_loss": [
+                      0.024863492467006046,
+                      0.02483027797440688,
+                      0.025602915609876317,
+                      0.024775621084868908,
+                      0.024456076107422512,
+                      0.023653340875605743,
+                      0.02418685620923837,
+                      0.02411447047839562,
+                      0.02491596477329731
+                    ]
+                  },
+                  "torch_threads": 1,
+                  "model_sha256": "9d8aedb3153dc9aea3ddc8c9a4be905f8c96bbca32ba3c2d824d588899a7acba",
+                  "v1_sha256": "c49727230a542ddf9b50b657aceaf7b9e5bb7a9371b63c84cb76c66caa494db4",
+                  "wall_seconds": 2688.644533634186
+                },
+                "Penmanshiel/LG/cand3/h3": {
+                  "name": "Penmanshiel/LG/cand3/h3",
+                  "fit_seconds": 4342.315620040987,
+                  "v1_predict_seconds": 10.845998420845717,
+                  "tree": {
+                    "total_models": 5,
+                    "nodes": 9,
+                    "leaves": 5,
+                    "split_columns": [
+                      18,
+                      10,
+                      13,
+                      12
+                    ],
+                    "lower_loss": [
+                      0.02317470870912075,
+                      0.02317470870912075,
+                      0.025691449642181396,
+                      0.025691449642181396,
+                      0.023017875850200653,
+                      0.023017875850200653,
+                      0.024238307029008865,
+                      0.023017875850200653,
+                      0.024584099650382996
+                    ],
+                    "upper_loss": [
+                      0.036912117115656534,
+                      0.029370006982485455,
+                      0.03568755489488443,
+                      0.03681822705467542,
+                      0.035401242355505624,
+                      0.03539518212676048,
+                      0.03543856830795606,
+                      0.035645821803808216,
+                      0.03474716411530972
+                    ]
+                  },
+                  "torch_threads": 1,
+                  "model_sha256": "af6958278f2297ae153bde20801d9001772238aa62a9099807d93d6ab86628c0",
+                  "v1_sha256": "2553aff19b964a025ca01c5900aba7dd89f500cc070df7ed8c439cf9c5b5d4d2",
+                  "wall_seconds": 4353.394127607346
+                },
+                "Penmanshiel/LG/cand3/h4": {
+                  "name": "Penmanshiel/LG/cand3/h4",
+                  "fit_seconds": 4754.270496153971,
+                  "v1_predict_seconds": 11.793515299912542,
+                  "tree": {
+                    "total_models": 5,
+                    "nodes": 9,
+                    "leaves": 5,
+                    "split_columns": [
+                      18,
+                      17,
+                      13,
+                      19
+                    ],
+                    "lower_loss": [
+                      0.025238312780857086,
+                      0.025238312780857086,
+                      0.025160495191812515,
+                      0.025160495191812515,
+                      0.026738950982689857,
+                      0.026738950982689857,
+                      0.029621170833706856,
+                      0.025160495191812515,
+                      0.028681760653853416
+                    ],
+                    "upper_loss": [
+                      0.0501643630584081,
+                      0.037635978521903354,
+                      0.048102440285682675,
+                      0.04212522740761439,
+                      0.04701388416687648,
+                      0.038847885129849116,
+                      0.046251942998170856,
+                      0.03824688129623731,
+                      0.040885548520088195
+                    ]
+                  },
+                  "torch_threads": 1,
+                  "model_sha256": "e5c1253b65da5f81f1e7b6791d45353bbe602b56b7f020c6780c7e702b1c5447",
+                  "v1_sha256": "0a321494079894e71cf3837b2205a2b531ba9c2424cf857333181f12ccf944ce",
+                  "wall_seconds": 4766.28214263916
+                }
+              },
+              "fit_seconds": 14011.633527389029
+            }
+          ],
+          "selected": 3
+        },
+        "LUG": {
+          "features": 99,
+          "value_positions": [
+            21,
+            22,
+            23,
+            24,
+            25,
+            26,
+            27,
+            28,
+            29,
+            30,
+            31,
+            32,
+            33
+          ],
+          "acceptance": {
+            "mask_cells_6": 16178,
+            "mask_cells_18": 137493,
+            "windows_differing": 16176,
+            "routing": {
+              "split_column": 27,
+              "other_column": 21,
+              "rows": 4004,
+              "root": 1002,
+              "left": 1000,
+              "right_nominal": 1,
+              "right_robust": 2001
+            }
+          },
+          "data_sha256": "ea7cf954230f063229d664366f39e5e3c376897114d90a789f735c77467ca8bb",
+          "candidates": [
+            {
+              "name": "LR_s2",
+              "hidden": [],
+              "weight_decay": 0.0,
+              "max_splits": 2,
+              "v1_mae": 1072.6950780251937,
+              "trees": {
+                "Penmanshiel/LUG/cand0/h1": {
+                  "name": "Penmanshiel/LUG/cand0/h1",
+                  "fit_seconds": 999.8567227420863,
+                  "v1_predict_seconds": 4.2973324849735945,
+                  "tree": {
+                    "total_models": 2,
+                    "nodes": 3,
+                    "leaves": 2,
+                    "split_columns": [
+                      26
+                    ],
+                    "lower_loss": [
+                      0.2341436743736267,
+                      0.2341436743736267,
+                      0.008049634285271168
+                    ],
+                    "upper_loss": [
+                      770427630.2165333,
+                      770324921.3098667,
+                      786392.9262
+                    ]
+                  },
+                  "torch_threads": 1,
+                  "model_sha256": "bb60451b38a8715559ed04590a96a57146ab03425c73b7511e373c1824471c11",
+                  "v1_sha256": "61c6ab3626e9baf96f44802fe84514014e24cbffae33610e1928affd2c194bb3",
+                  "wall_seconds": 1004.4102489948273
+                },
+                "Penmanshiel/LUG/cand0/h2": {
+                  "name": "Penmanshiel/LUG/cand0/h2",
+                  "fit_seconds": 1323.6358067130204,
+                  "v1_predict_seconds": 3.0904368199408054,
+                  "tree": {
+                    "total_models": 2,
+                    "nodes": 3,
+                    "leaves": 2,
+                    "split_columns": [
+                      26
+                    ],
+                    "lower_loss": [
+                      0.22529108822345734,
+                      0.22529108822345734,
+                      0.016476351767778397
+                    ],
+                    "upper_loss": [
+                      5496221134.574933,
+                      5496221134.574933,
+                      1740302319.8208
+                    ]
+                  },
+                  "torch_threads": 1,
+                  "model_sha256": "d152be917e6abcfa7b2fb0fbcd041cce5b2de3ea263a3467d07ae3598fd981ff",
+                  "v1_sha256": "318f65c42b449ed7c8b6c1ef8619df2742eae48c77e856a1528e7e01e0ff6f80",
+                  "wall_seconds": 1327.0489716529846
+                },
+                "Penmanshiel/LUG/cand0/h3": {
+                  "name": "Penmanshiel/LUG/cand0/h3",
+                  "fit_seconds": 1346.3286849909928,
+                  "v1_predict_seconds": 4.00420218706131,
+                  "tree": {
+                    "total_models": 2,
+                    "nodes": 3,
+                    "leaves": 2,
+                    "split_columns": [
+                      31
+                    ],
+                    "lower_loss": [
+                      0.2043672502040863,
+                      0.2043672502040863,
+                      0.021733740344643593
+                    ],
+                    "upper_loss": [
+                      544690042.7093333,
+                      571845544.2432,
+                      25383495.0368
+                    ]
+                  },
+                  "torch_threads": 1,
+                  "model_sha256": "a2032dcd016d79e9f8191dc9b8ef89a37bab619ea3c940107b84295dc48fe773",
+                  "v1_sha256": "c88d08bf3fc3c65ad375d6e5eadbe3777dfe3cf49bd31b1ba599b41058109ae9",
+                  "wall_seconds": 1350.4748389720917
+                },
+                "Penmanshiel/LUG/cand0/h4": {
+                  "name": "Penmanshiel/LUG/cand0/h4",
+                  "fit_seconds": 1368.3681914340705,
+                  "v1_predict_seconds": 4.3240513959899545,
+                  "tree": {
+                    "total_models": 2,
+                    "nodes": 3,
+                    "leaves": 2,
+                    "split_columns": [
+                      31
+                    ],
+                    "lower_loss": [
+                      0.24938160181045532,
+                      0.24938160181045532,
+                      0.026451054960489273
+                    ],
+                    "upper_loss": [
+                      3843926946.3381333,
+                      3817987430.8096,
+                      172367176.20906666
+                    ]
+                  },
+                  "torch_threads": 1,
+                  "model_sha256": "417a7908942fe0199b2715092067f7390f7eb7cb857a09d6afd70b02e055fe3c",
+                  "v1_sha256": "5620ad1987403c82bcef29eb218847ece008ee104dae73e3e196b5f9656f64ce",
+                  "wall_seconds": 1372.813129901886
+                }
+              },
+              "fit_seconds": 5038.18940588017
+            },
+            {
+              "name": "LR_s5",
+              "hidden": [],
+              "weight_decay": 0.0,
+              "max_splits": 5,
+              "v1_mae": 1089.9379879190956,
+              "trees": {
+                "Penmanshiel/LUG/cand1/h1": {
+                  "name": "Penmanshiel/LUG/cand1/h1",
+                  "fit_seconds": 2139.942050517071,
+                  "v1_predict_seconds": 2.7793548949994147,
+                  "tree": {
+                    "total_models": 5,
+                    "nodes": 9,
+                    "leaves": 5,
+                    "split_columns": [
+                      26,
+                      24,
+                      28,
+                      30
+                    ],
+                    "lower_loss": [
+                      0.2341436743736267,
+                      0.2341436743736267,
+                      0.008049634285271168,
+                      0.2341436743736267,
+                      0.00804959051311016,
+                      0.2341436743736267,
+                      0.008053935132920742,
+                      0.008053935132920742,
+                      0.008061864413321018
+                    ],
+                    "upper_loss": [
+                      770427630.2165333,
+                      770324921.3098667,
+                      786392.9262,
+                      770324732.1429334,
+                      786066.9269666667,
+                      770324226.4234667,
+                      661392991.7781334,
+                      661392991.7781334,
+                      654169875.2170666
+                    ]
+                  },
+                  "torch_threads": 1,
+                  "model_sha256": "a33b61319445b760aab8b60d03d418ba0cba8ee862b54ddb6cf0957ed20a49d2",
+                  "v1_sha256": "dfe23d6521080946cda02a499e6273e442aa6c023349979fdb67cc28f517b69d",
+                  "wall_seconds": 2142.8583760261536
+                },
+                "Penmanshiel/LUG/cand1/h2": {
+                  "name": "Penmanshiel/LUG/cand1/h2",
+                  "fit_seconds": 2021.1055066019762,
+                  "v1_predict_seconds": 1.8633403619751334,
+                  "tree": {
+                    "total_models": 5,
+                    "nodes": 9,
+                    "leaves": 5,
+                    "split_columns": [
+                      26,
+                      28,
+                      30,
+                      32
+                    ],
+                    "lower_loss": [
+                      0.22529108822345734,
+                      0.22529108822345734,
+                      0.016476351767778397,
+                      0.016476351767778397,
+                      0.016458861529827118,
+                      0.016476351767778397,
+                      0.01645650528371334,
+                      0.016476351767778397,
+                      0.016458027064800262
+                    ],
+                    "upper_loss": [
+                      5496221134.574933,
+                      5496221134.574933,
+                      1740302319.8208,
+                      1740143383.0741334,
+                      196102884.07893333,
+                      1740143383.0741334,
+                      904980218.9482666,
+                      1740143383.0741334,
+                      904968337.1349334
+                    ]
+                  },
+                  "torch_threads": 1,
+                  "model_sha256": "1abe5156a9e39dd46b6ea0e48e84fd7f7d2d504d35a006fd8c3b98d5544a4279",
+                  "v1_sha256": "3a0d78cbbe60cac21895aaef627d5ac6011561a0f6c09bbe834ad2c676c6cf71",
+                  "wall_seconds": 2023.1390578746796
+                },
+                "Penmanshiel/LUG/cand1/h3": {
+                  "name": "Penmanshiel/LUG/cand1/h3",
+                  "fit_seconds": 2132.875679968158,
+                  "v1_predict_seconds": 1.7621807379182428,
+                  "tree": {
+                    "total_models": 5,
+                    "nodes": 9,
+                    "leaves": 5,
+                    "split_columns": [
+                      31,
+                      28,
+                      24,
+                      26
+                    ],
+                    "lower_loss": [
+                      0.2043672502040863,
+                      0.2043672502040863,
+                      0.021733740344643593,
+                      0.2043672502040863,
+                      0.02173186093568802,
+                      0.02173186093568802,
+                      0.021729258820414543,
+                      0.02173186093568802,
+                      0.021733053028583527
+                    ],
+                    "upper_loss": [
+                      544690042.7093333,
+                      571845544.2432,
+                      25383495.0368,
+                      571845544.2432,
+                      424296928.08533335,
+                      424296928.08533335,
+                      374707598.9845333,
+                      424296928.08533335,
+                      374710082.08213335
+                    ]
+                  },
+                  "torch_threads": 1,
+                  "model_sha256": "f41e8d2acaa0d76c6e1958cc24f97a1b6f4d4deb2367f597c73c9dd1c97aec1b",
+                  "v1_sha256": "c88d08bf3fc3c65ad375d6e5eadbe3777dfe3cf49bd31b1ba599b41058109ae9",
+                  "wall_seconds": 2134.763808488846
+                },
+                "Penmanshiel/LUG/cand1/h4": {
+                  "name": "Penmanshiel/LUG/cand1/h4",
+                  "fit_seconds": 2139.3600549069233,
+                  "v1_predict_seconds": 1.827863201033324,
+                  "tree": {
+                    "total_models": 5,
+                    "nodes": 9,
+                    "leaves": 5,
+                    "split_columns": [
+                      31,
+                      24,
+                      28,
+                      25
+                    ],
+                    "lower_loss": [
+                      0.24938160181045532,
+                      0.24938160181045532,
+                      0.026451054960489273,
+                      0.24938160181045532,
+                      0.02645251527428627,
+                      0.02645251527428627,
+                      0.02644190564751625,
+                      0.02645251527428627,
+                      0.026815619319677353
+                    ],
+                    "upper_loss": [
+                      3843926946.3381333,
+                      3817987430.8096,
+                      172367176.20906666,
+                      3817988476.3818665,
+                      2978004689.851733,
+                      2978004689.851733,
+                      2663819327.7610664,
+                      2977999911.5946665,
+                      3544620635.0677333
+                    ]
+                  },
+                  "torch_threads": 1,
+                  "model_sha256": "a7a326e1003fe22d38c2a3ee83975302734e744aa74bc578c90ae2d3add601b7",
+                  "v1_sha256": "5620ad1987403c82bcef29eb218847ece008ee104dae73e3e196b5f9656f64ce",
+                  "wall_seconds": 2141.3219363689423
+                }
+              },
+              "fit_seconds": 8433.283291994128
+            },
+            {
+              "name": "NN_s2",
+              "hidden": [
+                50,
+                50,
+                50
+              ],
+              "weight_decay": 1e-05,
+              "max_splits": 2,
+              "v1_mae": 221.42986962441347,
+              "trees": {
+                "Penmanshiel/LUG/cand2/h1": {
+                  "name": "Penmanshiel/LUG/cand2/h1",
+                  "fit_seconds": 1097.8130408579018,
+                  "v1_predict_seconds": 10.270899762166664,
+                  "tree": {
+                    "total_models": 2,
+                    "nodes": 3,
+                    "leaves": 2,
+                    "split_columns": [
+                      24
+                    ],
+                    "lower_loss": [
+                      0.007722378242760897,
+                      0.007722378242760897,
+                      0.008088230155408382
+                    ],
+                    "upper_loss": [
+                      0.010453746813038985,
+                      0.010224951651195685,
+                      0.01112690669943889
+                    ]
+                  },
+                  "torch_threads": 1,
+                  "model_sha256": "3edf7632e3f4ea51be3509093381c25d5197c9280d2c64fa475414699e1b0a1a",
+                  "v1_sha256": "efe442735c5677c18160f4701d2abc90dbb608ef7e97af3a4e2cf3323de5f124",
+                  "wall_seconds": 1108.633697271347
+                },
+                "Penmanshiel/LUG/cand2/h2": {
+                  "name": "Penmanshiel/LUG/cand2/h2",
+                  "fit_seconds": 1721.6981508119497,
+                  "v1_predict_seconds": 7.059833948966116,
+                  "tree": {
+                    "total_models": 2,
+                    "nodes": 3,
+                    "leaves": 2,
+                    "split_columns": [
+                      29
+                    ],
+                    "lower_loss": [
+                      0.0156258475035429,
+                      0.0156258475035429,
+                      0.01606573909521103
+                    ],
+                    "upper_loss": [
+                      0.023031762244800726,
+                      0.021468709155917167,
+                      0.023097316967447597
+                    ]
+                  },
+                  "torch_threads": 1,
+                  "model_sha256": "247d2cdde90d82283aa73157b2a36041207b5cb92f2002cc857f543d675dbbb3",
+                  "v1_sha256": "994a1f5bd443cc249ac2de867012049f399c80f4ff8c7c3c8bb97fe1f3183aa3",
+                  "wall_seconds": 1728.886679649353
+                },
+                "Penmanshiel/LUG/cand2/h3": {
+                  "name": "Penmanshiel/LUG/cand2/h3",
+                  "fit_seconds": 1675.6207919141743,
+                  "v1_predict_seconds": 5.896169073879719,
+                  "tree": {
+                    "total_models": 2,
+                    "nodes": 3,
+                    "leaves": 2,
+                    "split_columns": [
+                      29
+                    ],
+                    "lower_loss": [
+                      0.020031163468956947,
+                      0.020031163468956947,
+                      0.019880909472703934
+                    ],
+                    "upper_loss": [
+                      0.03390189950168133,
+                      0.029707752618193625,
+                      0.03229124990801017
+                    ]
+                  },
+                  "torch_threads": 1,
+                  "model_sha256": "660897c11994f294669fd8dd743eb12370471eef7b5493dc03b14f91f1ca76fa",
+                  "v1_sha256": "73dfbd9546820b59c456e222525125367ab6035d2bdaf7a219f18453459bbe80",
+                  "wall_seconds": 1681.693107843399
+                },
+                "Penmanshiel/LUG/cand2/h4": {
+                  "name": "Penmanshiel/LUG/cand2/h4",
+                  "fit_seconds": 1886.3712830089498,
+                  "v1_predict_seconds": 6.8570474840234965,
+                  "tree": {
+                    "total_models": 2,
+                    "nodes": 3,
+                    "leaves": 2,
+                    "split_columns": [
+                      27
+                    ],
+                    "lower_loss": [
+                      0.028000352904200554,
+                      0.028000352904200554,
+                      0.029494987800717354
+                    ],
+                    "upper_loss": [
+                      0.042572624238332114,
+                      0.04135451119144758,
+                      0.04403702658216158
+                    ]
+                  },
+                  "torch_threads": 1,
+                  "model_sha256": "a89b4f630a634abaadcbf67371ef428878414f2954cae7bc3cbdb92e37f6615e",
+                  "v1_sha256": "28d220ee618c1cafbf6e074e96b2c83e4d7275e85d6c1ec4856713a80bff0ca1",
+                  "wall_seconds": 1893.386271238327
+                }
+              },
+              "fit_seconds": 6381.503266592976
+            },
+            {
+              "name": "NN_s5",
+              "hidden": [
+                50,
+                50,
+                50
+              ],
+              "weight_decay": 1e-05,
+              "max_splits": 5,
+              "v1_mae": 221.5996327714339,
+              "trees": {
+                "Penmanshiel/LUG/cand3/h1": {
+                  "name": "Penmanshiel/LUG/cand3/h1",
+                  "fit_seconds": 3029.347205961123,
+                  "v1_predict_seconds": 7.297529730945826,
+                  "tree": {
+                    "total_models": 5,
+                    "nodes": 9,
+                    "leaves": 5,
+                    "split_columns": [
+                      24,
+                      27,
+                      21,
+                      23
+                    ],
+                    "lower_loss": [
+                      0.007722378242760897,
+                      0.007722378242760897,
+                      0.008088230155408382,
+                      0.008088230155408382,
+                      0.008211029693484306,
+                      0.007722378242760897,
+                      0.008854479528963566,
+                      0.007722378242760897,
+                      0.008083037100732327
+                    ],
+                    "upper_loss": [
+                      0.010453746813038985,
+                      0.010224951651195685,
+                      0.01112690669943889,
+                      0.010374352857470513,
+                      0.010513284094631672,
+                      0.010390824008981387,
+                      0.011221452838182449,
+                      0.010300811442236105,
+                      0.010569054410854975
+                    ]
+                  },
+                  "torch_threads": 1,
+                  "model_sha256": "b0b814baba7c19196057cc78fa45c182bcb2bc7268babff36740cbfca82600c0",
+                  "v1_sha256": "c654d097de7a778157852b3b946160ef1df5a0e70b37d5818ff8d07a1fa9ac59",
+                  "wall_seconds": 3036.839938402176
+                },
+                "Penmanshiel/LUG/cand3/h2": {
+                  "name": "Penmanshiel/LUG/cand3/h2",
+                  "fit_seconds": 4294.86688119499,
+                  "v1_predict_seconds": 10.647201166022569,
+                  "tree": {
+                    "total_models": 5,
+                    "nodes": 9,
+                    "leaves": 5,
+                    "split_columns": [
+                      29,
+                      24,
+                      23,
+                      28
+                    ],
+                    "lower_loss": [
+                      0.0156258475035429,
+                      0.0156258475035429,
+                      0.01606573909521103,
+                      0.01606573909521103,
+                      0.016599342226982117,
+                      0.01606573909521103,
+                      0.01608765311539173,
+                      0.01608765311539173,
+                      0.01645052805542946
+                    ],
+                    "upper_loss": [
+                      0.023031762244800726,
+                      0.021468709155917167,
+                      0.023097316967447597,
+                      0.02231039905846119,
+                      0.02278948101947705,
+                      0.02328016686141491,
+                      0.0233450974047184,
+                      0.02222943507830302,
+                      0.02377805523176988
+                    ]
+                  },
+                  "torch_threads": 1,
+                  "model_sha256": "be0a46da8b739854fecb75e55b8515bff74abe838028d7cfd2aa1ed93f74f41a",
+                  "v1_sha256": "affb195057aa50109073fb2cf280e01cc23b4a5979f8110a60e0bdf4a81b17be",
+                  "wall_seconds": 4305.7109043598175
+                },
+                "Penmanshiel/LUG/cand3/h3": {
+                  "name": "Penmanshiel/LUG/cand3/h3",
+                  "fit_seconds": 4844.293278716039,
+                  "v1_predict_seconds": 13.011068428866565,
+                  "tree": {
+                    "total_models": 5,
+                    "nodes": 9,
+                    "leaves": 5,
+                    "split_columns": [
+                      29,
+                      28,
+                      30,
+                      24
+                    ],
+                    "lower_loss": [
+                      0.020031163468956947,
+                      0.020031163468956947,
+                      0.019880909472703934,
+                      0.019880909472703934,
+                      0.02015840820968151,
+                      0.02015840820968151,
+                      0.020851997658610344,
+                      0.020851997658610344,
+                      0.020930921658873558
+                    ],
+                    "upper_loss": [
+                      0.03390189950168133,
+                      0.029707752618193625,
+                      0.03229124990801017,
+                      0.029859269740184147,
+                      0.03227416448791822,
+                      0.029776455816626548,
+                      0.03260096406539281,
+                      0.03238269251386325,
+                      0.03213626078168551
+                    ]
+                  },
+                  "torch_threads": 1,
+                  "model_sha256": "9741ea8a45635cf10b97f8ebbf130cec37c87dec051e17b319e8740c47d8888a",
+                  "v1_sha256": "c1ce0cad65e22b7c5b9477b42139a95639221a5726b076eb2b6e472e70272c1b",
+                  "wall_seconds": 4857.550332069397
+                },
+                "Penmanshiel/LUG/cand3/h4": {
+                  "name": "Penmanshiel/LUG/cand3/h4",
+                  "fit_seconds": 4562.40490544308,
+                  "v1_predict_seconds": 7.100329814013094,
+                  "tree": {
+                    "total_models": 5,
+                    "nodes": 9,
+                    "leaves": 5,
+                    "split_columns": [
+                      27,
+                      21,
+                      29,
+                      24
+                    ],
+                    "lower_loss": [
+                      0.028000352904200554,
+                      0.028000352904200554,
+                      0.029494987800717354,
+                      0.029494987800717354,
+                      0.027371874079108238,
+                      0.027371874079108238,
+                      0.026975804939866066,
+                      0.027371874079108238,
+                      0.02797824516892433
+                    ],
+                    "upper_loss": [
+                      0.042572624238332114,
+                      0.04135451119144758,
+                      0.04403702658216158,
+                      0.04208775310913722,
+                      0.04367140277226766,
+                      0.04480935341914495,
+                      0.042458728486299516,
+                      0.03870510239203771,
+                      0.03937768859068553
+                    ]
+                  },
+                  "torch_threads": 1,
+                  "model_sha256": "82d0179df3085ddebaf2a94f8cf7c0e58681da6c3d31067e8846f6bfec7aba1b",
+                  "v1_sha256": "124adc548e9e753106e7da7e7e666e4b3ead7943a522fe24161c9f047f33bcce",
+                  "wall_seconds": 4569.649746179581
+                }
+              },
+              "fit_seconds": 16730.912271315232
+            }
+          ],
+          "selected": 2
+        }
+      }
+    },
+    "HoT": {
+      "full": {
+        "train": 420475,
+        "V1": 14932,
+        "V2": 15103,
+        "keys": {
+          "V1": {
+            "issue": "e7834f4ff0d2b131889cbf087b7f80cda015e6cb77546620f09dd396b09ddf7c",
+            "turbines": "28f82c1bb092c68f6f55abf3783bcc92fc3eec486c742159e1ee5e4d192cd165",
+            "truth": "3b153e420644e1e411d9ca4e2dcbaa7a11dee7ec04594b5e44e70b8cbbed3001"
+          },
+          "V2": {
+            "issue": "33bea1175a8cffe82ff05c5887c3d3768e81be7c7a06030987a47d13c804d04e",
+            "turbines": "296e38519c54cae3bcf74f0114cc6d810e544c2d928608f3153207901fcfebe6",
+            "truth": "999c45e30334ce4764417018432246a5dee518a199bff63374062f3431f34db5"
+          }
+        },
+        "train_last_label": "2023-06-30T23:00:00.000000000",
+        "V1_start": "2023-07-01",
+        "units": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20
+        ]
+      },
+      "assignment_counts": {
+        "train": [
+          84238,
+          84301,
+          83988,
+          84249,
+          83699
+        ],
+        "V1": [
+          3032,
+          2974,
+          3069,
+          2931,
+          2926
+        ]
+      },
+      "sample": 50000,
+      "assignment_sha256": {
+        "train": "faf169407559b3ed605fbba9fb9eda169af795fb13accdd9a6d3ca3f5ab76f89",
+        "V1": "6d8835b5e0b9137f4d5b73454de8b4e09a849d56ac2f4bbe3ddbe22fa1a3c1e0"
+      },
+      "sample_keys_sha256": "97fd1498a39cad2ba2380a1f76ad21efb3dab47f92d180d652e871a90f22c644",
+      "infos": {
+        "LG": {
+          "features": 95,
+          "value_positions": [
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22
+          ],
+          "acceptance": {
+            "mask_cells_6": 7483,
+            "mask_cells_18": 143614,
+            "windows_differing": 15103,
+            "routing": {
+              "split_column": 16,
+              "other_column": 10,
+              "rows": 4004,
+              "root": 1274,
+              "left": 728,
+              "right_nominal": 1,
+              "right_robust": 2001
+            }
+          },
+          "data_sha256": "e38bbdb8c4efc98ece1d2af1c5e19eddb191990bacc6d8b45180e788d8581193",
+          "candidates": [
+            {
+              "name": "LR_s2",
+              "hidden": [],
+              "weight_decay": 0.0,
+              "max_splits": 2,
+              "v1_mae": 255.7381329097762,
+              "trees": {
+                "HoT/LG/cand0/h1": {
+                  "name": "HoT/LG/cand0/h1",
+                  "fit_seconds": 448.4181010008324,
+                  "v1_predict_seconds": 3.164722230983898,
+                  "tree": {
+                    "total_models": 2,
+                    "nodes": 3,
+                    "leaves": 2,
+                    "split_columns": [
+                      12
+                    ],
+                    "lower_loss": [
+                      0.009800666011869907,
+                      0.009800666011869907,
+                      0.009807475842535496
+                    ],
+                    "upper_loss": [
+                      0.012994950647900502,
+                      0.01322406064470609,
+                      0.012458339540163677
+                    ]
+                  },
+                  "torch_threads": 1,
+                  "model_sha256": "14d7c334df42653dac2e312b28cba59ad552f9cad407974ced84ae77036bd2cb",
+                  "v1_sha256": "94353e7540efd1b20899fd72e5571fbaf2e269a113aaa708e564a3bb0d1f426b",
+                  "wall_seconds": 451.9824409484863
+                },
+                "HoT/LG/cand0/h2": {
+                  "name": "HoT/LG/cand0/h2",
+                  "fit_seconds": 292.69567594700493,
+                  "v1_predict_seconds": 2.6825970709323883,
+                  "tree": {
+                    "total_models": 2,
+                    "nodes": 3,
+                    "leaves": 2,
+                    "split_columns": [
+                      13
+                    ],
+                    "lower_loss": [
+                      0.020582109689712524,
+                      0.020582109689712524,
+                      0.02061045728623867
+                    ],
+                    "upper_loss": [
+                      0.025036740110317868,
+                      0.026437209498882293,
+                      0.04142319048643112
+                    ]
+                  },
+                  "torch_threads": 1,
+                  "model_sha256": "3263c71aefc193e96437d7f39eee9bd3d241e6781e9268d92ea00edaec04e05d",
+                  "v1_sha256": "7f8b61b0a05448c3fc97bf85926f330f651173c07b1b31ec0c424286156054b7",
+                  "wall_seconds": 295.4945137500763
+                },
+                "HoT/LG/cand0/h3": {
+                  "name": "HoT/LG/cand0/h3",
+                  "fit_seconds": 381.40632237214595,
+                  "v1_predict_seconds": 3.1530402079224586,
+                  "tree": {
+                    "total_models": 2,
+                    "nodes": 3,
+                    "leaves": 2,
+                    "split_columns": [
+                      13
+                    ],
+                    "lower_loss": [
+                      0.02758795954287052,
+                      0.02758795954287052,
+                      0.027636824175715446
+                    ],
+                    "upper_loss": [
+                      0.04328738852540652,
+                      0.0477000607073307,
+                      0.033223283723990124
+                    ]
+                  },
+                  "torch_threads": 1,
+                  "model_sha256": "bf34a9f84e3d2d624ba6b0815ff12874882d0f3a70d063baf9fbf1694dbdf93b",
+                  "v1_sha256": "d66585e384d5c6f289525a590680ff34b80da7fbce8653a503298b46475fc7f4",
+                  "wall_seconds": 384.7165596485138
+                },
+                "HoT/LG/cand0/h4": {
+                  "name": "HoT/LG/cand0/h4",
+                  "fit_seconds": 283.73064153501764,
+                  "v1_predict_seconds": 2.640016008866951,
+                  "tree": {
+                    "total_models": 2,
+                    "nodes": 3,
+                    "leaves": 2,
+                    "split_columns": [
+                      10
+                    ],
+                    "lower_loss": [
+                      0.03300636261701584,
+                      0.03300636261701584,
+                      0.03312898427248001
+                    ],
+                    "upper_loss": [
+                      0.04009361456036568,
+                      0.040728571638464925,
+                      0.05367189209659894
+                    ]
+                  },
+                  "torch_threads": 1,
+                  "model_sha256": "e97c678d331053e7106dbab42a501ffeecf31b1e453ad0d11de0e3071955dd91",
+                  "v1_sha256": "f87098b2786db07368f566cdfbaa60733406e5484ebe5910bd1e54fb47f7ec91",
+                  "wall_seconds": 286.5078954696655
+                }
+              },
+              "fit_seconds": 1406.250740855001
+            },
+            {
+              "name": "LR_s5",
+              "hidden": [],
+              "weight_decay": 0.0,
+              "max_splits": 5,
+              "v1_mae": 240.55364831924464,
+              "trees": {
+                "HoT/LG/cand1/h1": {
+                  "name": "HoT/LG/cand1/h1",
+                  "fit_seconds": 1348.6299080778845,
+                  "v1_predict_seconds": 4.349656678037718,
+                  "tree": {
+                    "total_models": 5,
+                    "nodes": 9,
+                    "leaves": 5,
+                    "split_columns": [
+                      12,
+                      13,
+                      17,
+                      10
+                    ],
+                    "lower_loss": [
+                      0.009800666011869907,
+                      0.009800666011869907,
+                      0.009807475842535496,
+                      0.009800666011869907,
+                      0.009807806462049484,
+                      0.009807475842535496,
+                      0.009815871715545654,
+                      0.009807475842535496,
+                      0.00981685146689415
+                    ],
+                    "upper_loss": [
+                      0.012994950647900502,
+                      0.01322406064470609,
+                      0.012458339540163677,
+                      0.011982618376612663,
+                      0.012233512363334496,
+                      0.015267355295519034,
+                      0.012875239171584446,
+                      0.0114967388600111,
+                      0.018837200201551118
+                    ]
+                  },
+                  "torch_threads": 1,
+                  "model_sha256": "6441c4f21acabe07b639944ecb864b325c7db455ebf3c7e131a6fb3499aa9e10",
+                  "v1_sha256": "e12771eb3287aaf4fa945180cb0701821b47b8dda2d7d9e61ff7fe8550bb91ba",
+                  "wall_seconds": 1353.08975815773
+                },
+                "HoT/LG/cand1/h2": {
+                  "name": "HoT/LG/cand1/h2",
+                  "fit_seconds": 873.5521838341374,
+                  "v1_predict_seconds": 4.056378435809165,
+                  "tree": {
+                    "total_models": 5,
+                    "nodes": 9,
+                    "leaves": 5,
+                    "split_columns": [
+                      13,
+                      10,
+                      17,
+                      11
+                    ],
+                    "lower_loss": [
+                      0.020582109689712524,
+                      0.020582109689712524,
+                      0.02061045728623867,
+                      0.02061045728623867,
+                      0.02065938152372837,
+                      0.02065938152372837,
+                      0.02067718841135502,
+                      0.02065938152372837,
+                      0.020682796835899353
+                    ],
+                    "upper_loss": [
+                      0.025036740110317868,
+                      0.026437209498882293,
+                      0.04142319048643112,
+                      0.026761160256465275,
+                      0.03189411141574383,
+                      0.03752962110042572,
+                      0.026266427692770957,
+                      0.030691111986835797,
+                      0.02625655393600464
+                    ]
+                  },
+                  "torch_threads": 1,
+                  "model_sha256": "a78a33a88d0a75f3ba2538c9ccd6b8e73f1834d5b26c19a57737ce10d821d67e",
+                  "v1_sha256": "5e639e2870b238db4249e0140e3d6a4c494b6c131acb2b7bd9ee8349fba743ef",
+                  "wall_seconds": 877.7479050159454
+                },
+                "HoT/LG/cand1/h3": {
+                  "name": "HoT/LG/cand1/h3",
+                  "fit_seconds": 882.8484542770311,
+                  "v1_predict_seconds": 2.394503172021359,
+                  "tree": {
+                    "total_models": 5,
+                    "nodes": 9,
+                    "leaves": 5,
+                    "split_columns": [
+                      13,
+                      10,
+                      12,
+                      19
+                    ],
+                    "lower_loss": [
+                      0.02758795954287052,
+                      0.02758795954287052,
+                      0.027636824175715446,
+                      0.02758795954287052,
+                      0.027678590267896652,
+                      0.027678590267896652,
+                      0.027692824602127075,
+                      0.027678590267896652,
+                      0.02772855944931507
+                    ],
+                    "upper_loss": [
+                      0.04328738852540652,
+                      0.0477000607073307,
+                      0.033223283723990124,
+                      0.032752862601478895,
+                      0.039320547866821286,
+                      0.03340113505125046,
+                      0.03341188702881336,
+                      0.03244628560443719,
+                      0.03932452573577563
+                    ]
+                  },
+                  "torch_threads": 1,
+                  "model_sha256": "c0bb27b66be811683d0e642810260eaccac637f9941c2893a0b87922a5f7a47a",
+                  "v1_sha256": "ca1da42fb4f9e392e5188f8dc6a5042cfffc784c1649d3de69112275133996c6",
+                  "wall_seconds": 885.3852171897888
+                },
+                "HoT/LG/cand1/h4": {
+                  "name": "HoT/LG/cand1/h4",
+                  "fit_seconds": 914.4957141929772,
+                  "v1_predict_seconds": 2.3562919630203396,
+                  "tree": {
+                    "total_models": 5,
+                    "nodes": 9,
+                    "leaves": 5,
+                    "split_columns": [
+                      10,
+                      13,
+                      19,
+                      11
+                    ],
+                    "lower_loss": [
+                      0.03300636261701584,
+                      0.03300636261701584,
+                      0.03312898427248001,
+                      0.03312898427248001,
+                      0.03317970409989357,
+                      0.03312898427248001,
+                      0.033202216029167175,
+                      0.03312898427248001,
+                      0.03318947181105614
+                    ],
+                    "upper_loss": [
+                      0.04009361456036568,
+                      0.040728571638464925,
+                      0.05367189209659894,
+                      0.05606180123090744,
+                      0.04019168069163958,
+                      0.045983247299989066,
+                      0.0417170617689689,
+                      0.03772093482712904,
+                      0.038313233941793444
+                    ]
+                  },
+                  "torch_threads": 1,
+                  "model_sha256": "0c1c028a7e0dd8c7388564e0d0b6a56ddbaa740260523e62ea020a826ede242d",
+                  "v1_sha256": "a70618574752a0ef41fe104c2e9df038db36aa2983722bcc46220d38edabcfc5",
+                  "wall_seconds": 916.9975674152374
+                }
+              },
+              "fit_seconds": 4019.52626038203
+            },
+            {
+              "name": "NN_s2",
+              "hidden": [
+                50,
+                50,
+                50
+              ],
+              "weight_decay": 1e-05,
+              "max_splits": 2,
+              "v1_mae": 218.53883396429322,
+              "trees": {
+                "HoT/LG/cand2/h1": {
+                  "name": "HoT/LG/cand2/h1",
+                  "fit_seconds": 736.8326676519355,
+                  "v1_predict_seconds": 4.309679937083274,
+                  "tree": {
+                    "total_models": 2,
+                    "nodes": 3,
+                    "leaves": 2,
+                    "split_columns": [
+                      10
+                    ],
+                    "lower_loss": [
+                      0.00938686914741993,
+                      0.00938686914741993,
+                      0.009368336759507656
+                    ],
+                    "upper_loss": [
+                      0.011030149851739406,
+                      0.011013222700854142,
+                      0.010950421051184336
+                    ]
+                  },
+                  "torch_threads": 1,
+                  "model_sha256": "5abbfff70bd29225cf49099f13e6b05cf7273897f2fde6f4d756c6a06cd5ab2f",
+                  "v1_sha256": "2a06c8981fabda9c7528b17c99c0ab5196be13589962d9cbf8a7fa3b933664bb",
+                  "wall_seconds": 742.4975430965424
+                },
+                "HoT/LG/cand2/h2": {
+                  "name": "HoT/LG/cand2/h2",
+                  "fit_seconds": 685.0840525430394,
+                  "v1_predict_seconds": 4.4537789929891005,
+                  "tree": {
+                    "total_models": 2,
+                    "nodes": 3,
+                    "leaves": 2,
+                    "split_columns": [
+                      17
+                    ],
+                    "lower_loss": [
+                      0.019594699144363403,
+                      0.019594699144363403,
+                      0.01957804523408413
+                    ],
+                    "upper_loss": [
+                      0.023498239256441594,
+                      0.02457010975331068,
+                      0.02270860248208046
+                    ]
+                  },
+                  "torch_threads": 1,
+                  "model_sha256": "dd0193a7bcec39abc48741405b216e8b7b821b7aa2bff3f7e36e0ecd4da8c7bf",
+                  "v1_sha256": "10a6972b55ba9dec410afe141ff69be4e55e0e66dd0715918e8976debd60acc9",
+                  "wall_seconds": 690.8935492038727
+                },
+                "HoT/LG/cand2/h3": {
+                  "name": "HoT/LG/cand2/h3",
+                  "fit_seconds": 723.6461135110585,
+                  "v1_predict_seconds": 4.339962958008982,
+                  "tree": {
+                    "total_models": 2,
+                    "nodes": 3,
+                    "leaves": 2,
+                    "split_columns": [
+                      10
+                    ],
+                    "lower_loss": [
+                      0.02579026110470295,
+                      0.02579026110470295,
+                      0.025802206248044968
+                    ],
+                    "upper_loss": [
+                      0.03042028223325809,
+                      0.031987711274623874,
+                      0.03122500497152408
+                    ]
+                  },
+                  "torch_threads": 1,
+                  "model_sha256": "cae8d2ee5ec7129ce3f9b3b7c0f890f1e8d9d695039547dc41fac6a0519de459",
+                  "v1_sha256": "9f1f9ba7d17c53be7a2a5ffd40f0efe9e066101a8c91a00a8591598f9dd586b3",
+                  "wall_seconds": 729.3413033485413
+                },
+                "HoT/LG/cand2/h4": {
+                  "name": "HoT/LG/cand2/h4",
+                  "fit_seconds": 1030.0306489689974,
+                  "v1_predict_seconds": 4.4368351099547,
+                  "tree": {
+                    "total_models": 2,
+                    "nodes": 3,
+                    "leaves": 2,
+                    "split_columns": [
+                      10
+                    ],
+                    "lower_loss": [
+                      0.03023643232882023,
+                      0.03023643232882023,
+                      0.032529864460229874
+                    ],
+                    "upper_loss": [
+                      0.03631527032554149,
+                      0.03636438797811667,
+                      0.037224626908699675
+                    ]
+                  },
+                  "torch_threads": 1,
+                  "model_sha256": "93fc240db39127c1e6069efffab425834138ee08fd3a480167b3e9c67eaaebc3",
+                  "v1_sha256": "80668d9a2007f816bff10b72a012880d69f48c619438d3171e1d0d329f1dc6e5",
+                  "wall_seconds": 1035.8233799934387
+                }
+              },
+              "fit_seconds": 3175.593482675031
+            },
+            {
+              "name": "NN_s5",
+              "hidden": [
+                50,
+                50,
+                50
+              ],
+              "weight_decay": 1e-05,
+              "max_splits": 5,
+              "v1_mae": 208.5010788934571,
+              "trees": {
+                "HoT/LG/cand3/h1": {
+                  "name": "HoT/LG/cand3/h1",
+                  "fit_seconds": 2582.343315085047,
+                  "v1_predict_seconds": 10.63606712804176,
+                  "tree": {
+                    "total_models": 5,
+                    "nodes": 9,
+                    "leaves": 5,
+                    "split_columns": [
+                      10,
+                      11,
+                      17,
+                      17
+                    ],
+                    "lower_loss": [
+                      0.00938686914741993,
+                      0.00938686914741993,
+                      0.009368336759507656,
+                      0.00938686914741993,
+                      0.009237702935934067,
+                      0.00938686914741993,
+                      0.011273668147623539,
+                      0.009237702935934067,
+                      0.009326749481260777
+                    ],
+                    "upper_loss": [
+                      0.011030149851739406,
+                      0.011013222700854142,
+                      0.010950421051184336,
+                      0.011455275957286359,
+                      0.01094883339330554,
+                      0.011103268714000782,
+                      0.011025667396436135,
+                      0.01081226305787762,
+                      0.010904726495593786
+                    ]
+                  },
+                  "torch_threads": 1,
+                  "model_sha256": "ab870483c19225967399f7093d46f991a9d3e8895d7929a234201f96911dff1d",
+                  "v1_sha256": "2e9ff8883d3f2b49b17dd294d4a54eb729ae056f3f29c34810fc1c0ad7d2d811",
+                  "wall_seconds": 2594.387595176697
+                },
+                "HoT/LG/cand3/h2": {
+                  "name": "HoT/LG/cand3/h2",
+                  "fit_seconds": 2349.119229580043,
+                  "v1_predict_seconds": 6.1191243439679965,
+                  "tree": {
+                    "total_models": 5,
+                    "nodes": 9,
+                    "leaves": 5,
+                    "split_columns": [
+                      17,
+                      18,
+                      18,
+                      16
+                    ],
+                    "lower_loss": [
+                      0.019594699144363403,
+                      0.019594699144363403,
+                      0.01957804523408413,
+                      0.019594699144363403,
+                      0.02230876311659813,
+                      0.01957804523408413,
+                      0.01986691914498806,
+                      0.01957804523408413,
+                      0.019821280613541603
+                    ],
+                    "upper_loss": [
+                      0.023498239256441594,
+                      0.02457010975331068,
+                      0.02270860248208046,
+                      0.02180800463060538,
+                      0.021857717441767455,
+                      0.02309060047864914,
+                      0.022558221225937206,
+                      0.022308138343691827,
+                      0.02177818335245053
+                    ]
+                  },
+                  "torch_threads": 1,
+                  "model_sha256": "f6f7fb6b6c0a530e683bbb9504a97d5310ec53c4bcd24464ceaa528577f54a3e",
+                  "v1_sha256": "5756311c5e57137c300f5a9a0dbbba69c364f9d62f4af41290a9fc06f2c63f83",
+                  "wall_seconds": 2356.6196627616882
+                },
+                "HoT/LG/cand3/h3": {
+                  "name": "HoT/LG/cand3/h3",
+                  "fit_seconds": 2416.862607152085,
+                  "v1_predict_seconds": 6.062789797899313,
+                  "tree": {
+                    "total_models": 5,
+                    "nodes": 9,
+                    "leaves": 5,
+                    "split_columns": [
+                      10,
+                      17,
+                      11,
+                      12
+                    ],
+                    "lower_loss": [
+                      0.02579026110470295,
+                      0.02579026110470295,
+                      0.025802206248044968,
+                      0.02579026110470295,
+                      0.026990586891770363,
+                      0.025802206248044968,
+                      0.02667538821697235,
+                      0.025802206248044968,
+                      0.022902224212884903
+                    ],
+                    "upper_loss": [
+                      0.03042028223325809,
+                      0.031987711274623874,
+                      0.03122500497152408,
+                      0.02981037053366502,
+                      0.03114083194732666,
+                      0.031090731710692248,
+                      0.03157408292988936,
+                      0.030241643326481184,
+                      0.030726610055069128
+                    ]
+                  },
+                  "torch_threads": 1,
+                  "model_sha256": "2b99ea0b0c669716157822988900d0b9a8068af300fb9a2503a36756265dc875",
+                  "v1_sha256": "4b6f5dfbe1c53840173d1d2cea11be913a1d2d73b000608b501e34f3fb9067d1",
+                  "wall_seconds": 2424.3037807941437
+                },
+                "HoT/LG/cand3/h4": {
+                  "name": "HoT/LG/cand3/h4",
+                  "fit_seconds": 2740.9012814209564,
+                  "v1_predict_seconds": 5.783428017050028,
+                  "tree": {
+                    "total_models": 5,
+                    "nodes": 9,
+                    "leaves": 5,
+                    "split_columns": [
+                      10,
+                      18,
+                      17,
+                      19
+                    ],
+                    "lower_loss": [
+                      0.03023643232882023,
+                      0.03023643232882023,
+                      0.032529864460229874,
+                      0.03023643232882023,
+                      0.03288505598902702,
+                      0.03023643232882023,
+                      0.03536691516637802,
+                      0.03023643232882023,
+                      0.03239673003554344
+                    ],
+                    "upper_loss": [
+                      0.03631527032554149,
+                      0.03636438797811667,
+                      0.037224626908699675,
+                      0.03557507688899835,
+                      0.0365814611663421,
+                      0.036199032699068386,
+                      0.03625111720263958,
+                      0.03553893673817317,
+                      0.035188434634606046
+                    ]
+                  },
+                  "torch_threads": 1,
+                  "model_sha256": "4f4204782c5143374f08ca7df6410c5c2ad27c24f9cfdf282ea28aa339960b9b",
+                  "v1_sha256": "eede3c941d69a5640d8c0ef8ac6a1111fdc6f1aa557a4dde98445db3ed5b753c",
+                  "wall_seconds": 2748.0582423210144
+                }
+              },
+              "fit_seconds": 10089.226433238131
+            }
+          ],
+          "selected": 3
+        },
+        "LUG": {
+          "features": 107,
+          "value_positions": [
+            21,
+            22,
+            23,
+            24,
+            25,
+            26,
+            27,
+            28,
+            29,
+            30,
+            31,
+            32,
+            33
+          ],
+          "acceptance": {
+            "mask_cells_6": 7483,
+            "mask_cells_18": 143614,
+            "windows_differing": 15103,
+            "routing": {
+              "split_column": 27,
+              "other_column": 21,
+              "rows": 4004,
+              "root": 1274,
+              "left": 728,
+              "right_nominal": 1,
+              "right_robust": 2001
+            }
+          },
+          "data_sha256": "dea3f8038a77290be08749e8d746fdb9eedc54ce01ad9dc863ad1799346d6a84",
+          "candidates": [
+            {
+              "name": "LR_s2",
+              "hidden": [],
+              "weight_decay": 0.0,
+              "max_splits": 2,
+              "v1_mae": 250.99232289958317,
+              "trees": {
+                "HoT/LUG/cand0/h1": {
+                  "name": "HoT/LUG/cand0/h1",
+                  "fit_seconds": 621.5817758811172,
+                  "v1_predict_seconds": 2.7419666468631476,
+                  "tree": {
+                    "total_models": 2,
+                    "nodes": 3,
+                    "leaves": 2,
+                    "split_columns": [
+                      28
+                    ],
+                    "lower_loss": [
+                      0.009298741817474365,
+                      0.009298741817474365,
+                      0.00930655375123024
+                    ],
+                    "upper_loss": [
+                      0.013813208368420602,
+                      0.013332526642084121,
+                      0.012320309376964966
+                    ]
+                  },
+                  "torch_threads": 1,
+                  "model_sha256": "6e7c466de509c1593fcf06c8e9a477142d512710af974addb773a4adf18a94d3",
+                  "v1_sha256": "fbbfebc0b59f54363612404d75c94de22d0e2fa97ceb7f7d77753dcfc94da450",
+                  "wall_seconds": 624.555819272995
+                },
+                "HoT/LUG/cand0/h2": {
+                  "name": "HoT/LUG/cand0/h2",
+                  "fit_seconds": 385.6343027399853,
+                  "v1_predict_seconds": 4.447323964908719,
+                  "tree": {
+                    "total_models": 2,
+                    "nodes": 3,
+                    "leaves": 2,
+                    "split_columns": [
+                      24
+                    ],
+                    "lower_loss": [
+                      0.01879330724477768,
+                      0.01879330724477768,
+                      0.01880563423037529
+                    ],
+                    "upper_loss": [
+                      0.024258564517398676,
+                      0.02512860577305158,
+                      0.027099514601627985
+                    ]
+                  },
+                  "torch_threads": 1,
+                  "model_sha256": "e849feff4dc1fe21e185ca4deb4ba4352901d4d7b45179ef361d0d2818d08d25",
+                  "v1_sha256": "561d60f03d3fda1d1368c35f588603105728f46d6638a34931cb311cbb53321e",
+                  "wall_seconds": 390.28788709640503
+                },
+                "HoT/LUG/cand0/h3": {
+                  "name": "HoT/LUG/cand0/h3",
+                  "fit_seconds": 330.6266179860104,
+                  "v1_predict_seconds": 2.4530082780402154,
+                  "tree": {
+                    "total_models": 2,
+                    "nodes": 3,
+                    "leaves": 2,
+                    "split_columns": [
+                      24
+                    ],
+                    "lower_loss": [
+                      0.024785853922367096,
+                      0.024785853922367096,
+                      0.024809101596474648
+                    ],
+                    "upper_loss": [
+                      0.053864096758763,
+                      0.04031281614104907,
+                      0.041290223972996073
+                    ]
+                  },
+                  "torch_threads": 1,
+                  "model_sha256": "3b6a36418ae4fc656f2e06e0bc66cbea7765fcc93221ee6549779ce6d27b705a",
+                  "v1_sha256": "999ceeb5440aba7935d84879b2821f455778fd4550784fc697e0e2460a63bbb5",
+                  "wall_seconds": 333.18470525741577
+                },
+                "HoT/LUG/cand0/h4": {
+                  "name": "HoT/LUG/cand0/h4",
+                  "fit_seconds": 489.97145858593285,
+                  "v1_predict_seconds": 3.9886485019233078,
+                  "tree": {
+                    "total_models": 2,
+                    "nodes": 3,
+                    "leaves": 2,
+                    "split_columns": [
+                      21
+                    ],
+                    "lower_loss": [
+                      0.029593465849757195,
+                      0.029593465849757195,
+                      0.029641179367899895
+                    ],
+                    "upper_loss": [
+                      0.0866783998688062,
+                      0.07226723186572392,
+                      0.0746926469484965
+                    ]
+                  },
+                  "torch_threads": 1,
+                  "model_sha256": "c2879de29ac474159f11bf78a4e5b4eb7a8d3c99005f4a191f8e57848009586c",
+                  "v1_sha256": "453b4a7907aa8f890aa89724bfc908cb0fb57d840b4c380f8dd02a56ceb2adf3",
+                  "wall_seconds": 494.26319551467896
+                }
+              },
+              "fit_seconds": 1827.8141551930457
+            },
+            {
+              "name": "LR_s5",
+              "hidden": [],
+              "weight_decay": 0.0,
+              "max_splits": 5,
+              "v1_mae": 249.12130694304454,
+              "trees": {
+                "HoT/LUG/cand1/h1": {
+                  "name": "HoT/LUG/cand1/h1",
+                  "fit_seconds": 1681.2671389209572,
+                  "v1_predict_seconds": 2.527186396997422,
+                  "tree": {
+                    "total_models": 5,
+                    "nodes": 9,
+                    "leaves": 5,
+                    "split_columns": [
+                      28,
+                      23,
+                      24,
+                      21
+                    ],
+                    "lower_loss": [
+                      0.009298741817474365,
+                      0.009298741817474365,
+                      0.00930655375123024,
+                      0.009298741817474365,
+                      0.0093031395226717,
+                      0.009298741817474365,
+                      0.009301697835326195,
+                      0.009298741817474365,
+                      0.009302149526774883
+                    ],
+                    "upper_loss": [
+                      0.013813208368420602,
+                      0.013332526642084121,
+                      0.012320309376964966,
+                      0.013996940392255783,
+                      0.01221658505598704,
+                      0.012867035118242104,
+                      0.012539129063487054,
+                      0.01111232649932305,
+                      0.011917720444748798
+                    ]
+                  },
+                  "torch_threads": 1,
+                  "model_sha256": "05808f22b9faeb90469536a061002bc5cc1c691ef2d90f1e96567a33bbd49be3",
+                  "v1_sha256": "b323e2ee174984a123ec922270f6b9687c25c8d42456a356460ce18c95528635",
+                  "wall_seconds": 1683.9619085788727
+                },
+                "HoT/LUG/cand1/h2": {
+                  "name": "HoT/LUG/cand1/h2",
+                  "fit_seconds": 1239.926545951981,
+                  "v1_predict_seconds": 2.5058270699810237,
+                  "tree": {
+                    "total_models": 5,
+                    "nodes": 9,
+                    "leaves": 5,
+                    "split_columns": [
+                      24,
+                      28,
+                      21,
+                      29
+                    ],
+                    "lower_loss": [
+                      0.01879330724477768,
+                      0.01879330724477768,
+                      0.01880563423037529,
+                      0.01880563423037529,
+                      0.018825961276888847,
+                      0.018825961276888847,
+                      0.01884196139872074,
+                      0.01880563423037529,
+                      0.01882282830774784
+                    ],
+                    "upper_loss": [
+                      0.024258564517398676,
+                      0.02512860577305158,
+                      0.027099514601627985,
+                      0.027736290851235388,
+                      0.029117130774259568,
+                      0.024113653594255446,
+                      0.026029377995928128,
+                      0.028738714758555096,
+                      0.027994836059212685
+                    ]
+                  },
+                  "torch_threads": 1,
+                  "model_sha256": "e2e72bcb9340697a8c64870e801511ca4abcdfd4aca59986ce59a27d51565009",
+                  "v1_sha256": "8ab41f03501a9c4b9c28eaf146d797a34d03e8142f8b8c6e273bf06b095cad7d",
+                  "wall_seconds": 1242.541413784027
+                },
+                "HoT/LUG/cand1/h3": {
+                  "name": "HoT/LUG/cand1/h3",
+                  "fit_seconds": 974.3539281189442,
+                  "v1_predict_seconds": 3.2533462969586253,
+                  "tree": {
+                    "total_models": 5,
+                    "nodes": 9,
+                    "leaves": 5,
+                    "split_columns": [
+                      24,
+                      21,
+                      21,
+                      30
+                    ],
+                    "lower_loss": [
+                      0.024785853922367096,
+                      0.024785853922367096,
+                      0.024809101596474648,
+                      0.024809101596474648,
+                      0.02484651654958725,
+                      0.024785853922367096,
+                      0.024820847436785698,
+                      0.024820847436785698,
+                      0.024844307452440262
+                    ],
+                    "upper_loss": [
+                      0.053864096758763,
+                      0.04031281614104907,
+                      0.041290223972996073,
+                      0.03498794683714708,
+                      0.039415428060293196,
+                      0.036241704973578454,
+                      0.04126614936987559,
+                      0.053325711933771766,
+                      0.04007386819322904
+                    ]
+                  },
+                  "torch_threads": 1,
+                  "model_sha256": "39b6c3115d42981ef78149dc0b9be977f633c22f3ab4a5492015bbc693027a89",
+                  "v1_sha256": "3ef7ec86d30ab07d8459f6451910759c39b993fd6a5cc957732291cc697cc8e5",
+                  "wall_seconds": 977.7427265644073
+                },
+                "HoT/LUG/cand1/h4": {
+                  "name": "HoT/LUG/cand1/h4",
+                  "fit_seconds": 1151.7953367289156,
+                  "v1_predict_seconds": 3.655175955966115,
+                  "tree": {
+                    "total_models": 5,
+                    "nodes": 9,
+                    "leaves": 5,
+                    "split_columns": [
+                      21,
+                      24,
+                      30,
+                      33
+                    ],
+                    "lower_loss": [
+                      0.029593465849757195,
+                      0.029593465849757195,
+                      0.029641179367899895,
+                      0.029641179367899895,
+                      0.029661545529961586,
+                      0.029661545529961586,
+                      0.029691293835639954,
+                      0.029661545529961586,
+                      0.029730098322033882
+                    ],
+                    "upper_loss": [
+                      0.0866783998688062,
+                      0.07226723186572392,
+                      0.0746926469484965,
+                      0.07407791953484218,
+                      0.07553725754419963,
+                      0.07701598476966222,
+                      0.06536185944875081,
+                      0.059334523423512774,
+                      0.06968113774458567
+                    ]
+                  },
+                  "torch_threads": 1,
+                  "model_sha256": "135343947e0750b3ddcb50ef2ffe3c7b5a16f8e25c64e4e7581c621d352e1f6b",
+                  "v1_sha256": "f31a383c15215825c145e1562162064f508b768fd44eec001d240e8687d1c2a1",
+                  "wall_seconds": 1155.5685102939606
+                }
+              },
+              "fit_seconds": 5047.342949720798
+            },
+            {
+              "name": "NN_s2",
+              "hidden": [
+                50,
+                50,
+                50
+              ],
+              "weight_decay": 1e-05,
+              "max_splits": 2,
+              "v1_mae": 226.68836169782935,
+              "trees": {
+                "HoT/LUG/cand2/h1": {
+                  "name": "HoT/LUG/cand2/h1",
+                  "fit_seconds": 735.6707157819765,
+                  "v1_predict_seconds": 4.783498842967674,
+                  "tree": {
+                    "total_models": 2,
+                    "nodes": 3,
+                    "leaves": 2,
+                    "split_columns": [
+                      21
+                    ],
+                    "lower_loss": [
+                      0.009148390963673592,
+                      0.009148390963673592,
+                      0.011778580956161022
+                    ],
+                    "upper_loss": [
+                      0.011100019256025552,
+                      0.01130609044705828,
+                      0.014684724887212118
+                    ]
+                  },
+                  "torch_threads": 1,
+                  "model_sha256": "20f318890202b3de8db3157e7a8475624fdbd05be78c78c0c2fea80741352e62",
+                  "v1_sha256": "a91d51084ec5a0e0de8bad6d3b0bffca5f1e923666ef78e815a8f59b9e17f2a5",
+                  "wall_seconds": 740.7583363056183
+                },
+                "HoT/LUG/cand2/h2": {
+                  "name": "HoT/LUG/cand2/h2",
+                  "fit_seconds": 801.9812655319693,
+                  "v1_predict_seconds": 4.973074552020989,
+                  "tree": {
+                    "total_models": 2,
+                    "nodes": 3,
+                    "leaves": 2,
+                    "split_columns": [
+                      21
+                    ],
+                    "lower_loss": [
+                      0.017991075292229652,
+                      0.017991075292229652,
+                      0.018744848668575287
+                    ],
+                    "upper_loss": [
+                      0.022668983672807615,
+                      0.02441149786512057,
+                      0.02248998858630657
+                    ]
+                  },
+                  "torch_threads": 1,
+                  "model_sha256": "ca851aaf40910b5837f812770c44c84ab77fd635f8a422b18a7c26a890d8cb3f",
+                  "v1_sha256": "b0e6e3bb95d1d7dc318cdeb2d09136b86ecf6005710c1562740918675b5abb49",
+                  "wall_seconds": 807.051789522171
+                },
+                "HoT/LUG/cand2/h3": {
+                  "name": "HoT/LUG/cand2/h3",
+                  "fit_seconds": 802.9914891939843,
+                  "v1_predict_seconds": 4.650257479981519,
+                  "tree": {
+                    "total_models": 2,
+                    "nodes": 3,
+                    "leaves": 2,
+                    "split_columns": [
+                      23
+                    ],
+                    "lower_loss": [
+                      0.028194965794682503,
+                      0.028194965794682503,
+                      0.02850615233182907
+                    ],
+                    "upper_loss": [
+                      0.031911929303407666,
+                      0.03242147959222396,
+                      0.03141253476242224
+                    ]
+                  },
+                  "torch_threads": 1,
+                  "model_sha256": "87ae3787783ab925ade8e554582af7e31c29480221b34fb998a39699ac182831",
+                  "v1_sha256": "4d9bfd3dd437c3dac695c37b2b7af1c5480fe32e1ceabff8e0443bb7c11db464",
+                  "wall_seconds": 807.7380685806274
+                },
+                "HoT/LUG/cand2/h4": {
+                  "name": "HoT/LUG/cand2/h4",
+                  "fit_seconds": 931.2967955310596,
+                  "v1_predict_seconds": 6.025040581938811,
+                  "tree": {
+                    "total_models": 2,
+                    "nodes": 3,
+                    "leaves": 2,
+                    "split_columns": [
+                      30
+                    ],
+                    "lower_loss": [
+                      0.034014828503131866,
+                      0.034014828503131866,
+                      0.0367199145257473
+                    ],
+                    "upper_loss": [
+                      0.0758666326791048,
+                      0.03570601655145486,
+                      0.036833869886398314
+                    ]
+                  },
+                  "torch_threads": 1,
+                  "model_sha256": "ba60f3951761e9999d6c14bdf888b80cb6547b80fcc2b68f53fd70c1bc4eda42",
+                  "v1_sha256": "3343a1453fb0cf56e55b8d87e51ede58571463302c45eb14646f045ae28f02a3",
+                  "wall_seconds": 937.419766664505
+                }
+              },
+              "fit_seconds": 3271.9402660389896
+            },
+            {
+              "name": "NN_s5",
+              "hidden": [
+                50,
+                50,
+                50
+              ],
+              "weight_decay": 1e-05,
+              "max_splits": 5,
+              "v1_mae": 221.08006222315458,
+              "trees": {
+                "HoT/LUG/cand3/h1": {
+                  "name": "HoT/LUG/cand3/h1",
+                  "fit_seconds": 3520.3460996430367,
+                  "v1_predict_seconds": 9.057951824972406,
+                  "tree": {
+                    "total_models": 5,
+                    "nodes": 9,
+                    "leaves": 5,
+                    "split_columns": [
+                      21,
+                      33,
+                      22,
+                      23
+                    ],
+                    "lower_loss": [
+                      0.009148390963673592,
+                      0.009148390963673592,
+                      0.011778580956161022,
+                      0.011778580956161022,
+                      0.008919375017285347,
+                      0.008919375017285347,
+                      0.00910621602088213,
+                      0.008919375017285347,
+                      0.011443671770393848
+                    ],
+                    "upper_loss": [
+                      0.011100019256025552,
+                      0.01130609044705828,
+                      0.014684724887212118,
+                      0.01276725631604592,
+                      0.011165906153370937,
+                      0.011804935799539088,
+                      0.010767129630347093,
+                      0.010899151311069727,
+                      0.015336148086190224
+                    ]
+                  },
+                  "torch_threads": 1,
+                  "model_sha256": "0d170bf7a09db1167701bcac85eeda961c440a2876018ad83a34e9cee5562f40",
+                  "v1_sha256": "48cd6097523be7385ba7a0f0f3005e198ab3c82d12a33ed7bfa6049c5a3d2e6f",
+                  "wall_seconds": 3529.702407836914
+                },
+                "HoT/LUG/cand3/h2": {
+                  "name": "HoT/LUG/cand3/h2",
+                  "fit_seconds": 2713.288777102949,
+                  "v1_predict_seconds": 8.235522449016571,
+                  "tree": {
+                    "total_models": 5,
+                    "nodes": 9,
+                    "leaves": 5,
+                    "split_columns": [
+                      21,
+                      22,
+                      23,
+                      25
+                    ],
+                    "lower_loss": [
+                      0.017991075292229652,
+                      0.017991075292229652,
+                      0.018744848668575287,
+                      0.017991075292229652,
+                      0.021990196779370308,
+                      0.017991075292229652,
+                      0.021503321826457977,
+                      0.017991075292229652,
+                      0.02158699743449688
+                    ],
+                    "upper_loss": [
+                      0.022668983672807615,
+                      0.02441149786512057,
+                      0.02248998858630657,
+                      0.02279858134686947,
+                      0.02292493953158458,
+                      0.023568451268970968,
+                      0.02485410808076461,
+                      0.021746046152214208,
+                      0.023725711618860564
+                    ]
+                  },
+                  "torch_threads": 1,
+                  "model_sha256": "9362011879f4f9d0ed22bcdb2b6f96a10224c68e7c1e6350c392cef48b09177f",
+                  "v1_sha256": "c632b63b334afd3ac1acb41e8c373c89eef8f7a936c735564971c5458414991a",
+                  "wall_seconds": 2721.767788887024
+                },
+                "HoT/LUG/cand3/h3": {
+                  "name": "HoT/LUG/cand3/h3",
+                  "fit_seconds": 2703.748682967969,
+                  "v1_predict_seconds": 6.381911626085639,
+                  "tree": {
+                    "total_models": 5,
+                    "nodes": 9,
+                    "leaves": 5,
+                    "split_columns": [
+                      23,
+                      29,
+                      30,
+                      22
+                    ],
+                    "lower_loss": [
+                      0.028194965794682503,
+                      0.028194965794682503,
+                      0.02850615233182907,
+                      0.028194965794682503,
+                      0.030978141352534294,
+                      0.028194965794682503,
+                      0.02884565480053425,
+                      0.02884565480053425,
+                      0.031417056918144226
+                    ],
+                    "upper_loss": [
+                      0.031911929303407666,
+                      0.03242147959222396,
+                      0.03141253476242224,
+                      0.03351671553055445,
+                      0.03187736544112364,
+                      0.03044182391266028,
+                      0.03428095995982488,
+                      0.03072660971879959,
+                      0.030779519637922446
+                    ]
+                  },
+                  "torch_threads": 1,
+                  "model_sha256": "5735ff5ec51e3b203549895aa8fc7abeae5672c6da6806f64264142617d4f58e",
+                  "v1_sha256": "9f15bcf78379987a88c4ea8cc4a22b2bfa70fd9d50f9429fecf4e6d4342a1e5e",
+                  "wall_seconds": 2710.2995624542236
+                },
+                "HoT/LUG/cand3/h4": {
+                  "name": "HoT/LUG/cand3/h4",
+                  "fit_seconds": 2499.6076908429386,
+                  "v1_predict_seconds": 6.146085292100906,
+                  "tree": {
+                    "total_models": 5,
+                    "nodes": 9,
+                    "leaves": 5,
+                    "split_columns": [
+                      30,
+                      31,
+                      29,
+                      28
+                    ],
+                    "lower_loss": [
+                      0.034014828503131866,
+                      0.034014828503131866,
+                      0.0367199145257473,
+                      0.034014828503131866,
+                      0.03436842933297157,
+                      0.03436842933297157,
+                      0.034349679946899414,
+                      0.034349679946899414,
+                      0.03464818373322487
+                    ],
+                    "upper_loss": [
+                      0.0758666326791048,
+                      0.03570601655145486,
+                      0.036833869886398314,
+                      0.03637715664803982,
+                      0.03748695770800114,
+                      0.03713003662526607,
+                      0.037930143873890244,
+                      0.03635983024140199,
+                      0.03751696836253007
+                    ]
+                  },
+                  "torch_threads": 1,
+                  "model_sha256": "bcd551cd96c8b72704dbe6881f759fffb70e466fe8551548992c2d4153f2cb61",
+                  "v1_sha256": "0212fb67c30ac29dcd2af7fbb389c56069e75c8bd36198879fcabf7a9654de11",
+                  "wall_seconds": 2505.889130592346
+                }
+              },
+              "fit_seconds": 11436.991250556894
+            }
+          ],
+          "selected": 3
+        }
+      }
+    }
+  },
+  "written_utc": "2026-11-24T16:13:50.890511+00:00"
+}

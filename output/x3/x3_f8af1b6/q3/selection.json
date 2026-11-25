@@ -1,0 +1,53 @@
+{
+  "selection": {
+    "Kelmarsh": {
+      "member": "ft",
+      "w": 0.6,
+      "v1_mae": 132.35445453851733,
+      "candidates": {
+        "zs": {
+          "w": 0.85,
+          "v1_mae": 134.2549603279569
+        },
+        "ft": {
+          "w": 0.6,
+          "v1_mae": 132.35445453851733
+        }
+      },
+      "control_w": 0.55
+    },
+    "Penmanshiel": {
+      "member": "ft",
+      "w": 0.65,
+      "v1_mae": 185.32736055622243,
+      "candidates": {
+        "zs": {
+          "w": 0.9,
+          "v1_mae": 187.33889247790998
+        },
+        "ft": {
+          "w": 0.65,
+          "v1_mae": 185.32736055622243
+        }
+      },
+      "control_w": 0.7
+    },
+    "HoT": {
+      "member": "ft",
+      "w": 0.95,
+      "v1_mae": 164.5126561571257,
+      "candidates": {
+        "zs": {
+          "w": 0.95,
+          "v1_mae": 164.55726015222066
+        },
+        "ft": {
+          "w": 0.95,
+          "v1_mae": 164.5126561571257
+        }
+      },
+      "control_w": 0.65
+    }
+  },
+  "rule": "V1 MAE; ties -> zero-shot member; w ties -> larger w"
+}

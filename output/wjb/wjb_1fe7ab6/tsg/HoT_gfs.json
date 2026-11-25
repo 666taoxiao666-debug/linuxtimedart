@@ -1,0 +1,112 @@
+{
+  "caches": {
+    "identities": {
+      "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/G2/hot_dev_f58f2ce_r5/prepared/points_0.npz": "65f854595a0746b3b77baefd6db29f7f14d9d55fa7d650873a9f79b9d7031e7e",
+      "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/G2/hot_dev_f58f2ce_r5/prepared/points_1.npz": "fdd9efd7d228a7b658d70df46603ec0dc4f95f62666fb837f41efff7281c6dba"
+    },
+    "cycles": 11668,
+    "cycles_kept": 11668,
+    "kept_before": "2024-01-01"
+  },
+  "mean": 4.21224430898862,
+  "scale": 2.441899127867903,
+  "cutoff": "2024-01-01",
+  "audit": {
+    "train@6": {
+      "delay": 6,
+      "age_min": 6,
+      "age_max": 11,
+      "cycles_used": 35874,
+      "issues": 35929
+    },
+    "train@9": {
+      "delay": 9,
+      "age_min": 9,
+      "age_max": 14,
+      "cycles_used": 35873,
+      "issues": 35929
+    },
+    "train@12": {
+      "delay": 12,
+      "age_min": 12,
+      "age_max": 17,
+      "cycles_used": 35868,
+      "issues": 35929
+    },
+    "train@15": {
+      "delay": 15,
+      "age_min": 15,
+      "age_max": 20,
+      "cycles_used": 35875,
+      "issues": 35929
+    },
+    "train@18": {
+      "delay": 18,
+      "age_min": 18,
+      "age_max": 23,
+      "cycles_used": 35889,
+      "issues": 35929
+    },
+    "train@binding": {
+      "max_abs_diff": 0.0,
+      "exact_fraction": 1.0
+    },
+    "V1@6": {
+      "delay": 6,
+      "age_min": 6,
+      "age_max": 11,
+      "cycles_used": 2175,
+      "issues": 2175
+    },
+    "V1@9": {
+      "delay": 9,
+      "age_min": 9,
+      "age_max": 14,
+      "cycles_used": 2175,
+      "issues": 2175
+    },
+    "V1@12": {
+      "delay": 12,
+      "age_min": 12,
+      "age_max": 17,
+      "cycles_used": 2175,
+      "issues": 2175
+    },
+    "V1@15": {
+      "delay": 15,
+      "age_min": 15,
+      "age_max": 20,
+      "cycles_used": 2175,
+      "issues": 2175
+    },
+    "V1@18": {
+      "delay": 18,
+      "age_min": 18,
+      "age_max": 23,
+      "cycles_used": 2175,
+      "issues": 2175
+    },
+    "V1@binding": {
+      "max_abs_diff": 0.0,
+      "exact_fraction": 1.0
+    },
+    "V2@6": {
+      "delay": 6,
+      "age_min": 6,
+      "age_max": 11,
+      "cycles_used": 2196,
+      "issues": 2196
+    },
+    "V2@18": {
+      "delay": 18,
+      "age_min": 18,
+      "age_max": 23,
+      "cycles_used": 2196,
+      "issues": 2196
+    },
+    "V2@binding": {
+      "max_abs_diff": 0.0,
+      "exact_fraction": 1.0
+    }
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "implementation_commit": "e4819b0",
+  "status": "RUNNING",
+  "phase_at_last_check": "A3",
+  "queue_pid": 1278009,
+  "run": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/x1_e4819b0_gpu_r1",
+  "worktree": "/home/XT/nuist/pythoncode/TimeDARTFirst_X1_e4819b0",
+  "protocol_sha256": "d75b1312ac6aa1f6a0d60b933340c09e4e56abacdb5a047134ddf0ec1b2c1bf3",
+  "command": "/home/XT/miniconda3/envs/timedart/bin/python -u output/x1/run_gpu_queue.py --output /home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/x1_e4819b0_gpu_r1 --logs /home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs --receipt /home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/cursor_env/receipt.json --manifest /home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/cursor_env/chronos2_manifest.json --a1 /home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/x1_6e17435_r4/A1",
+  "x2_formal_fits": 0,
+  "server_tests": {"legacy_passed": 11, "legacy_seconds": 3.474, "x1_passed": 12},
+  "local_tests": {"x1_passed": 12, "legacy_numpy_passed": 6, "torch_skipped": 5},
+  "chronos_revision": "29ec3766d36d6f73f0696f85560a422f50e8498c",
+  "chronos_manifest_sha256": "758b5c252d2a0bbe0237554d3c1587b4bb5165b73d96ccdcec0cf98e31d0de5e",
+  "server_model_files_verified": true,
+  "preflight": {
+    "Kelmarsh": {"train_validation_test_windows": [75024, 15680, 16949], "historical_rows": 336603},
+    "Penmanshiel": {"train_validation_test_windows": [64771, 35603, 38147], "historical_rows": 432930},
+    "HoT": {"train_validation_test_windows": [420475, 30056, 59587, 56857], "historical_rows": 1738470}
+  },
+  "preflight_scope": "Read-only model/source data identity and timestamp alignment; no predictions, fits or losses",
+  "queue": ["A3a/A3b", "B2_27_fits", "B1_3_fits", "C1"],
+  "E1": "Previous r7 anchor equality failure retained; no repeat and no input tolerance relaxation"
+}

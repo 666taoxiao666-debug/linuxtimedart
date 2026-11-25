@@ -1,0 +1,67 @@
+{
+  "grid": [
+    {
+      "num_leaves": 31,
+      "min_child_samples": 50,
+      "validation_mae": 133.49744528860663,
+      "best_iterations": [
+        196,
+        532,
+        491,
+        529
+      ]
+    },
+    {
+      "num_leaves": 31,
+      "min_child_samples": 200,
+      "validation_mae": 134.08657135975284,
+      "best_iterations": [
+        418,
+        265,
+        436,
+        1257
+      ]
+    },
+    {
+      "num_leaves": 127,
+      "min_child_samples": 50,
+      "validation_mae": 133.65454921929143,
+      "best_iterations": [
+        162,
+        156,
+        258,
+        329
+      ]
+    },
+    {
+      "num_leaves": 127,
+      "min_child_samples": 200,
+      "validation_mae": 133.942914138121,
+      "best_iterations": [
+        162,
+        172,
+        200,
+        525
+      ]
+    }
+  ],
+  "selected": {
+    "num_leaves": 31,
+    "min_child_samples": 50,
+    "validation_mae": 133.49744528860663,
+    "best_iterations": [
+      196,
+      532,
+      491,
+      529
+    ]
+  },
+  "model_sha256": {
+    "Kelmarsh_h1.txt": "d71ef32a0cff7fa05bf50bffdea10a624b31b370f7b14ebace00d5c108b5a1f5",
+    "Kelmarsh_h2.txt": "fa29d164e6735d08d2b6ea885e3385cdcdbbee052310c37b0f2f38aeb4016cde",
+    "Kelmarsh_h3.txt": "bac26d8b1e10b6094447a740131be46167768245cc633a896cbc2b02b9fbf7dc",
+    "Kelmarsh_h4.txt": "272065ce20e0f226a34778973bdea46c61c99c0cc459091bf08d4d8516067290"
+  },
+  "selection": "validation_mae_only",
+  "validation_prediction_sha256": "b770c432e23034208dbbce2735c0d900791253750dff9208627343d01ef9145b"
+}

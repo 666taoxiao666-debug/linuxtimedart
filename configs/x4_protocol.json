@@ -1,0 +1,232 @@
+{
+  "stage": "X4",
+  "version": 2,
+  "plan": "docs/STAGE_PLAN.md (X4, approved after R2 + user ruling, eab3276); decisions docs/review/DECISIONS.md stage X4; v2 = X4-smokefix: report diagnostics and the identical-prediction rule (smoke x4_efbd0af)",
+  "references": {
+    "a3": {
+      "dir": "X1/x1_e4819b0_gpu_r1/A3",
+      "completed_sha256": "b8c5cf17f95de1893e34231c0b4889c24b05d712a813d98a4b60e648730c6462"
+    },
+    "x2_a": {
+      "dir": "X2/x2_91d4d20/a",
+      "completed_sha256": "1e8ed09c41f9d664817a26b6eb52784144f75e63c134e4ecde62c73bddef28b6",
+      "commit": "91d4d207ad7e0af36eadd01e51be201bb1fc3523"
+    },
+    "x2_b": {
+      "dir": "X2/x2_0f24875/b",
+      "completed_sha256": "3299474f002ecd1aba09a6c6b62550ec0b208a2f7e0ea4a78f2d9b0300cc8b45",
+      "commit": "0f24875ea598c4a659352b427f91f4212ca88696"
+    },
+    "x3": {
+      "dir": "X3/x3_f8af1b6",
+      "commit": "f8af1b69d9ee57d0036b4d93c3d5979c8d175226",
+      "completed_sha256": {
+        "q1": "5040976813a6920f45fefcd92e65ad9e831cb075faa7a3d9fa949e879cf83501",
+        "q2": "af535e95f37f7af9933b2b22b39816b8ff6337baf972ac4adae78e0c8b0f4971",
+        "q4": "ecd7b82f78be2693ad91e758acec56f6587b7a01ef10aa07475461507533eb6e"
+      },
+      "q2_spec_sha256": {
+        "Kelmarsh": "9ba3ee7d62eb8a94650e1bae34f15d7494f042f34764a347eeba8a6b884fd6c0",
+        "Penmanshiel": "620db22e33dabf56693773e8feaa190152ca98cfec00eee3b61b5274b3a1777e",
+        "HoT": "fbd0ee94e5c6dab956c09caecf587014f990d149382d762f9924c211c9b38f2b"
+      }
+    }
+  },
+  "chronos": {
+    "revision": "29ec3766d36d6f73f0696f85560a422f50e8498c",
+    "manifest_sha256": "758b5c252d2a0bbe0237554d3c1587b4bb5165b73d96ccdcec0cf98e31d0de5e",
+    "package": "chronos-forecasting 2.3.2, not upgraded"
+  },
+  "history_rule": "X3-HS: every window's GFS history comes from the preparation of its own frozen pack (K/P and HoT train/validation: A3 hourly grid = development preparation; HoT test packs: sealed-prep point cache via run_x2.hot_test_history); bound to x50 channel 20 for every window and hour before use in q1, q2 and q4; the A3 grid may differ from a native source only (a) where A3 is NaN, the native value finite and the hour a development-boundary hour (outside_development), or (b) where A3 is finite, the native value NaN and the hour's available cycle predates the native source's first day (sealed cache start edge, HS0); values never differ",
+  "splits": {
+    "Kelmarsh": {
+      "V1": [
+        "2021-01-01",
+        "2021-07-01"
+      ],
+      "V2": [
+        "2021-07-01",
+        "2022-01-01"
+      ]
+    },
+    "Penmanshiel": {
+      "V1": [
+        "2020-01-01",
+        "2020-07-01"
+      ],
+      "V2": [
+        "2020-07-01",
+        "2021-01-01"
+      ]
+    },
+    "HoT": {
+      "V1": [
+        "2023-07-01",
+        "2023-10-01"
+      ],
+      "V2": [
+        "2023-10-01",
+        "2024-01-01"
+      ]
+    }
+  },
+  "gpu_fraction": 0.7,
+  "family_z": 2.3939797998185104,
+  "family": "A, B1, B2 (Bonferroni over 3); D0 is a feasibility gate, not a claim",
+  "a": {
+    "deployment": {
+      "Kelmarsh": "2021-01-01",
+      "Penmanshiel": "2020-01-01",
+      "HoT": "2023-07-01"
+    },
+    "k_months": [
+      1,
+      3
+    ],
+    "es_fraction": 0.2,
+    "context_length": 512,
+    "inputs": "single series; upstream NaN on flagged hours for every farm and window; target windows: every channel and the GFS history NaN before D-k; X3-HS history sources",
+    "source_pool": "the frozen L_1X source pool: other two farms, every h1-h4 label strictly before the target's L_1X early-stopping cut; regenerated and checked against X3 q4_meta (target_windows, es_windows, es_cut, fit_windows) for k = 1 and 3",
+    "source_windows": 20000,
+    "source_windows_smoke": 256,
+    "seed": 2024,
+    "stage1_lrs": [
+      1e-06,
+      1e-05
+    ],
+    "stage1_steps": 2000,
+    "stage1_steps_smoke": 4,
+    "stage1_eval": 200,
+    "stage1_eval_smoke": 2,
+    "stage1_selection": "median MAE on the target k=1 early-stopping set; ties -> smaller lr, then earlier step",
+    "stage2_steps": 200,
+    "stage2_steps_smoke": 4,
+    "stage2_eval": 20,
+    "stage2_eval_smoke": 2,
+    "stage2_rule": "from the stage-1 selection, lr = stage-1 lr, target k-month fit windows (labels < cut), step 0 is a candidate; k = 1 (C_T1) and k = 3 (C_T3, descriptive)",
+    "C_D1": "from the base model, target k = 1 fit windows, stage-2 steps / evaluation / step-0 rule, lr shared with the stage-1 selection of the same target (R2-S2); descriptive",
+    "decision": "C_T1 vs L_1X on target V1: every farm gain > 0 and pooled CI low > 0 (family z)",
+    "batch_size": 256,
+    "modes": [
+      "full"
+    ],
+    "microbatch_plan": [
+      [
+        256,
+        1
+      ],
+      [
+        135,
+        2
+      ],
+      [
+        90,
+        3
+      ],
+      [
+        45,
+        6
+      ]
+    ],
+    "preflight_windows": 2048,
+    "preflight_windows_smoke": 64,
+    "preflight_steps": 20,
+    "preflight_steps_smoke": 2
+  },
+  "b": {
+    "training_windows": "X3 Q2-FT20k npz per farm (path and SHA from the hash-pinned X3 q2_spec.json)",
+    "train_windows_smoke": 512,
+    "seed": 2024,
+    "context": "X3 Q1 selection (1024 h), single series, unmasked as X3 Q2",
+    "lrs": [
+      3e-06,
+      1e-05
+    ],
+    "steps": 2000,
+    "steps_smoke": 4,
+    "eval": 200,
+    "eval_smoke": 2,
+    "selection": "V1 median MAE after reload: candidates [X3 Q2-FT20k (lr 1e-6), lr 3e-6, lr 1e-5]; ties -> earlier candidate",
+    "margin": 0.01,
+    "w_step": 0.05,
+    "min_gain": 0.01,
+    "batch_size": 256,
+    "modes": [
+      "full"
+    ],
+    "microbatch_plan": [
+      [
+        256,
+        1
+      ],
+      [
+        135,
+        2
+      ],
+      [
+        90,
+        3
+      ],
+      [
+        45,
+        6
+      ]
+    ],
+    "preflight_windows": 2048,
+    "preflight_windows_smoke": 64,
+    "preflight_steps": 20,
+    "preflight_steps_smoke": 2
+  },
+  "d0": {
+    "deployment": {
+      "Kelmarsh": "2021-01-01",
+      "Penmanshiel": "2020-01-01",
+      "HoT": "2023-07-01"
+    },
+    "blocks": "calendar months [D-5m, D-1m), 4 blocks",
+    "es_fraction": 0.2,
+    "isolation": "per block a fixed cut c (es_split); target training windows and every source window: all h1-h4 labels strictly before c; evaluation windows issue >= c; windows crossing c are dropped, never moved (R2-B2)",
+    "event_features": [
+      "gfs_future_mean (gF cols 6-9)",
+      "gfs_future_change (gF col 9 - col 5)",
+      "power_pu (p_hist_23)",
+      "up_missing"
+    ],
+    "nonfinite_event_rule": "source windows with a non-finite event feature are excluded from that block's pool (count reported)",
+    "groups": 6,
+    "kmeans_n_init": 10,
+    "kmeans_iters": 300,
+    "seed": 2024,
+    "freeze": "standardiser and centres fitted once per pseudo-target on the first block's compliant source pool; later blocks only assign (R2-B1)",
+    "n_cap": 3000,
+    "n_cap_smoke": 200,
+    "pool_smoke": 2000,
+    "num_leaves": 31,
+    "min_child_samples": 50,
+    "learning_rate": 0.05,
+    "trees": 300,
+    "trees_smoke": 20,
+    "proxy": "LightGBM L1, fixed trees, no early stopping, Q4 111 columns, one model per horizon; MAE over windows and 4 horizons in per-unit power",
+    "spearman_min": 0.5,
+    "wins_min": 2,
+    "farms_min": 2,
+    "timeout_min": 30,
+    "timeout_scope": "from the end of data preparation (farm_tables, reported separately) to the last proxy fit",
+    "invalid": "empty group (n = 0), empty block or constant U (Spearman undefined) or timeout -> INCOMPLETE, not a negative result, no rerun (R2-S3)"
+  },
+  "statistics": {
+    "block_length": 8,
+    "replicates": 5000,
+    "seed": 2024
+  },
+  "statistics_smoke": {
+    "block_length": 8,
+    "replicates": 200,
+    "seed": 2024
+  },
+  "smoke": {
+    "issues": 40
+  },
+  "no_2026_data": true,
+  "identical_rule": "a development comparison whose candidate equals its reference (e.g. an ensemble with V1 weight w = 1, the registered tie rule's 'no ensemble') has a gain of exactly 0: requirements 'gain > 0' / '>= 1%' fail for that farm, the question is NOT passed and its pooled interval is reported as UNDEFINED_IDENTICAL; any other degenerate interval remains a technical failure, located in report_diagnostics.json"
+}

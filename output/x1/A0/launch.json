@@ -1,0 +1,9 @@
+{
+  "arm": "A0",
+  "protocol_sha256": "690397175db685e492c06cbaa85a72eb02e1cfe53dfa1177c2aceaf6b9cd0cc7",
+  "script_sha256": "ea44d5fcd620d0a9766b595a886389003e596f359dfca72aec2f6e7d5633e4ea",
+  "started_utc": "2026-11-16T00:25:21.662522+00:00",
+  "cpu_threads": 2,
+  "retry": false,
+  "new_fits": 0
+}

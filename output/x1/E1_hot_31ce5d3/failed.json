@@ -1,0 +1,5 @@
+{
+  "type": "TypeError",
+  "message": "unsupported operand type(s) for /: 'NoneType' and 'str'",
+  "stop_E1_only": true
+}

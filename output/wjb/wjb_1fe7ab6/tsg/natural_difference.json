@@ -1,0 +1,416 @@
+{
+  "Kelmarsh": {
+    "LG": {
+      "mean_abs_kw": 91.54390391959747,
+      "identical_windows": 0.0,
+      "leaves": {
+        "Kelmarsh/LG/cand2/h1": {
+          "6": {
+            "sha256": "759a6cfee5fdd863a043a6cb0009e443ad752777424b623588e39729a74f2569",
+            "leaves": {
+              "0": 8249
+            }
+          },
+          "18": {
+            "sha256": "62d2e0b9f32099b9f775cc92aee1507c9069684f118923a5e748a7cb35e971b2",
+            "leaves": {
+              "0": 8249
+            }
+          }
+        },
+        "Kelmarsh/LG/cand2/h2": {
+          "6": {
+            "sha256": "be0691240b6a359f57aeadb9748c003f0a80ff907ef08b037711b4e8fba6924b",
+            "leaves": {
+              "0": 4123,
+              "2": 4126
+            }
+          },
+          "18": {
+            "sha256": "8de0a0659fcdf3a453cae517fa06f587933b2f49a0e222a1e84056945a85dc68",
+            "leaves": {
+              "1": 8249
+            }
+          }
+        },
+        "Kelmarsh/LG/cand2/h3": {
+          "6": {
+            "sha256": "3bf83a9942a9da0d5321a59f7cc646f95e3df994cdec98f67ee8950eb3ec5015",
+            "leaves": {
+              "0": 8249
+            }
+          },
+          "18": {
+            "sha256": "e544446aa7d948bbf84c48a61188394b90250dec5755a732139c8970e5cc90f8",
+            "leaves": {
+              "0": 8249
+            }
+          }
+        },
+        "Kelmarsh/LG/cand2/h4": {
+          "6": {
+            "sha256": "ac43a0d2e4c0db46459867b778f521c34e179f7335e15fdbc5f09a5237cd08d3",
+            "leaves": {
+              "0": 4123,
+              "1": 4126
+            }
+          },
+          "18": {
+            "sha256": "a808ca926fa2dee0edf7d74ede71bf23716d2697c982a982c3397808e8ff09d6",
+            "leaves": {
+              "2": 8249
+            }
+          }
+        }
+      },
+      "note": "logged only (R2-B3)"
+    },
+    "LUG": {
+      "mean_abs_kw": 77.86399274821731,
+      "identical_windows": 0.0,
+      "leaves": {
+        "Kelmarsh/LUG/cand2/h1": {
+          "6": {
+            "sha256": "dbebfc3fe6698dc9099f71bd7392328952b0aa91f338ba788c942ec9e1700a92",
+            "leaves": {
+              "0": 8249
+            }
+          },
+          "18": {
+            "sha256": "a4c1171b24468c4b2efc5559771f7567b94bb80b253a90627e875c107b893337",
+            "leaves": {
+              "0": 8249
+            }
+          }
+        },
+        "Kelmarsh/LUG/cand2/h2": {
+          "6": {
+            "sha256": "c306576a63bd1004062aee35ad4bb7e7ecd98412a363a001ab838836222246b7",
+            "leaves": {
+              "0": 8249
+            }
+          },
+          "18": {
+            "sha256": "1696b8aff4fc0fa0fbf32a19fea7579a1f2121dedbd7c28256755a57323e1c03",
+            "leaves": {
+              "0": 8249
+            }
+          }
+        },
+        "Kelmarsh/LUG/cand2/h3": {
+          "6": {
+            "sha256": "0566080f43175e2a039b8e0dc68aaf813a104adadfe0e12d6fcdabf5fbd2e87e",
+            "leaves": {
+              "0": 4123,
+              "1": 4126
+            }
+          },
+          "18": {
+            "sha256": "74d008e83bf37c4e46e8e59e6c73e533461bba4b52d3cb7d6443c7a1ae1031c7",
+            "leaves": {
+              "2": 8249
+            }
+          }
+        },
+        "Kelmarsh/LUG/cand2/h4": {
+          "6": {
+            "sha256": "4943e081516f22b888b6fc36c97a92b0a44b07a606554fd5e564fca4627762b4",
+            "leaves": {
+              "0": 4123,
+              "1": 4126
+            }
+          },
+          "18": {
+            "sha256": "592f927cb8f912328b022f1e08812b865ec84071841c973a10fa6a4d79ad2488",
+            "leaves": {
+              "2": 8249
+            }
+          }
+        }
+      },
+      "note": "logged only (R2-B3)"
+    }
+  },
+  "Penmanshiel": {
+    "LG": {
+      "mean_abs_kw": 123.47433181477697,
+      "identical_windows": 0.0,
+      "leaves": {
+        "Penmanshiel/LG/cand3/h1": {
+          "6": {
+            "sha256": "febb496fc0a77512cfc94b53a08362b3dabc8dc298fe4d382175abc4e11d92dd",
+            "leaves": {
+              "0": 8087,
+              "8": 8089
+            }
+          },
+          "18": {
+            "sha256": "ee5ba995c060668a45370df002a8e12edb516d3f28ba656dcd88fed6d9b396b6",
+            "leaves": {
+              "4": 8089,
+              "6": 8087
+            }
+          }
+        },
+        "Penmanshiel/LG/cand3/h2": {
+          "6": {
+            "sha256": "c19c39b036db2e0af9541dc95a0be9bdd81ff3cca6f9dce8088a60058481fd1a",
+            "leaves": {
+              "0": 8087,
+              "6": 8089
+            }
+          },
+          "18": {
+            "sha256": "6e5c79965e038ad65e095f52747b2cc115fa29f46766202fec0d9eaf27467708",
+            "leaves": {
+              "4": 8089,
+              "7": 8087
+            }
+          }
+        },
+        "Penmanshiel/LG/cand3/h3": {
+          "6": {
+            "sha256": "cb7657a2b8857c76580d0d8a17e936073306732421c1f4ffb1a7b5f09440b4a4",
+            "leaves": {
+              "0": 8087,
+              "1": 8089
+            }
+          },
+          "18": {
+            "sha256": "9cd4b39d430e78e79b71e407a960ed26170eafb36422b5925c74fa168fccd22a",
+            "leaves": {
+              "3": 16176
+            }
+          }
+        },
+        "Penmanshiel/LG/cand3/h4": {
+          "6": {
+            "sha256": "872fdf829f2249e64eea4e4054eeeb2b4ff0026547d3a15f6acecd349ea1b62b",
+            "leaves": {
+              "0": 8087,
+              "1": 8089
+            }
+          },
+          "18": {
+            "sha256": "8c7960b1f906df7201c613da050133d6bd87af161604097cb4cd86c3dbd9caa0",
+            "leaves": {
+              "6": 16176
+            }
+          }
+        }
+      },
+      "note": "logged only (R2-B3)"
+    },
+    "LUG": {
+      "mean_abs_kw": 94.9348700733671,
+      "identical_windows": 0.0008036597428288823,
+      "leaves": {
+        "Penmanshiel/LUG/cand2/h1": {
+          "6": {
+            "sha256": "2b4df143f5354e0632b2d872b33dda87248c6d5341e22b20aaf1bc3fb7357374",
+            "leaves": {
+              "0": 8087,
+              "1": 8089
+            }
+          },
+          "18": {
+            "sha256": "e6a6bb6ed90f945c1db5941cbefa92ed60a617a59638f3da793bd8c13887bd13",
+            "leaves": {
+              "1": 8089,
+              "2": 8087
+            }
+          }
+        },
+        "Penmanshiel/LUG/cand2/h2": {
+          "6": {
+            "sha256": "728b168b9a9f9e5a0ae92086cee41c3d466ea3ccbb71e248bad726a4f0625932",
+            "leaves": {
+              "0": 8087,
+              "1": 8089
+            }
+          },
+          "18": {
+            "sha256": "7b3eaebb0f5514867e1db188833e5279fa604eaa173e480e9da29f38ea62cdf1",
+            "leaves": {
+              "2": 16176
+            }
+          }
+        },
+        "Penmanshiel/LUG/cand2/h3": {
+          "6": {
+            "sha256": "cb299ace885c67f5750f43ba54f5f9c7113bbcb6cfc90918f2609021bbe65d0a",
+            "leaves": {
+              "0": 8087,
+              "1": 8089
+            }
+          },
+          "18": {
+            "sha256": "8486c96f2a6530a880203444a2e3e2bec89195b5dcaa4ad1ba41721878f3fb1a",
+            "leaves": {
+              "2": 16176
+            }
+          }
+        },
+        "Penmanshiel/LUG/cand2/h4": {
+          "6": {
+            "sha256": "87283a1cfe374168888998d29949f2faabdce4067bcedd8e95771711bee6a8f7",
+            "leaves": {
+              "0": 8087,
+              "1": 8089
+            }
+          },
+          "18": {
+            "sha256": "31a7d0af7b1fce053538b501b69bfee20d28dcbb1b2f2efbe3eaf0dde3361697",
+            "leaves": {
+              "2": 16176
+            }
+          }
+        }
+      },
+      "note": "logged only (R2-B3)"
+    }
+  },
+  "HoT": {
+    "LG": {
+      "mean_abs_kw": 135.39693424748583,
+      "identical_windows": 0.0005296960868701583,
+      "leaves": {
+        "HoT/LG/cand3/h1": {
+          "6": {
+            "sha256": "b87485399fb11e98aee72eff89d10fa14e4e078ec7315fbd083d8803ecab2422",
+            "leaves": {
+              "0": 10095,
+              "2": 5008
+            }
+          },
+          "18": {
+            "sha256": "1e8808dc37edd4cc6d474b9ec04be07db76ac781994777e8c3b097f57734b0cd",
+            "leaves": {
+              "6": 12561,
+              "8": 2542
+            }
+          }
+        },
+        "HoT/LG/cand3/h2": {
+          "6": {
+            "sha256": "db87fab23f07fb790b1bf2942679b264b0f436e8e1ef3948ef386abf2e77d550",
+            "leaves": {
+              "0": 10095,
+              "3": 5008
+            }
+          },
+          "18": {
+            "sha256": "680fbe1d52ef9305f79f9a1a4b2db784517468bd3b1d0131104176a7f9eaf157",
+            "leaves": {
+              "6": 15103
+            }
+          }
+        },
+        "HoT/LG/cand3/h3": {
+          "6": {
+            "sha256": "32caa2c42e99aa95272ce7b0df9853a1abedfe7a4d598501585f3ab1eb9c3382",
+            "leaves": {
+              "0": 10095,
+              "2": 2533,
+              "6": 2475
+            }
+          },
+          "18": {
+            "sha256": "2a088aa380e4a1a4e0c35e3b832d3eddddb8c9c31aaf2f01eca3db9af743caab",
+            "leaves": {
+              "4": 15103
+            }
+          }
+        },
+        "HoT/LG/cand3/h4": {
+          "6": {
+            "sha256": "39c6c3c7a58b82297c7b1f33975e0005b7407f392a694e79fd833cbfc399876c",
+            "leaves": {
+              "0": 10095,
+              "2": 5008
+            }
+          },
+          "18": {
+            "sha256": "f6e197547b61cf634ac0605de56b9a9ea95eed1d9e9930ade289361e722f5419",
+            "leaves": {
+              "4": 15103
+            }
+          }
+        }
+      },
+      "note": "logged only (R2-B3)"
+    },
+    "LUG": {
+      "mean_abs_kw": 102.72889908384413,
+      "identical_windows": 0.0003310600542938489,
+      "leaves": {
+        "HoT/LUG/cand3/h1": {
+          "6": {
+            "sha256": "01e952bda94806a9b39737b64eb65d62677a2b9e99a36193dd2c0d4e800dbbef",
+            "leaves": {
+              "0": 10095,
+              "2": 2533,
+              "3": 2475
+            }
+          },
+          "18": {
+            "sha256": "b5378188ec9c0d38839d1e43d6131cfed83f980ac7d9bae4430f864722fb2477",
+            "leaves": {
+              "1": 15103
+            }
+          }
+        },
+        "HoT/LUG/cand3/h2": {
+          "6": {
+            "sha256": "f791742e8e2685d76a9452776fd694a8a5799968dc53faa354c04b6d765b7dca",
+            "leaves": {
+              "0": 10095,
+              "2": 5008
+            }
+          },
+          "18": {
+            "sha256": "febd79b83cc9231ecb0590c833fd5ffda928c178b4fcdf9455ad795b7936c8e4",
+            "leaves": {
+              "4": 2542,
+              "6": 2535,
+              "7": 5008,
+              "8": 5018
+            }
+          }
+        },
+        "HoT/LUG/cand3/h3": {
+          "6": {
+            "sha256": "840007ffaab9d02a7638df119b8b00d51fbfaa44ca353d7c1053d0542dbe7dc3",
+            "leaves": {
+              "0": 10095,
+              "5": 5008
+            }
+          },
+          "18": {
+            "sha256": "3ece746e6de097e16c1f1dccfbc26070a47b9c61d4334ab632edd9940461ac6d",
+            "leaves": {
+              "2": 5077,
+              "4": 10026
+            }
+          }
+        },
+        "HoT/LUG/cand3/h4": {
+          "6": {
+            "sha256": "6bf4abeb75a5427c9f40c66721f3159dbdec9aa1910f60ea262c71c63dfbcd74",
+            "leaves": {
+              "0": 10095,
+              "3": 5008
+            }
+          },
+          "18": {
+            "sha256": "628204cea21d8c3eabf61551ed82b2fcaa9d8af1572aaccb57cc9ba00a0df69d",
+            "leaves": {
+              "2": 15103
+            }
+          }
+        }
+      },
+      "note": "logged only (R2-B3)"
+    }
+  }
+}

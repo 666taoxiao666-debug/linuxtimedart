@@ -1,0 +1,9 @@
+{
+  "mode": "b",
+  "smoke": true,
+  "commit": "1c0a1256e962d9b8da46abcf0f48696b4e0bd917",
+  "script_sha256": "572193716b21cb30cee8171c498274689e8dd92c6b086db68d57bfc434bf005e",
+  "protocol_sha256": "9d70be88573bff2f2ebb1654b1d0a825dad148ff64a5146ad454f9e6551206ea",
+  "pid": 2858993,
+  "started_utc": "2026-11-20T16:35:39.425747+00:00"
+}

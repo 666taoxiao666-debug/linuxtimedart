@@ -1,0 +1,37 @@
+{
+  "task": "predict",
+  "output": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X4/x4_1c0a125/smoke_b/HoT/lr1/pred_v1",
+  "receipt": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/cursor_env/receipt.json",
+  "manifest": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/cursor_env/chronos2_manifest.json",
+  "gpu_fraction": 0.7,
+  "context_length": 1024,
+  "masked": false,
+  "models": [
+    {
+      "name": "m",
+      "init": {
+        "root": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X4/x4_1c0a125/smoke_b/HoT/lr1",
+        "model_sha256": {
+          "selected/config.json": "5ebdd54c86881d3796d054b729d5dca6548bb4cb736b47bd13538feb3d102f14",
+          "selected/model.safetensors": "27fd01be0fcd6c48d6c8a7000239b1bce6844c26aa58fd0dcd8e2b676e490e50"
+        }
+      }
+    }
+  ],
+  "contexts": [
+    {
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X4/x4_1c0a125/smoke_b/HoT/V1_context.npz",
+      "sha256": "8fd0df73b150d64eb9f7d16ecf632ff5e6ad067b527d2a132861fb3f85bb2e55",
+      "name": "V1",
+      "history": {
+        "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X4/x4_1c0a125/smoke_b/history/HoT_a3_grid.npz",
+        "sha256": "948f8521e95754fe23019dca3c2634278420c35a2618028eb116305e82b2c46c",
+        "source": "a3_grid"
+      },
+      "grid": {
+        "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/x1_e4819b0_gpu_r1/A3/HoT_history.npz",
+        "sha256": "2c1539d0357abb3ccc37267ea6da9024fa604215a615c0c063270d0686337f68"
+      }
+    }
+  ]
+}

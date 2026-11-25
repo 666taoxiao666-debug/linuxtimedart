@@ -1,0 +1,15 @@
+{
+  "candidate": {
+    "name": "full_mb135x2",
+    "mode": "full",
+    "microbatch": 135,
+    "accumulation": 2,
+    "windows_per_step": 18
+  },
+  "context_length": 1024,
+  "free_gb_before": 23.2657470703125,
+  "total_gb": 23.55999755859375,
+  "limit_gb": 16.491998291015623,
+  "ok": true,
+  "peak_gb": 10.688086986541748
+}

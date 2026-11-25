@@ -1,0 +1,434 @@
+{
+  "Kelmarsh": {
+    "LG": {
+      "mean_abs_kw": 678.1704778141342,
+      "identical_windows": 0.018,
+      "leaves": {
+        "Kelmarsh/LG/cand0/h1": {
+          "6": {
+            "sha256": "74cfe9f8b374951fc80d2bb7592873683e9d6bbab640b0a327f3a67dc84e1ecb",
+            "leaves": {
+              "0": 250,
+              "1": 250
+            }
+          },
+          "18": {
+            "sha256": "5b56fd2f9796dbcb6c80902bc87508363b76c37acc315c8a900856c658a64ccf",
+            "leaves": {
+              "1": 250,
+              "2": 250
+            }
+          }
+        },
+        "Kelmarsh/LG/cand0/h2": {
+          "6": {
+            "sha256": "d5e5e456c8366e6b518d20cc4ab45d7f3d2b6d67b9df8b4c9183bab09ae2dc80",
+            "leaves": {
+              "0": 250,
+              "1": 250
+            }
+          },
+          "18": {
+            "sha256": "cf205b421563fa91c8ea25993b0e10decdbcc72cfeb424f060c6561531362784",
+            "leaves": {
+              "1": 250,
+              "2": 250
+            }
+          }
+        },
+        "Kelmarsh/LG/cand0/h3": {
+          "6": {
+            "sha256": "1750319f29a18b5947850c2b2cdb568e6558156d7689aac7ad1cb44d53f038bc",
+            "leaves": {
+              "0": 250,
+              "1": 250
+            }
+          },
+          "18": {
+            "sha256": "958cd92610929a88ef21bf207dd0c503b3bccb18487e6782c81f85b50d459f15",
+            "leaves": {
+              "1": 250,
+              "2": 250
+            }
+          }
+        },
+        "Kelmarsh/LG/cand0/h4": {
+          "6": {
+            "sha256": "4c7b15d348aa6e9fc4eae4208a384331184ce00c60c0fab05448609bce1b8777",
+            "leaves": {
+              "0": 250,
+              "1": 250
+            }
+          },
+          "18": {
+            "sha256": "8ee1f1cad533565cf65ecc7ad6f7e0349dec5fc9e9e94d729348f4d6c1a65e0e",
+            "leaves": {
+              "1": 250,
+              "2": 250
+            }
+          }
+        }
+      },
+      "note": "logged only (R2-B3)"
+    },
+    "LUG": {
+      "mean_abs_kw": 835.1443992989138,
+      "identical_windows": 0.036,
+      "leaves": {
+        "Kelmarsh/LUG/cand0/h1": {
+          "6": {
+            "sha256": "6c72d12c02062e66576187696e18ccff189485b235fe439dc0ff45cbaa5b0bbc",
+            "leaves": {
+              "0": 250,
+              "1": 250
+            }
+          },
+          "18": {
+            "sha256": "cc1d2b3b8ff59bb752e513236932165dc600273b13c5d41bf207b6f03fb08a83",
+            "leaves": {
+              "1": 250,
+              "2": 250
+            }
+          }
+        },
+        "Kelmarsh/LUG/cand0/h2": {
+          "6": {
+            "sha256": "140d5c14dbb4920a729508d714c7f25b9d1098bd71f645dff94a0133817189cd",
+            "leaves": {
+              "0": 250,
+              "1": 250
+            }
+          },
+          "18": {
+            "sha256": "d4260bf15d742e6c403b6890c387ba4ba76a374eebbf6848a1d5b45fb837c43a",
+            "leaves": {
+              "1": 250,
+              "2": 250
+            }
+          }
+        },
+        "Kelmarsh/LUG/cand0/h3": {
+          "6": {
+            "sha256": "0893ce01b82eb9e9fe67c4f55e4b17bc3142c0de0ed0327b392d4fc681b9c20b",
+            "leaves": {
+              "0": 250,
+              "1": 250
+            }
+          },
+          "18": {
+            "sha256": "0317c9e262583fe47e297babe6576abbe9f0019736fb49f7095f32ce9fa5d500",
+            "leaves": {
+              "1": 250,
+              "2": 250
+            }
+          }
+        },
+        "Kelmarsh/LUG/cand0/h4": {
+          "6": {
+            "sha256": "c1b0d1aae21cafe34632fcf7ce757250d7aa7303f9cd7aeb9bc280cdc35dd3c9",
+            "leaves": {
+              "0": 250,
+              "1": 250
+            }
+          },
+          "18": {
+            "sha256": "7293394c57ad89e08ad66815a60f0aaac5575d38587d4d34e1fa84c3422d35ce",
+            "leaves": {
+              "1": 250,
+              "2": 250
+            }
+          }
+        }
+      },
+      "note": "logged only (R2-B3)"
+    }
+  },
+  "Penmanshiel": {
+    "LG": {
+      "mean_abs_kw": 296.1723117445596,
+      "identical_windows": 0.4,
+      "leaves": {
+        "Penmanshiel/LG/cand0/h1": {
+          "6": {
+            "sha256": "a1d2252ecd6dbc27700755c33bf052ab35a12342c4a14ae12bd09ea87d289ac5",
+            "leaves": {
+              "0": 251,
+              "1": 249
+            }
+          },
+          "18": {
+            "sha256": "533e13f9284ebe9b83b58b496d6fcd688c6e353015854d33e390cbc9b4cd8999",
+            "leaves": {
+              "1": 249,
+              "2": 251
+            }
+          }
+        },
+        "Penmanshiel/LG/cand0/h2": {
+          "6": {
+            "sha256": "0539d669628a49d557eeb73553e79f494f923f27b386c6cd44a5452086bbbbf3",
+            "leaves": {
+              "0": 251,
+              "1": 249
+            }
+          },
+          "18": {
+            "sha256": "2e132d9ed90d1ea78ef797f51ba05c533d01fb8eee1f0bbefbdf2237d59f8821",
+            "leaves": {
+              "1": 249,
+              "2": 251
+            }
+          }
+        },
+        "Penmanshiel/LG/cand0/h3": {
+          "6": {
+            "sha256": "91e09bc8a78e1b48934649c8f9386169e924df74970fdf4e296af1dfa2d347d3",
+            "leaves": {
+              "0": 251,
+              "1": 249
+            }
+          },
+          "18": {
+            "sha256": "8ee1f1cad533565cf65ecc7ad6f7e0349dec5fc9e9e94d729348f4d6c1a65e0e",
+            "leaves": {
+              "1": 249,
+              "2": 251
+            }
+          }
+        },
+        "Penmanshiel/LG/cand0/h4": {
+          "6": {
+            "sha256": "328683458ff2bd1e51c3782f4d57d0bb267c891234c6edb662b9637cf2cea85e",
+            "leaves": {
+              "0": 251,
+              "1": 249
+            }
+          },
+          "18": {
+            "sha256": "8ee1f1cad533565cf65ecc7ad6f7e0349dec5fc9e9e94d729348f4d6c1a65e0e",
+            "leaves": {
+              "1": 249,
+              "2": 251
+            }
+          }
+        }
+      },
+      "note": "logged only (R2-B3)"
+    },
+    "LUG": {
+      "mean_abs_kw": 278.571143768169,
+      "identical_windows": 0.46,
+      "leaves": {
+        "Penmanshiel/LUG/cand0/h1": {
+          "6": {
+            "sha256": "225d8139c7fa480468f20456f1d138963986c3ebdb9e40f79a29bef348a65bf8",
+            "leaves": {
+              "0": 251,
+              "1": 249
+            }
+          },
+          "18": {
+            "sha256": "8ee1f1cad533565cf65ecc7ad6f7e0349dec5fc9e9e94d729348f4d6c1a65e0e",
+            "leaves": {
+              "1": 249,
+              "2": 251
+            }
+          }
+        },
+        "Penmanshiel/LUG/cand0/h2": {
+          "6": {
+            "sha256": "df09a42cee170e9e4dffb4b97f4e3d3d2c37520fd8ddbf56e0e31b40aad9923e",
+            "leaves": {
+              "0": 251,
+              "1": 249
+            }
+          },
+          "18": {
+            "sha256": "8ee1f1cad533565cf65ecc7ad6f7e0349dec5fc9e9e94d729348f4d6c1a65e0e",
+            "leaves": {
+              "1": 249,
+              "2": 251
+            }
+          }
+        },
+        "Penmanshiel/LUG/cand0/h3": {
+          "6": {
+            "sha256": "b353a0554fbc43ce6711a5817f8d12f71b09ada167ef1bf19f3734d89ddfb0b3",
+            "leaves": {
+              "0": 251,
+              "1": 249
+            }
+          },
+          "18": {
+            "sha256": "8ee1f1cad533565cf65ecc7ad6f7e0349dec5fc9e9e94d729348f4d6c1a65e0e",
+            "leaves": {
+              "1": 249,
+              "2": 251
+            }
+          }
+        },
+        "Penmanshiel/LUG/cand0/h4": {
+          "6": {
+            "sha256": "bf5808aa81afae96408a588f3153c79b1a5520db7a43a833f58849451a36dc5d",
+            "leaves": {
+              "0": 251,
+              "1": 249
+            }
+          },
+          "18": {
+            "sha256": "8ee1f1cad533565cf65ecc7ad6f7e0349dec5fc9e9e94d729348f4d6c1a65e0e",
+            "leaves": {
+              "1": 249,
+              "2": 251
+            }
+          }
+        }
+      },
+      "note": "logged only (R2-B3)"
+    }
+  },
+  "HoT": {
+    "LG": {
+      "mean_abs_kw": 786.2695755748078,
+      "identical_windows": 0.076,
+      "leaves": {
+        "HoT/LG/cand0/h1": {
+          "6": {
+            "sha256": "99cc673693763c27212146b2aec0e2eec04a68d0cfad2dcc9dcd8c2f68be4234",
+            "leaves": {
+              "0": 250,
+              "1": 250
+            }
+          },
+          "18": {
+            "sha256": "c346e2bcd28cd51bdb8c64fda9198113153b424a698fadb9c5d0d000c3e3ae93",
+            "leaves": {
+              "1": 250,
+              "2": 250
+            }
+          }
+        },
+        "HoT/LG/cand0/h2": {
+          "6": {
+            "sha256": "70e57370642d4c93b7e75509c1da5e6e5f39b242f99bee85b8ca6dac3658fd3b",
+            "leaves": {
+              "0": 250,
+              "1": 250
+            }
+          },
+          "18": {
+            "sha256": "08921facd3190e2cc3c9191f66176dba86494e60a348320e2ecb55fb31b85c22",
+            "leaves": {
+              "1": 250,
+              "2": 250
+            }
+          }
+        },
+        "HoT/LG/cand0/h3": {
+          "6": {
+            "sha256": "748f409ebfe58b556b638d47f77b7cf77642c78ddfdd6757ef4ebf30bb509802",
+            "leaves": {
+              "0": 250,
+              "1": 250
+            }
+          },
+          "18": {
+            "sha256": "8ee1f1cad533565cf65ecc7ad6f7e0349dec5fc9e9e94d729348f4d6c1a65e0e",
+            "leaves": {
+              "1": 250,
+              "2": 250
+            }
+          }
+        },
+        "HoT/LG/cand0/h4": {
+          "6": {
+            "sha256": "72d33f7ecf526ab4671e3af17318aa3abdc17581986ca7a23692e2cf868cbabf",
+            "leaves": {
+              "0": 250,
+              "1": 250
+            }
+          },
+          "18": {
+            "sha256": "2138669f9284fb3ee295c0236265ccbf857033269966ad47aa3f5c69d09a7977",
+            "leaves": {
+              "1": 250,
+              "2": 250
+            }
+          }
+        }
+      },
+      "note": "logged only (R2-B3)"
+    },
+    "LUG": {
+      "mean_abs_kw": 913.4528086904436,
+      "identical_windows": 0.108,
+      "leaves": {
+        "HoT/LUG/cand0/h1": {
+          "6": {
+            "sha256": "4da7f8679ff15d239378eaffb73abfaa3167cb46e3a096effc30e1f711fe4f05",
+            "leaves": {
+              "0": 250,
+              "1": 250
+            }
+          },
+          "18": {
+            "sha256": "70e5aaed2a702a99df89db1dfafdf2a77dd43432cdaa79a427d0d16b799ef540",
+            "leaves": {
+              "1": 250,
+              "2": 250
+            }
+          }
+        },
+        "HoT/LUG/cand0/h2": {
+          "6": {
+            "sha256": "c191c7f976cbea811bf79743e3bed2a171ae9ec8f878976ec7ae645011eec825",
+            "leaves": {
+              "0": 250,
+              "1": 250
+            }
+          },
+          "18": {
+            "sha256": "6b52f38bb0500199b05f8b54c87c0acdc08fa5a7b148c78bb7728b8c71a5e39a",
+            "leaves": {
+              "1": 250,
+              "2": 250
+            }
+          }
+        },
+        "HoT/LUG/cand0/h3": {
+          "6": {
+            "sha256": "96ba27fedf4df39ab1e5516c175a1ae69445f3241c7c492b51571ffdedcb1ffd",
+            "leaves": {
+              "0": 250,
+              "1": 250
+            }
+          },
+          "18": {
+            "sha256": "e6d4bca32b63fe33b6cd2c01bbfccd95c6dc5c95d0e08590224687576769487e",
+            "leaves": {
+              "1": 250,
+              "2": 250
+            }
+          }
+        },
+        "HoT/LUG/cand0/h4": {
+          "6": {
+            "sha256": "b795d6a59cd9532a903a6c8809b2ef6b807e2443a9fa08eed86a4728513e2ece",
+            "leaves": {
+              "0": 250,
+              "1": 250
+            }
+          },
+          "18": {
+            "sha256": "75b92dfea23c91bddc6cd95275ed9a852e33e2f595dc43a5c43718aefb95e374",
+            "leaves": {
+              "1": 250,
+              "2": 250
+            }
+          }
+        }
+      },
+      "note": "logged only (R2-B3)"
+    }
+  }
+}

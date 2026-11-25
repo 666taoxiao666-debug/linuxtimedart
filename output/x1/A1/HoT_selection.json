@@ -1,0 +1,67 @@
+{
+  "grid": [
+    {
+      "num_leaves": 31,
+      "min_child_samples": 50,
+      "validation_mae": 175.50943337166012,
+      "best_iterations": [
+        1783,
+        1611,
+        766,
+        716
+      ]
+    },
+    {
+      "num_leaves": 31,
+      "min_child_samples": 200,
+      "validation_mae": 175.99527973273422,
+      "best_iterations": [
+        1576,
+        1141,
+        1320,
+        622
+      ]
+    },
+    {
+      "num_leaves": 127,
+      "min_child_samples": 50,
+      "validation_mae": 175.76775438912512,
+      "best_iterations": [
+        299,
+        346,
+        573,
+        351
+      ]
+    },
+    {
+      "num_leaves": 127,
+      "min_child_samples": 200,
+      "validation_mae": 175.63074510200568,
+      "best_iterations": [
+        422,
+        264,
+        346,
+        540
+      ]
+    }
+  ],
+  "selected": {
+    "num_leaves": 31,
+    "min_child_samples": 50,
+    "validation_mae": 175.50943337166012,
+    "best_iterations": [
+      1783,
+      1611,
+      766,
+      716
+    ]
+  },
+  "model_sha256": {
+    "HoT_h1.txt": "52e45cd23e6973f1b08714d36d5e6aea88ad84eccb967d063e9711300da58c2f",
+    "HoT_h2.txt": "deae4aeef4f5b8aa02c4961880178232392ac1a437d17e6a694f94f9064688f0",
+    "HoT_h3.txt": "07dca1abf2c2491328254b680e8acc5c18145cc1d0ff380ac064cb056f37e69a",
+    "HoT_h4.txt": "ab35e89291f66ddc68ea1bc42e2a18f31749c0cb3be653f8e8643ddd65236113"
+  },
+  "selection": "validation_mae_only",
+  "validation_prediction_sha256": "165b4fea4d1e5b41060e1dfcfecf0135629e200a9a2d0a16aa1daed418446c79"
+}

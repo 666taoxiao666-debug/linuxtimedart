@@ -1,0 +1,7 @@
+{
+  "mode": "A1",
+  "protocol_sha256": "50da39efbd74700c4d816fb13dd1fa2be88ffcd11d78f2153f2ee2ecee101a48",
+  "source_sha256": "f37d1e7ca0c5e349dc4626edd4d898f9ab551e6695573bf30fe0e98a879df7d7",
+  "lightgbm_version": "4.5.0",
+  "threads": 2
+}

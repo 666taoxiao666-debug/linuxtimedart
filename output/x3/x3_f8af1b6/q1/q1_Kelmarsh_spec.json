@@ -1,0 +1,73 @@
+{
+  "task": "q1",
+  "output": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X3/x3_f8af1b6/q1",
+  "receipt": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/cursor_env/receipt.json",
+  "manifest": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/cursor_env/chronos2_manifest.json",
+  "gpu_fraction": 0.7,
+  "farm": "Kelmarsh",
+  "contexts": [
+    {
+      "name": "Kelmarsh_validation",
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/x1_e4819b0_gpu_r1/A3/Kelmarsh_validation_context.npz",
+      "sha256": "75775af848c04f9c7d78cbfdf73cb3c9a1801b8d36d6e2ee8539616dec2ac5b2",
+      "history": {
+        "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X3/x3_f8af1b6/q1/history/Kelmarsh_a3_grid.npz",
+        "sha256": "9fb6b37c8f6e1aeaa512e948a770d8a35ea10d2ebf3b6b852dccc4cc8165a78e",
+        "source": "a3_grid"
+      }
+    },
+    {
+      "name": "Kelmarsh_2022",
+      "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/x1_e4819b0_gpu_r1/A3/Kelmarsh_2022_context.npz",
+      "sha256": "9a81ca7e44f2f3a59582c17d3dcf90d5d7481bc5e6e7623139e0e70e60935fee",
+      "history": {
+        "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X3/x3_f8af1b6/q1/history/Kelmarsh_a3_grid.npz",
+        "sha256": "9fb6b37c8f6e1aeaa512e948a770d8a35ea10d2ebf3b6b852dccc4cc8165a78e",
+        "source": "a3_grid"
+      }
+    }
+  ],
+  "grid": {
+    "path": "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/x1_e4819b0_gpu_r1/A3/Kelmarsh_history.npz",
+    "sha256": "cd54e76ebad2dc58a24811c1fce46827e2b0503d7367554e323892981907c8df"
+  },
+  "configs": [
+    [
+      168,
+      "single"
+    ],
+    [
+      512,
+      "single"
+    ],
+    [
+      1024,
+      "single"
+    ],
+    [
+      168,
+      "group"
+    ],
+    [
+      512,
+      "group"
+    ],
+    [
+      1024,
+      "group"
+    ]
+  ],
+  "descriptive_configs": [
+    [
+      24,
+      "single"
+    ]
+  ],
+  "masked_configs": [
+    [
+      512,
+      "single"
+    ]
+  ],
+  "masked_context": "Kelmarsh_validation"
+}

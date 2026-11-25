@@ -1,0 +1,17 @@
+{
+  "pid": 1166199,
+  "command": [
+    "/home/XT/miniconda3/envs/timedart/bin/python",
+    "-u",
+    "scripts/run_x1.py",
+    "--logs",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs",
+    "--output",
+    "/home/XT/nuist/pythoncode/TimeDARTFirst/outputs/logs/X1/x1_1d8479b_r1/A0",
+    "--protocol-sha256",
+    "690397175db685e492c06cbaa85a72eb02e1cfe53dfa1177c2aceaf6b9cd0cc7"
+  ],
+  "cwd": "/home/XT/nuist/pythoncode/TimeDARTFirst_X1_1d8479b",
+  "utc": "2026-11-16T00:25:15.611488+00:00",
+  "retry": false
+}

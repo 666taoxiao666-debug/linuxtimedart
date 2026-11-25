@@ -1,0 +1,30 @@
+{
+  "counts": {
+    "V1": 14932,
+    "V2": 15103,
+    "crossing_dropped": 21
+  },
+  "train": 4000,
+  "keys": {
+    "V1": {
+      "issue": "9ef3c923d76cb6b9475ecfcd37052905e21f0af5a3f4f331a0ac2e9baafaa8ab",
+      "turbines": "24ddaa4710480313757f965c38d60208a334556cb244f830d5006a893edd8da7",
+      "truth": "67afdb8058d40bb93a8df9eb1f0f25c68c3196bc16563d21de26f89553c17b52"
+    },
+    "V2": {
+      "issue": "9870759cb4d1e8f4b4bc263955606b2594a3de8944eb3f8aba75013f609909f3",
+      "turbines": "24ddaa4710480313757f965c38d60208a334556cb244f830d5006a893edd8da7",
+      "truth": "5fa50c3b9e5240ec5dd4026ad2761971368f01c9ede664a0843cf60f33ee741f"
+    },
+    "HoT_2024": {
+      "issue": "62f6f653545998a58a836f844b8f4c8496e14a490efa8b242f2f574e1bc60293",
+      "turbines": "24ddaa4710480313757f965c38d60208a334556cb244f830d5006a893edd8da7",
+      "truth": "30477d71c4861e987682b14e5c9830c512883760483bfc26e3b53dd617ee2305"
+    },
+    "HoT_2025": {
+      "issue": "b3746d09da4bb3e3a283c50cdd98ab7ae5740982975d9176d6683ddeb00b0035",
+      "turbines": "24ddaa4710480313757f965c38d60208a334556cb244f830d5006a893edd8da7",
+      "truth": "2f205ca848bb97be76a8c93320f08084f2afc9649b63e164551382622ac16574"
+    }
+  }
+}
