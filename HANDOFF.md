@@ -24,13 +24,14 @@
 需要用户决定: 1. 第 4 步是否现在就改论文初稿 paper_draft_v0.md。用户确认前，Codex 只写单独的主张修订稿，不动初稿。
 
 ## Codex → Claude
-<!-- 第 113 次交接，正式运行前的成绩清单 -->
-轮次: R1/2 | 阶段: wind-journal-baselines-result | 分支: exp/X1 | 提交号: 基线 20d56e6；服务器运行 1fe7ab6。
-审查结论: 第 113 次预登记读法已核对。已归档模型清单完成；正式结果复核等待反重力回传。
+<!-- 第 113 次交接，正式结果复核完成 -->
+轮次: R1/2 | 阶段: wind-journal-baselines-result | 分支: exp/X1 | 提交号: 运行 1fe7ab6，成绩清单前版 3cdf97a，本轮结果与本交接同一提交。
+审查结论: 通过，0 阻断。见 docs/review/wind-journal-baselines-result-R1-codex.md。
 已直接修复: 无。
-运行信息: 反重力桌面窗口存在，但本次 Computer Use 访问未获准。已把第 113 次启动及取回要求交用户代转，尚未收到 wjbcpu、wjbgpu 启动回执。
-关键数字: output/thesis_materials/wind_forecast_score_inventory.md 收录 464 个模型/条件/评估集条目、17 份指标文件。16 份与完成回执登记的 SHA256 一致；E1 使用登记有预测哈希的结果及独立复核记录。未重算预测数组。
-关键数字: WJB 本地目前仅有 5 个冒烟子步骤完成回执，四条正式线的成绩待核。
-交反重力: 原 worktree TimeDARTFirst_WJB_1fe7ab6，先核对锁和现有实例，并行启动尚未运行的 wjbcpu、wjbgpu 各一次；均结束后按第 112、113 次的停止规则执行 wjbfinal。归档五个正式目录的 JSON、MD、日志、V1/V2 预测、keys 与 TSG 的 natural_difference.json。数组仅保存在本地。
-需要 Claude 做的: 正式数据回来后独立复算配对差和区间；两类比较依 DECISIONS 预登记口径报告。
-需要用户决定: 如尚未发送，请向反重力转交本轮运行要求。论文主张先按独立修订稿处理，直接修改初稿留待用户决定。
+运行信息: 反重力已完成 wjbcpu、wjbgpu、wjbfinal。Codex 在本地 output/wjb/wjb_1fe7ab6 从归档预测复算。五个完成回执与结果 SHA256 已核对，TSG 96/96 棵树。
+关键数字: 本轮 102 个预测数组、24 个键包、30 份旧参照预测符合登记哈希。990 项指标、81 组配对统计与正式报告一致。
+关键数字: 同延迟 LightGBM 在核岭回归的 12/12 格更准，混合延迟 LightGBM 在 TSG 的 12/12 格更准。同输入 LightGBM-hist 在 Cabin 的 5/6 格更准，Kelmarsh LU 未检出差异。
+关键数字: U(18)−U(6) 按 K/P/H 排列，核岭回归 10.80/8.71/18.72 kW，TSG 12.46/6.81/23.55 kW，分别 3/3 场 CI > 0。HoT TSG 的 U(6)/U(18) 为 −18.13/+5.42 kW。
+交付: output/thesis_materials/ 下 wjb_development_comparisons.md、wjb_upstream_gain.svg、wjb_abstract_conclusion.md、wjb_claim_revision.md 和更新的 wind_forecast_score_inventory.md（500 条）。
+需要 Claude 做的: 用本地预测和键独立复算主表关键差值、区间与上游增益变化，按预登记边界复核摘要和主张修订稿。
+需要用户决定: 是否把经 Claude 复核的独立修订稿写入 paper_draft_v0.md。

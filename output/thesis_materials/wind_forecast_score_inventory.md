@@ -1,6 +1,6 @@
 # 三场风电预测成绩清单
 
-第 113 次交接，2026-11-24。下列 464 个条目对应已归档的评估集、模型和条件。同一模型在多个延迟条件的记录，或在另一份报告中的复用，不构成额外独立重复。正式期刊对照另待运行回执。
+第 113 次交接，2026-11-25。下列 500 个条目对应已归档的评估集、模型和条件，包含本次正式期刊对照的 36 个开发期成绩。同一模型在多个延迟条件的记录，或在另一份报告中的复用，不构成额外独立重复。
 
 ## 阅读口径
 
@@ -516,9 +516,48 @@
 | LightGBM LG | X5b | HoT | 2025 | H | LG / 24 h / 状态 D | 1 | A | 探索性 | 212.98 | 待核 | 待核 |
 | LightGBM LUG | X5b | HoT | 2025 | H | LUG / 24 h / 状态 D | 1 | A | 探索性 | 199.50 | 待核 | 待核 |
 
-## 尚待正式结果的记录
+## 风电期刊模型对照（开发期 V2）
 
-WJB 运行提交 `1fe7ab6`。核岭回归与同延迟 X5 树模型配对，Cabin 与同历史 LightGBM 配对，TSG 与混合延迟 X5 树模型配对。四个实现的正式成绩均待核，预定 A 级、开发期 V2。历史 v25–v28 的 Kelmarsh TSMixer 属 C 级，逐版本回执待核。
+同延迟 LightGBM、混合延迟 LightGBM、LightGBM-hist 分别对应核岭回归、TSG 与 Cabin。完整 30 格配对差及其区间见[三场开发期对照主表](wjb_development_comparisons.md)。历史 v25–v28 的 Kelmarsh TSMixer 属 C 级，逐版本回执待核。
+
+| 模型 | 来源 | 风场 | 评估 | 训练 | 输入 | 种子 | 等级 | 证据 | MAE | RMSE | R² |
+|---|---|---|---|---|---|---:|---|---|---:|---:|---:|
+| 核岭回归 | WJB | Kelmarsh | V2 2021下半年 | K | LG / d=6 h / 24 h | 1 | A | 开发期 | 146.44 | 215.47 | 0.857 |
+| 核岭回归 | WJB | Kelmarsh | V2 2021下半年 | K | LUG / d=6 h / 24 h | 1 | A | 开发期 | 143.60 | 212.70 | 0.860 |
+| 核岭回归 | WJB | Kelmarsh | V2 2021下半年 | K | LG / d=18 h / 24 h | 1 | A | 开发期 | 173.12 | 258.25 | 0.794 |
+| 核岭回归 | WJB | Kelmarsh | V2 2021下半年 | K | LUG / d=18 h / 24 h | 1 | A | 开发期 | 159.48 | 239.61 | 0.823 |
+| 核岭回归 | WJB | Penmanshiel | V2 2020下半年 | P | LG / d=6 h / 24 h | 1 | A | 开发期 | 196.69 | 289.60 | 0.804 |
+| 核岭回归 | WJB | Penmanshiel | V2 2020下半年 | P | LUG / d=6 h / 24 h | 1 | A | 开发期 | 194.85 | 285.91 | 0.809 |
+| 核岭回归 | WJB | Penmanshiel | V2 2020下半年 | P | LG / d=18 h / 24 h | 1 | A | 开发期 | 231.93 | 340.60 | 0.729 |
+| 核岭回归 | WJB | Penmanshiel | V2 2020下半年 | P | LUG / d=18 h / 24 h | 1 | A | 开发期 | 221.38 | 326.77 | 0.751 |
+| 核岭回归 | WJB | HoT | V2 2023第4季度 | H | LG / d=6 h / 24 h | 1 | A | 开发期 | 224.80 | 337.21 | 0.820 |
+| 核岭回归 | WJB | HoT | V2 2023第4季度 | H | LUG / d=6 h / 24 h | 1 | A | 开发期 | 224.97 | 338.15 | 0.819 |
+| 核岭回归 | WJB | HoT | V2 2023第4季度 | H | LG / d=18 h / 24 h | 1 | A | 开发期 | 279.57 | 407.41 | 0.737 |
+| 核岭回归 | WJB | HoT | V2 2023第4季度 | H | LUG / d=18 h / 24 h | 1 | A | 开发期 | 261.03 | 383.75 | 0.767 |
+| Cabin | WJB | Kelmarsh | V2 2021下半年 | K | L0 / 24 h | 1 | A | 开发期 | 168.68 | 256.98 | 0.796 |
+| LightGBM-hist | WJB | Kelmarsh | V2 2021下半年 | K | L0 / 24 h | 1 | A | 开发期 | 161.39 | 256.73 | 0.797 |
+| Cabin | WJB | Kelmarsh | V2 2021下半年 | K | LU / 24 h | 1 | A | 开发期 | 148.87 | 228.20 | 0.839 |
+| LightGBM-hist | WJB | Kelmarsh | V2 2021下半年 | K | LU / 24 h | 1 | A | 开发期 | 146.45 | 230.25 | 0.836 |
+| Cabin | WJB | Penmanshiel | V2 2020下半年 | P | L0 / 24 h | 1 | A | 开发期 | 231.27 | 344.27 | 0.723 |
+| LightGBM-hist | WJB | Penmanshiel | V2 2020下半年 | P | L0 / 24 h | 1 | A | 开发期 | 224.00 | 351.50 | 0.712 |
+| Cabin | WJB | Penmanshiel | V2 2020下半年 | P | LU / 24 h | 1 | A | 开发期 | 214.99 | 323.85 | 0.755 |
+| LightGBM-hist | WJB | Penmanshiel | V2 2020下半年 | P | LU / 24 h | 1 | A | 开发期 | 206.78 | 325.43 | 0.753 |
+| Cabin | WJB | HoT | V2 2023第4季度 | H | L0 / 24 h | 1 | A | 开发期 | 267.20 | 396.75 | 0.751 |
+| LightGBM-hist | WJB | HoT | V2 2023第4季度 | H | L0 / 24 h | 1 | A | 开发期 | 241.56 | 395.10 | 0.753 |
+| Cabin | WJB | HoT | V2 2023第4季度 | H | LU / 24 h | 1 | A | 开发期 | 246.57 | 370.63 | 0.782 |
+| LightGBM-hist | WJB | HoT | V2 2023第4季度 | H | LU / 24 h | 1 | A | 开发期 | 216.73 | 356.41 | 0.799 |
+| TSG | WJB | Kelmarsh | V2 2021下半年 | K | LG / d=6 h / 24 h | 1 | A | 开发期 | 167.40 | 237.28 | 0.826 |
+| TSG | WJB | Kelmarsh | V2 2021下半年 | K | LUG / d=6 h / 24 h | 1 | A | 开发期 | 162.83 | 230.04 | 0.837 |
+| TSG | WJB | Kelmarsh | V2 2021下半年 | K | LG / d=18 h / 24 h | 1 | A | 开发期 | 197.88 | 272.05 | 0.772 |
+| TSG | WJB | Kelmarsh | V2 2021下半年 | K | LUG / d=18 h / 24 h | 1 | A | 开发期 | 180.86 | 255.25 | 0.799 |
+| TSG | WJB | Penmanshiel | V2 2020下半年 | P | LG / d=6 h / 24 h | 1 | A | 开发期 | 201.16 | 300.88 | 0.789 |
+| TSG | WJB | Penmanshiel | V2 2020下半年 | P | LUG / d=6 h / 24 h | 1 | A | 开发期 | 199.83 | 299.70 | 0.790 |
+| TSG | WJB | Penmanshiel | V2 2020下半年 | P | LG / d=18 h / 24 h | 1 | A | 开发期 | 235.42 | 344.86 | 0.722 |
+| TSG | WJB | Penmanshiel | V2 2020下半年 | P | LUG / d=18 h / 24 h | 1 | A | 开发期 | 227.27 | 331.55 | 0.743 |
+| TSG | WJB | HoT | V2 2023第4季度 | H | LG / d=6 h / 24 h | 1 | A | 开发期 | 217.74 | 342.95 | 0.814 |
+| TSG | WJB | HoT | V2 2023第4季度 | H | LUG / d=6 h / 24 h | 1 | A | 开发期 | 235.87 | 365.30 | 0.789 |
+| TSG | WJB | HoT | V2 2023第4季度 | H | LG / d=18 h / 24 h | 1 | A | 开发期 | 268.92 | 397.33 | 0.750 |
+| TSG | WJB | HoT | V2 2023第4季度 | H | LUG / d=18 h / 24 h | 1 | A | 开发期 | 263.49 | 393.51 | 0.755 |
 
 ## 来源与校验
 
@@ -541,3 +580,4 @@ WJB 运行提交 `1fe7ab6`。核岭回归与同延迟 X5 树模型配对，Cabin
 - **E1** · 运行提交 `5944271` · [指标](../e1_baselines/a2/r1/result.json) · [核验回执](../e1_baselines/a2/r1/independent_verification.json) · `11f2ed2cda97100c6dc87a2067490ba9f67efd901f7959628f3c42485e183fff`
 - **X4** · 运行提交 `1c0a125` · [指标](../x4/x4_1c0a125/report/results.json) · [核验回执](../x4/x4_1c0a125/report/completed.json) · `fd1113915de34082a8795e3b8fafb6804d9b0c01a60209a954436c07005eaa74`
 - **X5b** · 运行提交 `b7018c0` · [指标](../x5/x5_b7018c0/mrun/X5/results.json) · [核验回执](../x5/x5_b7018c0/mrun/completed.json) · `fc9083ce5a1c5f6d4dd525a57147d48ae45df52ddce6f089b5d833fdc4b07b87`
+- **WJB** · 运行提交 `1fe7ab6` · [指标](../wjb/wjb_1fe7ab6/report/results.json) · [核验回执](../wjb/wjb_1fe7ab6/report/completed.json) · `974bd070f8dae47d246765f6b0a687cd32daa874c8cb5b9746ba3bbbdbddfebd`
