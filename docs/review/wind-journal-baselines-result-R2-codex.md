@@ -9,10 +9,10 @@
 
 ## TSG 线性候选的只读诊断
 
-本地冻结记录可将最早**有记录的异常**定位到根节点的稳健模型验证损失。Kelmarsh 的 16 棵线性树根节点下界为 0.00676–0.02187，上界为 2.63×10⁵–5.15×10⁸。Penmanshiel 对应为 0.00830–0.24938 和 5.45×10⁸–5.50×10⁹。作对照，两场 32 棵 NN 树的根节点上界均小于 0.051。数值来自归一化功率的损失记录，V1 MAE 另以 kW 计。
+本地冻结记录显示两场线性候选在根节点均有异常的稳健验证损失。Kelmarsh 的 16 棵线性树根节点下界为 0.00676–0.02187，上界为 2.63×10⁵–5.15×10⁸。Penmanshiel 对应为 0.00830–0.24938 和 5.45×10⁸–5.50×10⁹。作对照，两场 32 棵 NN 树的根节点上界均小于 0.051。数值来自归一化功率的损失记录，V1 MAE 另以 kW 计。
 
 作者代码把根节点名义模型的样本内损失记作下界，把稳健模型的最佳验证损失记作上界，随后把这两个值同时打印并写入树记录。由此可确认，进入分裂前保存的线性稳健模型已出现异常，输出截断时可观察到大量零或额定功率。当前证据不足以归因到某个特征、系数或优化步骤。[冻结记录](../../output/wjb/wjb_1fe7ab6/tsg/v1_freeze.json) · [作者实现](../../models/vendor_tsg/clean_finite_adaptability_functions.py#L198)
 
-**服务器原始日志待核。** Computer Use 未获准操作反重力窗口，诊断请求已交用户代转。请反重力在正式目录 `outputs/logs/WJB/wjb_1fe7ab6/tsg/jobs/{Kelmarsh,Penmanshiel}/{LG,LUG}/cand{0,1}/h{1,2,3,4}/author_stdout.txt` 只读核对上下界、最早异常与文件行号。仅返回代表数值和日志支持的一句成因，无需新增运行。
+**第 116 次日志核对。** 反重力只读回执显示，K/P 的 32 份日志在根节点首轮对抗训练记录的验证损失即达 10⁵–10⁹ 量级，随后缓降，Penmanshiel 的 LUG 在攻击前名义损失已达 0.20–0.25；这些观测支持共线输入下无正则最小二乘热启动对特征置零敏感的解释，日志未记录系数，具体列及单精度舍入机制仍未证实。[回执与证据边界](DECISIONS.md#阶段-wind-journal-baselines-result)
 
 [Claude 的复算输出](../../output/wjb/wjb_1fe7ab6/claude_review/output.txt) · [摘要](../../output/thesis_materials/wjb_abstract_conclusion.md) · [主张稿](../../output/thesis_materials/wjb_claim_revision.md)
