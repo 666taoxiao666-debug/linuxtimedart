@@ -1,14 +1,22 @@
 # Which exogenous information matters for turbine-level ultra-short-term wind power forecasting? A pre-registered three-farm study of numerical weather prediction, upstream observations and alternative predictors
 
-Working draft opened 17 November 2026. Literature and interpretation updated 21 November 2026; Section 5.6 (upstream value under NWP latency) and the X4 adaptation results added 22 November 2026. The matched-coverage analysis (Section 5.6), the comparison with three published wind-power models (Section 5.7) and the evidence status of each claim added 25 November 2026. The primary sealed comparison and later exploratory analyses are identified in the text.
+Working draft opened 17 November 2026. Literature and interpretation updated 21 November 2026; Section 5.6 (upstream value under NWP latency) and the X4 adaptation results added 22 November 2026. The matched-coverage analysis (Section 5.6), the comparison with three published wind-power models (Section 5.7) and the evidence status of each claim added 25 November 2026; the same day the abstract was shortened to the 250-word limit of Advanced Engineering Informatics and the references were checked. The primary sealed comparison and later exploratory analyses are identified in the text.
 
 ---
 
 ## Abstract
 
-For a wind farm with access to a numerical weather forecast, how much do upstream observations still improve turbine-level power predictions? We evaluated hourly forecasts at 1–4 h for 41 turbines on three UK farms. A factorial comparison gave the same local SCADA predictor upstream station observations, GFS forecasts, both sources, or neither, under a six-hour forecast-cycle availability rule. On first-opened test data, adding GFS to a predictor already using upstream observations reduced mean absolute error (MAE) by 8.7% at Kelmarsh and 8.6% at Penmanshiel, and by 6.9% and 7.2% in a single pre-registered confirmation spanning two held-out years at Hill of Towie; all four 95% intervals excluded zero. Conversely, upstream observations reduced TSMixer MAE by 5.7–11.0% without GFS but by only 0.4–1.5% with GFS, an increment whose interval excluded zero in two of the four test sets. On development data with single-seed LightGBM, the upstream increment was 1.82–2.28 kW when GFS cycles were selected 6 h after issue and 15.50–24.38 kW at 18 h, when the extracted forecasts no longer covered any target hour. A post-hoc analysis at 15 h partly separated the two changes: truncating a recent cycle to the lead coverage of the older cycle raised the upstream increment by 3.75–12.80 kW, whereas switching to the older cycle at matched coverage had no detectable additional effect. Three published wind-power models, adapted with a single seed to the same development windows, were less accurate than LightGBM given the same information in 29 of 30 paired comparisons, with one difference not detected; for the two that use GFS, the upstream increment also rose from 6 h to 18 h at all three farms. An upstream timing correction, fine-tuning and ensembling of Chronos-2, and cross-farm adaptation missed their pre-registered thresholds. For these sites, a forecaster with station access gained consistently from an additional GFS feed. On these development sets, the station feed yielded larger MAE reductions when the extracted GFS forecasts covered fewer target hours.
+How much do upstream observations still improve turbine-level wind power forecasts when a numerical weather forecast is available? We forecast hourly power 1–4 h ahead for 41 turbines on three UK farms, giving one local-data predictor upstream station observations, Global Forecast System (GFS) forecasts, both or neither. On first-opened test data, adding GFS to a predictor with upstream observations reduced mean absolute error (MAE) by 8.7% at Kelmarsh, 8.6% at Penmanshiel and, in a pre-registered confirmation, 6.9% and 7.2% in two held-out years at Hill of Towie (all intervals above zero). Upstream observations reduced MAE by 5.7–11.0% without GFS but by only 0.4–1.5% with it (interval above zero in two of four test sets; partly exploratory). On reused development data with single-seed LightGBM, the upstream increment rose from 1.82–2.28 kW at a 6 h forecast delay to 15.50–24.38 kW at 18 h, when the forecasts covered no target hour. In a post-hoc analysis at 15 h, truncating a recent cycle to the older cycle's lead coverage raised the increment by 3.75–12.80 kW, whereas switching to the older cycle at matched coverage had no detectable effect. Adaptations of three published models with the same inputs were less accurate than LightGBM in 29 of 30 single-seed development comparisons; for the two using GFS, the upstream increment also rose from 6 h to 18 h. Pre-registered forecast corrections and Chronos-2 adaptations missed their thresholds. On these development sets, stations reduced MAE more when GFS covered fewer target hours.
 
 **Keywords:** wind power forecasting; numerical weather prediction; upstream observations; information decomposition; pre-registration; negative results
+
+**Highlights** (separate file at submission; 3–5 bullets, ≤ 85 characters each)
+
+- GFS cut MAE by 6.9–8.7% at three UK farms even with upstream stations in use
+- With GFS, stations cut MAE by 0.4–1.5% (intervals excluded zero in 2 of 4 tests)
+- In development data, station value rose when GFS no longer covered target hours
+- At matched coverage, 6 h versus 15 h delays showed no clear change in station gain
+- LightGBM beat adapted models in 29 of 30 same-input, single-seed development pairs
 
 ---
 
@@ -114,7 +122,7 @@ Hill of Towie took no part in any design choice; its development years were used
 
 ### 5.3 Is the decomposition predictor-dependent? (LightGBM)
 
-A gradient-boosted tree model (LightGBM, one model per lead, L1 objective, 4-cell grid selected on validation) was given exactly the same inputs as N (last-step channels, 24-h power and wind history, turbine id). On the test years it reaches MAE 145.25 / 161.01 / 194.40 / 186.72 kW, i.e. 1.2 (n.s.), 8.0, 6.4 and 6.3 kW below N, while its accuracy (1 − nRMSE) differs from N by at most 0.2 percentage points; the advantage is specific to MAE and consistent with its L1 objective.
+A gradient-boosted tree model (LightGBM; Ke et al., 2017; one model per lead, L1 objective, 4-cell grid selected on validation) was given exactly the same inputs as N (last-step channels, 24-h power and wind history, turbine id). On the test years it reaches MAE 145.25 / 161.01 / 194.40 / 186.72 kW, i.e. 1.2 (n.s.), 8.0, 6.4 and 6.3 kW below N, while its accuracy (1 − nRMSE) differs from N by at most 0.2 percentage points; the advantage is specific to MAE and consistent with its L1 objective.
 
 Repeating the decomposition with LightGBM on the second half of the validation year (development data; seed 2024) gives: upstream alone −8.5 to −11.1 %, NWP alone −17.6 to −23.1 %, NWP given upstream −9.1 to −14.3 %, upstream given NWP −1.0 to −1.7 %. The ordering is the same as for TSMixer. On the (already opened) test years the upstream-given-NWP increment of LightGBM is positive in all four sets (2.5–6.7 kW, 1.7–3.4 %); we report this as exploratory.
 
@@ -142,7 +150,7 @@ A further development round tested two adaptations. Raising the fine-tuning lear
 
 ### 5.4b Base screening
 
-Six predictor families were trained on identical inputs (the 50-channel information set, HoT retrofit flag), identical splits and the same training recipe, with early stopping on the first half of the validation year (V1) and selection on the second half (V2). The neural candidates include the author's two earlier architectures: a TCN-GRU, with and without a domain-adversarial branch (standard gradient-reversal layer, time-segment domains, λ selected on V1), and CNN and BiLSTM networks with attention, also combined with LightGBM by ridge stacking fitted on V1 only.
+Six predictor families were trained on identical inputs (the 50-channel information set, HoT retrofit flag), identical splits and the same training recipe, with early stopping on the first half of the validation year (V1) and selection on the second half (V2). The neural candidates include the author's two earlier architectures: a TCN-GRU, with and without a domain-adversarial branch (standard gradient-reversal layer of Ganin et al., 2016, time-segment domains, λ selected on V1), and CNN and BiLSTM networks with attention, also combined with LightGBM by ridge stacking fitted on V1 only.
 
 **Table 2b.** V2 MAE (kW) and mean relative difference to LightGBM.
 
@@ -289,7 +297,7 @@ At Hill of Towie, aggregating turbines raised forecast accuracy on the same year
 - Three farms in one climate region (UK).
 - HoT test years are entirely post-retrofit, while most fit data are pre-retrofit.
 - The two HoT test years share the same fitted models.
-- The 15-min resolution of GB/T 40607 is not available from hourly aggregation.
+- The 15-min resolution of GB/T 40607 (SAMR and SAC, 2021) is not available from hourly aggregation.
 
 ---
 
@@ -301,28 +309,28 @@ On three UK wind farms, an issued GFS forecast reduced 1–4 h turbine-level MAE
 
 ## Data and code availability
 
-Kelmarsh and Penmanshiel SCADA (Zenodo, CC-BY-4.0); Hill of Towie (Zenodo 22662930); MIDAS Open (OGL v3, attribution required); GFS (NOAA, public). Code, protocols, hashes and all result files: [repository, PENDING].
+Kelmarsh and Penmanshiel SCADA (Zenodo, CC-BY-4.0); Hill of Towie (Zenodo 22662930); MIDAS Open (OGL v3, attribution required); GFS (NOAA, public). Code, protocols, hashes and all result files: [repository, PENDING]. Author implementations adapted in Section 5.7: Cabin, github.com/xiufengliu/cabin-wind-forecasting (commit 392f103, MIT licence); adaptive robust regression, github.com/akylasstrat/wind-forecast-missing-data (commit 409f20f, MIT licence).
 
-## References (to verify)
+## References
 
-- Gneiting T. et al. (2006) Calibrated probabilistic forecasting at the Stateline wind energy center. JASA.
-- Hering A.S., Genton M.G. (2010) Powering up with space-time wind forecasting. JASA.
-- Tastu J. et al. (2011). Spatio-temporal analysis and modeling of short-term wind power forecast errors. *Wind Energy* 14, 43–60. [Article](https://doi.org/10.1002/we.401)
-- Messner J.W., Pinson P. (2019) Online adaptive lasso estimation in vector autoregressive models for high dimensional wind power forecasting. IJF.
-- Hong T., Pinson P., Fan S. (2014) Global Energy Forecasting Competition 2012. IJF.
-- Ansari A. F. et al. (2025). Chronos-2: From univariate to universal forecasting. arXiv:2510.15821. [Technical report](https://arxiv.org/abs/2510.15821)
-- Chen S.-A. et al. (2023). TSMixer: An all-MLP architecture for time series forecasting. *Transactions on Machine Learning Research*. [Article](https://openreview.net/forum?id=wbpxTuXgm0)
-- Ke G. et al. (2017) LightGBM: A highly efficient gradient boosting decision tree. NeurIPS.
-- Ganin Y. et al. (2016) Domain-adversarial training of neural networks. JMLR.
-- Deignan C. et al. (2025). Portability of short term wind power forecasting: investigating model calibration using wind power data from Ireland and UK. *Scientific Reports* 15, 33891. [Article](https://doi.org/10.1038/s41598-025-08751-3)
-- Liu C. et al. (2023). Series-wise attention network for wind power forecasting considering temporal lag of numerical weather prediction. *Applied Energy* 336, 120815. [Article](https://doi.org/10.1016/j.apenergy.2023.120815)
-- Jin C. et al. (2024). Evaluation of forecasted wind speed at turbine hub height and wind ramps by five NWP models with observations from 262 wind farms over China. *Meteorological Applications* 31, e70007. [Article](https://doi.org/10.1002/met.70007)
-- Spiliotis E. and Theodorou E. (2025). Improving wind power forecasting accuracy through bias correction of wind speed predictions. *Sustainable Energy Technologies and Assessments* 83, 104599. [Article](https://doi.org/10.1016/j.seta.2025.104599)
-- Xu X. et al. (2025). A cross-dataset benchmark for neural network-based wind power forecasting. *Renewable Energy*, 123463. [Article](https://doi.org/10.1016/j.renene.2025.123463)
-- Peduto M. et al. (2026). Observation-driven correction of numerical weather prediction for marine winds. *Journal of Geophysical Research: Machine Learning and Computation* 3, e2025JH001174. [Article](https://doi.org/10.1029/2025JH001174)
-- Wang H. et al. (2026). DeepWind: A foundation model for zero-shot wind power forecasting. *Energy* 360, 141793. [Article](https://doi.org/10.1016/j.energy.2026.141793)
-- Zhu Y. et al. (2026). WPBench: A comprehensive benchmark for wind power forecasting. Preprint, arXiv:2609.24444. [Preprint](https://arxiv.org/abs/2609.24444)
-- GB/T 40607-2021. Technical requirements for wind/PV power forecasting systems on the dispatch side.
-- Bouche D., Flamary R., d'Alché-Buc F., Plougonven R., Clausel M., Badosa J., Drobinski P. (2023). Wind power predictions from nowcasts to 4-hour forecasts: A learning approach with variable selection. *Renewable Energy* 211, 938–947. [Article](https://doi.org/10.1016/j.renene.2023.05.005)
-- Wu S., Chen Y., He X., Wang Z., Liu X., Fu Y. (2025). Cabin: A collaborative and adaptive framework for wind power forecasting integrating ambient variables. *Energy* 335, 137753. [Article](https://doi.org/10.1016/j.energy.2025.137753) · code: github.com/xiufengliu/cabin-wind-forecasting (commit 392f103)
-- Stratigakos A., Andrianesis P. (2026). Learning data-driven uncertainty set partitions for robust and adaptive energy forecasting with missing data. *IEEE Transactions on Smart Grid* 17(1), 806–817. doi:10.1109/TSG.2025.3620957 (suffix to verify) · code: github.com/akylasstrat/wind-forecast-missing-data (commit 409f20f)
+<!-- Bibliographic checks and publisher records are documented in the wind-journal-baselines-paper R2 review, 25 November 2026. -->
+
+- Ansari A.F., Shchur O., Küken J., et al. (2025). Chronos-2: From univariate to universal forecasting. arXiv:2510.15821. https://doi.org/10.48550/arXiv.2510.15821
+- Bouche D., Flamary R., d'Alché-Buc F., Plougonven R., Clausel M., Badosa J., Drobinski P. (2023). Wind power predictions from nowcasts to 4-hour forecasts: A learning approach with variable selection. *Renewable Energy* 211, 938–947. https://doi.org/10.1016/j.renene.2023.05.005
+- Chen S.-A., Li C.-L., Yoder N.C., Arik S.Ö., Pfister T. (2023). TSMixer: An all-MLP architecture for time series forecasting. *Transactions on Machine Learning Research*. https://openreview.net/forum?id=wbpxTuXgm0
+- Deignan C., González Sopeña J.M., Ghosh B., Pakrashi V. (2025). Portability of short term wind power forecasting: investigating model calibration using wind power data from Ireland and UK. *Scientific Reports* 15, 33891. https://doi.org/10.1038/s41598-025-08751-3
+- Ganin Y., Ustinova E., Ajakan H., Germain P., Larochelle H., Laviolette F., Marchand M., Lempitsky V. (2016). Domain-adversarial training of neural networks. *Journal of Machine Learning Research* 17(59), 1–35.
+- Gneiting T., Larson K., Westrick K., Genton M.G., Aldrich E. (2006). Calibrated probabilistic forecasting at the Stateline wind energy center: The regime-switching space–time method. *Journal of the American Statistical Association* 101(475), 968–979. https://doi.org/10.1198/016214506000000456
+- Hering A.S., Genton M.G. (2010). Powering up with space–time wind forecasting. *Journal of the American Statistical Association* 105(489), 92–104. https://doi.org/10.1198/jasa.2009.ap08117
+- Jin C., Yang Y., Han C., Lei T., Li C., Lu B. (2024). Evaluation of forecasted wind speed at turbine hub height and wind ramps by five NWP models with observations from 262 wind farms over China. *Meteorological Applications* 31(6), e70007. https://doi.org/10.1002/met.70007
+- Ke G., Meng Q., Finley T., Wang T., Chen W., Ma W., Ye Q., Liu T.-Y. (2017). LightGBM: A highly efficient gradient boosting decision tree. *Advances in Neural Information Processing Systems* 30, 3146–3154.
+- Liu C., Zhang X., Mei S., Zhou Q., Fan H. (2023). Series-wise attention network for wind power forecasting considering temporal lag of numerical weather prediction. *Applied Energy* 336, 120815. https://doi.org/10.1016/j.apenergy.2023.120815
+- Peduto M., Yang Q., Giezendanner J., Tuia D., Wang S. (2026). Observation-driven correction of numerical weather prediction for marine winds. *Journal of Geophysical Research: Machine Learning and Computation* 3(4), e2025JH001174. https://doi.org/10.1029/2025JH001174
+- SAMR, SAC (2021). GB/T 40607-2021: Technical requirements for dispatching side forecasting system of wind or photovoltaic power. State Administration for Market Regulation and Standardization Administration of China, Beijing.
+- Spiliotis E., Theodorou E. (2025). Improving wind power forecasting accuracy through bias correction of wind speed predictions. *Sustainable Energy Technologies and Assessments* 83, 104599. https://doi.org/10.1016/j.seta.2025.104599
+- Stratigakos A., Andrianesis P. (2026). Learning data-driven uncertainty set partitions for robust and adaptive energy forecasting with missing data. *IEEE Transactions on Smart Grid* 17(1), 806–817. https://doi.org/10.1109/TSG.2025.3620957
+- Tastu J., Pinson P., Kotwa E., Madsen H., Nielsen H.Aa. (2011). Spatio-temporal analysis and modeling of short-term wind power forecast errors. *Wind Energy* 14(1), 43–60. https://doi.org/10.1002/we.401
+- Wang H., Zhou T., Jia C., Liu Y., Wang L. (2026). DeepWind: A foundation model for zero-shot wind power forecasting. *Energy* 360, 141793. https://doi.org/10.1016/j.energy.2026.141793
+- Wu S., Chen Y., He X., Wang Z., Liu X., Fu Y. (2025). Cabin: A collaborative and adaptive framework for wind power forecasting integrating ambient variables. *Energy* 335, 137753. https://doi.org/10.1016/j.energy.2025.137753
+- Xu X., Cao Q., Deng R., Guo Z., Chen Y., Yan J. (2025). A cross-dataset benchmark for neural network-based wind power forecasting. *Renewable Energy* 254, 123463. https://doi.org/10.1016/j.renene.2025.123463
+- Zhu Y., Hu J., Cai X., et al. (2026). WPBench: A comprehensive benchmark for wind power forecasting. arXiv:2609.24444 (accepted to IEEE ICDE 2027). https://arxiv.org/abs/2609.24444

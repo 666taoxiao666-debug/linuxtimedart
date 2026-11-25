@@ -5,30 +5,35 @@
 长期执行分工（用户于 2026-11-24 指定）：本项目原交给 Cursor 的服务器调用统一交给反重力（Antigravity），包括环境核验、已批准的下载、运行、状态查询和结果取回。交接写明已审提交、可执行步骤、回执位置和停止条件。历史路径里的 Cursor 字样按原名称使用。
 
 ## Claude → Codex
-<!-- 由 Claude 覆盖。最后更新：2026-11-25 第 117 次（用户同意：主张写入初稿、exp/X1 合回主线） -->
-轮次: R1/2 | 阶段: wind-journal-baselines-paper | 分支: exp/X1 | 基线提交: 125ca78（运行提交 1fe7ab6）
-请求: 复核结果（只看初稿改动是否超出 DECISIONS 已定的边界），通过后提交并合并
-待审范围: git diff 125ca78 -- output/thesis_materials/paper_draft_v0.md docs/review/DECISIONS.md
-允许改动: output/thesis_materials/paper_draft_v0.md, output/thesis_materials/任务线与目标_20261116.md, docs/review/DECISIONS.md, docs/review/wind-journal-baselines-result-R2-codex.md, docs/review/wind-journal-baselines-paper-R1-codex.md, output/wjb/**（*.npy、*.npz、*.pkl、*.pt、*.pid 不要提交）, output/thesis_materials/**（只提交本轮相关文件）, output/x5/**（*.npy、*.npz、*.pid 不要提交）, output/x4/**（*.npy 不要提交）, output/x3/**（*.npy、supervisor 文件不要提交）, output/x2/**（*.tar.gz、*.pid 不要提交）, output/external_acquisition/gfs_g0/manifest_b1.json（不要提交）, output/g2/hot_dev/audit_metadata_r5.tar.gz（不要提交）, .cursor-tmp/**（不要提交）
-审查文件: docs/review/wind-journal-baselines-paper-R1-codex.md
-本轮决议: 用户 11-25 同意我的两条推荐：主张写入初稿；exp/X1 用 --no-ff 合回主线。初稿改动清单见 DECISIONS「阶段 wind-journal-baselines-result」末尾
+<!-- 由 Claude 覆盖。最后更新：2026-11-25 第 118 次（R1-B1–B3 登记；按 AEI 要求压缩摘要、核对参考文献） -->
+轮次: R2/2 | 阶段: wind-journal-baselines-paper | 分支: codex/self-evolving-wiki（只改论文文字和文档） | 基线提交: a160f2c
+请求: 复核结果（终核初稿的摘要、Highlights 和参考文献；通过后提交）
+待审范围: git diff a160f2c -- output/thesis_materials/paper_draft_v0.md docs/review/DECISIONS.md
+允许改动: output/thesis_materials/paper_draft_v0.md, output/thesis_materials/任务线与目标_20261116.md, docs/review/DECISIONS.md, docs/review/wind-journal-baselines-paper-R2-codex.md, output/wjb/**（*.npy、*.npz、*.pkl、*.pt、*.pid 不要提交）, output/thesis_materials/**（只提交本轮相关文件）, output/x5/**（*.npy、*.npz、*.pid 不要提交）, output/x4/**（*.npy 不要提交）, output/x3/**（*.npy、supervisor 文件不要提交）, output/x2/**（*.tar.gz、*.pid 不要提交）, output/external_acquisition/gfs_g0/manifest_b1.json（不要提交）, output/g2/hot_dev/audit_metadata_r5.tar.gz（不要提交）, .cursor-tmp/**（不要提交）
+审查文件: docs/review/wind-journal-baselines-paper-R2-codex.md
+本轮决议: R1-B1–B3 采纳，已由用户授权修复、我复核通过（DECISIONS「阶段 wind-journal-baselines-paper」表格）；投稿准备的改动和核对结果在同一节末尾
 
-初稿改动要点:
-- 摘要、5.1、5.2、5.6（新增表 4b）、新增 5.7（表 5、表 6）、局限、结论、参考文献。
-- 表 4b、表 5、表 6 我已用脚本对照 results.json 逐格核对，29/1 的计数也复核过。
-- 摘要 328 词，投稿前要压缩。
+改动位置（paper_draft_v0.md，当前工作区行号）:
+- 第 3 行：版本说明。
+- 第 9 行：摘要 328 → 245 词（AEI 上限 250）；只定义 GFS、MAE；末句沿用你 R1-B2 收窄后的说法。
+- 第 13–19 行：新增 Highlights 5 条，每条 74–82 个字符（AEI 上限 85）。
+- 第 125 行：补引 Ke et al., 2017；第 153 行：补引 Ganin et al., 2016；第 300 行：补 (SAMR and SAC, 2021)。
+- 第 312 行：两份作者代码的仓库、提交号和许可证移到"数据与代码"。
+- 第 314 行起：参考文献 19 条，统一作者-年份格式、按字母排序；删去未引用的 Messner 2019、Hong 2014；正文引用与列表一一对应。
+- TSG 的 DOI 10.1109/TSG.2025.3620957 已经确认。标 [confirm] 的 5 处（卷期页、DOI、作者名单）我在线确认不了。
+说明: 工作区当前在 exp/X1（d064524），这几个文件和 a160f2c 内容相同；请切到主线后再提交，未提交的改动会随工作区一起带过去。
 需要你做的:
-1. 只读审初稿改动：每条主张是否在 DECISIONS 的边界内（证据性质、"未检出"与"无影响"的区别、不写"复现"或"覆盖主导"）。有越界就写成阻断；没有就提交。
-2. 在 R2 审查文件补上第 116 次的 LR 日志成因（用"支持"），与本轮一起提交。
-3. 提交后执行 `git checkout codex/self-evolving-wiki && git merge --no-ff exp/X1`。合并前确认没有 npy、npz、pkl、pt 或大文件进入历史；有冲突就停下交回，不要强推。合并后在 exp/X1 和主线各推送一次。
-需要用户决定: 无
+1. 终核摘要每句话是否仍在 DECISIONS 已定的证据边界内，Highlights 的数字是否和正文一致。
+2. 能访问 doi.org、IEEE Xplore 或 Wiley 的话，把 5 处 [confirm] 核掉并删去标记；核不了就保留标记。顺便请到 AEI 官网 guide-for-authors 再确认一次 250 词、85 字符、7 个关键词这三条。
+3. 通过后在 codex/self-evolving-wiki 上提交并推送。
+需要用户决定: 无（标题 27 词偏长，投稿前可再议）
 
 ## Codex → Claude
-<!-- 第 117 次交接，初稿边界核对 -->
-轮次: R1/2 | 阶段: wind-journal-baselines-paper | 分支: exp/X1 | 提交号: 本次定稿审查与交接同一提交，正式运行 1fe7ab6。
-审查结论: 初稿三处证据边界问题已按用户本轮授权直接修文，复核通过，遗留阻断 0；见 docs/review/wind-journal-baselines-paper-R1-codex.md。
-已直接修复: 区分 HoT 的分组均值与逐机组 MAE；限定覆盖不足时的站网结论；注明线性候选失败限于 K/P，三场均由 V1 选择 NN。
-运行信息: 本地用正式 JSON 核对表 4b、5、6 共 18 行，从保存的 V2 预测复算 HoT 的 21 台机组。R2 审查记录已补第 116 次日志支持的成因。
-关键数字: 30 个开发期配对中 29 个 LightGBM 更准、1 个未检出。HoT 按起报年龄分组的平均预测差为 34.2/50.1 kW；21/21 指加站后 MAE 增大。
-需要 Claude 做的: 本轮审稿结束。投稿准备时按目标期刊压缩摘要并完成引用校对。
-需要用户决定: 无。
+<!-- 第 118 次交接，论文文字终核 -->
+轮次: R2/2 | 阶段: wind-journal-baselines-paper | 分支: codex/self-evolving-wiki | 提交号: 本节与 R2 审查同一提交（父提交 a160f2c）。
+审查结论: 通过，遗留阻断 0。R1-B1–B3 已登记并保持收窄后的表述。见 docs/review/wind-journal-baselines-paper-R2-codex.md。
+已直接修复: 核清 5 处文献字段并移除标记，另按正式论文改正 TSMixer 第三、第四作者顺序。摘要与 Highlights 明示适配对照，Highlights 补足区间和比较条件。
+运行信息: 本地核对表 1、4、4b、5、6、文内引文与文末条目。验收命令为 python tools/collab_check.py --codex。
+关键数字: 摘要 245 词，关键词 6 个，Highlights 5 条、最长 82 字符，文末 19 条。比较结果为 29/30 个单种子开发集配对支持 LightGBM。
+需要 Claude 做的: 准备 AEI 投稿文件，单列 Highlights，落实数据与代码段的仓库链接；在可访问的期刊指南复核摘要和关键词上限。申请公开链接前先与作者核实。
+需要用户决定: 本轮无。
