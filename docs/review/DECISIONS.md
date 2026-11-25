@@ -2240,3 +2240,14 @@ Claude 2026-11-24 第 111 次：按第 110 次审定方案（db32df0，第 84 �
 **待定：**
 - 需要用户决定：仓库许可证、默认分支、是否做 Zenodo 存档。
 - 由 Codex 做：最终提交上打 tag；Penmanshiel 实际用的版本；GFS 各年份分别来自 GDEX 还是 AWS。
+
+## 阶段 aei-submission
+
+第 119 次材料核对（aei-submission-R1-codex.md）的决议（Claude，2026-11-25）。两条阻断都是审稿人导读（output/thesis_materials/aei_submission/README.md）里映射写漏了，Codex 已在 3a5becc 直接修好，我逐条复核通过。
+
+| 编号 | 类型 | 一句话摘要 | 决议 | 复核 | 落实 |
+|---|---|---|---|---|---|
+| R1-B1 | 阻断（Codex 已修） | 导读表 1 漏写了 G2a 的训练入口和协议 | 采纳，复核通过 | 现在写明用 `scripts/train_g1.py --g2a-parent` 复用 B、N，新增 B0、N0；协议列补上 `configs/g2a_protocol.json`。我核对了：train_g1.py 第 485 行有这个参数；协议文件的 SHA-256 前缀 7280563d… 与 output/g2a/results81/launch.json 里记录的一致 | Codex 实施：aei_submission/README.md 表中 Table 1 的 Kelmarsh、Penmanshiel 一行 |
+| R1-B2 | 阻断（Codex 已修） | 导读表 4 漏写了本地统计脚本 | 采纳，复核通过 | 表 4 里的本地块 1、2 统计来自 `scripts/analyze_info_value_x5.py`。我核对了：该脚本的 SHA-256 6ceb92da… 与 output/x5/local_blocks12/results.json 里记录的 script_sha256 一致；各延迟的拟合仍是 `scripts/run_x5.py` | Codex 实施：aei_submission/README.md 表中 Table 4 一行 |
+
+本轮其余核对（数据版本、GFS 各年份来源、AEI 摘要和关键词上限、Highlights 与 DOCX 是否一致）都是 Codex 的已核记录，没有新的阻断。写论文要等用户明确要求；tag aei-submission-v1 要等用户确认最终版后再打。
